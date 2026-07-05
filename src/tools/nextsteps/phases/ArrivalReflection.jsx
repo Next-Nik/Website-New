@@ -238,20 +238,20 @@ export function ArrivalReflection({ user, onReflectionLanded }) {
         .ns-chat--fresh { justify-content:center; }
         .ns-chat--fresh .ns-msgs { flex:0 0 auto; overflow:visible; padding:0 24px; }
         .ns-msgs { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:20px; padding:28px 24px 16px; max-width:680px; width:100%; margin:0 auto; box-sizing:border-box; }
-        .ns-bubble.assistant.ns-opener { background:transparent; border:none; padding:0 0 20px; font-family:'Cormorant Garamond',Georgia,serif; font-size:clamp(1.35rem,2.2vw,1.65rem); font-weight:400; line-height:1.55; color:rgba(15,21,35,0.88); max-width:100%; border-bottom:1px solid rgba(168,114,26,0.18); }
-        .ns-bubble { padding:14px 20px; border-radius:3px; font-family:'Lora',Georgia,serif; font-size:1rem; line-height:1.65; max-width:86%; color:#0F1523; }
-        .ns-bubble.assistant { background:#FFFFFF; border:1px solid rgba(168,114,26,0.16); align-self:flex-start; box-shadow:0 2px 8px rgba(15,21,35,0.06); }
-        .ns-bubble.user { background:rgba(168,114,26,0.08); border:1px solid rgba(168,114,26,0.20); align-self:flex-end; }
+        .ns-bubble.assistant.ns-opener { background:transparent; border:none; padding:0 0 20px; font-family:'Fraunces',Georgia,serif; font-size:clamp(1.35rem,2.2vw,1.65rem); font-weight:400; line-height:1.55; color:rgba(15,21,35,0.88); max-width:100%; border-bottom:1px solid rgba(38,48,42,0.18); }
+        .ns-bubble { padding:14px 20px; border-radius:3px; font-family:'Newsreader',Georgia,serif; font-size:1rem; line-height:1.65; max-width:86%; color:#0F1523; }
+        .ns-bubble.assistant { background:#FFFFFF; border:1px solid rgba(38,48,42,0.16); align-self:flex-start; box-shadow:0 2px 8px rgba(15,21,35,0.06); }
+        .ns-bubble.user { background:rgba(38,48,42,0.08); border:1px solid rgba(38,48,42,0.20); align-self:flex-end; }
         .ns-input-inline { display:flex; gap:10px; align-items:flex-end; margin-top:4px; padding:14px 0 0; }
-        .ns-input-row { flex-shrink:0; display:flex; gap:10px; align-items:flex-end; background:#FFFFFF; border-top:1px solid rgba(168,114,26,0.18); padding:14px 24px; max-width:680px; width:100%; margin:0 auto; box-sizing:border-box; }
-        .ns-input { flex:1; border:1px solid rgba(168,114,26,0.25); border-radius:3px; outline:none; resize:none; font-family:'Lora',Georgia,serif; font-size:1rem; line-height:1.55; color:#0F1523; background:#FFFFFF; padding:10px 12px; min-height:44px; }
+        .ns-input-row { flex-shrink:0; display:flex; gap:10px; align-items:flex-end; background:#FFFFFF; border-top:1px solid rgba(38,48,42,0.18); padding:14px 24px; max-width:680px; width:100%; margin:0 auto; box-sizing:border-box; }
+        .ns-input { flex:1; border:1px solid rgba(38,48,42,0.25); border-radius:3px; outline:none; resize:none; font-family:'Newsreader',Georgia,serif; font-size:1rem; line-height:1.55; color:#0F1523; background:#FFFFFF; padding:10px 12px; min-height:44px; }
         .ns-input-row .ns-input { border:none; background:transparent; padding:4px 0; min-height:28px; }
         .ns-input::placeholder { color:rgba(15,21,35,0.55); font-style:italic; }
-        .ns-send { background:#C8922A; color:#FFFFFF; border:none; border-radius:3px; padding:10px 20px; font-family:'Cormorant SC',Georgia,serif; font-size:0.8rem; letter-spacing:0.16em; text-transform:uppercase; cursor:pointer; transition:background 0.15s; flex-shrink:0; height:44px; }
-        .ns-send:hover:not(:disabled) { background:#A8721A; }
+        .ns-send { background:#6E7F5C; color:#FFFFFF; border:none; border-radius:3px; padding:10px 20px; font-family:'IBM Plex Mono',Georgia,serif; font-size:0.8rem; letter-spacing:0.16em; text-transform:uppercase; cursor:pointer; transition:background 0.15s; flex-shrink:0; height:44px; }
+        .ns-send:hover:not(:disabled) { background:#26302A; }
         .ns-send:disabled { background:rgba(15,21,35,0.15); cursor:not-allowed; }
-        .ns-typing { align-self:flex-start; display:inline-flex; gap:5px; padding:16px 20px; background:#FFFFFF; border:1px solid rgba(168,114,26,0.16); border-radius:3px; box-shadow:0 2px 8px rgba(15,21,35,0.06); }
-        .ns-typing span { width:6px; height:6px; border-radius:50%; background:rgba(168,114,26,0.50); animation:ns-bounce 1.2s infinite; }
+        .ns-typing { align-self:flex-start; display:inline-flex; gap:5px; padding:16px 20px; background:#FFFFFF; border:1px solid rgba(38,48,42,0.16); border-radius:3px; box-shadow:0 2px 8px rgba(15,21,35,0.06); }
+        .ns-typing span { width:6px; height:6px; border-radius:50%; background:rgba(38,48,42,0.50); animation:ns-bounce 1.2s infinite; }
         .ns-typing span:nth-child(2) { animation-delay:0.15s; }
         .ns-typing span:nth-child(3) { animation-delay:0.30s; }
         @keyframes ns-bounce { 0%,80%,100% { transform:translateY(0); opacity:0.5; } 40% { transform:translateY(-5px); opacity:1; } }

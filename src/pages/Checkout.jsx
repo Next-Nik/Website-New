@@ -36,10 +36,10 @@ function WelcomeCard({ type }) {
       <img src="/logo_nav.png" alt="NextUs" style={{ width: '52px', height: '52px', objectFit: 'contain', marginBottom: '32px' }} />
       <div style={{
         width: '100%', maxWidth: '400px', background: '#FFFFFF',
-        border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px',
+        border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '14px',
         padding: '48px 36px 40px', textAlign: 'center',
       }}>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#26302A', display: 'block', marginBottom: '16px' }}>
           Welcome
         </span>
         <h1 style={{ ...body, fontSize: '32px', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.2 }}>
@@ -50,7 +50,7 @@ function WelcomeCard({ type }) {
         </p>
         <a href={ROUTES.home} style={{
           display: 'block', width: '100%', padding: '14px 0',
-          background: '#C8922A', border: 'none', borderRadius: '40px',
+          background: '#6E7F5C', border: 'none', borderRadius: '40px',
           ...sc, fontSize: '15px', letterSpacing: '0.16em',
           color: '#FFFFFF', textDecoration: 'none', textAlign: 'center',
         }}>
@@ -71,10 +71,10 @@ function StatusCard({ eyebrow, heading, body: bodyText, action }) {
       <img src="/logo_nav.png" alt="NextUs" style={{ width: '44px', height: '44px', objectFit: 'contain', marginBottom: '32px' }} />
       <div style={{
         width: '100%', maxWidth: '400px', background: '#FFFFFF',
-        border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px',
+        border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '14px',
         padding: '40px 36px', textAlign: 'center',
       }}>
-        {eyebrow && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>{eyebrow}</span>}
+        {eyebrow && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#26302A', display: 'block', marginBottom: '12px' }}>{eyebrow}</span>}
         <h1 style={{ ...body, fontSize: '26px', fontWeight: 400, color: '#0F1523', marginBottom: '12px', lineHeight: 1.25 }}>{heading}</h1>
         {bodyText && <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, marginBottom: action ? '28px' : 0 }}>{bodyText}</p>}
         {action}
@@ -86,7 +86,7 @@ function StatusCard({ eyebrow, heading, body: bodyText, action }) {
 function GoldButton({ href, onClick, children, disabled }) {
   const style = {
     display: 'block', width: '100%', padding: '14px 0',
-    background: disabled ? 'rgba(200,146,42,0.35)' : '#C8922A',
+    background: disabled ? 'rgba(110,127,92,0.35)' : '#6E7F5C',
     border: 'none', borderRadius: '40px',
     ...sc, fontSize: '15px', letterSpacing: '0.16em',
     color: '#FFFFFF', cursor: disabled ? 'default' : 'pointer',

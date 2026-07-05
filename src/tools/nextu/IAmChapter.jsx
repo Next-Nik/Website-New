@@ -4,7 +4,7 @@
 // The canonical writer of horizon_profile.ia_statement. Extracted
 // from the legacy Dashboard's MapIAmView and redesigned to the
 // focused-surface standard: one domain at a time, the domain's
-// colour as a quiet 3px rule, the user's words in italic Lora —
+// colour as a quiet 3px rule, the user's words in italic Newsreader —
 // the only italics on the surface, because italics are reserved
 // for user-authored words and this chapter is made of them.
 //

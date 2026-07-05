@@ -63,6 +63,11 @@ const GOLD_WHITELIST = [
                                                 // locked ("do not modify without explicit instruction");
                                                 // this is a domain hue, not decorative chrome. Flagged
                                                 // for Nik — happy to swap the domain's colour if wanted.
+  'constants/domainColors.js',                 // Locked May 2026. Gold appears once, as the defensive
+                                                // fallback colour in selfColor()/civColor() for unknown
+                                                // domain keys ("keeps unfamiliar surfaces from rendering
+                                                // broken") — not a domain identity colour. Flagged for
+                                                // Nik rather than edited, since the file is locked.
   // e.g. 'app/components/mission-control/SettingsMissionPanel.jsx' — FOUNDER chip (approved moment 1/3)
 ]
 

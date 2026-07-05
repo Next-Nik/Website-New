@@ -14,10 +14,10 @@
 import { useState } from 'react'
 
 // ── Brand ─────────────────────────────────────────────────────────
-export const BODY  = { fontFamily: "'Lora', Georgia, serif" }
-export const SC    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-export const SERIF = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-export const GOLD  = '#A8721A'
+export const BODY  = { fontFamily: "'Newsreader', Georgia, serif" }
+export const SC    = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+export const SERIF = { fontFamily: "'Fraunces', Georgia, serif" }
+export const GOLD  = '#26302A'
 export const DARK  = '#0F1523'
 export const PARCH = '#FAFAF7'
 
@@ -48,7 +48,7 @@ export function TextInput({ value, onChange, placeholder, type = 'text' }) {
       value={value}
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
-      style={{ ...BODY, fontSize: '15px', color: DARK, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
+      style={{ ...BODY, fontSize: '15px', color: DARK, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(110,127,92,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
     />
   )
 }
@@ -60,7 +60,7 @@ export function TextArea({ value, onChange, placeholder, rows = 4 }) {
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
       rows={rows}
-      style={{ ...BODY, fontSize: '15px', color: DARK, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }}
+      style={{ ...BODY, fontSize: '15px', color: DARK, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(110,127,92,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }}
     />
   )
 }
@@ -70,7 +70,7 @@ export function SelectInput({ value, onChange, options }) {
     <select
       value={value}
       onChange={e => onChange(e.target.value)}
-      style={{ ...BODY, fontSize: '15px', color: DARK, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
+      style={{ ...BODY, fontSize: '15px', color: DARK, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(110,127,92,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
     >
       {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
@@ -110,7 +110,7 @@ export function LinkList({ value, onChange }) {
             value={v}
             onChange={e => update(i, e.target.value)}
             placeholder="https://..."
-            style={{ ...BODY, fontSize: '15px', color: DARK, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', flex: 1 }}
+            style={{ ...BODY, fontSize: '15px', color: DARK, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(110,127,92,0.30)', background: '#FFFFFF', outline: 'none', flex: 1 }}
           />
           {list.length > 1 && (
             <button
@@ -126,7 +126,7 @@ export function LinkList({ value, onChange }) {
       <button
         type="button"
         onClick={add}
-        style={{ ...SC, fontSize: '12px', letterSpacing: '0.14em', padding: '8px 16px', borderRadius: '40px', border: '1px solid rgba(200,146,42,0.30)', background: 'rgba(200,146,42,0.04)', color: GOLD, cursor: 'pointer', marginTop: '4px' }}
+        style={{ ...SC, fontSize: '12px', letterSpacing: '0.14em', padding: '8px 16px', borderRadius: '40px', border: '1px solid rgba(110,127,92,0.30)', background: 'rgba(110,127,92,0.04)', color: GOLD, cursor: 'pointer', marginTop: '4px' }}
       >
         + Add another link
       </button>
@@ -196,7 +196,7 @@ export function Beats({ items }) {
 
 export function PreFormLine({ children }) {
   return (
-    <p style={{ ...BODY, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: '0 0 32px', paddingTop: '24px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
+    <p style={{ ...BODY, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: '0 0 32px', paddingTop: '24px', borderTop: '1px solid rgba(110,127,92,0.20)' }}>
       {children}
     </p>
   )
@@ -222,7 +222,7 @@ export function CloserAndSubmit({ saving, error, submitLabel, onSubmit }) {
         style={{
           ...SC, fontSize: '14px', letterSpacing: '0.16em',
           padding: '14px 32px', borderRadius: '40px', border: 'none',
-          background: saving ? 'rgba(200,146,42,0.35)' : '#C8922A',
+          background: saving ? 'rgba(110,127,92,0.35)' : '#6E7F5C',
           color: '#FFFFFF', cursor: saving ? 'not-allowed' : 'pointer',
           display: 'block', width: '100%', marginTop: '8px',
         }}

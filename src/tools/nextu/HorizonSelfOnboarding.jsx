@@ -116,7 +116,7 @@ function TextField({ label, help, value, onChange, multiline = true, placeholder
     width: '100%', boxSizing: 'border-box', marginTop: '12px',
     padding: '14px 16px', border: `1px solid ${tokens.goldFaint}`,
     borderRadius: '6px', background: '#FFFFFF',
-    fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic',
+    fontFamily: "'Newsreader', Georgia, serif", fontStyle: 'italic',
     fontSize: '16px', lineHeight: 1.6, color: tokens.dark, outline: 'none',
   }
   return (
@@ -776,7 +776,7 @@ export function HorizonSelfOnboardingPage() {
                   width: '100%', boxSizing: 'border-box', marginTop: '8px',
                   padding: '12px 14px', border: `1px solid ${tokens.goldFaint}`,
                   borderRadius: '6px', background: tokens.bg,
-                  fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic',
+                  fontFamily: "'Newsreader', Georgia, serif", fontStyle: 'italic',
                   fontSize: '16px', lineHeight: 1.6, color: tokens.dark,
                   resize: 'vertical', outline: 'none',
                 }}
@@ -793,7 +793,7 @@ export function HorizonSelfOnboardingPage() {
                   width: '100%', boxSizing: 'border-box', marginTop: '8px',
                   padding: '12px 14px', border: `1px solid ${tokens.goldFaint}`,
                   borderRadius: '6px', background: tokens.bg,
-                  fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic',
+                  fontFamily: "'Newsreader', Georgia, serif", fontStyle: 'italic',
                   fontSize: '16px', lineHeight: 1.6, color: tokens.dark,
                   resize: 'vertical', outline: 'none',
                 }}

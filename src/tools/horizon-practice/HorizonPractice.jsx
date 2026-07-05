@@ -815,13 +815,13 @@ function StretchTasksRail({ activeSprint, civSprint, thresholds, onChange }) {
         return (
           <button key={item.ref} type="button" onClick={() => toggle(item)} style={{
             display: 'flex', alignItems: 'flex-start', gap: '10px', width: '100%', textAlign: 'left',
-            background: added ? 'rgba(200,146,42,0.07)' : 'transparent',
-            border: `1px solid ${added ? 'rgba(200,146,42,0.4)' : 'rgba(200,146,42,0.16)'}`,
+            background: added ? 'rgba(110,127,92,0.07)' : 'transparent',
+            border: `1px solid ${added ? 'rgba(110,127,92,0.4)' : 'rgba(110,127,92,0.16)'}`,
             borderRadius: '8px', padding: '10px 12px', marginBottom: '6px', cursor: 'pointer', transition: 'all 0.2s',
           }}>
             <span style={{
               width: '16px', height: '16px', borderRadius: '50%', flexShrink: 0, marginTop: '2px',
-              border: `1px solid ${added ? tokens.goldChrome : 'rgba(200,146,42,0.35)'}`,
+              border: `1px solid ${added ? tokens.goldChrome : 'rgba(110,127,92,0.35)'}`,
               background: added ? tokens.goldChrome : 'transparent',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
@@ -1522,7 +1522,7 @@ function TaskList({ thresholds, onComplete, onUncomplete, onCross }) {
           style={{
             flexShrink: 0, marginTop: '2px',
             width: '22px', height: '22px', borderRadius: '50%',
-            border: `1.5px solid ${isDone ? tokens.goldChrome : 'rgba(200,146,42,0.35)'}`,
+            border: `1.5px solid ${isDone ? tokens.goldChrome : 'rgba(110,127,92,0.35)'}`,
             background: isDone ? tokens.goldChrome : 'transparent',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: 'pointer', transition: 'all 0.2s ease', padding: 0,
