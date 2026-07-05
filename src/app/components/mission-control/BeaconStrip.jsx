@@ -100,6 +100,7 @@ export default function BeaconStrip({ userId }) {
   const [feed, setFeed] = useState(null)
   const [copied, setCopied] = useState(null)
   const panelRef = useRef(null)
+  const wrapRef = useRef(null)
   const lanternRef = useRef(null)
   const fireRef = useRef(null)
 
@@ -263,6 +264,25 @@ export default function BeaconStrip({ userId }) {
   // keep height correct when content changes while open
   useEffect(() => { if (open) setPanelHeight(measure(), false) }, [mine, feed, expanded, copied, askPush, open])
 
+  // ── click-off / Escape close ──
+  // The panel closes from anywhere, not only the toggle: any pointer press
+  // outside the strip, or Escape. Capture phase so an inner stopPropagation
+  // elsewhere on the page can't strand the panel open.
+  useEffect(() => {
+    if (!open) return
+    const close = () => { setOpen(false); setPanelHeight(0, true) }
+    const onDocDown = (e) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) close()
+    }
+    const onKey = (e) => { if (e.key === 'Escape') close() }
+    document.addEventListener('pointerdown', onDocDown, true)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('pointerdown', onDocDown, true)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
   if (!beacon || beacon.status === 'pending' || !beacon.rooted) return null
 
   const newcomer = ready && mine.length === 0
@@ -275,7 +295,7 @@ export default function BeaconStrip({ userId }) {
         : 'You showed up! Well done!'
 
   return (
-    <div className={`bcn-wrap${open ? ' open' : ''}`}>
+    <div className={`bcn-wrap${open ? ' open' : ''}`} ref={wrapRef}>
       <style>{CSS}</style>
 
       <div className="bcn-bar" onClick={toggle} role="button" tabIndex={0}
