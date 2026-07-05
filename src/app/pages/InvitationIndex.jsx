@@ -9,7 +9,7 @@ import { SiteFooter }          from '../../components/SiteFooter'
 import { supabase }            from '../../hooks/useSupabase'
 import { body, sc } from '../../lib/designTokens'
 
-const gold  = '#A8721A'
+const gold  = '#26302A'
 const dark  = '#0F1523'
 const parch = '#FAFAF7'
 
@@ -39,8 +39,8 @@ function InvitationListCard({ invitation }) {
       <div style={{
         padding: '24px 28px',
         background: '#FFFFFF',
-        border: '1px solid rgba(200,146,42,0.16)',
-        borderLeft: '3px solid rgba(200,146,42,0.55)',
+        border: '1px solid rgba(110,127,92,0.16)',
+        borderLeft: '3px solid rgba(110,127,92,0.55)',
         borderRadius: '12px',
         marginBottom: '14px',
         transition: 'border-left-color 0.15s, box-shadow 0.15s',
@@ -48,10 +48,10 @@ function InvitationListCard({ invitation }) {
       }}
         onMouseEnter={e => {
           e.currentTarget.style.borderLeftColor = gold
-          e.currentTarget.style.boxShadow = '0 2px 12px rgba(200,146,42,0.08)'
+          e.currentTarget.style.boxShadow = '0 2px 12px rgba(110,127,92,0.08)'
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.borderLeftColor = 'rgba(200,146,42,0.55)'
+          e.currentTarget.style.borderLeftColor = 'rgba(110,127,92,0.55)'
           e.currentTarget.style.boxShadow = 'none'
         }}
       >
@@ -63,8 +63,8 @@ function InvitationListCard({ invitation }) {
               fontSize: '10px',
               letterSpacing: '0.16em',
               color: i === 0 ? gold : 'rgba(15,21,35,0.55)',
-              background: i === 0 ? 'rgba(200,146,42,0.08)' : 'rgba(15,21,35,0.04)',
-              border: `1px solid ${i === 0 ? 'rgba(200,146,42,0.28)' : 'rgba(15,21,35,0.10)'}`,
+              background: i === 0 ? 'rgba(110,127,92,0.08)' : 'rgba(15,21,35,0.04)',
+              border: `1px solid ${i === 0 ? 'rgba(110,127,92,0.28)' : 'rgba(15,21,35,0.10)'}`,
               borderRadius: '4px',
               padding: '2px 8px',
               textTransform: 'uppercase',
@@ -138,8 +138,8 @@ function DomainFilter({ selected, onChange }) {
           padding: '6px 14px',
           borderRadius: '40px',
           cursor: 'pointer',
-          border: selected === null ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.22)',
-          background: selected === null ? 'rgba(200,146,42,0.10)' : 'transparent',
+          border: selected === null ? '1.5px solid rgba(110,127,92,0.78)' : '1.5px solid rgba(110,127,92,0.22)',
+          background: selected === null ? 'rgba(110,127,92,0.10)' : 'transparent',
           color: selected === null ? gold : 'rgba(15,21,35,0.55)',
           transition: 'all 0.15s',
         }}
@@ -159,8 +159,8 @@ function DomainFilter({ selected, onChange }) {
               padding: '6px 14px',
               borderRadius: '40px',
               cursor: 'pointer',
-              border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.18)',
-              background: on ? 'rgba(200,146,42,0.10)' : 'transparent',
+              border: on ? '1.5px solid rgba(110,127,92,0.78)' : '1.5px solid rgba(110,127,92,0.18)',
+              background: on ? 'rgba(110,127,92,0.10)' : 'transparent',
               color: on ? gold : 'rgba(15,21,35,0.55)',
               transition: 'all 0.15s',
             }}

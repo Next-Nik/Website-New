@@ -1,12 +1,14 @@
 // src/beta/components/OrgShared.jsx
 // Shared UI primitives used by OrgManage and OrgPublic.
 // Extracted so both pages stay lean and consistent.
+// Atlas rail — actor profile pages per Master Spec §1.
+import { at } from '../lib/designTokens'
 
-export const body = { fontFamily: "'Lora', Georgia, serif" }
-export const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-export const gold = '#A8721A'
-export const dark = '#0F1523'
-export const parch = '#FAFAF7'
+export const body = { fontFamily: "'Newsreader', Georgia, serif" }
+export const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+export const gold = at.brass
+export const dark = at.text
+export const parch = at.ground
 
 export const DOMAIN_LIST = [
   { value: 'human-being',    label: 'Human Being' },
@@ -111,12 +113,12 @@ export function Label({ children, required }) {
 }
 
 export function Hint({ children }) {
-  return <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '5px', lineHeight: 1.5 }}>{children}</p>
+  return <p style={{ ...body, fontSize: '13px', color: at.ghost, marginTop: '5px', lineHeight: 1.5 }}>{children}</p>
 }
 
 export function SectionCard({ children, style }) {
   return (
-    <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.18)', borderRadius: '14px', padding: '28px 32px', marginBottom: '24px', ...style }}>
+    <div style={{ background: at.object, border: '1.5px solid rgba(217,178,74,0.18)', borderRadius: '14px', padding: '28px 32px', marginBottom: '24px', ...style }}>
       {children}
     </div>
   )
@@ -126,9 +128,9 @@ export function SectionCard({ children, style }) {
 
 export function Btn({ onClick, children, variant = 'primary', disabled, small }) {
   const styles = {
-    primary: { background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', color: gold },
-    solid:   { background: '#C8922A', border: '1.5px solid rgba(168,114,26,0.8)', color: '#FFFFFF' },
-    ghost:   { background: 'transparent', border: '1px solid rgba(15,21,35,0.55)', color: 'rgba(15,21,35,0.55)' },
+    primary: { background: 'rgba(217,178,74,0.05)', border: '1.5px solid rgba(217,178,74,0.78)', color: gold },
+    solid:   { background: at.verdigris, border: '1.5px solid rgba(217,178,74,0.8)', color: '#FFFFFF' },
+    ghost:   { background: 'transparent', border: `1px solid ${at.ghost}`, color: at.ghost },
     danger:  { background: 'rgba(138,48,48,0.05)', border: '1.5px solid rgba(138,48,48,0.40)', color: '#8A3030' },
   }
   return (
@@ -146,21 +148,21 @@ export function Btn({ onClick, children, variant = 'primary', disabled, small })
 export function TextInput({ value, onChange, placeholder, type = 'text', disabled }) {
   return (
     <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} disabled={disabled}
-      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: disabled ? 'rgba(200,146,42,0.03)' : '#FFFFFF', outline: 'none', width: '100%' }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)', background: disabled ? 'rgba(217,178,74,0.03)' : at.object, outline: 'none', width: '100%' }} />
   )
 }
 
 export function TextArea({ value, onChange, placeholder, rows = 4 }) {
   return (
     <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows}
-      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)', background: at.object, outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
   )
 }
 
 export function SelectInput({ value, onChange, options, disabled }) {
   return (
     <select value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
-      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}>
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)', background: at.object, outline: 'none', width: '100%' }}>
       {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
   )
@@ -173,9 +175,9 @@ export function ModeSelector({ value, onChange }) {
         const on = value === m.value
         return (
           <button key={m.value} type="button" onClick={() => onChange(m.value)}
-            style={{ textAlign: 'left', padding: '12px 14px', borderRadius: '10px', cursor: 'pointer', border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.20)', background: on ? 'rgba(200,146,42,0.07)' : '#FFFFFF', transition: 'all 0.15s' }}>
-            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: on ? gold : 'rgba(15,21,35,0.70)', marginBottom: '3px' }}>{m.label}</div>
-            <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.4 }}>{m.desc}</div>
+            style={{ textAlign: 'left', padding: '12px 14px', borderRadius: '10px', cursor: 'pointer', border: on ? '1.5px solid rgba(217,178,74,0.78)' : '1.5px solid rgba(217,178,74,0.20)', background: on ? 'rgba(217,178,74,0.07)' : at.object, transition: 'all 0.15s' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: on ? gold : 'rgba(234,241,237,0.70)', marginBottom: '3px' }}>{m.label}</div>
+            <div style={{ ...body, fontSize: '13px', color: at.ghost, lineHeight: 1.4 }}>{m.desc}</div>
           </button>
         )
       })}
@@ -185,12 +187,12 @@ export function ModeSelector({ value, onChange }) {
 
 export function Eyebrow({ children, style = {} }) {
   return (
-    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', ...style }}>
+    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: at.ghost, textTransform: 'uppercase', ...style }}>
       {children}
     </div>
   )
 }
 
 export function Rule() {
-  return <div style={{ height: '1px', background: 'rgba(200,146,42,0.10)', margin: '40px 0' }} />
+  return <div style={{ height: '1px', background: 'rgba(217,178,74,0.10)', margin: '40px 0' }} />
 }

@@ -126,7 +126,7 @@ export function FocusSearch({
   return (
     <div style={{ position: 'relative' }}>
       {value ? (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.55)', background: 'rgba(200,146,42,0.04)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '8px', border: '1.5px solid rgba(88,160,138,0.55)', background: 'rgba(88,160,138,0.04)' }}>
           <div>
             <span style={{ ...body, fontSize: '15px', color: '#0F1523' }}>{value.name}</span>
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, marginLeft: '10px' }}>
@@ -142,16 +142,16 @@ export function FocusSearch({
             onChange={e => { setQuery(e.target.value); setOpen(true) }}
             onFocus={() => setOpen(true)}
             placeholder={placeholder || 'Search — e.g. Canada, Toronto, Cascadia…'}
-            style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
+            style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(88,160,138,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
           />
           {open && query.trim().length >= 2 && (
-            <div className="focus-search-dropdown" style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 200, background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '0 0 8px 8px', boxShadow: '0 8px 24px rgba(15,21,35,0.10)', maxHeight: '280px', overflowY: 'auto' }}>
+            <div className="focus-search-dropdown" style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 200, background: '#FFFFFF', border: '1.5px solid rgba(88,160,138,0.30)', borderRadius: '0 0 8px 8px', boxShadow: '0 8px 24px rgba(15,21,35,0.10)', maxHeight: '280px', overflowY: 'auto' }}>
               {searching && <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', padding: '12px 16px' }}>Searching…</div>}
               {!searching && results.length === 0 && <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', padding: '12px 16px' }}>No results for "{query}"</div>}
               {results.map(f => (
                 <button key={f.id} onClick={() => select(f)}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 16px', background: 'none', border: 'none', borderBottom: '1px solid rgba(200,146,42,0.10)', cursor: 'pointer', textAlign: 'left' }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,146,42,0.05)'}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 16px', background: 'none', border: 'none', borderBottom: '1px solid rgba(88,160,138,0.10)', cursor: 'pointer', textAlign: 'left' }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(88,160,138,0.05)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'none'}
                 >
                   <span style={{ ...body, fontSize: '15px', color: '#0F1523' }}>{f.name}</span>

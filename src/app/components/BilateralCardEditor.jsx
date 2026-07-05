@@ -14,7 +14,7 @@ import {
   withdrawDraft,
 } from '../hooks/useBilateral'
 
-const gold = '#A8721A'
+const gold = '#26302A'
 const dark = '#0F1523'
 
 // ── Shared form primitives ───────────────────────────────────
@@ -53,8 +53,8 @@ function TextInput({ value, onChange, placeholder, disabled }) {
       style={{
         ...body, fontSize: '15px', color: dark,
         padding: '11px 16px', borderRadius: '8px',
-        border: '1.5px solid rgba(200,146,42,0.30)',
-        background: disabled ? 'rgba(200,146,42,0.03)' : '#FFFFFF',
+        border: '1.5px solid rgba(110,127,92,0.30)',
+        background: disabled ? 'rgba(110,127,92,0.03)' : '#FFFFFF',
         outline: 'none', width: '100%',
       }}
     />
@@ -72,8 +72,8 @@ function TextArea({ value, onChange, placeholder, rows = 3, disabled }) {
       style={{
         ...body, fontSize: '15px', color: dark,
         padding: '11px 16px', borderRadius: '8px',
-        border: '1.5px solid rgba(200,146,42,0.30)',
-        background: disabled ? 'rgba(200,146,42,0.03)' : '#FFFFFF',
+        border: '1.5px solid rgba(110,127,92,0.30)',
+        background: disabled ? 'rgba(110,127,92,0.03)' : '#FFFFFF',
         outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65,
       }}
     />
@@ -109,8 +109,8 @@ function PartyBSearch({ value, onChange }) {
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '10px 14px', borderRadius: '8px',
-        border: '1.5px solid rgba(200,146,42,0.55)',
-        background: 'rgba(200,146,42,0.04)',
+        border: '1.5px solid rgba(110,127,92,0.55)',
+        background: 'rgba(110,127,92,0.04)',
       }}>
         <div>
           <span style={{ ...body, fontSize: '15px', color: dark }}>{value.display_name}</span>
@@ -142,14 +142,14 @@ function PartyBSearch({ value, onChange }) {
         style={{
           ...body, fontSize: '15px', color: dark,
           padding: '11px 16px', borderRadius: '8px',
-          border: '1.5px solid rgba(200,146,42,0.30)',
+          border: '1.5px solid rgba(110,127,92,0.30)',
           background: '#FFFFFF', outline: 'none', width: '100%',
         }}
       />
       {(results.length > 0 || searching) && (
         <div style={{
           position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 200,
-          background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.30)',
+          background: '#FFFFFF', border: '1.5px solid rgba(110,127,92,0.30)',
           borderRadius: '0 0 8px 8px', boxShadow: '0 8px 24px rgba(15,21,35,0.10)',
           maxHeight: '220px', overflowY: 'auto',
         }}>
@@ -165,10 +165,10 @@ function PartyBSearch({ value, onChange }) {
               style={{
                 display: 'flex', flexDirection: 'column', width: '100%',
                 padding: '10px 16px', background: 'none', border: 'none',
-                borderBottom: '1px solid rgba(200,146,42,0.08)',
+                borderBottom: '1px solid rgba(110,127,92,0.08)',
                 cursor: 'pointer', textAlign: 'left',
               }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,146,42,0.04)'}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(110,127,92,0.04)'}
               onMouseLeave={e => e.currentTarget.style.background = 'none'}
             >
               <span style={{ ...body, fontSize: '15px', color: dark }}>{r.display_name}</span>
@@ -225,8 +225,8 @@ function SprintBuddyFields({ payload, onChange, locked }) {
                 style={{
                   ...sc, fontSize: '11px', letterSpacing: '0.12em',
                   padding: '5px 12px', borderRadius: '40px', cursor: locked ? 'default' : 'pointer',
-                  border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.25)',
-                  background: on ? 'rgba(200,146,42,0.10)' : 'transparent',
+                  border: on ? '1.5px solid rgba(110,127,92,0.78)' : '1.5px solid rgba(110,127,92,0.25)',
+                  background: on ? 'rgba(110,127,92,0.10)' : 'transparent',
                   color: on ? gold : 'rgba(15,21,35,0.55)',
                 }}
               >
@@ -336,8 +336,8 @@ function CollaborationCardFields({ payload, onChange, locked }) {
                 style={{
                   ...sc, fontSize: '11px', letterSpacing: '0.12em',
                   padding: '5px 12px', borderRadius: '40px', cursor: locked ? 'default' : 'pointer',
-                  border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.25)',
-                  background: on ? 'rgba(200,146,42,0.10)' : 'transparent',
+                  border: on ? '1.5px solid rgba(110,127,92,0.78)' : '1.5px solid rgba(110,127,92,0.25)',
+                  background: on ? 'rgba(110,127,92,0.10)' : 'transparent',
                   color: on ? gold : 'rgba(15,21,35,0.55)',
                 }}
               >
@@ -487,7 +487,7 @@ export function BilateralCardEditor({
   return (
     <div style={{
       background: '#FFFFFF',
-      border: '1.5px solid rgba(200,146,42,0.30)',
+      border: '1.5px solid rgba(110,127,92,0.30)',
       borderRadius: '14px',
       padding: '28px 32px',
     }}>
@@ -526,8 +526,8 @@ export function BilateralCardEditor({
                   ...sc, fontSize: '12px', letterSpacing: '0.12em',
                   padding: '10px 14px', borderRadius: '10px',
                   cursor: isEdit ? 'default' : 'pointer',
-                  border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.20)',
-                  background: on ? 'rgba(200,146,42,0.08)' : '#FAFAF7',
+                  border: on ? '1.5px solid rgba(110,127,92,0.78)' : '1.5px solid rgba(110,127,92,0.20)',
+                  background: on ? 'rgba(110,127,92,0.08)' : '#FAFAF7',
                   color: on ? gold : 'rgba(15,21,35,0.60)',
                   textAlign: 'left',
                 }}
@@ -551,8 +551,8 @@ export function BilateralCardEditor({
       {isEdit && (
         <div style={{
           padding: '10px 14px', borderRadius: '8px',
-          background: 'rgba(200,146,42,0.04)',
-          border: '1px solid rgba(200,146,42,0.18)',
+          background: 'rgba(110,127,92,0.04)',
+          border: '1px solid rgba(110,127,92,0.18)',
           marginBottom: '18px',
         }}>
           <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)' }}>
@@ -591,7 +591,7 @@ export function BilateralCardEditor({
             style={{
               ...sc, fontSize: '14px', letterSpacing: '0.14em',
               padding: '12px 24px', borderRadius: '40px', cursor: saving ? 'not-allowed' : 'pointer',
-              background: '#C8922A', border: '1.5px solid rgba(168,114,26,0.8)',
+              background: '#6E7F5C', border: '1.5px solid rgba(38,48,42,0.8)',
               color: '#FFFFFF', opacity: saving ? 0.6 : 1,
             }}
           >

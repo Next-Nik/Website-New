@@ -56,8 +56,8 @@ function TestimonialRow({ testimonial, onSave, onDelete, toast }) {
   if (!editing) {
     return (
       <div style={{ borderLeft: testimonial.featured
-          ? '2px solid rgba(200,146,42,0.60)'
-          : '2px solid rgba(200,146,42,0.20)',
+          ? '2px solid rgba(88,160,138,0.60)'
+          : '2px solid rgba(88,160,138,0.20)',
         paddingLeft: '20px', marginBottom: '18px',
         opacity: testimonial.active ? 1 : 0.55 }}>
 
@@ -90,8 +90,8 @@ function TestimonialRow({ testimonial, onSave, onDelete, toast }) {
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
               color: gold, textTransform: 'uppercase',
               padding: '3px 10px', borderRadius: '40px',
-              background: 'rgba(200,146,42,0.10)',
-              border: '1px solid rgba(200,146,42,0.30)' }}>
+              background: 'rgba(88,160,138,0.10)',
+              border: '1px solid rgba(88,160,138,0.30)' }}>
               Featured
             </span>
           )}
@@ -107,8 +107,8 @@ function TestimonialRow({ testimonial, onSave, onDelete, toast }) {
           <button onClick={() => setEditing(true)}
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
               padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
-              border: '1px solid rgba(200,146,42,0.30)',
-              background: 'rgba(200,146,42,0.04)', color: gold }}>
+              border: '1px solid rgba(88,160,138,0.30)',
+              background: 'rgba(88,160,138,0.04)', color: gold }}>
             Edit
           </button>
           <button onClick={remove}
@@ -124,8 +124,8 @@ function TestimonialRow({ testimonial, onSave, onDelete, toast }) {
   }
 
   return (
-    <div style={{ background: 'rgba(200,146,42,0.03)',
-      border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px',
+    <div style={{ background: 'rgba(88,160,138,0.03)',
+      border: '1px solid rgba(88,160,138,0.20)', borderRadius: '10px',
       padding: '20px', marginBottom: '18px',
       display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div>
@@ -209,8 +209,8 @@ function NewTestimonialForm({ actorId, onCreate, toast }) {
       <button onClick={() => setOpen(true)}
         style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
           padding: '10px 22px', borderRadius: '40px', cursor: 'pointer',
-          border: '1px dashed rgba(200,146,42,0.45)',
-          background: 'rgba(200,146,42,0.04)', color: gold,
+          border: '1px dashed rgba(88,160,138,0.45)',
+          background: 'rgba(88,160,138,0.04)', color: gold,
           marginTop: '8px' }}>
         + Add testimonial
       </button>
@@ -218,8 +218,8 @@ function NewTestimonialForm({ actorId, onCreate, toast }) {
   }
 
   return (
-    <div style={{ background: 'rgba(200,146,42,0.03)',
-      border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px',
+    <div style={{ background: 'rgba(88,160,138,0.03)',
+      border: '1px solid rgba(88,160,138,0.20)', borderRadius: '10px',
       padding: '20px', marginTop: '8px',
       display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div>
@@ -296,8 +296,8 @@ export function TestimonialsTab({ actorId, toast }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-      <div style={{ background: 'rgba(200,146,42,0.04)',
-        border: '1px solid rgba(200,146,42,0.18)',
+      <div style={{ background: 'rgba(88,160,138,0.04)',
+        border: '1px solid rgba(88,160,138,0.18)',
         borderRadius: '10px', padding: '14px 18px' }}>
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.65)',
           lineHeight: 1.6, margin: 0 }}>

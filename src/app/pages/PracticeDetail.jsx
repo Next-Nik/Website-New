@@ -2,7 +2,7 @@
 //
 // /beta/practice/:slug — single practice detail.
 //
-// Renders title (Cormorant Garamond, large), kind badge, placement
+// Renders title (Fraunces, large), kind badge, placement
 // breadcrumb, lens chips, PrincipleStrip, description as flowing prose,
 // LineageBlock with dignity, evidence summary if Best for All,
 // attestation list, outcome reports list, and CTAs for both attest and
@@ -30,7 +30,7 @@ import {
 } from '../constants/practices'
 import { body, sc } from '../../lib/designTokens'
 
-const garamond = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
 
 // ─── Helpers ───────────────────────────────────────────────
 
@@ -131,9 +131,9 @@ function LensChips({ lenses = [] }) {
       {lenses.map((l, i) => (
         <span key={l} style={{
           ...sc, fontSize: '11px', letterSpacing: '0.06em',
-          color: i === 0 ? '#A8721A' : 'rgba(15,21,35,0.65)',
-          background: i === 0 ? 'rgba(200,146,42,0.06)' : '#FFFFFF',
-          border: `1px solid ${i === 0 ? 'rgba(200,146,42,0.40)' : 'rgba(200,146,42,0.18)'}`,
+          color: i === 0 ? '#26302A' : 'rgba(15,21,35,0.65)',
+          background: i === 0 ? 'rgba(110,127,92,0.06)' : '#FFFFFF',
+          border: `1px solid ${i === 0 ? 'rgba(110,127,92,0.40)' : 'rgba(110,127,92,0.18)'}`,
           borderRadius: '40px',
           padding: '3px 10px',
         }}>
@@ -153,13 +153,13 @@ function AttestationItem({ attestation, attesterName }) {
   return (
     <div style={{
       padding: '14px 18px',
-      background: 'rgba(200,146,42,0.03)',
-      border: '1px solid rgba(200,146,42,0.15)',
+      background: 'rgba(110,127,92,0.03)',
+      border: '1px solid rgba(110,127,92,0.15)',
       borderRadius: '10px',
       marginBottom: '10px',
     }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
-        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#A8721A', fontWeight: 600 }}>
+        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#26302A', fontWeight: 600 }}>
           {display}
         </span>
         {attestation.attester_role && (
@@ -210,9 +210,9 @@ function SectionHeading({ children, count }) {
       display: 'flex', alignItems: 'baseline', gap: '12px',
       marginTop: '40px', marginBottom: '18px',
       paddingBottom: '10px',
-      borderBottom: '1px solid rgba(200,146,42,0.18)',
+      borderBottom: '1px solid rgba(110,127,92,0.18)',
     }}>
-      <h2 style={{ ...sc, fontSize: '12px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', margin: 0, fontWeight: 600 }}>
+      <h2 style={{ ...sc, fontSize: '12px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase', margin: 0, fontWeight: 600 }}>
         {children}
       </h2>
       {typeof count === 'number' && (
@@ -368,7 +368,7 @@ export default function PracticeDetail() {
             This practice may have been withdrawn, or the link is mistyped.
           </p>
           <Link to="/practices"
-            style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}>
+            style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: '#26302A', textDecoration: 'none' }}>
             Back to practices
           </Link>
         </div>
@@ -499,7 +499,7 @@ export default function PracticeDetail() {
         )}
 
         {/* Contributor attribution (small footer to description) */}
-        <div style={{ paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '14px' }}>
+        <div style={{ paddingTop: '14px', borderTop: '1px solid rgba(110,127,92,0.15)', marginBottom: '14px' }}>
           <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>
             Contributed by {contributorName || 'an anonymous contributor'}
             {practice.contributor_role && (
@@ -529,8 +529,8 @@ export default function PracticeDetail() {
               style={{
                 ...sc, fontSize: '13px', letterSpacing: '0.14em',
                 padding: '12px 26px', borderRadius: '40px',
-                border: '1px solid rgba(200,146,42,0.40)',
-                background: 'rgba(200,146,42,0.05)', color: '#A8721A', cursor: 'pointer',
+                border: '1px solid rgba(110,127,92,0.40)',
+                background: 'rgba(110,127,92,0.05)', color: '#26302A', cursor: 'pointer',
               }}>
               Report an outcome
             </button>

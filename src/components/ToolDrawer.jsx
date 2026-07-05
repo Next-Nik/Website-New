@@ -45,10 +45,10 @@ const DISCOVER = [
 function StatusPill({ status }) {
   if (!status) return null
   const cfg = {
-    started:  { label: 'Started',     color: '#A8721A', bg: 'rgba(200,146,42,0.08)' },
-    active:   { label: 'In progress', color: '#A8721A', bg: 'rgba(200,146,42,0.08)' },
+    started:  { label: 'Started',     color: '#26302A', bg: 'rgba(110,127,92,0.08)' },
+    active:   { label: 'In progress', color: '#26302A', bg: 'rgba(110,127,92,0.08)' },
     complete: { label: 'Complete',    color: '#2D6A4F', bg: 'rgba(45,106,79,0.10)'  },
-  }[status] || { label: status, color: '#A8721A', bg: 'rgba(200,146,42,0.08)' }
+  }[status] || { label: status, color: '#26302A', bg: 'rgba(110,127,92,0.08)' }
   return (
     <span style={{
       ...sc, fontSize: '15px', letterSpacing: '0.14em', textTransform: 'uppercase',
@@ -169,7 +169,7 @@ export function ToolDrawer({ open, onClose }) {
       <div style={{
         position: 'fixed', top: '64px', left: 0, right: 0, zIndex: 1101,
         background: 'rgba(250,250,247,0.98)',
-        borderBottom: '1px solid rgba(200,146,42,0.20)',
+        borderBottom: '1px solid rgba(110,127,92,0.20)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         animation: 'drawerSlideDown 0.25s cubic-bezier(0.16,1,0.3,1) both',
@@ -181,7 +181,7 @@ export function ToolDrawer({ open, onClose }) {
           {/* Horizon Suite tools grid */}
           <div style={{ marginBottom: '32px' }}>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em',
-              color: '#A8721A', textTransform: 'uppercase', display: 'block',
+              color: '#26302A', textTransform: 'uppercase', display: 'block',
               marginBottom: '16px' }}>Horizon Suite</span>
             <div style={{
               display: 'grid',
@@ -203,7 +203,7 @@ export function ToolDrawer({ open, onClose }) {
                     style={{
                       display: 'block', padding: '16px 18px',
                       background: '#FFFFFF',
-                      border: '1.5px solid rgba(200,146,42,0.22)',
+                      border: '1.5px solid rgba(110,127,92,0.22)',
                       borderRadius: '14px',
                       textDecoration: 'none',
                       transition: 'all 0.18s',
@@ -212,12 +212,12 @@ export function ToolDrawer({ open, onClose }) {
                     onMouseEnter={e => {
                       e.currentTarget.style.transform = 'translateY(-2px)'
                       e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'
-                      e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)'
+                      e.currentTarget.style.borderColor = 'rgba(110,127,92,0.55)'
                     }}
                     onMouseLeave={e => {
                       e.currentTarget.style.transform = ''
                       e.currentTarget.style.boxShadow = ''
-                      e.currentTarget.style.borderColor = 'rgba(200,146,42,0.22)'
+                      e.currentTarget.style.borderColor = 'rgba(110,127,92,0.22)'
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'flex-start',
@@ -230,7 +230,7 @@ export function ToolDrawer({ open, onClose }) {
                       <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
                         color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>{tool.subtitle}</div>
                     )}
-                    <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '17px',
+                    <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '17px',
                       color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: 0 }}>
                       {tool.desc}
                     </p>
@@ -241,12 +241,12 @@ export function ToolDrawer({ open, onClose }) {
           </div>
 
           {/* Divider */}
-          <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '24px' }} />
+          <div style={{ borderTop: '1px solid rgba(110,127,92,0.15)', marginBottom: '24px' }} />
 
           {/* NextUs platform */}
           <div style={{ marginBottom: '32px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '16px' }}>
-              <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase' }}>NextUs</span>
+              <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#26302A', textTransform: 'uppercase' }}>NextUs</span>
               <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>A life worth living, a future worth building.</span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px' }}>
@@ -255,9 +255,9 @@ export function ToolDrawer({ open, onClose }) {
                   key={item.key}
                   to={item.path}
                   onClick={onClose}
-                  style={{ display: 'block', padding: '16px 18px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)', borderRadius: '14px', textDecoration: 'none', transition: 'all 0.18s' }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.55)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)' }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.22)' }}
+                  style={{ display: 'block', padding: '16px 18px', background: '#FFFFFF', border: '1.5px solid rgba(110,127,92,0.22)', borderRadius: '14px', textDecoration: 'none', transition: 'all 0.18s' }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.55)'; e.currentTarget.style.borderColor = 'rgba(110,127,92,0.55)' }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(110,127,92,0.22)' }}
                 >
                   <div style={{ marginBottom: '4px' }}>
                     <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.08em', color: '#0F1523', fontWeight: 600 }}>{item.label}</span>
@@ -272,14 +272,14 @@ export function ToolDrawer({ open, onClose }) {
           </div>
 
           {/* Divider */}
-          <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '24px' }} />
+          <div style={{ borderTop: '1px solid rgba(110,127,92,0.15)', marginBottom: '24px' }} />
 
           {/* Coaching nudge — "Don't go it alone" */}
           <div style={{
             marginBottom: '24px',
             padding: '20px 24px',
-            background: 'rgba(200,146,42,0.04)',
-            border: '1px solid rgba(200,146,42,0.12)',
+            background: 'rgba(110,127,92,0.04)',
+            border: '1px solid rgba(110,127,92,0.12)',
             borderRadius: '14px',
             display: 'flex',
             alignItems: 'flex-start',
@@ -287,7 +287,7 @@ export function ToolDrawer({ open, onClose }) {
           }}>
             <span style={{ flexShrink: 0, marginTop: '2px', lineHeight: 0, display: 'inline-flex' }}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-              stroke="#A8721A" strokeWidth="1.2" strokeLinecap="round"
+              stroke="#26302A" strokeWidth="1.2" strokeLinecap="round"
               strokeLinejoin="round" opacity="0.75">
               <circle cx="9" cy="7" r="3"/><circle cx="15" cy="7" r="3"/>
               <path d="M3 20c0-4 2.7-7 6-7M15 13c3.3 0 6 3 6 7"/>
@@ -298,7 +298,7 @@ export function ToolDrawer({ open, onClose }) {
                 Don't go it alone.
               </div>
               <p style={{ ...body, fontSize: '14px', lineHeight: 1.65, color: 'rgba(15,21,35,0.65)', margin: 0 }}>
-                <Link to="/work-with-nik" onClick={onClose} style={{ color: '#A8721A', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+                <Link to="/work-with-nik" onClick={onClose} style={{ color: '#26302A', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
                   Talk to us
                 </Link>
                 {' '}about group programmes or individual coaching for your transformation.
@@ -307,7 +307,7 @@ export function ToolDrawer({ open, onClose }) {
           </div>
 
           {/* Divider */}
-          <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '24px' }} />
+          <div style={{ borderTop: '1px solid rgba(110,127,92,0.15)', marginBottom: '24px' }} />
 
           {/* Discover row */}
           <div>
@@ -320,12 +320,12 @@ export function ToolDrawer({ open, onClose }) {
                   ...sc, fontSize: '17px', letterSpacing: '0.1em',
                   color: 'rgba(15,21,35,0.72)', textDecoration: 'none',
                   padding: '8px 16px',
-                  border: '1px solid rgba(200,146,42,0.18)',
-                  borderRadius: '40px', background: 'rgba(200,146,42,0.05)',
+                  border: '1px solid rgba(110,127,92,0.18)',
+                  borderRadius: '40px', background: 'rgba(110,127,92,0.05)',
                   transition: 'all 0.15s',
                 }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#A8721A'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.45)' }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(15,21,35,0.72)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.18)' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#26302A'; e.currentTarget.style.borderColor = 'rgba(110,127,92,0.45)' }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(15,21,35,0.72)'; e.currentTarget.style.borderColor = 'rgba(110,127,92,0.18)' }}
                 >{d.label}</Link>
               ))}
             </div>

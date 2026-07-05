@@ -86,15 +86,15 @@ export function CrisisResources({ variant = 'compact', defaultCountry = null }) 
         </p>
       )}
 
-      <div style={{ borderTop: '1px solid rgba(200,146,42,0.20)', paddingTop: '20px' }}>
-        <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '12px' }}>
+      <div style={{ borderTop: '1px solid rgba(110,127,92,0.20)', paddingTop: '20px' }}>
+        <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#26302A', marginBottom: '12px' }}>
           International
         </p>
         {intlResources.map(r => <ResourceCard key={r.id} resource={r} compact />)}
       </div>
 
       {otherCountries.length > 0 && (
-        <div style={{ marginTop: '24px', borderTop: '1px solid rgba(200,146,42,0.10)', paddingTop: '16px' }}>
+        <div style={{ marginTop: '24px', borderTop: '1px solid rgba(110,127,92,0.10)', paddingTop: '16px' }}>
           <button
             onClick={() => setShowOther(!showOther)}
             style={{
@@ -109,7 +109,7 @@ export function CrisisResources({ variant = 'compact', defaultCountry = null }) 
             <div style={{ marginTop: '16px' }}>
               {otherCountries.map(cc => (
                 <div key={cc} style={{ marginBottom: '20px' }}>
-                  <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>
+                  <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', marginBottom: '8px' }}>
                     {countryName(cc)}
                   </p>
                   {resources.filter(r => r.country_code === cc).map(r => (
@@ -132,7 +132,7 @@ function CountrySelect({ country, setCountry, resources }) {
 
   return (
     <div style={{ marginBottom: '20px' }}>
-      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginBottom: '6px' }}>
+      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', display: 'block', marginBottom: '6px' }}>
         Your region
       </label>
       <select
@@ -141,7 +141,7 @@ function CountrySelect({ country, setCountry, resources }) {
         style={{
           ...body, fontSize: '15px', color: '#0F1523',
           padding: '9px 14px', borderRadius: '8px',
-          border: '1.5px solid rgba(200,146,42,0.30)',
+          border: '1.5px solid rgba(110,127,92,0.30)',
           background: '#FFFFFF', outline: 'none',
           minWidth: '200px',
         }}
@@ -158,7 +158,7 @@ function ResourceCard({ resource, compact = false }) {
   return (
     <div style={{
       background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.15)',
+      border: '1px solid rgba(110,127,92,0.15)',
       borderRadius: '10px',
       padding: compact ? '14px 16px' : '16px 18px',
       marginBottom: '10px',
@@ -180,7 +180,7 @@ function ResourceCard({ resource, compact = false }) {
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 16px', marginBottom: resource.description ? '8px' : 0 }}>
         {resource.phone && (
           <a href={`tel:${resource.phone.replace(/\s/g, '')}`}
-            style={{ ...body, fontSize: '15px', color: '#A8721A', textDecoration: 'none', fontWeight: 500 }}>
+            style={{ ...body, fontSize: '15px', color: '#26302A', textDecoration: 'none', fontWeight: 500 }}>
             📞 {resource.phone}
           </a>
         )}
@@ -191,7 +191,7 @@ function ResourceCard({ resource, compact = false }) {
         )}
         {resource.web_url && (
           <a href={resource.web_url} target="_blank" rel="noopener noreferrer"
-            style={{ ...body, fontSize: '14px', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.3)' }}>
+            style={{ ...body, fontSize: '14px', color: '#26302A', textDecoration: 'none', borderBottom: '1px solid rgba(110,127,92,0.3)' }}>
             Online chat
           </a>
         )}
@@ -227,10 +227,10 @@ function FullDirectory({ resources, userCountry, setCountry }) {
       {orderedCodes.map(cc => (
         <div key={cc} style={{ marginBottom: '40px' }}>
           <h3 style={{ ...body, fontSize: '20px', fontWeight: 400, color: '#0F1523', marginBottom: '14px',
-            paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.20)' }}>
+            paddingBottom: '8px', borderBottom: '1px solid rgba(110,127,92,0.20)' }}>
             {countryName(cc)}
             {cc === userCountry && (
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', marginLeft: '12px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', marginLeft: '12px' }}>
                 YOUR REGION
               </span>
             )}

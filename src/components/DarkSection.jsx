@@ -46,15 +46,15 @@ export function ArcEntry({ topColor = '#FAFAF7', bottomColor = '#0F1523' }) {
         <path d={`M0,${FLAT} Q${W/2},${peak} ${W},${FLAT} L${W},${H} L0,${H} Z`} fill={bottomColor} />
         {/* Gold stroke — the border of the dark section */}
         <path d={`M0,${FLAT} Q${W/2},${peak} ${W},${FLAT}`}
-          fill="none" stroke="#C8922A" strokeWidth="3" opacity="0.85" />
+          fill="none" stroke="#6E7F5C" strokeWidth="3" opacity="0.85" />
         {/* Compass mark at apex */}
-        <circle cx={W/2} cy={peak+7} r="4.5" fill="none" stroke="#C8922A" strokeWidth="0.9" opacity="0.7" />
-        <circle cx={W/2} cy={peak+7} r="1.8" fill="#C8922A" opacity="0.85" />
-        <line x1={W/2} y1={peak} x2={W/2} y2={peak+2} stroke="#C8922A" strokeWidth="1" opacity="0.85" />
+        <circle cx={W/2} cy={peak+7} r="4.5" fill="none" stroke="#6E7F5C" strokeWidth="0.9" opacity="0.7" />
+        <circle cx={W/2} cy={peak+7} r="1.8" fill="#6E7F5C" opacity="0.85" />
+        <line x1={W/2} y1={peak} x2={W/2} y2={peak+2} stroke="#6E7F5C" strokeWidth="1" opacity="0.85" />
         <polygon points={`${W/2},${peak} ${W/2+3},${peak+8} ${W/2},${peak+12} ${W/2-3},${peak+8}`}
-          fill="#C8922A" opacity="0.75" />
-        <circle cx={W/2-16} cy={peak+10} r="1.4" fill="#C8922A" opacity="0.4" />
-        <circle cx={W/2+16} cy={peak+10} r="1.4" fill="#C8922A" opacity="0.4" />
+          fill="#6E7F5C" opacity="0.75" />
+        <circle cx={W/2-16} cy={peak+10} r="1.4" fill="#6E7F5C" opacity="0.4" />
+        <circle cx={W/2+16} cy={peak+10} r="1.4" fill="#6E7F5C" opacity="0.4" />
       </svg>
     </div>
   )
@@ -70,12 +70,12 @@ export function ArcExit({ topColor = '#0F1523', bottomColor = '#FAFAF7' }) {
         <path d={`M0,0 L${W},0 L${W},${start} Q${W/2},${nadir} 0,${start} Z`} fill={topColor} />
         {/* Gold stroke — the border of the dark section */}
         <path d={`M0,${start} Q${W/2},${nadir} ${W},${start}`}
-          fill="none" stroke="#C8922A" strokeWidth="3" opacity="0.85" />
+          fill="none" stroke="#6E7F5C" strokeWidth="3" opacity="0.85" />
         {/* Compass mark at nadir */}
-        <circle cx={W/2} cy={nadir-6} r="4.5" fill="none" stroke="#C8922A" strokeWidth="0.9" opacity="0.7" />
-        <circle cx={W/2} cy={nadir-6} r="1.8" fill="#C8922A" opacity="0.85" />
-        <circle cx={W/2-16} cy={nadir-10} r="1.4" fill="#C8922A" opacity="0.4" />
-        <circle cx={W/2+16} cy={nadir-10} r="1.4" fill="#C8922A" opacity="0.4" />
+        <circle cx={W/2} cy={nadir-6} r="4.5" fill="none" stroke="#6E7F5C" strokeWidth="0.9" opacity="0.7" />
+        <circle cx={W/2} cy={nadir-6} r="1.8" fill="#6E7F5C" opacity="0.85" />
+        <circle cx={W/2-16} cy={nadir-10} r="1.4" fill="#6E7F5C" opacity="0.4" />
+        <circle cx={W/2+16} cy={nadir-10} r="1.4" fill="#6E7F5C" opacity="0.4" />
       </svg>
     </div>
   )
@@ -129,7 +129,7 @@ export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FA
         //      transitioning to flat #0F1523 at the base, where the
         //      ArcExit divider takes over.
         background: [
-          'radial-gradient(ellipse 60% 40% at 18% 12%, rgba(200, 146, 42, 0.07) 0%, transparent 65%)',
+          'radial-gradient(ellipse 60% 40% at 18% 12%, rgba(110,127,92, 0.07) 0%, transparent 65%)',
           'radial-gradient(ellipse 50% 36% at 82% 88%, rgba(74, 100, 168, 0.16) 0%, transparent 70%)',
           'linear-gradient(180deg, #1A2030 0%, #131826 55%, #0F1523 100%)',
         ].join(', '),
@@ -151,7 +151,7 @@ export function DarkEyebrow({ children }) {
   return (
     <span style={{
       ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em',
-      color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '14px',
+      color: '#26302A', textTransform: 'uppercase', display: 'block', marginBottom: '14px',
     }}>{children}</span>
   )
 }
@@ -182,11 +182,11 @@ export function DarkGhostButton({ href, children }) {
     <a href={href} style={{
       display: 'inline-block', ...sc, fontSize: '15px', fontWeight: 600,
       letterSpacing: '0.16em', padding: '13px 32px', borderRadius: '40px',
-      border: '1.5px solid rgba(200,146,42,0.7)', color: '#A8721A',
-      background: 'rgba(200,146,42,0.07)', textDecoration: 'none', transition: 'all 0.2s',
+      border: '1.5px solid rgba(110,127,92,0.7)', color: '#26302A',
+      background: 'rgba(110,127,92,0.07)', textDecoration: 'none', transition: 'all 0.2s',
     }}
-      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.14)'; e.currentTarget.style.borderColor = '#C8922A' }}
-      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.07)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.7)' }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.14)'; e.currentTarget.style.borderColor = '#6E7F5C' }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.07)'; e.currentTarget.style.borderColor = 'rgba(110,127,92,0.7)' }}
     >{children}</a>
   )
 }
@@ -197,8 +197,8 @@ export function DarkSolidButton({ href, children, onClick }) {
     <a href={href} onClick={onClick} style={{
       display: 'inline-block', ...sc, fontSize: '15px', fontWeight: 600,
       letterSpacing: '0.16em', padding: '13px 32px', borderRadius: '40px',
-      border: '1px solid rgba(168,114,26,0.8)', color: '#FFFFFF',
-      background: '#C8922A', textDecoration: 'none',
+      border: '1px solid rgba(38,48,42,0.8)', color: '#FFFFFF',
+      background: '#6E7F5C', textDecoration: 'none',
     }}>{children}</a>
   )
 }
@@ -208,9 +208,9 @@ export function DarkPullQuote({ quote, attribution }) {
   return (
     <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
       <div style={{
-        fontFamily: "'Cormorant Garamond', Georgia, serif",
+        fontFamily: "'Fraunces', Georgia, serif",
         fontSize: '80px', fontWeight: 300,
-        color: 'rgba(200,146,42,0.45)', lineHeight: 0.8, marginBottom: '28px',
+        color: 'rgba(110,127,92,0.45)', lineHeight: 0.8, marginBottom: '28px',
       }}>"</div>
       <p style={{
         ...body, fontSize: 'clamp(18px,2.4vw,24px)', fontWeight: 400,
@@ -219,7 +219,7 @@ export function DarkPullQuote({ quote, attribution }) {
       {attribution && (
         <span style={{
           ...sc, fontSize: '13px', letterSpacing: '0.18em',
-          color: '#A8721A', textTransform: 'uppercase',
+          color: '#26302A', textTransform: 'uppercase',
         }}>{attribution}</span>
       )}
     </div>

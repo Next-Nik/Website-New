@@ -55,7 +55,7 @@ function getNodeLabel(name) {
 function getNodeSizing(lines) {
   const maxLen = Math.max(...lines.map(l => l.length))
   const n = lines.length
-  // Lora at 20px: ~10.9px per char, so half-width = maxLen * 5.45
+  // Newsreader at 20px: ~10.9px per char, so half-width = maxLen * 5.45
   // Add 16px padding each side → minimum radius = maxLen * 5.45 + 16
   // Height: n lines * 20px * 1.35 lineHeight / 2 + 10px padding
   const halfW = maxLen * 5.45 + 16
@@ -264,13 +264,13 @@ export default function Heptagon({
           <stop offset="0%" stopColor="#FFFEF9" />
           <stop offset="20%" stopColor="#FCEFD0" />
           <stop offset="60%" stopColor="#E8C97A" />
-          <stop offset="88%" stopColor="#C8922A" stopOpacity="0.55" />
-          <stop offset="100%" stopColor="#A8721A" stopOpacity="0.7" />
+          <stop offset="88%" stopColor="#6E7F5C" stopOpacity="0.55" />
+          <stop offset="100%" stopColor="#26302A" stopOpacity="0.7" />
         </radialGradient>
         <radialGradient id="orbActive" cx="32%" cy="24%" r="75%">
           <stop offset="0%" stopColor="#FFFFFF" />
           <stop offset="25%" stopColor="#FFE99A" />
-          <stop offset="65%" stopColor="#C8922A" />
+          <stop offset="65%" stopColor="#6E7F5C" />
           <stop offset="100%" stopColor="#8A5E10" />
         </radialGradient>
         <radialGradient id="orbSpec" cx="33%" cy="24%" r="45%">
@@ -279,23 +279,23 @@ export default function Heptagon({
           <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
         </radialGradient>
         <radialGradient id="orbGlowIdle" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#C8922A" stopOpacity="0.35" />
-          <stop offset="55%" stopColor="#C8922A" stopOpacity="0.14" />
-          <stop offset="100%" stopColor="#C8922A" stopOpacity="0" />
+          <stop offset="0%" stopColor="#6E7F5C" stopOpacity="0.35" />
+          <stop offset="55%" stopColor="#6E7F5C" stopOpacity="0.14" />
+          <stop offset="100%" stopColor="#6E7F5C" stopOpacity="0" />
         </radialGradient>
         <radialGradient id="orbGlowActive" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#C8922A" stopOpacity="0.55" />
-          <stop offset="55%" stopColor="#C8922A" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="#C8922A" stopOpacity="0" />
+          <stop offset="0%" stopColor="#6E7F5C" stopOpacity="0.55" />
+          <stop offset="55%" stopColor="#6E7F5C" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="#6E7F5C" stopOpacity="0" />
         </radialGradient>
       </defs>
 
       {/* Outer decorative rings */}
-      <circle cx={CX} cy={CY} r={RADIUS + 48} fill="none" stroke="rgba(200,146,42,0.04)" strokeWidth="1" />
-      <circle cx={CX} cy={CY} r={RADIUS + 24} fill="none" stroke="rgba(200,146,42,0.06)" strokeWidth="0.5" />
+      <circle cx={CX} cy={CY} r={RADIUS + 48} fill="none" stroke="rgba(110,127,92,0.04)" strokeWidth="1" />
+      <circle cx={CX} cy={CY} r={RADIUS + 24} fill="none" stroke="rgba(110,127,92,0.06)" strokeWidth="0.5" />
 
       {/* Heptagon web */}
-      <polygon points={polygonPoints} fill="rgba(200,146,42,0.03)" stroke="rgba(200,146,42,0.15)" strokeWidth="0.75" />
+      <polygon points={polygonPoints} fill="rgba(110,127,92,0.03)" stroke="rgba(110,127,92,0.15)" strokeWidth="0.75" />
 
       {/* Spokes — centre to node centre. Rendered before nodes so orbs paint over the ends cleanly */}
       {Array.from({ length: count }, (_, i) => {
@@ -305,7 +305,7 @@ export default function Heptagon({
             key={`spoke-${i}`}
             x1={CX} y1={CY}
             x2={p.x} y2={p.y}
-            stroke="rgba(200,146,42,0.35)"
+            stroke="rgba(110,127,92,0.35)"
             strokeWidth="1"
           />
         )
@@ -372,18 +372,18 @@ export default function Heptagon({
             <circle
               cx={p.x} cy={p.y} r={r + 1}
               fill="none"
-              stroke={isActive ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.85)'}
+              stroke={isActive ? 'rgba(110,127,92,1)' : 'rgba(110,127,92,0.85)'}
               strokeWidth="2"
               style={{ pointerEvents: 'none' }}
             />
 
-            {/* Label — Lora with dark stroke for legibility on gold */}
+            {/* Label — Newsreader with dark stroke for legibility on gold */}
             <text
               x={p.x} y={p.y}
               textAnchor="middle" dominantBaseline="middle"
               fill="#FFFFFF"
               fontSize={fontSize}
-              fontFamily="'Lora', Georgia, serif"
+              fontFamily="'Newsreader', Georgia, serif"
               fontWeight="400"
               stroke="#0F1523"
               strokeWidth="2"
@@ -412,14 +412,14 @@ export default function Heptagon({
         style={{ cursor: onCentreClick ? 'pointer' : 'default' }}
       >
         {/* Breathing halo ring */}
-        <circle cx={CX} cy={CY} r={84} fill="none" stroke="rgba(200,146,42,0.18)" strokeWidth="1" style={{ pointerEvents: 'none' }}>
+        <circle cx={CX} cy={CY} r={84} fill="none" stroke="rgba(110,127,92,0.18)" strokeWidth="1" style={{ pointerEvents: 'none' }}>
           <animate attributeName="r" values="82;90;82" dur="3s" repeatCount="indefinite" />
           <animate attributeName="stroke-opacity" values="0.18;0.04;0.18" dur="3s" repeatCount="indefinite" />
         </circle>
         {/* Ambient glow — active level always on centre */}
         <circle cx={CX} cy={CY} r={100} fill="url(#orbGlowActive)" style={{ pointerEvents: 'none' }} />
         {/* Orb base — always active gradient, centre is the anchor */}
-        <circle cx={CX} cy={CY} r={76} fill="url(#orbActive)" stroke="rgba(200,146,42,0.9)" strokeWidth="1.5" className={styles.centreCircle} />
+        <circle cx={CX} cy={CY} r={76} fill="url(#orbActive)" stroke="rgba(110,127,92,0.9)" strokeWidth="1.5" className={styles.centreCircle} />
         {/* Specular */}
         <circle cx={CX} cy={CY} r={76} fill="url(#orbSpec)" style={{ pointerEvents: 'none' }} />
         {centreLabel && (
@@ -428,7 +428,7 @@ export default function Heptagon({
             textAnchor="middle" dominantBaseline="middle"
             fill="#FFFFFF"
             fontSize="36"
-            fontFamily="'Lora', Georgia, serif"
+            fontFamily="'Newsreader', Georgia, serif"
             fontWeight="400"
             stroke="#0F1523"
             strokeWidth="2"

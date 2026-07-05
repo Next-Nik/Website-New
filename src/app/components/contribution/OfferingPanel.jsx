@@ -24,8 +24,8 @@ import { PRINCIPLES_ORDERED, PRINCIPLE_WEIGHTS } from '../../constants/principle
 import PrincipleBadge from '../PrincipleBadge'
 import TierChip from './TierChip'
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 function Eyebrow({ children, style = {} }) {
   return (
@@ -33,7 +33,7 @@ function Eyebrow({ children, style = {} }) {
       ...sc,
       fontSize: '11px',
       letterSpacing: '0.2em',
-      color: '#A8721A',
+      color: '#26302A',
       textTransform: 'uppercase',
       display: 'block',
       marginBottom: '10px',
@@ -88,7 +88,7 @@ function FreeTextField({ label, hint, value, placeholder, onSave, rows = 3 }) {
           ...sc,
           fontSize: '10px',
           letterSpacing: '0.1em',
-          color: saving ? '#A8721A' : savedRecently ? '#2D6A4F' : 'rgba(15,21,35,0.55)',
+          color: saving ? '#26302A' : savedRecently ? '#2D6A4F' : 'rgba(15,21,35,0.55)',
           transition: 'color 200ms ease',
         }}>
           {saving ? 'Saving' : savedRecently ? 'Saved' : 'Auto-saves on blur'}
@@ -108,7 +108,7 @@ function FreeTextField({ label, hint, value, placeholder, onSave, rows = 3 }) {
           width: '100%',
           padding: '12px 14px',
           borderRadius: '10px',
-          border: '1px solid rgba(200,146,42,0.30)',
+          border: '1px solid rgba(110,127,92,0.30)',
           background: '#FFFFFF',
           outline: 'none',
           resize: 'vertical',
@@ -140,11 +140,11 @@ function MediumRadio({ value, onChange }) {
             ...sc,
             fontSize: '12px',
             letterSpacing: '0.04em',
-            color: value === o.v ? '#A8721A' : 'rgba(15,21,35,0.72)',
-            background: value === o.v ? 'rgba(200,146,42,0.08)' : '#FFFFFF',
+            color: value === o.v ? '#26302A' : 'rgba(15,21,35,0.72)',
+            background: value === o.v ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
             border: value === o.v
-              ? '1px solid rgba(200,146,42,0.55)'
-              : '1px solid rgba(200,146,42,0.25)',
+              ? '1px solid rgba(110,127,92,0.55)'
+              : '1px solid rgba(110,127,92,0.25)',
             borderRadius: '40px',
             padding: '6px 14px',
             cursor: 'pointer',
@@ -165,10 +165,10 @@ function PrincipleRow({ principle, selected, weight, onToggle, onWeightChange })
   return (
     <div style={{
       padding: '12px 14px',
-      background: selected ? 'rgba(200,146,42,0.04)' : '#FFFFFF',
+      background: selected ? 'rgba(110,127,92,0.04)' : '#FFFFFF',
       border: selected
-        ? '1px solid rgba(200,146,42,0.40)'
-        : '1px solid rgba(200,146,42,0.18)',
+        ? '1px solid rgba(110,127,92,0.40)'
+        : '1px solid rgba(110,127,92,0.18)',
       borderRadius: '12px',
       transition: 'background 120ms ease, border-color 120ms ease',
     }}>
@@ -178,7 +178,7 @@ function PrincipleRow({ principle, selected, weight, onToggle, onWeightChange })
             type="checkbox"
             checked={selected}
             onChange={onToggle}
-            style={{ width: '16px', height: '16px', accentColor: '#A8721A', cursor: 'pointer' }}
+            style={{ width: '16px', height: '16px', accentColor: '#26302A', cursor: 'pointer' }}
           />
           <PrincipleBadge slug={principle.slug} weight={selected ? (weight || 'primary') : 'tertiary'} />
         </label>
@@ -191,9 +191,9 @@ function PrincipleRow({ principle, selected, weight, onToggle, onWeightChange })
               ...sc,
               fontSize: '11px',
               letterSpacing: '0.08em',
-              color: '#A8721A',
+              color: '#26302A',
               background: '#FFFFFF',
-              border: '1px solid rgba(200,146,42,0.30)',
+              border: '1px solid rgba(110,127,92,0.30)',
               borderRadius: '40px',
               padding: '4px 10px',
               cursor: 'pointer',
@@ -228,11 +228,11 @@ function DomainChips({ domains, selected = [], onToggle }) {
               ...sc,
               fontSize: '12px',
               letterSpacing: '0.04em',
-              color: active ? (d.color || '#A8721A') : 'rgba(15,21,35,0.72)',
-              background: active ? 'rgba(200,146,42,0.08)' : '#FFFFFF',
+              color: active ? (d.color || '#26302A') : 'rgba(15,21,35,0.72)',
+              background: active ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
               border: active
-                ? `1px solid ${d.color || '#A8721A'}`
-                : '1px solid rgba(200,146,42,0.25)',
+                ? `1px solid ${d.color || '#26302A'}`
+                : '1px solid rgba(110,127,92,0.25)',
               borderRadius: '40px',
               padding: '5px 12px',
               cursor: 'pointer',
@@ -240,7 +240,7 @@ function DomainChips({ domains, selected = [], onToggle }) {
               transition: 'background 120ms ease',
             }}
             onMouseEnter={(e) => {
-              if (!active) e.currentTarget.style.background = 'rgba(200,146,42,0.04)'
+              if (!active) e.currentTarget.style.background = 'rgba(110,127,92,0.04)'
             }}
             onMouseLeave={(e) => {
               if (!active) e.currentTarget.style.background = '#FFFFFF'

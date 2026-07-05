@@ -18,8 +18,8 @@ import { supabase } from '../../hooks/useSupabase'
 import { InfoButton } from './InfoButton'
 import { body, sc } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const gold    = '#A8721A'
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const gold    = '#26302A'
 const dark    = '#0F1523'
 
 const TIER_LABEL = {
@@ -124,8 +124,8 @@ export function RosterSection() {
           color: 'rgba(15,21,35,0.72)',
           fontStyle: 'italic',
           padding: '16px 18px',
-          background: 'rgba(200,146,42,0.04)',
-          border: '1px dashed rgba(200,146,42,0.35)',
+          background: 'rgba(110,127,92,0.04)',
+          border: '1px dashed rgba(110,127,92,0.35)',
           borderRadius: '8px',
           marginBottom: '20px',
         }}>
@@ -142,8 +142,8 @@ export function RosterSection() {
           fontSize: '14.5px',
           color: gold,
           padding: '16px 18px',
-          background: 'rgba(200,146,42,0.06)',
-          border: '1px dashed rgba(200,146,42,0.55)',
+          background: 'rgba(110,127,92,0.06)',
+          border: '1px dashed rgba(110,127,92,0.55)',
           borderRadius: '8px',
           marginBottom: '20px',
         }}>
@@ -204,7 +204,7 @@ function BudgetHeader({ spent, free, wasted, cap }) {
         height: '10px',
         borderRadius: '6px',
         background: '#FAFAF7',
-        border: '1px solid rgba(200,146,42,0.22)',
+        border: '1px solid rgba(110,127,92,0.22)',
         overflow: 'hidden',
         display: 'flex',
       }}>
@@ -271,8 +271,8 @@ function TierRow({ tier, roster, resolved, addingHere, onAdd, onAddCancel, watch
               fontSize: '13px',
               letterSpacing: '0.14em',
               color: gold,
-              background: 'rgba(200,146,42,0.04)',
-              border: '1.2px dashed rgba(200,146,42,0.55)',
+              background: 'rgba(110,127,92,0.04)',
+              border: '1.2px dashed rgba(110,127,92,0.55)',
               borderRadius: '20px',
               padding: '8px 18px',
               cursor: 'pointer',
@@ -351,7 +351,7 @@ function SlotCard({ slot, roster, resolved }) {
           fontSize: '13.5px',
           color: dark,
           background: '#FFFFFF',
-          border: '1.2px solid rgba(200,146,42,0.30)',
+          border: '1.2px solid rgba(110,127,92,0.30)',
           borderRadius: '20px',
           padding: '7px 14px 7px 14px',
           cursor: busy ? 'wait' : 'pointer',
@@ -367,7 +367,7 @@ function SlotCard({ slot, roster, resolved }) {
           left: 0,
           marginTop: '6px',
           background: '#FFFFFF',
-          border: '1.5px solid rgba(200,146,42,0.30)',
+          border: '1.5px solid rgba(110,127,92,0.30)',
           borderRadius: '8px',
           boxShadow: '0 8px 24px rgba(15,21,35,0.10)',
           padding: '8px',
@@ -395,7 +395,7 @@ function SlotCard({ slot, roster, resolved }) {
                 {TIER_LABEL[t]} ({roster.tierCosts[t]})
               </button>
             ))}
-          <div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', margin: '6px 0' }} />
+          <div style={{ height: '1px', background: 'rgba(110,127,92,0.20)', margin: '6px 0' }} />
           <button
             type="button"
             onClick={remove}
@@ -485,8 +485,8 @@ function RosterPicker({ tier, roster, watches, resolved, onCancel, onAdded }) {
     <div style={{
       marginTop: '12px',
       padding: '16px',
-      background: 'rgba(200,146,42,0.04)',
-      border: '1.5px solid rgba(200,146,42,0.30)',
+      background: 'rgba(110,127,92,0.04)',
+      border: '1.5px solid rgba(110,127,92,0.30)',
       borderRadius: '10px',
     }}>
       <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '10px' }}>
@@ -504,7 +504,7 @@ function RosterPicker({ tier, roster, watches, resolved, onCancel, onAdded }) {
           color: dark,
           padding: '8px 12px',
           borderRadius: '6px',
-          border: '1.2px solid rgba(200,146,42,0.30)',
+          border: '1.2px solid rgba(110,127,92,0.30)',
           background: '#FFFFFF',
           outline: 'none',
           width: '100%',
@@ -533,7 +533,7 @@ function RosterPicker({ tier, roster, watches, resolved, onCancel, onAdded }) {
               style={{
                 ...body, fontSize: '14px', color: dark,
                 background: '#FFFFFF',
-                border: '1px solid rgba(200,146,42,0.18)',
+                border: '1px solid rgba(110,127,92,0.18)',
                 borderRadius: '6px',
                 padding: '8px 12px',
                 cursor: busy ? 'wait' : 'pointer',

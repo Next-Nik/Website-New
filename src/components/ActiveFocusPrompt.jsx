@@ -21,10 +21,10 @@ import { supabase } from '../../hooks/useSupabase'
 import { useActiveFocus } from '../hooks/useActiveFocus'
 import { body, sc } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
-const GOLD = '#A8721A'
-const GOLD_LIGHT = '#C8922A'
+const GOLD = '#26302A'
+const GOLD_LIGHT = '#6E7F5C'
 const INK  = '#0F1523'
 
 const DOMAINS = [
@@ -119,8 +119,8 @@ function CompactSummary({ focus, onEdit, onClear, bare = false, errToShow = null
     : {
         marginBottom: '32px',
         padding: '18px 22px',
-        background: 'rgba(200,146,42,0.04)',
-        border: '1px solid rgba(200,146,42,0.25)',
+        background: 'rgba(110,127,92,0.04)',
+        border: '1px solid rgba(110,127,92,0.25)',
         borderRadius: '10px',
       }
 
@@ -214,7 +214,7 @@ function CompactSummary({ focus, onEdit, onClear, bare = false, errToShow = null
 const chipStyle = {
   ...body, fontSize: '13px', color: INK,
   background: '#FFFFFF',
-  border: '1px solid rgba(200,146,42,0.30)',
+  border: '1px solid rgba(110,127,92,0.30)',
   borderRadius: '14px', padding: '4px 11px',
   textDecoration: 'none',
 }
@@ -238,7 +238,7 @@ function PromptOpen({ focus, save, hasFocus, onCollapse, bare = false, errToShow
         marginBottom: '40px',
         padding: '28px',
         background: '#FFFFFF',
-        border: '1px solid rgba(200,146,42,0.30)',
+        border: '1px solid rgba(110,127,92,0.30)',
         borderRadius: '12px',
         boxShadow: '0 1px 0 rgba(15,21,35,0.02)',
       }
@@ -647,7 +647,7 @@ function Question2({ focus, save }) {
                       ...body, fontSize: '13px',
                       color: active ? '#FFFFFF' : INK,
                       background: active ? GOLD : '#FFFFFF',
-                      border: '1px solid rgba(200,146,42,0.30)',
+                      border: '1px solid rgba(110,127,92,0.30)',
                       borderRadius: '14px',
                       padding: '4px 11px',
                       cursor: 'pointer',
@@ -719,7 +719,7 @@ function Question3({ focus, save }) {
               style={{
                 ...sc, fontSize: '13px', letterSpacing: '0.14em',
                 color: active ? '#FFFFFF' : GOLD,
-                background: active ? GOLD : 'rgba(200,146,42,0.04)',
+                background: active ? GOLD : 'rgba(110,127,92,0.04)',
                 border: `1.5px solid ${GOLD}`,
                 borderRadius: '20px',
                 padding: '6px 14px',
@@ -742,7 +742,7 @@ function QuestionBlock({ title, helper, children, last = false }) {
     <div style={{
       marginBottom: last ? 0 : '28px',
       paddingBottom: last ? 0 : '22px',
-      borderBottom: last ? 'none' : '1px dashed rgba(200,146,42,0.20)',
+      borderBottom: last ? 'none' : '1px dashed rgba(110,127,92,0.20)',
     }}>
       <h3 style={{
         ...display,
@@ -771,7 +771,7 @@ function PickedChip({ label, onRemove }) {
     <span style={{
       ...body, fontSize: '13px', color: INK,
       background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.30)',
+      border: '1px solid rgba(110,127,92,0.30)',
       borderRadius: '14px', padding: '4px 6px 4px 11px',
       display: 'inline-flex', alignItems: 'center', gap: '6px',
     }}>
@@ -796,15 +796,15 @@ const inputStyle = {
   ...body, fontSize: '14px', color: INK,
   padding: '9px 14px',
   borderRadius: '8px',
-  border: '1.5px solid rgba(200,146,42,0.30)',
+  border: '1.5px solid rgba(110,127,92,0.30)',
   background: '#FFFFFF', outline: 'none',
   width: '100%', maxWidth: '380px',
 }
 
 const suggestionStyle = {
   ...sc, fontSize: '13px', letterSpacing: '0.14em',
-  color: GOLD, background: 'rgba(200,146,42,0.04)',
-  border: '1px dashed rgba(200,146,42,0.45)',
+  color: GOLD, background: 'rgba(110,127,92,0.04)',
+  border: '1px dashed rgba(110,127,92,0.45)',
   borderRadius: '14px', padding: '4px 11px',
   cursor: 'pointer', textTransform: 'uppercase',
 }
@@ -815,7 +815,7 @@ function ResultsDropdown({ searching, results, onPick }) {
       marginTop: '8px',
       maxWidth: '380px',
       background: '#FFFFFF',
-      border: '1.5px solid rgba(200,146,42,0.30)',
+      border: '1.5px solid rgba(110,127,92,0.30)',
       borderRadius: '8px',
       maxHeight: '240px',
       overflowY: 'auto',
@@ -838,7 +838,7 @@ function ResultsDropdown({ searching, results, onPick }) {
           style={{
             display: 'flex', justifyContent: 'space-between',
             alignItems: 'center', padding: '9px 14px', width: '100%',
-            borderBottom: '1px solid rgba(200,146,42,0.10)',
+            borderBottom: '1px solid rgba(110,127,92,0.10)',
             background: 'transparent', border: 'none',
             cursor: 'pointer', textAlign: 'left',
           }}

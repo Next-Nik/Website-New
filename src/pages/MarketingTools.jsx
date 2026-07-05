@@ -10,8 +10,8 @@ import { Nav }        from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import { serif, body, sc } from '../lib/designTokens'
 
-const gold    = '#A8721A'
-const goldBdr = 'rgba(200,146,42,0.78)'
+const gold    = '#26302A'
+const goldBdr = 'rgba(110,127,92,0.78)'
 const ink     = '#0F1523'
 const inkDim  = 'rgba(15,21,35,0.55)'
 
@@ -129,22 +129,22 @@ function WheelPreview() {
       {/* spokes */}
       {pts.map((p, i) => (
         <line key={i} x1={CX} y1={CY} x2={p.x} y2={p.y}
-          stroke="rgba(200,146,42,0.18)" strokeWidth="1" />
+          stroke="rgba(110,127,92,0.18)" strokeWidth="1" />
       ))}
       {/* filled polygon */}
       <polygon points={polygon}
-        fill="rgba(168,114,26,0.08)"
-        stroke="rgba(168,114,26,0.5)"
+        fill="rgba(38,48,42,0.08)"
+        stroke="rgba(38,48,42,0.5)"
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
       {/* dots */}
       {pts.map((p, i) => (
         <circle key={i} cx={p.x} cy={p.y} r={DOT}
-          fill="#A8721A" opacity="0.8" />
+          fill="#26302A" opacity="0.8" />
       ))}
       {/* centre */}
-      <circle cx={CX} cy={CY} r="5" fill="rgba(168,114,26,0.3)" stroke="#A8721A" strokeWidth="1" />
+      <circle cx={CX} cy={CY} r="5" fill="rgba(38,48,42,0.3)" stroke="#26302A" strokeWidth="1" />
       {/* labels */}
       {pts.map((p, i) => {
         const lx = CX + (R + 22) * Math.cos(RAD(p.angle))
@@ -152,7 +152,7 @@ function WheelPreview() {
         return (
           <text key={i} x={lx} y={ly}
             textAnchor="middle" dominantBaseline="middle"
-            style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.08em' }}
+            style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.08em' }}
             fill="rgba(15,21,35,0.55)"
           >
             {p.label}
@@ -170,7 +170,7 @@ function ToolCard({ tool }) {
       className="mt-card"
       style={{
         background: '#FFFFFF',
-        border: '1px solid rgba(200,146,42,0.10)',
+        border: '1px solid rgba(110,127,92,0.10)',
         borderRadius: '12px',
         padding: 'clamp(24px,3vw,32px)',
         display: 'flex',
@@ -237,15 +237,15 @@ export function MarketingToolsPage() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '8px',
               padding: '14px 32px', borderRadius: '40px',
-              background: '#C8922A',
+              background: '#6E7F5C',
               border: `1.5px solid ${goldBdr}`,
               ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.16em',
               color: '#FFFFFF', textDecoration: 'none',
               alignSelf: 'flex-start',
               transition: 'background 0.18s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#A8721A' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#C8922A' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#26302A' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#6E7F5C' }}
           >
             START WITH YOUR MAP →
           </a>
@@ -254,7 +254,7 @@ export function MarketingToolsPage() {
           <div style={{
             marginTop: '28px',
             paddingTop: '24px',
-            borderTop: '1px solid rgba(200,146,42,0.10)',
+            borderTop: '1px solid rgba(110,127,92,0.10)',
             display: 'flex', alignItems: 'flex-start', gap: '12px',
             maxWidth: '400px',
           }}>
@@ -313,7 +313,7 @@ export function MarketingToolsPage() {
       }}>
         <div style={{
           background: '#FFFFFF',
-          border: '1px solid rgba(200,146,42,0.12)',
+          border: '1px solid rgba(110,127,92,0.12)',
           borderRadius: '16px',
           overflow: 'hidden',
           display: 'grid',
@@ -322,7 +322,7 @@ export function MarketingToolsPage() {
           minHeight: '280px',
         }} className="mt-featured">
           {/* Copy */}
-          <div style={{ padding: 'clamp(32px,4vw,48px)', display: 'flex', flexDirection: 'column', justifyContent: 'center', borderRight: '1px solid rgba(200,146,42,0.08)' }}>
+          <div style={{ padding: 'clamp(32px,4vw,48px)', display: 'flex', flexDirection: 'column', justifyContent: 'center', borderRight: '1px solid rgba(110,127,92,0.08)' }}>
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, marginBottom: '14px', display: 'block' }}>
               FEATURED TOOL
             </span>
@@ -338,21 +338,21 @@ export function MarketingToolsPage() {
                 display: 'inline-flex', alignItems: 'center', gap: '6px',
                 padding: '12px 24px', borderRadius: '40px',
                 border: `1.5px solid ${goldBdr}`,
-                background: 'rgba(200,146,42,0.06)',
+                background: 'rgba(110,127,92,0.06)',
                 ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em',
                 color: gold, textDecoration: 'none',
                 alignSelf: 'flex-start',
                 transition: 'all 0.18s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.12)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.06)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.12)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.06)' }}
             >
               SEE YOUR MAP →
             </a>
           </div>
 
           {/* Wheel */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', borderRight: '1px solid rgba(200,146,42,0.08)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', borderRight: '1px solid rgba(110,127,92,0.08)' }}>
             <WheelPreview />
           </div>
 
@@ -363,7 +363,7 @@ export function MarketingToolsPage() {
             </p>
             {/* destination pin echo */}
             <svg width="32" height="42" viewBox="0 0 32 42" fill="none" opacity="0.25">
-              <path d="M16 2C9.4 2 4 7.4 4 14c0 9 12 26 12 26S28 23 28 14c0-6.6-5.4-12-12-12Z" fill="#A8721A"/>
+              <path d="M16 2C9.4 2 4 7.4 4 14c0 9 12 26 12 26S28 23 28 14c0-6.6-5.4-12-12-12Z" fill="#26302A"/>
               <circle cx="16" cy="14" r="5" fill="#FAFAF7"/>
             </svg>
           </div>
@@ -408,15 +408,15 @@ export function MarketingToolsPage() {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
                 padding: '14px 32px', borderRadius: '40px',
-                background: '#C8922A',
+                background: '#6E7F5C',
                 border: `1.5px solid ${goldBdr}`,
                 ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.16em',
                 color: '#FFFFFF', textDecoration: 'none',
                 whiteSpace: 'nowrap',
                 transition: 'background 0.18s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#A8721A' }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#C8922A' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#26302A' }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#6E7F5C' }}
             >
               EXPLORE THE NEXTUS PLATFORM →
             </a>
@@ -424,7 +424,7 @@ export function MarketingToolsPage() {
               href="/login?path=civ"
               style={{
                 ...sc, fontSize: '13px', letterSpacing: '0.14em',
-                color: 'rgba(200,146,42,0.7)', textDecoration: 'underline', textUnderlineOffset: '3px',
+                color: 'rgba(110,127,92,0.7)', textDecoration: 'underline', textUnderlineOffset: '3px',
               }}
             >
               Learn more about the NextUs platform
@@ -459,7 +459,7 @@ export function MarketingToolsPage() {
         }
         .mt-card { transition: box-shadow 0.18s, transform 0.18s; }
         .mt-card:hover {
-          box-shadow: 0 4px 24px rgba(168,114,26,0.08);
+          box-shadow: 0 4px 24px rgba(38,48,42,0.08);
           transform: translateY(-2px);
         }
         .mt-featured {
@@ -471,7 +471,7 @@ export function MarketingToolsPage() {
           }
           .mt-featured > div {
             border-right: none !important;
-            border-bottom: 1px solid rgba(200,146,42,0.08);
+            border-bottom: 1px solid rgba(110,127,92,0.08);
           }
           .mt-featured > div:last-child {
             border-bottom: none;

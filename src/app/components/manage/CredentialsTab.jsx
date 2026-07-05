@@ -73,7 +73,7 @@ function CredentialRow({ credential, onSave, onDelete, toast }) {
 
   if (!editing) {
     return (
-      <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)',
+      <div style={{ borderLeft: '2px solid rgba(88,160,138,0.20)',
         paddingLeft: '18px', marginBottom: '14px',
         display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
         gap: '14px' }}>
@@ -100,8 +100,8 @@ function CredentialRow({ credential, onSave, onDelete, toast }) {
           <button onClick={() => setEditing(true)}
             style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
               padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
-              border: '1px solid rgba(200,146,42,0.30)',
-              background: 'rgba(200,146,42,0.04)', color: gold }}>
+              border: '1px solid rgba(88,160,138,0.30)',
+              background: 'rgba(88,160,138,0.04)', color: gold }}>
             Edit
           </button>
           <button onClick={remove}
@@ -117,8 +117,8 @@ function CredentialRow({ credential, onSave, onDelete, toast }) {
   }
 
   return (
-    <div style={{ background: 'rgba(200,146,42,0.03)',
-      border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px',
+    <div style={{ background: 'rgba(88,160,138,0.03)',
+      border: '1px solid rgba(88,160,138,0.20)', borderRadius: '10px',
       padding: '20px', marginBottom: '14px',
       display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div>
@@ -195,8 +195,8 @@ function NewCredentialForm({ actorId, onCreate, toast }) {
       <button onClick={() => setOpen(true)}
         style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
           padding: '10px 22px', borderRadius: '40px', cursor: 'pointer',
-          border: '1px dashed rgba(200,146,42,0.45)',
-          background: 'rgba(200,146,42,0.04)', color: gold,
+          border: '1px dashed rgba(88,160,138,0.45)',
+          background: 'rgba(88,160,138,0.04)', color: gold,
           marginTop: '8px' }}>
         + Add credential
       </button>
@@ -204,8 +204,8 @@ function NewCredentialForm({ actorId, onCreate, toast }) {
   }
 
   return (
-    <div style={{ background: 'rgba(200,146,42,0.03)',
-      border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px',
+    <div style={{ background: 'rgba(88,160,138,0.03)',
+      border: '1px solid rgba(88,160,138,0.20)', borderRadius: '10px',
       padding: '20px', marginTop: '8px',
       display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div>
@@ -275,8 +275,8 @@ export function CredentialsTab({ actorId, toast }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
-      <div style={{ background: 'rgba(200,146,42,0.04)',
-        border: '1px solid rgba(200,146,42,0.18)',
+      <div style={{ background: 'rgba(88,160,138,0.04)',
+        border: '1px solid rgba(88,160,138,0.18)',
         borderRadius: '10px', padding: '14px 18px' }}>
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.65)',
           lineHeight: 1.6, margin: 0 }}>

@@ -29,7 +29,7 @@ import { body, sc } from '../../lib/designTokens'
 // References Module 1.5 for principle primitives.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
 const CIV_DOMAIN_OPTIONS = [
   { value: 'human-being',     label: 'Human Being' },
@@ -523,7 +523,7 @@ function PageHeader({ onViewPublic }) {
             display: 'block',
             fontSize: '13px',
             letterSpacing: '0.08em',
-            color: '#A8721A',
+            color: '#26302A',
             fontWeight: 600,
             marginBottom: '6px',
           }}
@@ -549,18 +549,18 @@ function PageHeader({ onViewPublic }) {
         style={{
           ...sc,
           background: 'transparent',
-          border: '1px solid rgba(200, 146, 42, 0.45)',
+          border: '1px solid rgba(110,127,92, 0.45)',
           borderRadius: '40px',
           padding: '8px 18px',
           fontSize: '14px',
           letterSpacing: '0.04em',
           fontWeight: 600,
-          color: '#A8721A',
+          color: '#26302A',
           cursor: 'pointer',
           transition: 'background 120ms ease',
         }}
         onMouseEnter={(e) =>
-          (e.currentTarget.style.background = 'rgba(200, 146, 42, 0.05)')
+          (e.currentTarget.style.background = 'rgba(110,127,92, 0.05)')
         }
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
@@ -635,9 +635,9 @@ function DevelopmentalVisibility({ value, onSave }) {
               padding: '14px 16px',
               borderRadius: '10px',
               border: selected
-                ? '1.5px solid rgba(200, 146, 42, 0.65)'
-                : '1px solid rgba(200, 146, 42, 0.20)',
-              background: selected ? 'rgba(200, 146, 42, 0.05)' : 'transparent',
+                ? '1.5px solid rgba(110,127,92, 0.65)'
+                : '1px solid rgba(110,127,92, 0.20)',
+              background: selected ? 'rgba(110,127,92, 0.05)' : 'transparent',
               cursor: 'pointer',
             }}
           >
@@ -648,7 +648,7 @@ function DevelopmentalVisibility({ value, onSave }) {
               checked={selected}
               disabled={saving}
               onChange={() => pick(opt.value)}
-              style={{ marginTop: '4px', accentColor: '#A8721A' }}
+              style={{ marginTop: '4px', accentColor: '#26302A' }}
             />
             <div>
               <div
@@ -700,7 +700,7 @@ function Section({ eyebrow, title, children, anchorId }) {
       style={{
         marginBottom: '40px',
         paddingBottom: '32px',
-        borderBottom: '1px solid rgba(200, 146, 42, 0.20)',
+        borderBottom: '1px solid rgba(110,127,92, 0.20)',
         scrollMarginTop: '88px',
       }}
     >
@@ -711,7 +711,7 @@ function Section({ eyebrow, title, children, anchorId }) {
             display: 'block',
             fontSize: '12px',
             letterSpacing: '0.08em',
-            color: '#A8721A',
+            color: '#26302A',
             fontWeight: 600,
             marginBottom: '6px',
           }}
@@ -784,7 +784,7 @@ function StatementBlock({ userId, column, label, helper, value, onSave }) {
     <article
       style={{
         background: '#FFFFFF',
-        border: '1px solid rgba(200, 146, 42, 0.20)',
+        border: '1px solid rgba(110,127,92, 0.20)',
         borderRadius: '14px',
         padding: '16px 18px',
       }}
@@ -804,7 +804,7 @@ function StatementBlock({ userId, column, label, helper, value, onSave }) {
             ...sc,
             fontSize: '13px',
             letterSpacing: '0.06em',
-            color: '#A8721A',
+            color: '#26302A',
             fontWeight: 600,
           }}
         >
@@ -841,7 +841,7 @@ function PlacementVisibilityRow({ userId }) {
     <article
       style={{
         background: '#FFFFFF',
-        border: '1px solid rgba(200, 146, 42, 0.20)',
+        border: '1px solid rgba(110,127,92, 0.20)',
         borderRadius: '14px',
         padding: '14px 16px',
         display: 'flex',
@@ -904,18 +904,18 @@ function FounderToolsLinks() {
           style={{
             display: 'block',
             padding: '14px 16px',
-            border: '1px solid rgba(200, 146, 42, 0.25)',
+            border: '1px solid rgba(110,127,92, 0.25)',
             borderRadius: '10px',
             textDecoration: 'none',
             background: '#FFFFFF',
             transition: 'border-color 0.15s, background 0.15s',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(200, 146, 42, 0.55)'
-            e.currentTarget.style.background = 'rgba(200, 146, 42, 0.04)'
+            e.currentTarget.style.borderColor = 'rgba(110,127,92, 0.55)'
+            e.currentTarget.style.background = 'rgba(110,127,92, 0.04)'
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(200, 146, 42, 0.25)'
+            e.currentTarget.style.borderColor = 'rgba(110,127,92, 0.25)'
             e.currentTarget.style.background = '#FFFFFF'
           }}
         >
@@ -925,7 +925,7 @@ function FounderToolsLinks() {
               display: 'block',
               fontSize: '12px',
               letterSpacing: '0.14em',
-              color: '#A8721A',
+              color: '#26302A',
               fontWeight: 600,
               marginBottom: '4px',
             }}
@@ -989,7 +989,7 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <p style={{
-        fontFamily: "'Lora', Georgia, serif",
+        fontFamily: "'Newsreader', Georgia, serif",
         fontSize: '14px',
         fontStyle: 'italic',
         color: '#777',
@@ -1012,9 +1012,9 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
               alignItems: 'flex-start',
               gap: '14px',
               padding: '14px 16px',
-              border: '1px solid rgba(200, 146, 42, 0.30)',
+              border: '1px solid rgba(110,127,92, 0.30)',
               borderRadius: '14px',
-              background: active ? 'rgba(200, 146, 42, 0.06)' : 'transparent',
+              background: active ? 'rgba(110,127,92, 0.06)' : 'transparent',
               cursor: isLast ? 'not-allowed' : 'pointer',
               opacity: !loaded ? 0.55 : (isLast ? 0.85 : 1),
               transition: 'background 0.18s ease, opacity 0.18s ease',
@@ -1029,7 +1029,7 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
                 marginTop: '3px',
                 width: '16px',
                 height: '16px',
-                accentColor: '#A8721A',
+                accentColor: '#26302A',
                 cursor: isLast ? 'not-allowed' : 'pointer',
                 flexShrink: 0,
               }}
@@ -1043,7 +1043,7 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
                 flexWrap: 'wrap',
               }}>
                 <span style={{
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  fontFamily: "'Fraunces', Georgia, serif",
                   fontSize: '17px',
                   fontWeight: 500,
                   color: '#0F1523',
@@ -1052,7 +1052,7 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
                 </span>
                 {isLast && (
                   <span style={{
-                    fontFamily: "'Cormorant SC', Georgia, serif",
+                    fontFamily: "'IBM Plex Mono', Georgia, serif",
                     fontSize: '9.5px',
                     letterSpacing: '0.18em',
                     color: '#999',
@@ -1063,10 +1063,10 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
                 )}
                 {isSaving && (
                   <span style={{
-                    fontFamily: "'Cormorant SC', Georgia, serif",
+                    fontFamily: "'IBM Plex Mono', Georgia, serif",
                     fontSize: '9.5px',
                     letterSpacing: '0.18em',
-                    color: '#A8721A',
+                    color: '#26302A',
                     textTransform: 'uppercase',
                   }}>
                     Saving…
@@ -1074,7 +1074,7 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
                 )}
               </div>
               <p style={{
-                fontFamily: "'Lora', Georgia, serif",
+                fontFamily: "'Newsreader', Georgia, serif",
                 fontSize: '13.5px',
                 color: '#666',
                 margin: 0,

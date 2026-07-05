@@ -36,12 +36,12 @@ import { ActiveFocusPrompt } from './ActiveFocusPrompt'
 import { FeedItem } from './feed/FeedItem'
 import { resolvePurposePiece, isPurposePieceComplete } from '../util/purposePiece'
 
-const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body    = { fontFamily: "'Lora', Georgia, serif" }
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
-const GOLD       = '#A8721A'
-const GOLD_LIGHT = '#C8922A'
+const GOLD       = '#26302A'
+const GOLD_LIGHT = '#6E7F5C'
 const INK        = '#0F1523'
 
 const DOMAINS = [
@@ -184,7 +184,7 @@ function NextStepsIntake() {
           rows={2}
           placeholder="What's bothering you, or what you'd build…"
           style={{
-            flex: 1, resize: 'none', border: '1px solid rgba(168,114,26,0.28)', borderRadius: '3px',
+            flex: 1, resize: 'none', border: '1px solid rgba(38,48,42,0.28)', borderRadius: '3px',
             padding: '10px 12px', ...body, fontSize: '14px', lineHeight: 1.55, color: INK,
             background: '#FAFAF7', outline: 'none',
           }}
@@ -326,8 +326,8 @@ function CombinedAnchor({ focus, pp, onEditFocus, onEditPurposePiece }) {
   return (
     <div style={{
       padding: '20px 22px',
-      background: 'rgba(200,146,42,0.04)',
-      border: '1px solid rgba(200,146,42,0.25)',
+      background: 'rgba(110,127,92,0.04)',
+      border: '1px solid rgba(110,127,92,0.25)',
       borderRadius: '10px',
       marginBottom: '24px',
     }}>
@@ -408,8 +408,8 @@ function PurposePieceSummary({ pp, onEdit }) {
   return (
     <div style={{
       padding: '20px 22px',
-      background: 'rgba(200,146,42,0.04)',
-      border: '1px solid rgba(200,146,42,0.25)',
+      background: 'rgba(110,127,92,0.04)',
+      border: '1px solid rgba(110,127,92,0.25)',
       borderRadius: '10px',
       marginBottom: '0',
     }}>
@@ -466,8 +466,8 @@ function FocusSummary({ focus, onEdit, onClear }) {
   return (
     <div style={{
       padding: '20px 22px',
-      background: 'rgba(200,146,42,0.04)',
-      border: '1px solid rgba(200,146,42,0.25)',
+      background: 'rgba(110,127,92,0.04)',
+      border: '1px solid rgba(110,127,92,0.25)',
       borderRadius: '10px',
       marginBottom: '0',
     }}>
@@ -511,8 +511,8 @@ function PurposePieceCTA({ onClick }) {
   return (
     <div style={{
       padding: '18px 22px',
-      background: 'rgba(200,146,42,0.04)',
-      border: '1px dashed rgba(200,146,42,0.35)',
+      background: 'rgba(110,127,92,0.04)',
+      border: '1px dashed rgba(110,127,92,0.35)',
       borderRadius: '10px',
       marginBottom: '0',
     }}>
@@ -536,7 +536,7 @@ function PurposePieceCTA({ onClick }) {
 function SectionDivider() {
   return (
     <div style={{
-      borderTop: '1px dashed rgba(200,146,42,0.20)',
+      borderTop: '1px dashed rgba(110,127,92,0.20)',
       margin: '20px 0',
     }} />
   )
@@ -584,7 +584,7 @@ function FilterRow({ value, onChange }) {
               padding: '7px 14px',
               borderRadius: '30px',
               cursor: 'pointer',
-              border: `1px solid ${active ? GOLD_LIGHT : 'rgba(200,146,42,0.30)'}`,
+              border: `1px solid ${active ? GOLD_LIGHT : 'rgba(110,127,92,0.30)'}`,
               background: active ? GOLD_LIGHT : 'transparent',
               color: active ? '#FFFFFF' : GOLD,
               transition: 'background 0.15s, color 0.15s',

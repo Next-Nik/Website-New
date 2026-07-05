@@ -50,7 +50,7 @@ import { useState, useEffect, useRef } from 'react'
 import { selfColor, SELF_KEYS_ORDERED } from '../../constants/domainColors'
 import { body, sc } from '../../lib/designTokens'
 
-const head = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const head = { fontFamily: "'Fraunces', Georgia, serif" }
 
 const SELF_LABELS = ['Path', 'Spark', 'Body', 'Finances', 'Connection', 'Inner Game', 'Signal']
 const SELF_KEYS   = SELF_KEYS_ORDERED // ['path', 'spark', 'body', 'finances', 'connection', 'inner_game', 'signal']
@@ -317,7 +317,7 @@ export default function SelfWheel({
     <div ref={containerRef} style={{ position: 'relative', display: 'inline-block' }}>
       {/* Eyebrow */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase' }}>
           Self
         </span>
         {onToggleVisibility && (
@@ -336,7 +336,7 @@ export default function SelfWheel({
               ...sc,
               fontSize: '13px',
               letterSpacing: '0.1em',
-              color: visible ? '#A8721A' : 'rgba(15,21,35,0.72)',
+              color: visible ? '#26302A' : 'rgba(15,21,35,0.72)',
               transition: 'color 150ms ease',
             }}
             onMouseEnter={() => setHovered(true)}
@@ -356,7 +356,7 @@ export default function SelfWheel({
             width: 0, height: 0,
             borderLeft: '6px solid transparent',
             borderRight: '6px solid transparent',
-            borderTop: '7px solid #A8721A',
+            borderTop: '7px solid #26302A',
             margin: '0 auto 4px',
           }} />
           <div style={{
@@ -398,11 +398,11 @@ export default function SelfWheel({
             <radialGradient id="sunCore" cx="50%" cy="50%" r="50%">
               <stop offset="0%"  stopColor="#FFE9B0" stopOpacity="1" />
               <stop offset="60%" stopColor="#E8B547" stopOpacity="1" />
-              <stop offset="100%" stopColor="#A8721A" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#26302A" stopOpacity="0.9" />
             </radialGradient>
             <radialGradient id="sunGhost" cx="50%" cy="50%" r="50%">
               <stop offset="0%"  stopColor="#D8C8A8" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#A8721A" stopOpacity="0.15" />
+              <stop offset="100%" stopColor="#26302A" stopOpacity="0.15" />
             </radialGradient>
           </defs>
 
@@ -425,7 +425,7 @@ export default function SelfWheel({
                   key={frac}
                   points={pts}
                   fill="none"
-                  stroke="rgba(200,146,42,0.08)"
+                  stroke="rgba(110,127,92,0.08)"
                   strokeWidth="0.5"
                 />
               )
@@ -453,7 +453,7 @@ export default function SelfWheel({
                     y1={cy}
                     x2={tipX}
                     y2={tipY}
-                    stroke={scored ? 'rgba(200,146,42,0.22)' : 'rgba(15,21,35,0.18)'}
+                    stroke={scored ? 'rgba(110,127,92,0.22)' : 'rgba(15,21,35,0.18)'}
                     strokeWidth={isHovered && offersSprint ? 1.5 : 0.8}
                     strokeDasharray={scored ? 'none' : '3 4'}
                     style={{ transition: 'stroke-width 200ms ease, stroke 200ms ease' }}
@@ -488,8 +488,8 @@ export default function SelfWheel({
             {hasAnyCurrent && (
               <polygon
                 points={currentPolygonPts}
-                fill="rgba(200,146,42,0.10)"
-                stroke="rgba(200,146,42,0.45)"
+                fill="rgba(110,127,92,0.10)"
+                stroke="rgba(110,127,92,0.45)"
                 strokeWidth="1.5"
                 strokeLinejoin="round"
                 style={{ transition: 'all 400ms ease' }}
@@ -583,7 +583,7 @@ export default function SelfWheel({
                   y={ly}
                   textAnchor={anchor}
                   dominantBaseline="middle"
-                  fontFamily="'Cormorant SC', Georgia, serif"
+                  fontFamily="'IBM Plex Mono', Georgia, serif"
                   fontSize="13"
                   fontWeight="600"
                   letterSpacing="2.2"
@@ -631,7 +631,7 @@ export default function SelfWheel({
                 ...sc,
                 fontSize: '13px',
                 letterSpacing: '0.1em',
-                color: '#A8721A',
+                color: '#26302A',
                 textDecoration: 'none',
                 pointerEvents: 'auto',
               }}
@@ -673,7 +673,7 @@ function PointySun({ cx, cy, r, scored, glowing }) {
       <polygon
         points={ptStr}
         fill={scored ? 'url(#sunCore)' : 'url(#sunGhost)'}
-        stroke={scored ? 'rgba(168,114,26,0.7)' : 'rgba(168,114,26,0.4)'}
+        stroke={scored ? 'rgba(38,48,42,0.7)' : 'rgba(38,48,42,0.4)'}
         strokeWidth="0.6"
         strokeLinejoin="round"
       />
@@ -683,9 +683,9 @@ function PointySun({ cx, cy, r, scored, glowing }) {
 
 // --- Popover ------------------------------------------------------------
 function Popover({ popover, getPopoverStyle, horizonGoals, currentReflections, activeSprintDomains, onClose }) {
-  const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const head = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
+  const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+  const head = { fontFamily: "'Fraunces', Georgia, serif" }
+  const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
   const labelMap = {
     path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances',
@@ -720,7 +720,7 @@ function Popover({ popover, getPopoverStyle, horizonGoals, currentReflections, a
         <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <a
             href={`/tools/map?domain=${popover.domainKey}`}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', textDecoration: 'none' }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textDecoration: 'none' }}
           >
             {text ? 'Revise' : 'Write it'}
           </a>
@@ -753,7 +753,7 @@ function Popover({ popover, getPopoverStyle, horizonGoals, currentReflections, a
         <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <a
             href={`/tools/map?domain=${popover.domainKey}`}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', textDecoration: 'none' }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textDecoration: 'none' }}
           >
             Update
           </a>
@@ -789,10 +789,10 @@ function Popover({ popover, getPopoverStyle, horizonGoals, currentReflections, a
                 ...sc,
                 fontSize: '13px',
                 letterSpacing: '0.1em',
-                color: '#A8721A',
+                color: '#26302A',
                 textDecoration: 'none',
                 padding: '8px 10px',
-                border: '1px solid rgba(200,146,42,0.4)',
+                border: '1px solid rgba(110,127,92,0.4)',
                 borderRadius: '3px',
                 textAlign: 'center',
               }}
@@ -807,10 +807,10 @@ function Popover({ popover, getPopoverStyle, horizonGoals, currentReflections, a
               fontSize: '13px',
               letterSpacing: '0.1em',
               color: hasSprint ? '#0F1523' : '#FAFAF7',
-              background: hasSprint ? 'transparent' : '#A8721A',
+              background: hasSprint ? 'transparent' : '#26302A',
               textDecoration: 'none',
               padding: '8px 10px',
-              border: hasSprint ? '1px solid rgba(15,21,35,0.2)' : '1px solid #A8721A',
+              border: hasSprint ? '1px solid rgba(15,21,35,0.2)' : '1px solid #26302A',
               borderRadius: '3px',
               textAlign: 'center',
             }}

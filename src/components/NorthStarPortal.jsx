@@ -3,8 +3,8 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
 import { serif, body, sc } from '../lib/designTokens'
 
-const GOLD      = '#C8922A'
-const GOLD_TEXT = '#A8721A'
+const GOLD      = '#6E7F5C'
+const GOLD_TEXT = '#26302A'
 const DARK      = '#0F1523'
 
 const NS_OPENING = `Tell me a little about what's going on. I'll point you somewhere useful.`
@@ -37,7 +37,7 @@ function FullChat({ messages, input, setInput, waiting, done, send, messagesRef,
   return (
     <div style={{
       background: '#FFFFFF',
-      border: '1.5px solid rgba(200,146,42,0.78)',
+      border: '1.5px solid rgba(110,127,92,0.78)',
       borderRadius: '14px',
       overflow: 'hidden',
       width: '100%',
@@ -61,25 +61,25 @@ function FullChat({ messages, input, setInput, waiting, done, send, messagesRef,
             </div>
           )
           if (m.role === 'user') return (
-            <div key={i} style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px', padding: '10px 14px', alignSelf: 'flex-end', maxWidth: '80%' }}>
+            <div key={i} style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.20)', borderRadius: '10px', padding: '10px 14px', alignSelf: 'flex-end', maxWidth: '80%' }}>
               {m.content}
             </div>
           )
           if (m.role === 'result') {
             const d = m.data
             return (
-              <div key={i} style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', padding: '22px', alignSelf: 'flex-start', maxWidth: '96%' }}>
+              <div key={i} style={{ background: '#FAFAF7', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '12px', padding: '22px', alignSelf: 'flex-start', maxWidth: '96%' }}>
                 {d.stage && <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: GOLD_TEXT, marginBottom: '8px' }}>{d.stage}</div>}
                 <div style={{ ...body, fontSize: '16px', lineHeight: 1.8, color: DARK, marginBottom: '16px' }}>{d.reflection}</div>
                 {(d.recommendations || []).map((r, ri) => (
-                  <div key={ri} style={{ borderTop: '1px solid rgba(200,146,42,0.20)', paddingTop: '14px', marginTop: '14px' }}>
+                  <div key={ri} style={{ borderTop: '1px solid rgba(110,127,92,0.20)', paddingTop: '14px', marginTop: '14px' }}>
                     <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', marginBottom: '4px' }}>{r.category}</div>
                     <div style={{ ...body, fontSize: '17px', color: DARK, marginBottom: '4px' }}>{r.title}</div>
                     <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.65, marginBottom: '8px' }}>{r.description}</div>
                     {r.link && r.link !== 'null' && <a href={r.link} style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: GOLD_TEXT, textDecoration: 'none' }}>{r.link_text || 'Go there →'}</a>}
                   </div>
                 ))}
-                {d.closing && <div style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>{d.closing}</div>}
+                {d.closing && <div style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(110,127,92,0.20)' }}>{d.closing}</div>}
               </div>
             )
           }
@@ -87,13 +87,13 @@ function FullChat({ messages, input, setInput, waiting, done, send, messagesRef,
         })}
         {waiting && (
           <div style={{ display: 'flex', gap: '5px', alignItems: 'center', padding: '4px 0' }}>
-            {[0, 0.2, 0.4].map((d, i) => <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(200,146,42,0.45)', animation: `nsPulse 1.4s ease ${d}s infinite` }} />)}
+            {[0, 0.2, 0.4].map((d, i) => <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(110,127,92,0.45)', animation: `nsPulse 1.4s ease ${d}s infinite` }} />)}
             <style>{`@keyframes nsPulse{0%,80%,100%{transform:scale(0.7);opacity:0.4}40%{transform:scale(1);opacity:1}}`}</style>
           </div>
         )}
       </div>
       {!done && (
-        <div style={{ borderTop: '1px solid rgba(200,146,42,0.20)', padding: '16px 20px', display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
+        <div style={{ borderTop: '1px solid rgba(110,127,92,0.20)', padding: '16px 20px', display: 'flex', gap: '12px', alignItems: 'flex-end' }}>
           <textarea
             ref={textareaRef}
             value={input}
@@ -107,7 +107,7 @@ function FullChat({ messages, input, setInput, waiting, done, send, messagesRef,
             rows={1}
             style={{
               flex: 1, resize: 'none',
-              border: '1.5px solid rgba(200,146,42,0.30)',
+              border: '1.5px solid rgba(110,127,92,0.30)',
               borderRadius: '10px', padding: '11px 14px',
               ...body, fontSize: '16px', color: DARK,
               background: '#FAFAF7', outline: 'none',
@@ -120,8 +120,8 @@ function FullChat({ messages, input, setInput, waiting, done, send, messagesRef,
             style={{
               flexShrink: 0, padding: '11px 22px',
               borderRadius: '40px',
-              border: '1.5px solid rgba(200,146,42,0.78)',
-              background: 'rgba(200,146,42,0.05)',
+              border: '1.5px solid rgba(110,127,92,0.78)',
+              background: 'rgba(110,127,92,0.05)',
               ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.14em',
               color: GOLD_TEXT, cursor: 'pointer', whiteSpace: 'nowrap',
               opacity: (!input.trim() || waiting) ? 0.4 : 1,
@@ -201,7 +201,7 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
               x={CX - d.rx} y={CY - d.ry}
               width={d.rx * 2} height={d.ry * 2}
               rx={d.ry * 0.55}
-              fill="#A8721A" fillOpacity="0.025"/>
+              fill="#26302A" fillOpacity="0.025"/>
           ))}
         </g>
 
@@ -288,7 +288,7 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
             rows={1}
             style={{
               flex: 1, resize: 'none',
-              border: '1.5px solid rgba(200,146,42,0.35)',
+              border: '1.5px solid rgba(110,127,92,0.35)',
               borderRadius: '8px', padding: '9px 12px',
               ...body, fontSize: '15px', color: DARK,
               background: '#FAFAF7', outline: 'none',
@@ -301,7 +301,7 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
             style={{
               flexShrink: 0, padding: '9px 18px',
               borderRadius: '40px',
-              border: '1.5px solid rgba(200,146,42,0.78)',
+              border: '1.5px solid rgba(110,127,92,0.78)',
               background: '#FAFAF7',
               ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em',
               color: GOLD_TEXT, cursor: 'pointer', whiteSpace: 'nowrap',

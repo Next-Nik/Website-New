@@ -102,8 +102,8 @@ function VenuePicker({ value, onChange, focus }) {
     return (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 14px', background: 'rgba(168,114,26,0.06)',
-        border: '1px solid rgba(200,146,42,0.30)', borderRadius: '8px',
+        padding: '10px 14px', background: 'rgba(38,48,42,0.06)',
+        border: '1px solid rgba(110,127,92,0.30)', borderRadius: '8px',
       }}>
         <div>
           <div style={{ ...body, fontSize: '15px', color: dark }}>
@@ -139,7 +139,7 @@ function VenuePicker({ value, onChange, focus }) {
       {results.length > 0 && (
         <div style={{
           marginTop: '6px', background: '#FFFFFF',
-          border: '1px solid rgba(200,146,42,0.22)', borderRadius: '8px',
+          border: '1px solid rgba(110,127,92,0.22)', borderRadius: '8px',
           maxHeight: '240px', overflowY: 'auto',
         }}>
           {results.map(v => (
@@ -148,7 +148,7 @@ function VenuePicker({ value, onChange, focus }) {
               style={{
                 display: 'block', width: '100%', textAlign: 'left',
                 padding: '10px 14px', background: 'transparent',
-                border: 'none', borderBottom: '1px solid rgba(200,146,42,0.10)',
+                border: 'none', borderBottom: '1px solid rgba(110,127,92,0.10)',
                 cursor: 'pointer', fontFamily: body.fontFamily, fontSize: '14px',
                 color: dark,
               }}
@@ -180,8 +180,8 @@ function VenuePicker({ value, onChange, focus }) {
       {showCreate && (
         <div style={{
           marginTop: '12px', padding: '14px',
-          background: 'rgba(168,114,26,0.04)',
-          border: '1px solid rgba(200,146,42,0.22)', borderRadius: '8px',
+          background: 'rgba(38,48,42,0.04)',
+          border: '1px solid rgba(110,127,92,0.22)', borderRadius: '8px',
         }}>
           <Label>Venue name</Label>
           <TextInput value={createName} onChange={setCreateName} />
@@ -293,7 +293,7 @@ function EventTypePicker({ selected, onChange }) {
               <span key={s} style={{
                 ...sc, fontSize: '11px', letterSpacing: '0.12em',
                 padding: '4px 10px', borderRadius: '40px',
-                background: 'rgba(168,114,26,0.10)', color: gold,
+                background: 'rgba(38,48,42,0.10)', color: gold,
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
               }}>
                 {t?.label || s.replace(/-/g, ' ')}
@@ -328,7 +328,7 @@ function EventTypePicker({ selected, onChange }) {
       {filtered.length > 0 && (
         <div style={{
           marginTop: '6px', background: '#FFFFFF',
-          border: '1px solid rgba(200,146,42,0.22)', borderRadius: '8px',
+          border: '1px solid rgba(110,127,92,0.22)', borderRadius: '8px',
           maxHeight: '240px', overflowY: 'auto',
         }}>
           {filtered.map(t => (
@@ -337,7 +337,7 @@ function EventTypePicker({ selected, onChange }) {
               style={{
                 display: 'block', width: '100%', textAlign: 'left',
                 padding: '8px 14px', background: 'transparent',
-                border: 'none', borderBottom: '1px solid rgba(200,146,42,0.08)',
+                border: 'none', borderBottom: '1px solid rgba(110,127,92,0.08)',
                 cursor: 'pointer', fontFamily: body.fontFamily, fontSize: '14px',
                 color: dark,
               }}
@@ -410,10 +410,10 @@ function DomainPlacementPicker({ placements, onChange, actorDomains = [] }) {
                 ...sc, fontSize: '12px', letterSpacing: '0.12em',
                 padding: '6px 14px', borderRadius: '40px', cursor: 'pointer',
                 border: on
-                  ? (isPrimary ? '2px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.40)')
-                  : '1.5px solid rgba(200,146,42,0.25)',
-                background: on ? 'rgba(200,146,42,0.10)' : 'transparent',
-                color: on ? gold : (isActorDomain ? 'rgba(168,114,26,0.62)' : 'rgba(15,21,35,0.55)'),
+                  ? (isPrimary ? '2px solid rgba(110,127,92,0.78)' : '1.5px solid rgba(110,127,92,0.40)')
+                  : '1.5px solid rgba(110,127,92,0.25)',
+                background: on ? 'rgba(110,127,92,0.10)' : 'transparent',
+                color: on ? gold : (isActorDomain ? 'rgba(38,48,42,0.62)' : 'rgba(15,21,35,0.55)'),
                 position: 'relative',
               }}
             >
@@ -441,8 +441,8 @@ function DomainPlacementPicker({ placements, onChange, actorDomains = [] }) {
                   style={{
                     ...sc, fontSize: '11px', letterSpacing: '0.12em',
                     padding: '4px 10px', borderRadius: '40px', cursor: 'pointer',
-                    border: p.is_primary ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.25)',
-                    background: p.is_primary ? 'rgba(200,146,42,0.14)' : 'transparent',
+                    border: p.is_primary ? '1.5px solid rgba(110,127,92,0.78)' : '1.5px solid rgba(110,127,92,0.25)',
+                    background: p.is_primary ? 'rgba(110,127,92,0.14)' : 'transparent',
                     color: p.is_primary ? gold : 'rgba(15,21,35,0.55)',
                   }}
                 >
@@ -666,7 +666,7 @@ export function EventForm({ actor, initial, onSubmitDone, toast }) {
             onChange={e => update('starts_at_local', e.target.value)}
             style={{
               ...body, fontSize: '15px', color: dark, padding: '10px 14px',
-              borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)',
+              borderRadius: '8px', border: '1.5px solid rgba(110,127,92,0.30)',
               background: '#FFFFFF', outline: 'none', width: '100%', boxSizing: 'border-box',
             }}
           />
@@ -679,7 +679,7 @@ export function EventForm({ actor, initial, onSubmitDone, toast }) {
             onChange={e => update('ends_at_local', e.target.value)}
             style={{
               ...body, fontSize: '15px', color: dark, padding: '10px 14px',
-              borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)',
+              borderRadius: '8px', border: '1.5px solid rgba(110,127,92,0.30)',
               background: '#FFFFFF', outline: 'none', width: '100%', boxSizing: 'border-box',
             }}
           />
@@ -820,7 +820,7 @@ export function EventForm({ actor, initial, onSubmitDone, toast }) {
       {/* Actions */}
       <div style={{
         display: 'flex', gap: '10px', flexWrap: 'wrap',
-        paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.20)',
+        paddingTop: '16px', borderTop: '1px solid rgba(110,127,92,0.20)',
       }}>
         <Btn onClick={() => submit('published')} disabled={saving}>
           {saving ? 'Saving…' : (initial && form.status === 'published' ? 'Save' : 'Publish')}
