@@ -19,7 +19,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 
-const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const sc = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
 
 function ShareGlyph({ size = 16 }) {
   return (
@@ -84,7 +84,7 @@ export function ShareButton({
   }
 
   const baseColor = 'rgba(15,21,35,0.55)'
-  const activeColor = '#A8721A'
+  const activeColor = '#26302A'
 
   if (variant === 'text') {
     return (
@@ -97,8 +97,8 @@ export function ShareButton({
           alignItems: 'center',
           gap: '6px',
           padding: '6px 12px',
-          background: copied ? 'rgba(200,146,42,0.10)' : 'transparent',
-          border: '1px solid rgba(200,146,42,0.30)',
+          background: copied ? 'rgba(110,127,92,0.10)' : 'transparent',
+          border: '1px solid rgba(110,127,92,0.30)',
           borderRadius: '40px',
           color: copied ? activeColor : baseColor,
           cursor: 'pointer',
@@ -131,7 +131,7 @@ export function ShareButton({
         justifyContent: 'center',
         width: '32px',
         height: '32px',
-        background: copied ? 'rgba(200,146,42,0.10)' : 'transparent',
+        background: copied ? 'rgba(110,127,92,0.10)' : 'transparent',
         border: 'none',
         borderRadius: '50%',
         color: copied ? activeColor : baseColor,
@@ -142,7 +142,7 @@ export function ShareButton({
       onMouseEnter={e => {
         if (!copied) {
           e.currentTarget.style.color = activeColor
-          e.currentTarget.style.background = 'rgba(200,146,42,0.06)'
+          e.currentTarget.style.background = 'rgba(110,127,92,0.06)'
         }
       }}
       onMouseLeave={e => {

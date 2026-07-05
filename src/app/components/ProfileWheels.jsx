@@ -4,12 +4,12 @@
 
 import { CIV_DOMAINS, DOMAIN_COLORS, SELF_DOMAINS } from '../constants/domains'
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 // Tier colour for Self wheel
 function selfTierColor(v) {
-  if (v == null) return 'rgba(200,146,42,0.20)'
+  if (v == null) return 'rgba(110,127,92,0.20)'
   if (v >= 8)   return '#3B6B9E'
   if (v >= 6.5) return '#5A8AB8'
   if (v >= 5)   return '#8A8070'
@@ -56,7 +56,7 @@ function SpiderWheel({ domains, currentScores, horizonScores, colorFn, size = 22
         const pts = domains.map((_, i) => pt(i, v).join(',')).join(' ')
         return (
           <polygon key={v} points={pts} fill="none"
-            stroke={v === 5 ? 'rgba(138,48,48,0.18)' : 'rgba(200,146,42,0.06)'}
+            stroke={v === 5 ? 'rgba(138,48,48,0.18)' : 'rgba(110,127,92,0.06)'}
             strokeWidth={v === 5 ? 1 : 0.75}
             strokeDasharray={v === 5 ? '3 3' : 'none'} />
         )
@@ -66,7 +66,7 @@ function SpiderWheel({ domains, currentScores, horizonScores, colorFn, size = 22
       {domains.map((_, i) => {
         const [x, y] = ptFull(i)
         return <line key={i} x1={cx} y1={cy} x2={x} y2={y}
-          stroke="rgba(200,146,42,0.05)" strokeWidth="0.75" />
+          stroke="rgba(110,127,92,0.05)" strokeWidth="0.75" />
       })}
 
       {/* Horizon shape */}
@@ -80,8 +80,8 @@ function SpiderWheel({ domains, currentScores, horizonScores, colorFn, size = 22
 
       {/* Current shape */}
       <polygon points={currentPts}
-        fill="rgba(200,146,42,0.06)"
-        stroke="rgba(200,146,42,0.55)"
+        fill="rgba(110,127,92,0.06)"
+        stroke="rgba(110,127,92,0.55)"
         strokeWidth="1.5"
         strokeLinejoin="round" />
 
@@ -105,7 +105,7 @@ function SpiderWheel({ domains, currentScores, horizonScores, colorFn, size = 22
           <text key={i} x={lx} y={ly}
             textAnchor={anchor}
             dominantBaseline="middle"
-            fontFamily="'Cormorant SC', Georgia, serif"
+            fontFamily="'IBM Plex Mono', Georgia, serif"
             fontSize="10"
             letterSpacing="0.6"
             fill={s != null ? 'rgba(15,21,35,0.72)' : 'rgba(15,21,35,0.35)'}>
@@ -143,7 +143,7 @@ export function ProfileWheels({ selfWheelPublic, civWheelPublic, horizonByDomain
   if (!hasSelf && !hasCiv) return null
 
   function civColorFn(slug) {
-    return DOMAIN_COLORS[slug] || 'rgba(200,146,42,0.50)'
+    return DOMAIN_COLORS[slug] || 'rgba(110,127,92,0.50)'
   }
 
   const civDomainList = CIV_DOMAINS.filter(d => civWheelPublic.includes(d.slug))

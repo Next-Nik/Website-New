@@ -17,7 +17,7 @@ import { useState } from 'react'
 //   compact       — optional, tightens for inline use
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const sc = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
 
 export default function VisibilityToggle({
   value = 'private',
@@ -74,7 +74,7 @@ export default function VisibilityToggle({
             width: `${trackWidth}px`,
             height: `${trackHeight}px`,
             background: isPublic
-              ? '#A8721A'
+              ? '#26302A'
               : hover
               ? 'rgba(15, 21, 35, 0.20)'
               : 'rgba(15, 21, 35, 0.12)',
@@ -106,7 +106,7 @@ export default function VisibilityToggle({
             ...sc,
             fontSize: compact ? '12px' : '13px',
             letterSpacing: '0.06em',
-            color: isPublic ? '#A8721A' : 'rgba(15, 21, 35, 0.72)',
+            color: isPublic ? '#26302A' : 'rgba(15, 21, 35, 0.72)',
             fontWeight: 600,
             minWidth: '52px',
           }}

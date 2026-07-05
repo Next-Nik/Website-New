@@ -11,8 +11,8 @@
 //   onClick   — () => void; toggles selection
 //   showDescription — when true, renders description below the label
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 export default function TierChip({
   slug,
@@ -31,11 +31,11 @@ export default function TierChip({
         ...sc,
         fontSize: '13px',
         letterSpacing: '0.04em',
-        color: active ? '#A8721A' : 'rgba(15,21,35,0.72)',
-        background: active ? 'rgba(200,146,42,0.08)' : '#FFFFFF',
+        color: active ? '#26302A' : 'rgba(15,21,35,0.72)',
+        background: active ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
         border: active
-          ? '1px solid rgba(200,146,42,0.55)'
-          : '1px solid rgba(200,146,42,0.25)',
+          ? '1px solid rgba(110,127,92,0.55)'
+          : '1px solid rgba(110,127,92,0.25)',
         borderRadius: showDescription ? '14px' : '40px',
         padding: showDescription ? '12px 16px' : '6px 14px',
         cursor: 'pointer',
@@ -48,7 +48,7 @@ export default function TierChip({
       }}
       onMouseEnter={(e) => {
         if (!active) {
-          e.currentTarget.style.background = 'rgba(200,146,42,0.04)'
+          e.currentTarget.style.background = 'rgba(110,127,92,0.04)'
         }
       }}
       onMouseLeave={(e) => {
@@ -67,7 +67,7 @@ export default function TierChip({
                   width: '6px',
                   height: '6px',
                   borderRadius: '50%',
-                  background: '#A8721A',
+                  background: '#26302A',
                 }}
               />
             )}
@@ -92,7 +92,7 @@ export default function TierChip({
                 width: '5px',
                 height: '5px',
                 borderRadius: '50%',
-                background: '#A8721A',
+                background: '#26302A',
                 display: 'inline-block',
               }}
             />

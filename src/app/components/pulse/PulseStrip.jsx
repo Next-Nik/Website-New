@@ -28,10 +28,10 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../../hooks/useSupabase'
 
-const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body    = { fontFamily: "'Lora', Georgia, serif" }
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const GOLD    = '#A8721A'
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const GOLD    = '#26302A'
 const INK     = '#0F1523'
 
 // ── data ─────────────────────────────────────────────────────
@@ -154,13 +154,13 @@ export function PulseStrip({ compact = false, dark = false }) {
     <section
       aria-label="The pulse — ecosystem activity"
       style={{
-        border: '1px solid rgba(200,146,42,0.20)',
+        border: '1px solid rgba(110,127,92,0.20)',
         borderRadius: '10px',
         padding: compact ? '18px 20px' : '22px 24px',
-        background: 'rgba(200,146,42,0.04)',
+        background: 'rgba(110,127,92,0.04)',
       }}
     >
-      <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em', color: dark ? '#C8922A' : GOLD }}>
+      <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em', color: dark ? '#6E7F5C' : GOLD }}>
         THE PULSE · THIS WEEK ON YOUR PLANET
       </div>
 
@@ -173,7 +173,7 @@ export function PulseStrip({ compact = false, dark = false }) {
       )}
 
       {/* the live tracker */}
-      <div style={{ marginTop: hasNumbers ? '18px' : '14px', borderTop: '1px solid rgba(200,146,42,0.14)', paddingTop: '14px' }}>
+      <div style={{ marginTop: hasNumbers ? '18px' : '14px', borderTop: '1px solid rgba(110,127,92,0.14)', paddingTop: '14px' }}>
         {lines.length === 0 ? (
           <p style={{ ...body, fontSize: '14px', color: dark ? 'rgba(250,250,247,0.55)' : 'rgba(15,21,35,0.55)', margin: 0, lineHeight: 1.6 }}>
             The pulse starts here. Every actor that joins the map, every practice

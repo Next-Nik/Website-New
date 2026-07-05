@@ -1,8 +1,8 @@
 // src/beta/components/ProfileOffering.jsx
 // "What I am offering" — count_on_me_for free-text.
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 export function ProfileOffering({ countOnMeFor }) {
   if (!countOnMeFor) return null

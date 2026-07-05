@@ -20,9 +20,9 @@ import { useAuth } from '../../hooks/useAuth'
 import { InfoButton } from './InfoButton'
 import { logActivity } from './pulse/logActivity'
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const gold = '#A8721A'
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const gold = '#26302A'
 
 export function WatchButton({ entityType, entityId, entityName, size = 'md' }) {
   const { user } = useAuth()
@@ -94,7 +94,7 @@ export function WatchButton({ entityType, entityId, entityName, size = 'md' }) {
           fontSize,
           letterSpacing: letterSpace,
           color: watching ? '#FFFFFF' : gold,
-          background: watching ? gold : 'rgba(200,146,42,0.04)',
+          background: watching ? gold : 'rgba(110,127,92,0.04)',
           border: '1.5px solid ' + gold,
           borderRadius: '30px',
           padding,

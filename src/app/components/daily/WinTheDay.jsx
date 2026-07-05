@@ -28,16 +28,16 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../../hooks/useSupabase'
 
-const GOLD     = '#C8922A'
-const GOLD_DK  = '#A8721A'
+const GOLD     = '#6E7F5C'
+const GOLD_DK  = '#26302A'
 const INK      = '#0F1523'
-const SC       = "'Cormorant SC', Georgia, serif"
-const BODY     = "'Lora', Georgia, serif"
-const DISP     = "'Cormorant Garamond', Georgia, serif"
+const SC       = "'IBM Plex Mono', Georgia, serif"
+const BODY     = "'Newsreader', Georgia, serif"
+const DISP     = "'Fraunces', Georgia, serif"
 const META     = 'rgba(15,21,35,0.72)'
 const FAINT    = 'rgba(15,21,35,0.55)'
-const RULE     = 'rgba(200,146,42,0.20)'
-const TINT     = 'rgba(200,146,42,0.05)'
+const RULE     = 'rgba(110,127,92,0.20)'
+const TINT     = 'rgba(110,127,92,0.05)'
 
 const DOMAIN_LABELS = {
   path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances',
@@ -299,7 +299,7 @@ export default function WinTheDay({ userId: userIdProp = null, sprintData = null
             placeholder="Add a bonus win…"
             style={{
               flex: 1, padding: '10px 12px', fontFamily: BODY, fontSize: '14px',
-              color: META, background: TINT, border: `1px dashed rgba(200,146,42,0.30)`,
+              color: META, background: TINT, border: `1px dashed rgba(110,127,92,0.30)`,
               borderRadius: '8px', outline: 'none',
             }}
           />
@@ -370,12 +370,12 @@ export default function WinTheDay({ userId: userIdProp = null, sprintData = null
             display: 'flex', alignItems: 'center', gap: '14px', width: '100%', textAlign: 'left',
             padding: '16px 16px', marginBottom: '18px', cursor: 'pointer',
             border: `1.5px solid ${winDone ? GOLD : RULE}`, borderRadius: '12px',
-            background: winDone ? 'rgba(200,146,42,0.10)' : TINT,
+            background: winDone ? 'rgba(110,127,92,0.10)' : TINT,
           }}
         >
           <span style={{
             flexShrink: 0, width: '34px', height: '34px', borderRadius: '50%',
-            border: `1.5px solid ${winDone ? GOLD : 'rgba(200,146,42,0.55)'}`,
+            border: `1.5px solid ${winDone ? GOLD : 'rgba(110,127,92,0.55)'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             background: winDone ? GOLD : 'transparent',
           }}>
@@ -407,12 +407,12 @@ export default function WinTheDay({ userId: userIdProp = null, sprintData = null
                   display: 'flex', alignItems: 'center', gap: '12px', width: '100%', textAlign: 'left',
                   padding: '11px 13px', marginBottom: '6px', cursor: 'pointer',
                   border: `1px solid ${RULE}`, borderRadius: '8px',
-                  background: done ? 'rgba(200,146,42,0.07)' : 'none',
+                  background: done ? 'rgba(110,127,92,0.07)' : 'none',
                 }}
               >
                 <span style={{
                   flexShrink: 0, width: '22px', height: '22px', borderRadius: '50%',
-                  border: `1.5px solid ${done ? GOLD : 'rgba(200,146,42,0.45)'}`,
+                  border: `1.5px solid ${done ? GOLD : 'rgba(110,127,92,0.45)'}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   background: done ? GOLD : 'transparent',
                 }}>

@@ -22,9 +22,9 @@ import { useState } from 'react'
 //   className     — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body    = { fontFamily: "'Lora', Georgia, serif" }
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
 export default function WheelsToggleSection({
   selfSlot,
@@ -44,8 +44,8 @@ export default function WheelsToggleSection({
         padding: '24px 22px',
         transition: 'background 240ms ease',
         border: isCiv
-          ? '1px solid rgba(200, 146, 42, 0.20)'
-          : '1px solid rgba(200, 146, 42, 0.20)',
+          ? '1px solid rgba(110,127,92, 0.20)'
+          : '1px solid rgba(110,127,92, 0.20)',
       }}
     >
       <div
@@ -65,7 +65,7 @@ export default function WheelsToggleSection({
               display: 'block',
               fontSize: '12px',
               letterSpacing: '0.08em',
-              color: isCiv ? '#C8922A' : '#A8721A',
+              color: isCiv ? '#6E7F5C' : '#26302A',
               fontWeight: 600,
               marginBottom: '4px',
             }}
@@ -137,7 +137,7 @@ function ScaleToggle({ mode, onChange }) {
         padding: '3px',
         border:
           '1px solid ' +
-          (isSelf ? 'rgba(200, 146, 42, 0.20)' : 'rgba(200, 146, 42, 0.30)'),
+          (isSelf ? 'rgba(110,127,92, 0.20)' : 'rgba(110,127,92, 0.30)'),
       }}
     >
       <ToggleOption
@@ -211,8 +211,8 @@ function Placeholder({ dark, label }) {
           margin: '0 auto 16px',
           borderRadius: '50%',
           border: dark
-            ? '1px dashed rgba(200, 146, 42, 0.35)'
-            : '1px dashed rgba(200, 146, 42, 0.35)',
+            ? '1px dashed rgba(110,127,92, 0.35)'
+            : '1px dashed rgba(110,127,92, 0.35)',
         }}
       />
       <p

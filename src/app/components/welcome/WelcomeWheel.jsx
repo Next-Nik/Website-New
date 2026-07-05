@@ -62,7 +62,7 @@ function selfWheelBase(svg, selfData) {
     const a = angleFor(i)
     const tx = cx + maxR * Math.cos(a), ty = cy + maxR * Math.sin(a)
     html += `<line x1="${cx}" y1="${cy}" x2="${tx}" y2="${ty}" class="horizon-spoke"/>`
-    html += `<circle cx="${tx}" cy="${ty}" r="3" fill="rgba(200,146,42,0.5)"/>`
+    html += `<circle cx="${tx}" cy="${ty}" r="3" fill="rgba(110,127,92,0.5)"/>`
   }
   for (let i = 0; i < n; i++) {
     const a = angleFor(i)
@@ -152,7 +152,7 @@ function civWheelBase(svg, civData) {
       const a = angleFor(i)
       pts.push(`${cx + f * maxR * Math.cos(a)},${cy + f * maxR * Math.sin(a)}`)
     }
-    html += `<polygon points="${pts.join(' ')}" fill="none" stroke="rgba(200,146,42,0.18)" stroke-width="1"/>`
+    html += `<polygon points="${pts.join(' ')}" fill="none" stroke="rgba(110,127,92,0.18)" stroke-width="1"/>`
   })
   for (let i = 0; i < n; i++) {
     const a = angleFor(i)
@@ -248,7 +248,7 @@ function applyScaleZoom(svg, cx, cy, maxR, timers, civData) {
 
   rings.forEach(ring => {
     const r = ring.frac * maxR
-    const stroke = ring.lit ? 'var(--gold)' : 'rgba(200,146,42,0.32)'
+    const stroke = ring.lit ? 'var(--gold)' : 'rgba(110,127,92,0.32)'
     const strokeWidth = ring.lit ? '2' : '1'
     const dasharray = ring.lit ? 'none' : '2 4'
     svg.insertAdjacentHTML('beforeend',

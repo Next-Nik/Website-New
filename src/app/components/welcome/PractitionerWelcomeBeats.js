@@ -71,7 +71,7 @@ export function getTierColor(current, horizon, key) {
   if (key && PRAC_KEY_TO_SELF_KEY[key]) {
     return DOMAIN_COLORS[PRAC_KEY_TO_SELF_KEY[key]].base
   }
-  return 'rgba(200,146,42,0.5)'
+  return 'rgba(110,127,92,0.5)'
 }
 
 // ─── Headers per act ───────────────────────────────────────

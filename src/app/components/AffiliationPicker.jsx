@@ -124,8 +124,8 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
 
   return (
     <div style={{
-      border: '1.5px solid rgba(200,146,42,0.22)',
-      background: 'rgba(200,146,42,0.03)',
+      border: '1.5px solid rgba(110,127,92,0.22)',
+      background: 'rgba(110,127,92,0.03)',
       borderRadius: '10px',
       padding: '20px 22px 22px',
       marginBottom: '20px',
@@ -192,8 +192,8 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
         <div style={{
           marginTop: '14px',
           padding: '12px 14px',
-          background: 'rgba(200,146,42,0.06)',
-          border: '1px dashed rgba(200,146,42,0.50)',
+          background: 'rgba(110,127,92,0.06)',
+          border: '1px dashed rgba(110,127,92,0.50)',
           borderRadius: '8px',
         }}>
           <div style={{ ...body, fontSize: '13.5px', color: dark, lineHeight: 1.6 }}>
@@ -210,8 +210,8 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
                 fontSize: '12px',
                 letterSpacing: '0.14em',
                 color: gold,
-                background: 'rgba(200,146,42,0.10)',
-                border: '1.2px solid rgba(200,146,42,0.55)',
+                background: 'rgba(110,127,92,0.10)',
+                border: '1.2px solid rgba(110,127,92,0.55)',
                 borderRadius: '30px',
                 padding: '7px 16px',
                 cursor: 'pointer',
@@ -343,8 +343,8 @@ function Chip({ selected, onClick, children }) {
         fontSize: '12px',
         letterSpacing: '0.14em',
         color: selected ? '#FFFFFF' : gold,
-        background: selected ? gold : 'rgba(200,146,42,0.04)',
-        border: '1.2px solid ' + (selected ? gold : 'rgba(200,146,42,0.45)'),
+        background: selected ? gold : 'rgba(110,127,92,0.04)',
+        border: '1.2px solid ' + (selected ? gold : 'rgba(110,127,92,0.45)'),
         borderRadius: '30px',
         padding: '7px 14px',
         cursor: 'pointer',

@@ -1,8 +1,8 @@
 // src/beta/components/ProfileIdentityStrip.jsx
 // Identity strip: name, focus, headline, primary "I am" statement.
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 export function ProfileIdentityStrip({ displayName, focusName, headline, primaryIAStatement, archetype, civDomain, scale }) {
   return (
@@ -73,9 +73,9 @@ export function ProfileIdentityStrip({ displayName, focusName, headline, primary
               ...sc,
               fontSize: '11px',
               letterSpacing: '0.14em',
-              color: '#A8721A',
-              background: 'rgba(200,146,42,0.06)',
-              border: '1px solid rgba(200,146,42,0.25)',
+              color: '#26302A',
+              background: 'rgba(110,127,92,0.06)',
+              border: '1px solid rgba(110,127,92,0.25)',
               borderRadius: '4px',
               padding: '3px 9px',
             }}>

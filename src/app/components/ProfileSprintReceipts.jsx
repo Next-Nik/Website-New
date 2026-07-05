@@ -1,8 +1,8 @@
 // src/beta/components/ProfileSprintReceipts.jsx
 // Sprint receipts: completed sprints marked visible.
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 const SELF_DOMAIN_LABELS = {
   path:       'Path',
@@ -23,7 +23,7 @@ function ReceiptCard({ sprint }) {
     <div style={{
       padding: '20px 24px',
       background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.12)',
+      border: '1px solid rgba(110,127,92,0.12)',
       borderRadius: '12px',
       display: 'flex',
       alignItems: 'flex-start',

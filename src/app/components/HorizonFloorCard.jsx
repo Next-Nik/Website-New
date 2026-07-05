@@ -25,9 +25,9 @@ import { getHorizonFloor, isValidDomainSlug } from '../constants/horizonFloor'
 //   className        — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body    = { fontFamily: "'Lora', Georgia, serif" }
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
 export default function HorizonFloorCard({
   domainSlug,
@@ -45,7 +45,7 @@ export default function HorizonFloorCard({
         className={className}
         style={{
           background: '#FFFFFF',
-          border: '1px solid rgba(200, 146, 42, 0.20)',
+          border: '1px solid rgba(110,127,92, 0.20)',
           borderRadius: '14px',
           padding: '18px 20px',
         }}
@@ -56,7 +56,7 @@ export default function HorizonFloorCard({
             display: 'block',
             fontSize: '12px',
             letterSpacing: '0.08em',
-            color: '#A8721A',
+            color: '#26302A',
             fontWeight: 600,
             marginBottom: '8px',
           }}
@@ -100,7 +100,7 @@ export default function HorizonFloorCard({
           display: 'block',
           fontSize: '13px',
           letterSpacing: '0.08em',
-          color: '#A8721A',
+          color: '#26302A',
           fontWeight: 600,
           marginBottom: '12px',
         }}
@@ -128,7 +128,7 @@ export default function HorizonFloorCard({
             style={{
               height: '1px',
               width: '64px',
-              background: 'rgba(200, 146, 42, 0.45)',
+              background: 'rgba(110,127,92, 0.45)',
               margin: '0 0 24px',
             }}
           />

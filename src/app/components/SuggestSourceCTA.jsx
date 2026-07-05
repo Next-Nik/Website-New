@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { at } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SuggestSourceCTA
@@ -18,9 +19,9 @@ import { useState } from 'react'
 //   className    — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body    = { fontFamily: "'Lora', Georgia, serif" }
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
 
 export default function SuggestSourceCTA({
   indicatorId,
@@ -101,14 +102,14 @@ export default function SuggestSourceCTA({
           ...sc,
           background: 'transparent',
           border: 'none',
-          color: '#A8721A',
+          color: at.brass,
           fontSize: '12px',
           letterSpacing: '0.08em',
           fontWeight: 600,
           cursor: 'pointer',
           padding: isBlock ? '8px 0' : '4px 0',
           textDecoration: 'underline',
-          textDecorationColor: 'rgba(168, 114, 26, 0.4)',
+          textDecorationColor: 'rgba(217,178,74, 0.4)',
           textUnderlineOffset: '3px',
         }}
       >
@@ -123,8 +124,8 @@ export default function SuggestSourceCTA({
       style={{
         marginTop: isBlock ? '12px' : '8px',
         padding: '14px 16px',
-        background: '#FFFFFF',
-        border: '1px solid rgba(200, 146, 42, 0.30)',
+        background: at.object,
+        border: '1px solid rgba(88,160,138, 0.30)',
         borderRadius: '12px',
       }}
     >
@@ -133,7 +134,7 @@ export default function SuggestSourceCTA({
           style={{
             ...display,
             fontSize: '17px',
-            color: '#0F1523',
+            color: at.text,
             lineHeight: 1.2,
           }}
         >
@@ -146,7 +147,7 @@ export default function SuggestSourceCTA({
           style={{
             background: 'transparent',
             border: 'none',
-            color: 'rgba(15, 21, 35, 0.55)',
+            color: at.ghost,
             fontSize: '18px',
             cursor: 'pointer',
             padding: '0 0 0 8px',
@@ -161,7 +162,7 @@ export default function SuggestSourceCTA({
         style={{
           ...body,
           fontSize: '13px',
-          color: 'rgba(15, 21, 35, 0.65)',
+          color: at.meta,
           margin: '0 0 14px 0',
           lineHeight: 1.5,
         }}
@@ -235,8 +236,8 @@ export default function SuggestSourceCTA({
             disabled={submitting}
             style={{
               ...sc,
-              background: '#A8721A',
-              color: '#FFFFFF',
+              background: at.brass,
+              color: at.object,
               border: 'none',
               borderRadius: '8px',
               padding: '9px 16px',
@@ -255,7 +256,7 @@ export default function SuggestSourceCTA({
             style={{
               ...sc,
               background: 'transparent',
-              color: 'rgba(15, 21, 35, 0.55)',
+              color: at.ghost,
               border: 'none',
               padding: '9px 4px',
               fontSize: '12px',
@@ -279,7 +280,7 @@ function Field({ label, required, children }) {
           ...sc,
           fontSize: '11px',
           letterSpacing: '0.08em',
-          color: 'rgba(15, 21, 35, 0.65)',
+          color: at.meta,
           marginBottom: '4px',
           fontWeight: 600,
         }}
@@ -292,14 +293,14 @@ function Field({ label, required, children }) {
 }
 
 const inputStyle = {
-  fontFamily: "'Lora', Georgia, serif",
+  fontFamily: "'Newsreader', Georgia, serif",
   fontSize: '14px',
   width: '100%',
   padding: '8px 10px',
-  border: '1px solid rgba(200, 146, 42, 0.30)',
+  border: '1px solid rgba(88,160,138, 0.30)',
   borderRadius: '8px',
-  background: '#FAFAF7',
-  color: '#0F1523',
+  background: at.ground,
+  color: at.text,
   outline: 'none',
   boxSizing: 'border-box',
 }

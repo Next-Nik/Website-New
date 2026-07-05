@@ -43,7 +43,7 @@ export default function FoundationAudio({ phase = 'baseline', title = null, onCo
       <div style={{ textAlign: 'right', marginBottom: '16px' }}>
         <button onClick={onSkip} style={{
           background: 'transparent', border: 'none', cursor: 'pointer',
-          fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', fontWeight: 600,
+          fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', fontWeight: 600,
           letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)', opacity: 0.6,
         }}>Skip</button>
       </div>

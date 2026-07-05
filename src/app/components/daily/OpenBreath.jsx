@@ -29,13 +29,13 @@ import { useState, useEffect, useRef } from 'react'
 
 const T = {
   dark: '#0F1523',
-  gold: '#A8721A', goldChrome: '#C8922A',
-  goldFaint: 'rgba(200,146,42,0.20)', goldFill: 'rgba(200,146,42,0.10)',
+  gold: '#26302A', goldChrome: '#6E7F5C',
+  goldFaint: 'rgba(110,127,92,0.20)', goldFill: 'rgba(110,127,92,0.10)',
   ghost: 'rgba(15,21,35,0.55)', whisper: 'rgba(15,21,35,0.30)',
 }
-const SC    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const BODY  = { fontFamily: "'Lora', Georgia, serif" }
-const SERIF = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const SC    = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const BODY  = { fontFamily: "'Newsreader', Georgia, serif" }
+const SERIF = { fontFamily: "'Fraunces', Georgia, serif" }
 
 function makeBeep(freq, dur = 0.12, gain = 0.18) {
   try {

@@ -29,8 +29,8 @@ import { useEffect, useRef, useState } from 'react'
 //   debounceMs     — typing debounce window, default 1500
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 export default function AutoSaveTextarea({
   value: persistedValue = '',
@@ -156,7 +156,7 @@ export default function AutoSaveTextarea({
                 ...sc,
                 fontSize: '13px',
                 letterSpacing: '0.08em',
-                color: '#A8721A',
+                color: '#26302A',
                 fontWeight: 600,
               }}
             >
@@ -184,15 +184,15 @@ export default function AutoSaveTextarea({
           color: '#0F1523',
           background: '#FFFFFF',
           padding: '12px 14px',
-          border: '1px solid rgba(200, 146, 42, 0.30)',
+          border: '1px solid rgba(110,127,92, 0.30)',
           borderRadius: '14px',
           resize: 'vertical',
           outline: 'none',
           transition: 'border-color 120ms ease',
           boxSizing: 'border-box',
         }}
-        onFocus={(e) => (e.currentTarget.style.borderColor = '#A8721A')}
-        onBlurCapture={(e) => (e.currentTarget.style.borderColor = 'rgba(200, 146, 42, 0.30)')}
+        onFocus={(e) => (e.currentTarget.style.borderColor = '#26302A')}
+        onBlurCapture={(e) => (e.currentTarget.style.borderColor = 'rgba(110,127,92, 0.30)')}
       />
       {helperText && status !== 'error' && (
         <p
@@ -232,7 +232,7 @@ function StatusIndicator({ status }) {
     text = 'Saving'
   } else if (status === 'saved') {
     text = 'Saved'
-    colour = '#A8721A'
+    colour = '#26302A'
   } else if (status === 'error') {
     text = 'Could not save'
     colour = 'rgba(138, 48, 48, 0.85)'

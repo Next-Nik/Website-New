@@ -26,7 +26,7 @@
 //                                          Forwarded to /nominate as
 //                                          location.state.prefill.
 //
-// Design tokens locked: gold-on-cream, Cormorant Garamond / Cormorant SC / Lora.
+// Design tokens locked: gold-on-cream, Fraunces / IBM Plex Mono / Newsreader.
 // No em dashes in copy.
 // ─────────────────────────────────────────────────────────────
 

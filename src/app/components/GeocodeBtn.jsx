@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { sc } from './OrgShared'
 
-const gold = '#A8721A'
+const gold = '#26302A'
 
 export function GeocodeBtn({ locationName, onResult }) {
   const [status, setStatus] = useState(null)
@@ -27,7 +27,7 @@ export function GeocodeBtn({ locationName, onResult }) {
       style={{
         ...sc, fontSize: '11px', letterSpacing: '0.13em',
         padding: '11px 13px', borderRadius: '8px', flexShrink: 0,
-        border: `1px solid ${status === 'ok' ? '#2A6B3A' : status === 'err' ? '#8A3030' : 'rgba(200,146,42,0.40)'}`,
+        border: `1px solid ${status === 'ok' ? '#2A6B3A' : status === 'err' ? '#8A3030' : 'rgba(110,127,92,0.40)'}`,
         background: 'transparent',
         color: status === 'ok' ? '#2A6B3A' : status === 'err' ? '#8A3030' : gold,
         cursor: 'pointer', whiteSpace: 'nowrap',

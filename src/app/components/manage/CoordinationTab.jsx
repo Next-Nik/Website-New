@@ -124,7 +124,7 @@ function ItemForm({ initial, onSave, onCancel, saving, kind }) {
               <button key={d.slug} type="button" onClick={() => toggleDomain(d.slug)}
                 style={{ ...sc, fontSize: '12px', letterSpacing: '0.06em',
                   padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
-                  border: on ? `1.5px solid ${accent}` : '1.5px solid rgba(200,146,42,0.25)',
+                  border: on ? `1.5px solid ${accent}` : '1.5px solid rgba(88,160,138,0.25)',
                   background: on ? `${accent}10` : 'transparent',
                   color: on ? accent : 'rgba(15,21,35,0.65)' }}>
                 {d.label}
@@ -158,7 +158,7 @@ function ItemForm({ initial, onSave, onCancel, saving, kind }) {
               <input type="date" value={form.timing_date || ''}
                 onChange={e => set('timing_date', e.target.value)}
                 style={{ ...body, padding: '8px 12px',
-                  border: '1px solid rgba(200,146,42,0.25)',
+                  border: '1px solid rgba(88,160,138,0.25)',
                   borderRadius: '6px', fontSize: '13px', width: '100%',
                   background: '#FFFFFF' }} />
             </div>
@@ -418,8 +418,8 @@ function ItemSection({ actorId, kind, toast }) {
 export function CoordinationTab({ actorId, toast }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-      <div style={{ background: 'rgba(200,146,42,0.04)',
-        border: '1px solid rgba(200,146,42,0.18)',
+      <div style={{ background: 'rgba(88,160,138,0.04)',
+        border: '1px solid rgba(88,160,138,0.18)',
         borderRadius: '10px', padding: '14px 18px' }}>
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.65)',
           lineHeight: 1.6, margin: 0 }}>

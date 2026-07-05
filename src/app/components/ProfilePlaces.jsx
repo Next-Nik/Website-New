@@ -13,10 +13,10 @@
 
 import { Link } from 'react-router-dom'
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const gold = '#A8721A'
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const gold = '#26302A'
 const dark = '#0F1523'
 
 // The label that precedes each group, framed naturally as a phrase a
@@ -117,7 +117,7 @@ function PlaceWithBreadcrumb({ focus, ancestors }) {
     <>
       <Link
         to={`/focus/${focus.slug}`}
-        style={{ color: dark, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.30)' }}
+        style={{ color: dark, textDecoration: 'none', borderBottom: '1px solid rgba(110,127,92,0.30)' }}
       >
         {focus.name}
       </Link>

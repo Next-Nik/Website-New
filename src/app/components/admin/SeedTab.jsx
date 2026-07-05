@@ -13,8 +13,8 @@ import { useAuth } from '../../../hooks/useAuth'
 import { tokens, body, sc } from '../../../lib/designTokens'
 
 const goldText  = tokens.gold            // text only
-const goldChrome = '#C8922A'             // borders / chrome
-const hair = '1px solid rgba(200,146,42,0.18)'
+const goldChrome = '#6E7F5C'             // borders / chrome
+const hair = '1px solid rgba(110,127,92,0.18)'
 
 function parseUrls(text) {
   return [...new Set(
@@ -301,7 +301,7 @@ export default function SeedTab({ toast }) {
           <div style={{ marginTop: '20px', paddingTop: '14px', borderTop: hair, display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
             <button type="button" onClick={placeSelected} disabled={placing || selectedCount === 0}
               style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', color: '#FFFFFF',
-                background: (placing || selectedCount === 0) ? 'rgba(200,146,42,0.30)' : goldChrome,
+                background: (placing || selectedCount === 0) ? 'rgba(110,127,92,0.30)' : goldChrome,
                 border: 'none', borderRadius: '40px', padding: '13px 32px',
                 cursor: (placing || selectedCount === 0) ? 'not-allowed' : 'pointer' }}>
               {placing ? 'Placing…' : `Place ${selectedCount} selected`}
@@ -326,7 +326,7 @@ function ReviewCard({ item, onToggle }) {
   return (
     <div style={{
       background: item._checked ? '#FFFFFF' : 'rgba(15,21,35,0.03)',
-      border: item._checked ? '1.5px solid rgba(200,146,42,0.40)' : '1.5px solid rgba(15,21,35,0.12)',
+      border: item._checked ? '1.5px solid rgba(110,127,92,0.40)' : '1.5px solid rgba(15,21,35,0.12)',
       borderRadius: '14px', padding: '16px 18px',
       opacity: item._checked ? 1 : 0.7,
       display: 'flex', gap: '14px', alignItems: 'flex-start',
@@ -338,7 +338,7 @@ function ReviewCard({ item, onToggle }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
           {/* Logo / image being placed */}
           <div style={{ flexShrink: 0, width: '52px', height: '52px', borderRadius: '8px',
-            border: '1px solid rgba(200,146,42,0.30)', background: '#FFFFFF',
+            border: '1px solid rgba(110,127,92,0.30)', background: '#FFFFFF',
             overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {item.image_url
               ? <img src={item.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }}
@@ -387,8 +387,8 @@ function ReviewCard({ item, onToggle }) {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '9px' }}>
             {links.map((l, i) => (
               <span key={i} style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase',
-                color: goldText, background: 'rgba(200,146,42,0.06)',
-                border: '1px solid rgba(200,146,42,0.30)', borderRadius: '40px', padding: '3px 10px' }}>
+                color: goldText, background: 'rgba(110,127,92,0.06)',
+                border: '1px solid rgba(110,127,92,0.30)', borderRadius: '40px', padding: '3px 10px' }}>
                 {(l.link_type || 'link').replace(/_/g, ' ')}
               </span>
             ))}

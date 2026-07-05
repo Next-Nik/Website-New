@@ -1,9 +1,9 @@
 // src/beta/components/feed/feedShared.js
 // Tokens and helpers used across feed-item components.
 
-export const body = { fontFamily: "'Lora', Georgia, serif" }
-export const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-export const gold = '#A8721A'
+export const body = { fontFamily: "'Newsreader', Georgia, serif" }
+export const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+export const gold = '#26302A'
 export const dark = '#0F1523'
 export const parch = '#FAFAF7'
 

@@ -16,7 +16,7 @@ export function NeedPostedItem({ item }) {
       actorName={actor.name || actor.display_name || 'An organisation'}
       actorHref={actor.id ? `/org/${actor.id}` : null}
       timestamp={timestamp}
-      accentColor={isInPerson ? '#A8721A' : 'rgba(200,146,42,0.50)'}
+      accentColor={isInPerson ? '#26302A' : 'rgba(110,127,92,0.50)'}
     >
       {/* Type / size / medium row */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
@@ -26,8 +26,8 @@ export function NeedPostedItem({ item }) {
             fontSize: '10px',
             letterSpacing: '0.14em',
             color: gold,
-            background: 'rgba(200,146,42,0.07)',
-            border: '1px solid rgba(200,146,42,0.25)',
+            background: 'rgba(110,127,92,0.07)',
+            border: '1px solid rgba(110,127,92,0.25)',
             borderRadius: '4px',
             padding: '2px 8px',
             textTransform: 'uppercase',

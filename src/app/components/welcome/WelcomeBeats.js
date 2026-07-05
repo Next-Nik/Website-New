@@ -56,7 +56,7 @@ export const KIN_CIV_ENGAGED = ['human-being', 'legacy']
 // two-arg calls.
 export function getTierColor(current, horizon, key) {
   if (key) return selfColor(key).base
-  return 'rgba(200,146,42,0.5)'
+  return 'rgba(110,127,92,0.5)'
 }
 
 // ─── Headers per act ───────────────────────────────────────

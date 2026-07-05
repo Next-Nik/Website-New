@@ -78,15 +78,15 @@ export default function Readiness({
     <div>
       <style>{`
         @keyframes rd-pulse-yes {
-          0%, 100% { box-shadow: 0 6px 16px rgba(168,114,26,0.28), 0 0 0 0 ${tokens.goldStrong}; }
-          50%      { box-shadow: 0 6px 16px rgba(168,114,26,0.28), 0 0 0 18px transparent; }
+          0%, 100% { box-shadow: 0 6px 16px rgba(38,48,42,0.28), 0 0 0 0 ${tokens.goldStrong}; }
+          50%      { box-shadow: 0 6px 16px rgba(38,48,42,0.28), 0 0 0 18px transparent; }
         }
         .rd-yes { animation: rd-pulse-yes 2.8s ease-in-out infinite; transition: transform 0.16s ease, box-shadow 0.16s ease; }
         .rd-yes:hover  { transform: scale(1.06); }
         /* the press: it sinks in and the glow collapses inward */
         .rd-yes:active {
           transform: scale(0.93);
-          box-shadow: 0 2px 6px rgba(168,114,26,0.30), inset 0 3px 10px rgba(0,0,0,0.22);
+          box-shadow: 0 2px 6px rgba(38,48,42,0.30), inset 0 3px 10px rgba(0,0,0,0.22);
           animation: none;
         }
         @keyframes rd-fade-in { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
@@ -144,7 +144,7 @@ export default function Readiness({
               ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase',
               color: '#FFFFFF', background: tokens.goldChrome, border: 'none', borderRadius: '50%',
               width: '124px', height: '124px', cursor: 'pointer', outline: 'none',
-              boxShadow: '0 6px 16px rgba(168,114,26,0.28)',
+              boxShadow: '0 6px 16px rgba(38,48,42,0.28)',
             }}
           >Yes</button>
         </div>

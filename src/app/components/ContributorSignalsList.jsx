@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { fetchContributorSignals } from '../hooks/useDomainIndicators'
+import { at } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ContributorSignalsList
@@ -22,8 +23,8 @@ import { fetchContributorSignals } from '../hooks/useDomainIndicators'
 //   className         — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 const TYPE_LABEL = {
   observation: 'Observation',
@@ -78,7 +79,7 @@ export default function ContributorSignalsList({
             ...body,
             fontSize: '15px',
             lineHeight: 1.55,
-            color: 'rgba(15, 21, 35, 0.72)',
+            color: at.meta,
             margin: 0,
           }}
         >
@@ -87,9 +88,9 @@ export default function ContributorSignalsList({
           <a
             href="/signals/new"
             style={{
-              color: '#A8721A',
+              color: at.brass,
               textDecoration: 'underline',
-              textDecorationColor: 'rgba(200, 146, 42, 0.45)',
+              textDecorationColor: 'rgba(88,160,138, 0.45)',
               textUnderlineOffset: '3px',
             }}
           >
@@ -114,7 +115,7 @@ export default function ContributorSignalsList({
           ...sc,
           background: 'transparent',
           border: 'none',
-          color: '#A8721A',
+          color: at.brass,
           fontSize: '13px',
           letterSpacing: '0.08em',
           fontWeight: 600,
@@ -132,7 +133,7 @@ export default function ContributorSignalsList({
               style={{
                 ...body,
                 fontSize: '14px',
-                color: 'rgba(15, 21, 35, 0.55)',
+                color: at.ghost,
                 margin: 0,
               }}
             >
@@ -156,7 +157,7 @@ export default function ContributorSignalsList({
               style={{
                 ...body,
                 fontSize: '14px',
-                color: 'rgba(15, 21, 35, 0.55)',
+                color: at.ghost,
                 margin: 0,
               }}
             >
@@ -199,8 +200,8 @@ function SignalRow({ signal }) {
   return (
     <li
       style={{
-        background: '#FFFFFF',
-        border: '1px solid rgba(200, 146, 42, 0.20)',
+        background: at.object,
+        border: '1px solid rgba(88,160,138, 0.20)',
         borderRadius: '14px',
         padding: '14px 16px',
       }}
@@ -220,7 +221,7 @@ function SignalRow({ signal }) {
             ...sc,
             fontSize: '12px',
             letterSpacing: '0.08em',
-            color: '#A8721A',
+            color: at.brass,
             fontWeight: 600,
           }}
         >
@@ -231,7 +232,7 @@ function SignalRow({ signal }) {
             ...sc,
             fontSize: '11px',
             letterSpacing: '0.06em',
-            color: 'rgba(15, 21, 35, 0.55)',
+            color: at.ghost,
           }}
         >
           {submittedAt}
@@ -242,7 +243,7 @@ function SignalRow({ signal }) {
           ...body,
           fontSize: '15px',
           lineHeight: 1.55,
-          color: '#0F1523',
+          color: at.text,
           margin: '0 0 8px',
           whiteSpace: 'pre-wrap',
         }}
@@ -254,7 +255,7 @@ function SignalRow({ signal }) {
           style={{
             ...body,
             fontSize: '14px',
-            color: 'rgba(15, 21, 35, 0.72)',
+            color: at.meta,
             margin: '0 0 8px',
           }}
         >
@@ -266,7 +267,7 @@ function SignalRow({ signal }) {
           ...sc,
           fontSize: '11px',
           letterSpacing: '0.06em',
-          color: 'rgba(15, 21, 35, 0.55)',
+          color: at.ghost,
           fontWeight: 600,
           margin: 0,
         }}

@@ -22,8 +22,8 @@ import VisibilityToggle from './VisibilityToggle'
 //   className — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 const COMPLETED_LIMIT = 6
 
@@ -219,7 +219,7 @@ function SprintGroup({
           display: 'block',
           fontSize: '12px',
           letterSpacing: '0.08em',
-          color: '#A8721A',
+          color: '#26302A',
           fontWeight: 600,
           marginBottom: '10px',
         }}
@@ -275,7 +275,7 @@ function SprintRow({
     <li
       style={{
         background: '#FFFFFF',
-        border: '1px solid rgba(200, 146, 42, 0.20)',
+        border: '1px solid rgba(110,127,92, 0.20)',
         borderRadius: '14px',
         padding: '14px 16px',
         display: 'flex',

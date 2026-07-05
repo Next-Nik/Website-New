@@ -33,7 +33,7 @@ function describe(rel, meId, nameById) {
 }
 
 const cardStyle = {
-  background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)',
+  background: '#FFFFFF', border: '1px solid rgba(88,160,138,0.25)',
   borderRadius: '10px', padding: '14px 16px', display: 'flex',
   alignItems: 'center', justifyContent: 'space-between', gap: '12px',
 }
@@ -221,16 +221,16 @@ export function RelationshipsTab({ actor, onSave, toast }) {
           {PROPOSE_TYPES.map(t => (
             <button key={t.value} type="button" onClick={() => setProposeType(t.value)}
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', padding: '7px 16px', borderRadius: '40px',
-                cursor: 'pointer', background: proposeType === t.value ? '#C8922A' : '#FFFFFF',
-                color: proposeType === t.value ? '#FFFFFF' : '#A8721A',
-                border: `1px solid ${proposeType === t.value ? '#C8922A' : 'rgba(200,146,42,0.40)'}` }}>
+                cursor: 'pointer', background: proposeType === t.value ? '#58A08A' : '#FFFFFF',
+                color: proposeType === t.value ? '#FFFFFF' : '#2B4A42',
+                border: `1px solid ${proposeType === t.value ? '#58A08A' : 'rgba(88,160,138,0.40)'}` }}>
               {t.label}
             </button>
           ))}
         </div>
         <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search by name…"
           style={{ ...body, fontSize: '15px', color: dark, width: '100%', background: '#FFFFFF',
-            border: '1.5px solid rgba(200,146,42,0.35)', borderRadius: '8px', padding: '10px 14px',
+            border: '1.5px solid rgba(88,160,138,0.35)', borderRadius: '8px', padding: '10px 14px',
             boxSizing: 'border-box', outline: 'none' }} />
         {results.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>

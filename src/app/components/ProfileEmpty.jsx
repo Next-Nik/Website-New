@@ -1,8 +1,8 @@
 // src/beta/components/ProfileEmpty.jsx
 // Empty profile state — sparse and intentional, not "you have nothing."
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 export function ProfileEmpty({ displayName }) {
   return (

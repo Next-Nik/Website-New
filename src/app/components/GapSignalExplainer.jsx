@@ -1,11 +1,12 @@
+import { at } from '../../lib/designTokens'
 // Design tokens
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const dark     = '#0F1523'
-const goldDark = '#A8721A'
+const serif = { fontFamily: "'Fraunces', Georgia, serif" }
+const body  = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc    = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const dark     = at.text
+const goldDark = at.brass
 const success  = '#2A6B3A'
-const warn     = '#A8721A'
+const warn     = at.brass
 
 // ─────────────────────────────────────────────────────────────
 // GapSignalExplainer — modal showing the three measured values
@@ -59,7 +60,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: '#FAFAF7',
+          background: at.ground,
           borderRadius: '14px',
           maxWidth: '560px', width: '100%',
           maxHeight: '90vh', overflowY: 'auto',
@@ -77,7 +78,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
             <h2 style={{ ...serif, fontSize: '26px', fontWeight: 300, color: dark, margin: 0, lineHeight: 1.2 }}>
               Why this is firing
             </h2>
-            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, marginTop: '6px' }}>
+            <p style={{ ...body, fontSize: '13px', color: at.ghost, lineHeight: 1.55, marginTop: '6px' }}>
               {focusName || 'This Focus'}, {capitalise(domainId)}. The structural alarm fires when score, actor density, and funding all sit below their thresholds at the same time.
             </p>
           </div>
@@ -85,7 +86,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
             onClick={onClose}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: '24px', color: 'rgba(15,21,35,0.55)',
+              fontSize: '24px', color: at.ghost,
               lineHeight: 1, padding: '0 4px', flexShrink: 0,
             }}
             aria-label="Close"
@@ -103,13 +104,13 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
               gap: '12px',
               alignItems: 'baseline',
               padding: '12px 0',
-              borderBottom: '1px solid rgba(200,146,42,0.10)',
+              borderBottom: '1px solid rgba(88,160,138,0.10)',
             }}>
               <div>
                 <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: dark, marginBottom: '2px' }}>
                   {row.label}
                 </div>
-                <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.5 }}>
+                <div style={{ ...body, fontSize: '13px', color: at.ghost, lineHeight: 1.5 }}>
                   {row.detail}
                 </div>
               </div>
@@ -121,15 +122,15 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
                 }}>
                   {row.format(row.value)}
                 </div>
-                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
+                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.12em', color: at.ghost, marginTop: '4px' }}>
                   Current
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1 }}>
+                <div style={{ ...body, fontSize: '13px', color: at.ghost, lineHeight: 1 }}>
                   &lt; {row.format(row.threshold)}
                 </div>
-                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
+                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.12em', color: at.ghost, marginTop: '4px' }}>
                   Threshold
                 </div>
               </div>
@@ -146,10 +147,10 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
             padding: '12px 14px',
             marginBottom: '20px',
           }}>
-            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
+            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: at.ghost, marginBottom: '4px' }}>
               Contributor signals
             </div>
-            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.55, margin: 0 }}>
+            <p style={{ ...body, fontSize: '13px', color: at.meta, lineHeight: 1.55, margin: 0 }}>
               {payload.contributor_density} contributor{payload.contributor_density === 1 ? '' : 's'} {payload.contributor_signals_used > 0 ? 'feeding into the score' : `not yet feeding into the score (threshold: ${payload.thresholds?.contributor_density || '\u2014'})`}.
               {payload.contributor_signals_used === 0 && ' Tier 3 signals require a minimum density before they influence the domain score.'}
             </p>
@@ -165,14 +166,14 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
           <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: success, marginBottom: '6px' }}>
             What this signals
           </div>
-          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>
+          <p style={{ ...body, fontSize: '13px', color: at.meta, lineHeight: 1.7, margin: 0 }}>
             This territory is structurally underserved at this Focus. The work is not just hard, it is largely unattended. New actors, fresh capital, and contributor knowledge would all move the picture. If you know an organisation working here that isn't on the map, nominate them.
           </p>
         </div>
 
         {/* Footer — methodology link, indicator count */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
+          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: at.ghost }}>
             Computed from {payload.indicator_count} indicator{payload.indicator_count === 1 ? '' : 's'}
             {payload.fresh === false ? ' \u00b7 cached' : ' \u00b7 fresh'}
           </div>
