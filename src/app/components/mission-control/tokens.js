@@ -35,7 +35,11 @@ export const BG_PARCHMENT  = fn.ground
 export const BG_PAGE       = fn.object
 export const BG_CARD       = fn.object
 export const BG_CARD_EMPTY = 'rgba(244,245,239,0.5)'
-export const BG_INK        = fn.ink
+export const BG_INK        = at.ground   // dark-stage ground — Atlas sea ink.
+// June 2026: was fn.ink (#26302A), the Field Notes graphite — a green-biased
+// TEXT colour. Used as the planet-side page/bar/panel background it cast the
+// whole dark stage olive. The civ stage maps to Atlas tokens; its ground is
+// at.ground. fn.ink remains TEXT_INK below — text only, never a surface.
 export const BG_WARM       = fn.ground
 
 export const TEXT_INK         = fn.ink

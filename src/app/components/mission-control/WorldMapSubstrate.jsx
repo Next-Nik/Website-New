@@ -271,11 +271,14 @@ function buildCSS() {
 }
 
 [data-stage="dark"] .mc-substrate-halo {
+  /* Stops match the Atlas ground (at.ground #10222B) exactly, so the
+     halo fades the star map into the stage colour with no cast of its
+     own — the navy pool around the wheel belongs to WheelStage. */
   background: radial-gradient(
     circle at center,
-    rgba(15, 21, 35, ${HALO.intensityDark}) 0%,
-    rgba(15, 21, 35, ${HALO.intensityDark}) ${HALO.softness}%,
-    rgba(15, 21, 35, 0) 100%
+    rgba(16, 34, 43, ${HALO.intensityDark}) 0%,
+    rgba(16, 34, 43, ${HALO.intensityDark}) ${HALO.softness}%,
+    rgba(16, 34, 43, 0) 100%
   );
 }
 
