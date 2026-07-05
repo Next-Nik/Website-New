@@ -6,7 +6,11 @@
 // across a founding challenge and its lineage tree, via the functions from
 // migration 152. Public read; no auth.
 //
-// A spark is a check-in. Completing is worth five. The economy lives on the
+// A spark is a check-in — one real action, one spark, one point of light.
+// Completions are counted and returned (a milestone for copy and seals) but
+// mint no extra sparks since migration 164: on once-cadence challenges the
+// completing check-in already minted its spark, and the sky must never show
+// more light than real actions. The economy lives on the
 // beacon row (checkin_sparks, completion_sparks), so this endpoint is the only
 // place the formula is applied.
 //
