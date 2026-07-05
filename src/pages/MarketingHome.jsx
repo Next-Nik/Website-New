@@ -429,7 +429,7 @@ export function MarketingHomePage() {
           maxWidth: '880px', margin: '0 auto',
           display: 'flex', gap: 'clamp(24px,4vw,40px)', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center',
         }}>
-          <img src="/beacon/mark.png" alt="" loading="lazy"
+          <img src="/beacon/mark.png?v=2" alt="" loading="lazy"
             style={{ width: 'clamp(150px,18vw,210px)', flex: 'none' }} />
           <div style={{ flex: '1 1 340px', minWidth: '280px', maxWidth: '520px' }}>
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#D7A24A', display: 'block' }}>

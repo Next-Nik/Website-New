@@ -35,11 +35,18 @@ export const BG_PARCHMENT  = fn.ground
 export const BG_PAGE       = fn.object
 export const BG_CARD       = fn.object
 export const BG_CARD_EMPTY = 'rgba(244,245,239,0.5)'
-export const BG_INK        = at.ground   // dark-stage ground — Atlas sea ink.
+// Mission Control dark-stage ground — deep navy, from the wheel's slate/navy
+// family (WheelStage pool rgba(15,22,38), well stops, slate accents), NOT the
+// Atlas sea ink: at.ground (#10222B) leans blue-green and read as a residue of
+// the olive cast on the planet side. Local to Mission Control; if the design
+// system later formalises a navy ground, source it from designTokens.js.
+const MC_DARK_GROUND = '#111B2E'
+
+export const BG_INK        = MC_DARK_GROUND   // dark-stage ground, bars, panels.
 // June 2026: was fn.ink (#26302A), the Field Notes graphite — a green-biased
 // TEXT colour. Used as the planet-side page/bar/panel background it cast the
-// whole dark stage olive. The civ stage maps to Atlas tokens; its ground is
-// at.ground. fn.ink remains TEXT_INK below — text only, never a surface.
+// whole dark stage olive. fn.ink remains TEXT_INK below — text only, never a
+// surface.
 export const BG_WARM       = fn.ground
 
 export const TEXT_INK         = fn.ink

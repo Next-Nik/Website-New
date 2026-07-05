@@ -271,14 +271,16 @@ function buildCSS() {
 }
 
 [data-stage="dark"] .mc-substrate-halo {
-  /* Stops match the Atlas ground (at.ground #10222B) exactly, so the
-     halo fades the star map into the stage colour with no cast of its
-     own — the navy pool around the wheel belongs to WheelStage. */
+  /* The dark mirror of the parchment disc. On the light stage the halo
+     sits BRIGHTER than the sage ground; on the dark stage it sits DEEPER
+     than the navy ground (#111B2E) — a clear night pool where the star
+     map dies and the world map reads. Matching the ground exactly (a
+     previous attempt) dissolves the circle and the stage reads as fog. */
   background: radial-gradient(
     circle at center,
-    rgba(16, 34, 43, ${HALO.intensityDark}) 0%,
-    rgba(16, 34, 43, ${HALO.intensityDark}) ${HALO.softness}%,
-    rgba(16, 34, 43, 0) 100%
+    rgba(9, 14, 26, ${HALO.intensityDark}) 0%,
+    rgba(9, 14, 26, ${HALO.intensityDark}) ${HALO.softness}%,
+    rgba(9, 14, 26, 0) 100%
   );
 }
 

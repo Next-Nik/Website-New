@@ -23,7 +23,11 @@ import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react'
 // the ring of the spire (glow home) and the large outer circle (fill target).
 const RING  = { x: 512, y: 662, r: 94 }
 const OUTER = { x: 511, y: 543, r: 389 }
-const MARK_SRC = '/beacon/mark.png'
+// v=2: cache-buster. The service worker serves same-origin images
+// stale-while-revalidate, so a changed mark.png under the same URL shows
+// the OLD artwork for one full visit after every deploy. Bump the query
+// whenever the artwork changes.
+const MARK_SRC = '/beacon/mark.png?v=2'
 
 function mulberry32(seed) {
   let a = seed >>> 0
