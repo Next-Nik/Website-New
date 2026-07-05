@@ -1,31 +1,29 @@
 // src/app/components/challenge/BeaconFire.jsx
 //
-// The beacon, alive, made of the beacon artwork itself. The frame is the
-// generated render with its glass emptied to true transparency; every star,
-// streak, and the core flare are true-alpha sprites cut from the generated
-// sheets. The canvas sits behind the frame and shines through the aperture.
+// The beacon, alive, built around the golden mark itself. The mark
+// (public/beacon/mark.png) sits over a canvas; the flame glow is seated in
+// the circle of the spire — the ring the needle passes through — and
+// breathes there. Stars grow up and out of that ring, filling the mark's
+// large outer circle and overflowing past it as sparks accrue.
 //
-// The sky is a tree, not a scatter: one seed at the centre (the founding
-// challenge), and every star grows from a branch of it. Growth is
-// deterministic (seeded PRNG), so every visitor sees the identical
-// constellation for the same spark count. The sky is honest: one star per
-// real spark, up to 78 — no decorative baseline. At zero sparks, only the
-// core flame burns.
+// The sky is a tree, not a scatter: one seed at the ring, every star grows
+// from a branch of it. Growth is deterministic (seeded PRNG), so every
+// visitor sees the identical constellation for the same spark count. The
+// sky is honest: one star per real spark, up to 78 — no decorative
+// baseline. At zero sparks, only the flame burns in the ring.
 //
 // Imperative API via ref: fireSpark() sends an energy pulse through a random
 // lineage. Wire it to a check-in so showing up visibly feeds the fire.
 //
-// Assets load from /public/beacon/. prefers-reduced-motion stills everything
-// to a lit, steady sky.
+// prefers-reduced-motion stills everything to a lit, steady sky.
 
 import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react'
 
-// Glass aperture of the frame render, measured per row in its 1024 space.
-const GLASS = {"y0":136,"rows":[[491,534],[482,543],[475,550],[470,555],[465,560],[460,565],[456,569],[452,573],[449,576],[445,580],[442,583],[439,586],[436,589],[433,592],[431,594],[428,597],[425,600],[423,602],[421,604],[418,607],[416,609],[414,611],[412,613],[410,615],[408,617],[406,619],[404,621],[402,623],[400,625],[399,626],[397,628],[395,630],[393,632],[392,633],[390,635],[389,636],[387,638],[385,640],[384,641],[382,643],[381,644],[380,645],[378,647],[377,648],[375,650],[374,651],[373,652],[371,654],[370,655],[369,656],[368,657],[366,659],[365,660],[364,661],[363,662],[362,663],[360,665],[359,666],[358,667],[357,668],[356,669],[355,670],[354,671],[353,672],[352,673],[351,674],[350,675],[349,676],[348,677],[347,678],[346,679],[345,680],[344,681],[343,682],[342,683],[341,684],[340,685],[339,686],[338,687],[337,688],[337,688],[336,689],[335,690],[334,691],[333,692],[332,693],[332,693],[331,694],[330,695],[329,696],[329,696],[328,697],[327,698],[326,699],[326,699],[325,700],[324,701],[323,702],[323,702],[322,703],[321,704],[321,704],[320,705],[319,706],[319,706],[318,707],[317,708],[317,708],[316,709],[315,710],[315,710],[314,711],[314,711],[313,712],[312,713],[312,713],[311,714],[311,714],[310,715],[310,715],[309,716],[309,716],[308,717],[307,718],[307,718],[306,719],[306,719],[305,720],[305,720],[304,721],[304,721],[303,722],[303,722],[303,722],[302,723],[302,723],[301,724],[301,724],[300,725],[300,725],[299,726],[299,726],[299,726],[298,727],[298,727],[297,728],[297,728],[297,728],[296,729],[296,729],[295,730],[295,730],[295,730],[294,731],[294,731],[294,731],[293,732],[293,732],[293,732],[292,733],[292,733],[292,733],[291,734],[291,734],[291,734],[290,735],[290,735],[290,735],[290,735],[289,736],[289,736],[289,736],[289,736],[288,737],[288,737],[288,737],[288,737],[287,738],[287,738],[287,738],[287,738],[286,739],[286,739],[286,739],[286,739],[286,739],[285,740],[285,740],[285,740],[285,740],[285,740],[284,741],[284,741],[284,741],[284,741],[284,741],[284,741],[283,742],[283,742],[283,742],[283,742],[283,742],[283,742],[283,742],[283,742],[282,743],[282,743],[282,743],[282,743],[282,743],[282,743],[282,743],[282,743],[282,743],[282,743],[282,743],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[281,744],[282,743],[282,743],[282,743],[282,743],[282,743],[282,743],[282,743],[282,743],[282,743],[282,743],[282,743],[283,742],[283,742],[283,742],[283,742],[283,742],[283,742],[283,742],[283,742],[284,741],[284,741],[284,741],[284,741],[284,741],[284,741],[285,740],[285,740],[285,740],[285,740],[285,740],[286,739],[286,739],[286,739],[286,739],[286,739],[287,738],[287,738],[287,738],[287,738],[288,737],[288,737],[288,737],[288,737],[289,736],[289,736],[289,736],[289,736],[290,735],[290,735],[290,735],[290,735],[291,734],[291,734],[291,734],[292,733],[292,733],[292,733],[293,732],[293,732],[293,732],[294,731],[294,731],[294,731],[295,730],[295,730],[295,730],[296,729],[296,729],[297,728],[297,728],[297,728],[298,727],[298,727],[299,726],[299,726],[299,726],[300,725],[300,725],[301,724],[301,724],[302,723],[302,723],[303,722],[303,722],[303,722],[304,721],[304,721],[305,720],[305,720],[306,719],[306,719],[307,718],[307,718],[308,717],[309,716],[309,716],[310,715],[310,715],[311,714],[311,714],[312,713],[312,713],[313,712],[314,711],[314,711],[315,710],[315,710],[316,709],[317,708],[317,708],[318,707],[319,706],[319,706],[320,705],[321,704],[321,704],[322,703],[323,702],[323,702],[324,701],[325,700],[326,699],[326,699],[327,698],[328,697],[329,696],[329,696],[330,695],[331,694],[332,693],[332,693],[333,692],[334,691],[335,690],[336,689],[337,688],[337,688],[338,687],[339,686],[340,685],[341,684],[342,683],[343,682],[344,681],[345,680],[346,679],[347,678],[348,677],[349,676],[350,675],[351,674],[352,673],[353,672],[354,671],[355,670],[356,669],[357,668],[358,667],[359,666],[360,665],[362,663],[363,662],[364,661],[365,660],[366,659],[368,657],[369,656],[370,655],[371,654],[373,652],[374,651],[375,650],[377,648],[378,647],[380,645],[381,644],[382,643],[384,641],[385,640],[387,638],[389,636],[390,635],[392,633],[393,632],[395,630],[397,628],[399,626],[400,625],[402,623],[404,621],[406,619],[408,617],[410,615],[412,613],[414,611],[416,609],[418,607],[421,604],[423,602],[425,600],[428,597],[431,594],[433,592],[436,589],[439,586],[442,583],[445,580],[449,576],[452,573],[456,569],[460,565],[465,560],[470,555],[475,550],[482,543],[491,534]]}
-
-const CORE = { x: 512, y: 366 }
-const ASSET = (n) => `/beacon/${n}.png`
-const SPRITE_NAMES = ['star-small', 'star-mid', 'star-glint', 'star-core', 'streak-long']
+// Geometry in the engine's 1024 space, measured from the mark artwork:
+// the ring of the spire (glow home) and the large outer circle (fill target).
+const RING  = { x: 512, y: 662, r: 94 }
+const OUTER = { x: 511, y: 543, r: 389 }
+const MARK_SRC = '/beacon/mark.png'
 
 function mulberry32(seed) {
   let a = seed >>> 0
@@ -65,15 +63,9 @@ const BeaconFire = forwardRef(function BeaconFire({ sparks = 0 }, ref) {
     const DPR = Math.min(2, window.devicePixelRatio || 1)
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    const rows = {}
-    for (let i = 0; i < GLASS.rows.length; i++) rows[GLASS.y0 + i] = GLASS.rows[i]
-    const Y0 = GLASS.y0 + 14
-    const Y1 = GLASS.y0 + GLASS.rows.length - 1 - 14
-
     const st = {
       nodes: [], links: [], frontier: [], pulses: [], risers: [],
-      rnd: null, K: 1, raf: 0, growQueue: 0, target: 24, running: true,
-      spr: {}, loaded: 0,
+      rnd: null, K: 1, raf: 0, growQueue: 0, target: 1, running: true,
     }
     state.current = st
 
@@ -90,28 +82,30 @@ const BeaconFire = forwardRef(function BeaconFire({ sparks = 0 }, ref) {
     function makeNode(x, y, depth, parent) {
       const roll = st.rnd()
       return { x, y, depth, parent, children: 0,
-        kind: roll < 0.5 ? 'star-small' : (roll < 0.8 ? 'star-mid' : 'star-glint'),
+        size: roll < 0.5 ? 7 : (roll < 0.85 ? 9.5 : 12.5),
         ph: st.rnd() * 6.28, sp: 0.5 + st.rnd() * 1.0 }
     }
     function reset() {
       st.rnd = mulberry32(7)
       st.nodes = []; st.links = []; st.frontier = []; st.pulses = []
-      const seed = makeNode(CORE.x, CORE.y, 0, null)
+      const seed = makeNode(RING.x, RING.y, 0, null)
       st.nodes.push(seed); st.frontier.push(seed)
+      // embers of the flame: rise from the ring, fade near the top
       st.risers = []
       const rr = mulberry32(41)
       for (let i = 0; i < 6; i++) {
-        st.risers.push({ x: CORE.x + (rr() - 0.5) * 260, y: Y0 + rr() * (Y1 - Y0),
+        st.risers.push({ x: RING.x + (rr() - 0.5) * 150, y: 220 + rr() * (RING.y - 60 - 220),
           vy: 9 + rr() * 9, ph: rr() * 6 })
       }
     }
     function childCap(n) { return n.depth === 0 ? 6 : (st.nodes.length < 36 ? 3 : 5) }
     function placeable(x, y) {
-      const yi = Math.round(y)
-      if (yi < Y0 || yi > Y1 || !rows[yi]) return false
-      const r = rows[yi]
-      if (x < r[0] + 12 || x > r[1] - 12) return false
-      if (Math.hypot(x - CORE.x, y - CORE.y) < 95) return false
+      // Up and out: stars live above the ring line, filling the outer circle
+      // and overflowing to the edges. Nothing settles below the ring, and the
+      // glow owns its circle.
+      if (x < 24 || x > 1000 || y < 30) return false
+      if (y > RING.y + 36) return false
+      if (Math.hypot(x - RING.x, y - RING.y) < RING.r + 46) return false
       for (let i = 0; i < st.nodes.length; i++) {
         if (Math.hypot(st.nodes[i].x - x, st.nodes[i].y - y) < 36) return false
       }
@@ -124,7 +118,7 @@ const BeaconFire = forwardRef(function BeaconFire({ sparks = 0 }, ref) {
     }
     function growOne() {
       let attempts = 0
-      while (attempts++ < 140) {
+      while (attempts++ < 160) {
         if (!st.frontier.length) {
           for (let ri = 0; ri < st.nodes.length; ri++) {
             if (st.nodes[ri].children < childCap(st.nodes[ri])) st.frontier.push(st.nodes[ri])
@@ -134,12 +128,21 @@ const BeaconFire = forwardRef(function BeaconFire({ sparks = 0 }, ref) {
         const p = st.frontier[Math.floor(st.rnd() * st.frontier.length)]
         if (p.children >= childCap(p)) { removeFromFrontier(p); continue }
         let ang
-        if (p.depth === 0) ang = p.children * (Math.PI * 2 / 6) + (st.rnd() - 0.5) * 0.5
-        else ang = Math.atan2(p.y - CORE.y, p.x - CORE.x) + (st.rnd() - 0.5) * 3.6
-        const dist = 58 + p.depth * 10 + st.rnd() * 26
+        if (p.depth === 0) {
+          // First branches leave the ring in a wide upward fan — up and out,
+          // never down.
+          ang = -Math.PI / 2 + (p.children - 2.5) * 0.66 + (st.rnd() - 0.5) * 0.4
+        } else {
+          // Radial growth away from the ring with a gentle upward pull, so
+          // the constellation climbs to fill the outer circle then spills
+          // past it.
+          ang = Math.atan2(p.y - RING.y, p.x - RING.x) + (st.rnd() - 0.5) * 2.6
+          ang = ang * 0.85 + (-Math.PI / 2) * 0.15
+        }
+        const dist = 92 + p.depth * 14 + st.rnd() * 46
         for (let si = 0; si < SHRINK.length; si++) {
-          const x = p.x + Math.cos(ang) * dist * SHRINK[si] + (st.rnd() - 0.5) * 20
-          const y = p.y + Math.sin(ang) * dist * SHRINK[si] + (st.rnd() - 0.5) * 20
+          const x = p.x + Math.cos(ang) * dist * SHRINK[si] + (st.rnd() - 0.5) * 30
+          const y = p.y + Math.sin(ang) * dist * SHRINK[si] + (st.rnd() - 0.5) * 30
           if (placeable(x, y)) {
             const n = makeNode(x, y, p.depth + 1, p)
             p.children++
@@ -154,9 +157,8 @@ const BeaconFire = forwardRef(function BeaconFire({ sparks = 0 }, ref) {
     }
     st.setSparks = function (sp) {
       // Honest sky: one visible star per real spark, capped at 78. The node
-      // count includes the invisible seed at the core (stars render from
-      // index 1), so N sparks = N + 1 nodes. The old formula rendered a
-      // decorative floor of 24 stars at zero sparks — a fiction removed.
+      // count includes the invisible seed at the ring (stars render from
+      // index 1), so N sparks = N + 1 nodes.
       const count = 1 + Math.min(78, Math.max(0, Math.floor(Number(sp || 0))))
       if (count < st.nodes.length) {
         reset()
@@ -169,47 +171,55 @@ const BeaconFire = forwardRef(function BeaconFire({ sparks = 0 }, ref) {
       if (reduced) draw(0, 0)
     }
 
-    function stamp(img, x, y, scale, alpha) {
-      const w = img.width * scale, h = img.height * scale
-      ctx.globalAlpha = alpha
-      ctx.drawImage(img, x - w / 2, y - h / 2, w, h)
+    function drawStar(x, y, r, alpha, tw) {
+      const pr = r * (0.9 + tw * 0.25)
+      const g = ctx.createRadialGradient(x, y, 0, x, y, pr * 4)
+      g.addColorStop(0, `rgba(255,236,190,${alpha})`)
+      g.addColorStop(0.35, `rgba(242,196,90,${alpha * 0.55})`)
+      g.addColorStop(1, 'rgba(242,196,90,0)')
+      ctx.fillStyle = g
+      ctx.beginPath(); ctx.arc(x, y, pr * 4, 0, 6.29); ctx.fill()
+      // glint cross
+      ctx.strokeStyle = `rgba(255,240,205,${alpha * 0.8})`
+      ctx.lineWidth = 1.6
+      ctx.beginPath()
+      ctx.moveTo(x - pr * 2.2, y); ctx.lineTo(x + pr * 2.2, y)
+      ctx.moveTo(x, y - pr * 2.2); ctx.lineTo(x, y + pr * 2.2)
+      ctx.stroke()
     }
-    const KIND_SCALE = { 'star-small': 0.42, 'star-mid': 0.45, 'star-glint': 0.5 }
 
     function draw(t, dt) {
       ctx.setTransform(st.K, 0, 0, st.K, 0, 0)
       ctx.clearRect(0, 0, 1024, 1024)
       ctx.globalCompositeOperation = 'lighter'
 
-      // lineage links: the streak artwork rotated along each edge
+      // lineage links
+      ctx.strokeStyle = 'rgba(242,196,90,0.22)'
+      ctx.lineWidth = 1.8
       for (let li = 0; li < st.links.length; li++) {
         const la = st.links[li].a, lb = st.links[li].b
-        const ldx = lb.x - la.x, ldy = lb.y - la.y
-        const llen = Math.hypot(ldx, ldy)
-        const lh = Math.max(10, Math.min(22, llen * 0.16))
-        ctx.save()
-        ctx.translate((la.x + lb.x) / 2, (la.y + lb.y) / 2)
-        ctx.rotate(Math.atan2(ldy, ldx))
-        ctx.globalAlpha = 0.55
-        ctx.drawImage(st.spr['streak-long'], -llen / 2, -lh / 2, llen, lh)
-        ctx.restore()
+        ctx.beginPath()
+        ctx.moveTo(la.x, la.y)
+        ctx.lineTo(lb.x, lb.y)
+        ctx.stroke()
       }
 
       // stars
       for (let ni = 1; ni < st.nodes.length; ni++) {
         const n = st.nodes[ni]
         const tw = reduced ? 0.8 : 0.62 + 0.38 * Math.sin(t * n.sp * 2 + n.ph)
-        stamp(st.spr[n.kind], n.x, n.y, KIND_SCALE[n.kind] * (0.92 + tw * 0.16), 0.55 + 0.45 * tw)
+        drawStar(n.x, n.y, n.size, 0.5 + 0.5 * tw, tw)
       }
 
-      // risers
+      // embers rising from the flame
       for (let mi = 0; mi < st.risers.length; mi++) {
         const m = st.risers[mi]
         if (!reduced) {
           m.y -= m.vy * dt / 1000
-          if (m.y < Y0 + 30) { m.y = Y1 - 20; m.x = CORE.x + (Math.random() - 0.5) * 280 }
+          if (m.y < 230) { m.y = RING.y - 70; m.x = RING.x + (Math.random() - 0.5) * 160 }
         }
-        stamp(st.spr['star-small'], m.x, m.y, 0.2, 0.20 + 0.14 * Math.sin(t * 1.3 + m.ph))
+        const ea = 0.16 + 0.12 * Math.sin(t * 1.3 + m.ph)
+        drawStar(m.x, m.y, 3.4, ea, 0.6)
       }
 
       // energy pulses along the lineage
@@ -221,13 +231,23 @@ const BeaconFire = forwardRef(function BeaconFire({ sparks = 0 }, ref) {
         if (p.seg >= p.path.length - 1 || (segT >= 1 && p.seg >= p.path.length - 2)) { st.pulses.splice(pi, 1); continue }
         const A = p.path[p.seg], B = p.path[p.seg + 1]
         const e = Math.max(0, Math.min(1, segT))
-        stamp(st.spr['star-mid'], A.x + (B.x - A.x) * e, A.y + (B.y - A.y) * e, 0.3, 0.95)
+        drawStar(A.x + (B.x - A.x) * e, A.y + (B.y - A.y) * e, 11, 0.95, 1)
       }
 
-      // the core, breathing
-      const breathe = reduced ? 1 : 1 + 0.06 * Math.sin(t * 1.4)
-      stamp(st.spr['star-core'], CORE.x, CORE.y, 0.75 * breathe, 1.0)
-      stamp(st.spr['star-core'], CORE.x, CORE.y, 0.42 * breathe, 0.7)
+      // the flame, seated in the circle of the spire, breathing
+      const breathe = reduced ? 1 : 1 + 0.07 * Math.sin(t * 1.4)
+      const R = RING.r * 1.7 * breathe
+      const g1 = ctx.createRadialGradient(RING.x, RING.y, 0, RING.x, RING.y, R)
+      g1.addColorStop(0, 'rgba(255,224,150,0.85)')
+      g1.addColorStop(0.4, 'rgba(242,180,70,0.32)')
+      g1.addColorStop(1, 'rgba(242,180,70,0)')
+      ctx.fillStyle = g1
+      ctx.beginPath(); ctx.arc(RING.x, RING.y, R, 0, 6.29); ctx.fill()
+      const g2 = ctx.createRadialGradient(RING.x, RING.y, 0, RING.x, RING.y, R * 0.35)
+      g2.addColorStop(0, 'rgba(255,246,220,0.95)')
+      g2.addColorStop(1, 'rgba(255,246,220,0)')
+      ctx.fillStyle = g2
+      ctx.beginPath(); ctx.arc(RING.x, RING.y, R * 0.35, 0, 6.29); ctx.fill()
 
       ctx.globalAlpha = 1
       ctx.globalCompositeOperation = 'source-over'
@@ -255,21 +275,12 @@ const BeaconFire = forwardRef(function BeaconFire({ sparks = 0 }, ref) {
       st.raf = requestAnimationFrame(frame)
     }
 
-    // load sprites, then start
-    SPRITE_NAMES.forEach((name) => {
-      const img = new Image()
-      img.onload = () => {
-        st.loaded++
-        if (st.loaded === SPRITE_NAMES.length) {
-          reset()
-          st.setSparks(st.pendingSparks || 0)
-          if (!reduced) st.raf = requestAnimationFrame((n) => { last = n; st.raf = requestAnimationFrame(frame) })
-          else draw(0, 0)
-        }
-      }
-      img.src = ASSET(name)
-      st.spr[name] = img
-    })
+    // no sprite sheets: the engine draws procedurally, so it starts at once
+    reset()
+    st.setSparks(st.pendingSparks ?? 0)
+    if (!reduced) st.raf = requestAnimationFrame((n) => { last = n; st.raf = requestAnimationFrame(frame) })
+    else draw(0, 0)
+    st.ready = true
 
     return () => {
       st.running = false
@@ -278,19 +289,19 @@ const BeaconFire = forwardRef(function BeaconFire({ sparks = 0 }, ref) {
     }
   }, [])
 
-  // spark count drives density; safe before load via pendingSparks
+  // spark count drives density; safe before mount via pendingSparks
   useEffect(() => {
     const st = state.current
     if (!st) return
-    if (st.setSparks && st.loaded === SPRITE_NAMES.length) st.setSparks(sparks)
+    if (st.ready && st.setSparks) st.setSparks(sparks)
     else st.pendingSparks = sparks
   }, [sparks])
 
   return (
     <div ref={boxRef} style={{ position: 'relative', width: '100%', aspectRatio: '1 / 1' }}>
       <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
-      <img src={ASSET('frame')} alt="" draggable={false}
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', userSelect: 'none' }} />
+      <img src={MARK_SRC} alt="" draggable={false}
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', pointerEvents: 'none', userSelect: 'none' }} />
     </div>
   )
 })

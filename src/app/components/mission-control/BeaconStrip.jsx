@@ -282,7 +282,7 @@ export default function BeaconStrip({ userId }) {
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle() } }}>
         <span className="bcn-mini" aria-hidden="true">
           <span className="bcn-mini-core" />
-          <img className="bcn-mini-img" src="/beacon/frame.png" alt="" />
+          <img className="bcn-mini-img" src="/beacon/mark.png" alt="" />
         </span>
         <span className="bcn-title">The beacon</span>
         <span className="bcn-msg">{bandMsg}</span>
