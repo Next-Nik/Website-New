@@ -20,9 +20,9 @@ import { supabase } from '../../hooks/useSupabase'
 import Wheel from '../components/Wheel'
 import { SELF_DOMAINS } from '../components/WheelSVG'
 
-const BG='#FAFAF7', CARD='#FFFFFF', INK='#0F1523', GOLD='#A8721A', CHROME='#C8922A', RED='#8A3030'
-const META='rgba(15,21,35,0.72)', GHOST='rgba(15,21,35,0.55)', RULE='rgba(200,146,42,0.20)'
-const SERIF="'Cormorant Garamond',Georgia,serif", SC="'Cormorant SC',Georgia,serif", LORA="'Lora',Georgia,serif"
+const BG='#FAFAF7', CARD='#FFFFFF', INK='#0F1523', GOLD='#26302A', CHROME='#6E7F5C', RED='#8A3030'
+const META='rgba(15,21,35,0.72)', GHOST='rgba(15,21,35,0.55)', RULE='rgba(110,127,92,0.20)'
+const SERIF="'Fraunces',Georgia,serif", SC="'IBM Plex Mono',Georgia,serif", LORA="'Newsreader',Georgia,serif"
 
 const LABELS={10:'the best there is',9:'really good',8:'solid',7:'getting there',6:'getting by',5:'the line',4:'trying but not moving',3:'pretty rough',2:'barely holding on',1:'really struggling',0:'zero'}
 const lab=v=>LABELS[Math.round(v)]
@@ -77,7 +77,7 @@ function Track({ d, now, onSet }){
         style={{ position:'relative', height:30, touchAction:'none', cursor:'pointer' }}>
         <div style={{ position:'absolute', top:'50%', left:0, right:0, height:4, transform:'translateY(-50%)', background:'rgba(15,21,35,0.10)', borderRadius:3 }} />
         <div style={{ position:'absolute', top:'50%', left:0, width:'50%', height:4, transform:'translateY(-50%)', background:'rgba(138,48,48,0.10)', borderRadius:'3px 0 0 3px' }} />
-        <div style={{ position:'absolute', top:'50%', height:4, transform:'translateY(-50%)', borderRadius:3, left:pct(lo)+'%', width:pct(hi-lo)+'%', background:focus?'rgba(138,48,48,0.30)':'rgba(200,146,42,0.34)' }} />
+        <div style={{ position:'absolute', top:'50%', height:4, transform:'translateY(-50%)', borderRadius:3, left:pct(lo)+'%', width:pct(hi-lo)+'%', background:focus?'rgba(138,48,48,0.30)':'rgba(110,127,92,0.34)' }} />
         <div style={{ position:'absolute', top:'50%', left:'50%', width:2, height:16, transform:'translate(-50%,-50%)', background:'rgba(15,21,35,0.30)' }} />
         <div style={{ position:'absolute', top:'calc(50% + 12px)', left:'50%', transform:'translateX(-50%)', fontFamily:SC, fontSize:10, letterSpacing:'0.08em', color:GHOST, whiteSpace:'nowrap' }}>THE LINE</div>
         {reaching && <div style={{ position:'absolute', top:'50%', left:pct(aim)+'%', width:15, height:15, transform:'translate(-50%,-50%)', borderRadius:'50%', background:CARD, border:`2.5px solid ${focus?RED:CHROME}`, boxShadow:'0 1px 4px rgba(15,21,35,0.18)', pointerEvents:'none' }} />}
@@ -146,7 +146,7 @@ export default function FirstLight(){
           )}
           {cover && (
             <div style={{ position:'absolute', top:'46%', left:'50%', transform:'translate(-50%,-50%)', zIndex:5, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
-              <button onClick={() => setPhase('place')} style={{ fontFamily:SC, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', fontSize:16, color:'#fff', background:GOLD, border:'none', borderRadius:40, padding:'16px 40px', cursor:'pointer', boxShadow:'0 6px 22px -6px rgba(168,114,26,0.7), 0 0 0 6px rgba(200,146,42,0.12)' }}>Start</button>
+              <button onClick={() => setPhase('place')} style={{ fontFamily:SC, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', fontSize:16, color:'#fff', background:GOLD, border:'none', borderRadius:40, padding:'16px 40px', cursor:'pointer', boxShadow:'0 6px 22px -6px rgba(38,48,42,0.7), 0 0 0 6px rgba(110,127,92,0.12)' }}>Start</button>
               <span style={{ fontFamily:LORA, fontSize:12.5, color:META, background:'rgba(250,250,247,0.86)', padding:'2px 10px', borderRadius:20 }}>about two minutes</span>
             </div>
           )}

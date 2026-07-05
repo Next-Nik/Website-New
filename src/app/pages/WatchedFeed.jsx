@@ -25,7 +25,7 @@ import { FeedItem } from '../components/feed/FeedItem'
 import { body, sc, gold, parch } from '../components/feed/feedShared'
 import { InfoButton } from '../components/InfoButton'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
 export default function WatchedFeed() {
   const { data: viewerCtx, loading: ctxLoading } = useViewerContext()
@@ -191,8 +191,8 @@ function LoadMoreButton({ onClick, page }) {
         fontSize: '13px',
         letterSpacing: '0.18em',
         color: gold,
-        background: 'rgba(200,146,42,0.05)',
-        border: '1px solid rgba(200,146,42,0.35)',
+        background: 'rgba(110,127,92,0.05)',
+        border: '1px solid rgba(110,127,92,0.35)',
         borderRadius: '40px',
         padding: '12px 28px',
         cursor: 'pointer',
@@ -209,7 +209,7 @@ function LoadMoreButton({ onClick, page }) {
 
 function EndOfFeedNotice() {
   return (
-    <div style={{ textAlign: 'center', padding: '56px 24px 24px', borderTop: '1px solid rgba(200,146,42,0.10)', marginTop: '32px' }}>
+    <div style={{ textAlign: 'center', padding: '56px 24px 24px', borderTop: '1px solid rgba(110,127,92,0.10)', marginTop: '32px' }}>
       <p style={{
         ...body, fontSize: '17px', fontWeight: 400, fontStyle: 'italic',
         color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, margin: 0,
@@ -232,8 +232,8 @@ function NotSignedIn() {
         </p>
         <button onClick={() => navigate('/login?redirect=/tuned-in')} style={{
           ...sc, fontSize: '13px', letterSpacing: '0.16em',
-          color: gold, background: 'rgba(200,146,42,0.05)',
-          border: '1px solid rgba(200,146,42,0.55)',
+          color: gold, background: 'rgba(110,127,92,0.05)',
+          border: '1px solid rgba(110,127,92,0.55)',
           borderRadius: '30px', padding: '10px 24px',
           cursor: 'pointer', textTransform: 'uppercase',
         }}>

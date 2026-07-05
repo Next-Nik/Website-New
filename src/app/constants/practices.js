@@ -39,7 +39,7 @@ export const PRACTICE_KIND_BY_SLUG = Object.fromEntries(
 export const VETTING_STATUSES = [
   { slug: 'self_submitted',      label: 'Self submitted',      color: 'rgba(15,21,35,0.55)' },
   { slug: 'community_attested',  label: 'Community attested',  color: '#2A6B3A' },
-  { slug: 'curator_reviewed',    label: 'Curator reviewed',    color: '#A8721A' },
+  { slug: 'curator_reviewed',    label: 'Curator reviewed',    color: '#26302A' },
 ]
 
 export const VETTING_BY_SLUG = Object.fromEntries(

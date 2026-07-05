@@ -22,9 +22,9 @@ import { NavigatorWheel } from '../components/NavigatorWheel'
 import { IntersectionPage } from '../components/IntersectionPage'
 import { body, sc } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
-const GOLD = '#A8721A'
+const GOLD = '#26302A'
 const INK = '#0F1523'
 const PARCH = '#FAFAF7'
 
@@ -231,8 +231,8 @@ function NotFound({ message }) {
       ...body, fontSize: '15px',
       color: 'rgba(15,21,35,0.72)', fontStyle: 'italic',
       padding: '20px',
-      background: 'rgba(200,146,42,0.04)',
-      border: '1px dashed rgba(200,146,42,0.35)',
+      background: 'rgba(110,127,92,0.04)',
+      border: '1px dashed rgba(110,127,92,0.35)',
       borderRadius: '8px',
       marginTop: '24px',
     }}>

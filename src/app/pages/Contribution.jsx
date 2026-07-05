@@ -38,7 +38,7 @@ function Tabs({ active, onChange }) {
     <div style={{
       display: 'flex',
       gap: '4px',
-      borderBottom: '1px solid rgba(200,146,42,0.18)',
+      borderBottom: '1px solid rgba(110,127,92,0.18)',
       marginBottom: '32px',
       overflowX: 'auto',
     }}>
@@ -54,10 +54,10 @@ function Tabs({ active, onChange }) {
               ...sc,
               fontSize: '13px',
               letterSpacing: '0.12em',
-              color: isActive ? '#A8721A' : 'rgba(15,21,35,0.55)',
+              color: isActive ? '#26302A' : 'rgba(15,21,35,0.55)',
               background: 'transparent',
               border: 'none',
-              borderBottom: isActive ? '2px solid #A8721A' : '2px solid transparent',
+              borderBottom: isActive ? '2px solid #26302A' : '2px solid transparent',
               padding: '12px 18px',
               cursor: 'pointer',
               fontWeight: isActive ? 600 : 400,
@@ -82,7 +82,7 @@ function PageHeader() {
         ...sc,
         fontSize: '11px',
         letterSpacing: '0.2em',
-        color: '#A8721A',
+        color: '#26302A',
         textTransform: 'uppercase',
         display: 'block',
         marginBottom: '10px',
@@ -121,7 +121,7 @@ function EmptyNeedsState({ filtersActive, totalNeedsExist }) {
     <div style={{
       padding: '48px 24px',
       background: '#FFFFFF',
-      border: '1px dashed rgba(200,146,42,0.30)',
+      border: '1px dashed rgba(110,127,92,0.30)',
       borderRadius: '14px',
       textAlign: 'center',
     }}>
@@ -189,7 +189,7 @@ function NeedsLoading() {
         <div key={i} style={{
           padding: '20px 22px',
           background: '#FFFFFF',
-          border: '1px solid rgba(200,146,42,0.14)',
+          border: '1px solid rgba(110,127,92,0.14)',
           borderRadius: '14px',
           height: '120px',
           animation: 'pulse 1.8s ease-in-out infinite',
@@ -605,7 +605,7 @@ export default function Contribution() {
               <div style={{
                 padding: '32px',
                 background: '#FFFFFF',
-                border: '1px solid rgba(200,146,42,0.14)',
+                border: '1px solid rgba(110,127,92,0.14)',
                 borderRadius: '14px',
                 opacity: 0.5,
                 animation: 'pulse 1.8s ease-in-out infinite',

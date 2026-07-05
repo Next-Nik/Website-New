@@ -11,7 +11,7 @@ import { Nav }      from '../../components/Nav'
 import { useAuth }  from '../../hooks/useAuth'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
 
-const hair  = '1px solid rgba(200,146,42,0.18)'
+const hair  = '1px solid rgba(110,127,92,0.18)'
 const muted = { color: 'rgba(15,21,35,0.78)' }
 const GOLD_C = tokens.goldChrome
 

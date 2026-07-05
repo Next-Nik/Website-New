@@ -23,7 +23,7 @@ function Divider() {
   return (
     <div style={{
       height: '1px',
-      background: 'rgba(200,146,42,0.10)',
+      background: 'rgba(110,127,92,0.10)',
       marginBottom: '72px',
     }} />
   )
@@ -228,7 +228,7 @@ export function PublicProfile() {
           <div style={{
             marginTop: '48px',
             paddingTop: '32px',
-            borderTop: '1px solid rgba(200,146,42,0.10)',
+            borderTop: '1px solid rgba(110,127,92,0.10)',
             textAlign: 'center',
           }}>
             <WatchButton

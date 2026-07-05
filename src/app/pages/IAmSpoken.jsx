@@ -32,10 +32,10 @@ const tokens = {
   inkSoft:   'rgba(15, 21, 35, 0.78)',
   inkMid:    'rgba(15, 21, 35, 0.60)',
   inkFaint:  'rgba(15, 21, 35, 0.55)',
-  gold:      '#A8721A',  // text only
-  goldChrome:'#C8922A',  // chrome/borders only
-  goldRule:  'rgba(200, 146, 42, 0.30)',
-  goldFaint: 'rgba(200, 146, 42, 0.12)',
+  gold:      '#26302A',  // text only
+  goldChrome:'#6E7F5C',  // chrome/borders only
+  goldRule:  'rgba(110,127,92, 0.30)',
+  goldFaint: 'rgba(110,127,92, 0.12)',
   card:      '#FFFFFF',
 }
 

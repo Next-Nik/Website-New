@@ -12,7 +12,7 @@ import { GradientPosition, TrajectoryArrow } from '../components/GradientPositio
 import { PrincipleStrip }      from '../components/PrincipleStrip'
 import { body, sc } from '../../lib/designTokens'
 
-const gold  = '#A8721A'
+const gold  = '#26302A'
 const dark  = '#0F1523'
 const parch = '#FAFAF7'
 
@@ -34,7 +34,7 @@ function GapBlock({ label, text }) {
     <div style={{
       padding: '20px 24px',
       background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.14)',
+      border: '1px solid rgba(110,127,92,0.14)',
       borderRadius: '10px',
     }}>
       <p style={{
@@ -159,7 +159,7 @@ function SectionNumber({ n }) {
       ...sc,
       fontSize: '11px',
       letterSpacing: '0.22em',
-      color: 'rgba(200,146,42,0.55)',
+      color: 'rgba(110,127,92,0.55)',
       marginBottom: '10px',
     }}>
       {String(n).padStart(2, '0')}
@@ -171,7 +171,7 @@ function SectionRule() {
   return (
     <div style={{
       height: '1px',
-      background: 'rgba(200,146,42,0.10)',
+      background: 'rgba(110,127,92,0.10)',
       margin: '64px 0',
     }} />
   )
@@ -316,7 +316,7 @@ export function InvitationPage() {
           </Link>
           {primaryDomain && (
             <>
-              <span style={{ color: 'rgba(200,146,42,0.40)' }}>/</span>
+              <span style={{ color: 'rgba(110,127,92,0.40)' }}>/</span>
               <Link
                 to={`/domain/${primaryDomain}`}
                 style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, textDecoration: 'none' }}
@@ -528,7 +528,7 @@ export function InvitationPage() {
 
           <div style={{
             paddingLeft: '20px',
-            borderLeft: '3px solid rgba(200,146,42,0.35)',
+            borderLeft: '3px solid rgba(110,127,92,0.35)',
           }}>
             <p style={{
               ...body,
@@ -590,7 +590,7 @@ export function InvitationPage() {
         <div style={{
           marginTop: '80px',
           paddingTop: '32px',
-          borderTop: '1px solid rgba(200,146,42,0.10)',
+          borderTop: '1px solid rgba(110,127,92,0.10)',
         }}>
           {/* Domain links */}
           {domains.length > 0 && (
@@ -605,7 +605,7 @@ export function InvitationPage() {
                     letterSpacing: '0.16em',
                     color: gold,
                     textDecoration: 'none',
-                    borderBottom: '1px dotted rgba(200,146,42,0.50)',
+                    borderBottom: '1px dotted rgba(110,127,92,0.50)',
                   }}
                 >
                   {CIV_DOMAIN_LABEL[d] || d} domain

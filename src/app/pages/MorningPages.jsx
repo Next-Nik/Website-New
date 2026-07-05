@@ -24,9 +24,9 @@ const tokens = {
   inkSoft:   'rgba(15, 21, 35, 0.78)',
   inkMid:    'rgba(15, 21, 35, 0.60)',
   inkFaint:  'rgba(15, 21, 35, 0.55)',
-  gold:      '#A8721A',
-  goldChrome:'#C8922A',
-  goldRule:  'rgba(200, 146, 42, 0.30)',
+  gold:      '#26302A',
+  goldChrome:'#6E7F5C',
+  goldRule:  'rgba(110,127,92, 0.30)',
   card:      '#FFFFFF',
 }
 

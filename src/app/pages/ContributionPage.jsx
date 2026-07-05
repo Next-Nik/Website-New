@@ -16,7 +16,7 @@ import { tokens, serif, body, sc } from '../../lib/designTokens'
 
 const gold   = { color: tokens.gold }
 const muted  = { color: 'rgba(15,21,35,0.78)' }
-const hair   = '1px solid rgba(200,146,42,0.18)'
+const hair   = '1px solid rgba(110,127,92,0.18)'
 const GOLD_C = tokens.goldChrome
 
 function Eyebrow({ children, style = {} }) {
@@ -46,8 +46,8 @@ function DomainChips({ value, onChange }) {
       {DOMAINS.map(d => (
         <button key={d.id} type="button" onClick={() => onChange(d.id)}
           style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '6px 16px', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.2s',
-            border: `1px solid ${value === d.id ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.3)'}`,
-            background: value === d.id ? 'rgba(200,146,42,0.08)' : 'transparent',
+            border: `1px solid ${value === d.id ? 'rgba(110,127,92,0.78)' : 'rgba(110,127,92,0.3)'}`,
+            background: value === d.id ? 'rgba(110,127,92,0.08)' : 'transparent',
             color: value === d.id ? tokens.gold : tokens.ghost }}>
           {d.l}
         </button>
@@ -128,7 +128,7 @@ function EmptyState({ domain }) {
         Asks appear here when Atlas actors and community members post specific needs. Be the first.
       </p>
       <a href="/tools/target-sprint"
-        style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
+        style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(110,127,92,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
         Post from your stretch →
       </a>
     </div>
@@ -190,7 +190,7 @@ export default function ContributionPage() {
         </p>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: '0', marginBottom: '24px', borderBottom: '1px solid rgba(200,146,42,0.18)' }}>
+        <div style={{ display: 'flex', gap: '0', marginBottom: '24px', borderBottom: '1px solid rgba(110,127,92,0.18)' }}>
           {[
             { id: 'asks',     l: 'Open asks' },
             { id: 'offering', l: 'What I can offer' },
@@ -239,10 +239,10 @@ export default function ContributionPage() {
 
         {/* Post an ask CTA */}
         {user && tab === 'asks' && (
-          <div style={{ marginTop: '40px', paddingTop: '28px', borderTop: '1px solid rgba(200,146,42,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ marginTop: '40px', paddingTop: '28px', borderTop: '1px solid rgba(110,127,92,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
             <span style={{ ...body, fontSize: '1.0625rem', color: tokens.ghost }}>Have a specific need?</span>
             <a href="/tools/target-sprint"
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(110,127,92,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
               Post an ask from your stretch →
             </a>
           </div>

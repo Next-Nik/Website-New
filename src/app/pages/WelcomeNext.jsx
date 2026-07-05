@@ -134,15 +134,15 @@ export default function WelcomeNext() {
 const NEXT_CSS = `
 .welcome-next-root {
   --bg-parchment:  #FAFAF7;
-  --gold:          #C8922A;
-  --gold-dk:       #A8721A;
-  --gold-rule:     rgba(200, 146, 42, 0.20);
+  --gold:          #6E7F5C;
+  --gold-dk:       #26302A;
+  --gold-rule:     rgba(110,127,92, 0.20);
   --text-ink:      #0F1523;
   --text-meta:     rgba(15, 21, 35, 0.65);
   --text-faint:    rgba(15, 21, 35, 0.40);
-  --font-display:  'Cormorant Garamond', Georgia, serif;
-  --font-sc:       'Cormorant SC', Georgia, serif;
-  --font-body:     'Lora', Georgia, serif;
+  --font-display:  'Fraunces', Georgia, serif;
+  --font-sc:       'IBM Plex Mono', Georgia, serif;
+  --font-body:     'Newsreader', Georgia, serif;
 
   position: fixed;
   inset: 0;

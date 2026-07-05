@@ -28,7 +28,7 @@ import { serif, body, sc } from '../../lib/designTokens'
 // signal is not firing. No layout space reserved when silent.
 // ─────────────────────────────────────────────────────────────
 const dark     = '#0F1523'
-const goldDark = '#A8721A'
+const goldDark = '#2B4A42'
 
 export function DomainPage() {
   const { slug } = useParams()
@@ -130,7 +130,7 @@ export function DomainPage() {
 
         {/* Actor grid placeholder */}
         <div style={{
-          border: '1.5px dashed rgba(200,146,42,0.30)',
+          border: '1.5px dashed rgba(88,160,138,0.30)',
           borderRadius: '14px',
           padding: '40px',
           textAlign: 'center',
