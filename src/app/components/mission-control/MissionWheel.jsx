@@ -298,8 +298,8 @@ function SelfWheel({
     return pts.join(' ')
   }, [cx, cy, maxR, displayRot])
 
-  const ringStroke  = dark ? 'rgba(88,160,138,0.42)' : 'rgba(110,127,92,0.30)'
-  const spokeStroke = dark ? 'rgba(88,160,138,0.60)' : 'rgba(110,127,92,0.42)'
+  const ringStroke  = dark ? 'rgba(100,130,185,0.42)' : 'rgba(110,127,92,0.30)'
+  const spokeStroke = dark ? 'rgba(100,130,185,0.60)' : 'rgba(110,127,92,0.42)'
   const vertStroke     = dark ? BG_INK : BG_CARD
   const walkerLabelFill = dark ? GOLD_LT : GOLD_DK
   const walkerDotFill   = dark ? GOLD_LT : GOLD_DK
@@ -338,9 +338,9 @@ function SelfWheel({
             </>
           ) : (
             <>
-              <stop offset="0%"   stopColor="rgba(255,253,247,0.40)" />
-              <stop offset="55%"  stopColor="rgba(255,250,240,0.18)" />
-              <stop offset="100%" stopColor="rgba(110,127,92,0.05)" />
+              <stop offset="0%"   stopColor="rgba(250,250,247,0.36)" />
+              <stop offset="55%"  stopColor="rgba(249,249,246,0.16)" />
+              <stop offset="100%" stopColor="rgba(110,127,92,0.03)" />
             </>
           )}
         </radialGradient>
@@ -390,8 +390,8 @@ function SelfWheel({
               points={pts.join(' ')}
               fill="none"
               stroke={isPass
-                ? (dark ? 'rgba(88,160,138,0.34)' : 'rgba(110,127,92,0.32)')
-                : (dark ? 'rgba(88,160,138,0.11)' : 'rgba(110,127,92,0.12)')}
+                ? (dark ? 'rgba(100,130,185,0.34)' : 'rgba(110,127,92,0.32)')
+                : (dark ? 'rgba(100,130,185,0.11)' : 'rgba(110,127,92,0.12)')}
               strokeWidth={isPass ? 1.4 : 1}
               strokeDasharray={isPass ? '5 5' : undefined}
               pointerEvents="none"
@@ -451,7 +451,7 @@ function SelfWheel({
               )}
               <circle
                 cx={p.x} cy={p.y} r={3}
-                fill={dark ? "rgba(88,160,138,0.5)" : "rgba(110,127,92,0.5)"}
+                fill={dark ? "rgba(100,130,185,0.5)" : "rgba(110,127,92,0.5)"}
                 style={{ pointerEvents: 'none' }}
               />
             </g>
@@ -462,8 +462,8 @@ function SelfWheel({
         {showEmpty ? (
           <circle
             cx={cx} cy={cy} r={6}
-            fill={dark ? "rgba(88,160,138,0.10)" : "rgba(110,127,92,0.10)"}
-            stroke={dark ? "rgba(88,160,138,0.40)" : "rgba(110,127,92,0.40)"}
+            fill={dark ? "rgba(100,130,185,0.10)" : "rgba(110,127,92,0.10)"}
+            stroke={dark ? "rgba(100,130,185,0.40)" : "rgba(110,127,92,0.40)"}
             strokeWidth="1"
             strokeDasharray="3 3"
             style={{ pointerEvents: 'none' }}
@@ -496,7 +496,7 @@ function SelfWheel({
             )}
             <polygon
               points={verts.map(v => `${v.x},${v.y}`).join(' ')}
-              fill={dark ? 'rgba(88,160,138,0.14)' : 'rgba(110,127,92,0.10)'}
+              fill={dark ? 'rgba(100,130,185,0.14)' : 'rgba(110,127,92,0.10)'}
               stroke={GOLD}
               strokeWidth="2"
               strokeOpacity="0.85"
@@ -695,7 +695,7 @@ function SelfWheel({
           {/* Outer bloom — wide, very soft */}
           <circle
             cx={cx} cy={cy} r={48}
-            fill={dark ? "rgba(88,160,138,0.07)" : "rgba(110,127,92,0.07)"}
+            fill={dark ? "rgba(100,130,185,0.07)" : "rgba(110,127,92,0.07)"}
             style={{ opacity: orbTarget, transition: 'opacity 0.4s ease', pointerEvents: 'none' }}
           >
             <animate attributeName="r" values="44;52;44" dur="3.6s" repeatCount="indefinite" />
@@ -704,14 +704,14 @@ function SelfWheel({
           {/* Mid haze */}
           <circle
             cx={cx} cy={cy} r={28}
-            fill={dark ? "rgba(88,160,138,0.15)" : "rgba(110,127,92,0.15)"}
+            fill={dark ? "rgba(100,130,185,0.15)" : "rgba(110,127,92,0.15)"}
             style={{ opacity: orbTarget, transition: 'opacity 0.4s ease', pointerEvents: 'none' }}
           />
           {/* Tight core — still soft, not solid */}
           <circle
             cx={cx} cy={cy} r={14}
-            fill={dark ? "rgba(88,160,138,0.35)" : "rgba(110,127,92,0.35)"}
-            stroke={dark ? "rgba(88,160,138,0.5)" : "rgba(110,127,92,0.5)"}
+            fill={dark ? "rgba(100,130,185,0.35)" : "rgba(110,127,92,0.35)"}
+            stroke={dark ? "rgba(100,130,185,0.5)" : "rgba(110,127,92,0.5)"}
             strokeWidth="1"
             style={{ opacity: orbTarget, transition: 'opacity 0.4s ease', pointerEvents: 'none' }}
           />
@@ -735,7 +735,7 @@ function SelfWheel({
           <defs>
             <clipPath id="mc-off-mark-clip"><circle cx={cx} cy={cy} r={24} /></clipPath>
           </defs>
-          <circle cx={cx} cy={cy} r={24} fill="#FFFFFF" stroke={dark ? "rgba(88,160,138,0.55)" : "rgba(110,127,92,0.55)"} strokeWidth="1.4" />
+          <circle cx={cx} cy={cy} r={24} fill="#FFFFFF" stroke={dark ? "rgba(100,130,185,0.55)" : "rgba(110,127,92,0.55)"} strokeWidth="1.4" />
           {offState.markUrl ? (
             <image
               href={offState.markUrl}
@@ -752,7 +752,7 @@ function SelfWheel({
               {offState.markInitial || '·'}
             </text>
           )}
-          <circle cx={cx} cy={cy} r={24} fill="none" stroke={dark ? "rgba(88,160,138,0.30)" : "rgba(110,127,92,0.30)"} strokeWidth="1" />
+          <circle cx={cx} cy={cy} r={24} fill="none" stroke={dark ? "rgba(100,130,185,0.30)" : "rgba(110,127,92,0.30)"} strokeWidth="1" />
           {offState.eyebrow && (
             <text
               x={cx} y={cy + 46} textAnchor="middle"
@@ -1034,12 +1034,12 @@ function CivWheel({
     return pts.join(' ')
   }, [count, displayRot])
 
-  const ringStroke = dark ? 'rgba(88,160,138,0.42)' : 'rgba(110,127,92,0.30)'
-  const spokeStroke = dark ? 'rgba(88,160,138,0.60)' : 'rgba(110,127,92,0.42)'
+  const ringStroke = dark ? 'rgba(100,130,185,0.42)' : 'rgba(110,127,92,0.30)'
+  const spokeStroke = dark ? 'rgba(100,130,185,0.60)' : 'rgba(110,127,92,0.42)'
   const labelFill = dark ? TEXT_WHITE_META : TEXT_META
   const labelActiveFill = dark ? GOLD_LT : GOLD_DK
   const centreFill = GOLD
-  const centreStroke = dark ? 'rgba(88,160,138,0.6)' : 'rgba(110,127,92,0.7)'
+  const centreStroke = dark ? 'rgba(100,130,185,0.6)' : 'rgba(110,127,92,0.7)'
   const centreTextFill = dark ? '#0F1523' : '#FFFFFF' // ink on gold reads on either stage
 
   // Centre orb sized to fit the longest centre label that can appear.
@@ -1092,9 +1092,9 @@ function CivWheel({
             </>
           ) : (
             <>
-              <stop offset="0%"   stopColor="rgba(255,253,247,0.40)" />
-              <stop offset="55%"  stopColor="rgba(255,250,240,0.18)" />
-              <stop offset="100%" stopColor="rgba(110,127,92,0.05)" />
+              <stop offset="0%"   stopColor="rgba(250,250,247,0.36)" />
+              <stop offset="55%"  stopColor="rgba(249,249,246,0.16)" />
+              <stop offset="100%" stopColor="rgba(110,127,92,0.03)" />
             </>
           )}
         </radialGradient>
@@ -1129,8 +1129,8 @@ function CivWheel({
             points={pts.join(' ')}
             fill="none"
             stroke={isPass
-              ? (dark ? 'rgba(88,160,138,0.34)' : 'rgba(110,127,92,0.32)')
-              : (dark ? 'rgba(88,160,138,0.11)' : 'rgba(110,127,92,0.12)')}
+              ? (dark ? 'rgba(100,130,185,0.34)' : 'rgba(110,127,92,0.32)')
+              : (dark ? 'rgba(100,130,185,0.11)' : 'rgba(110,127,92,0.12)')}
             strokeWidth={isPass ? 1.4 : 1}
             strokeDasharray={isPass ? '5 5' : undefined}
             pointerEvents="none"
@@ -1193,7 +1193,7 @@ function CivWheel({
             {/* Polygon — richer fill and stroke for visual presence */}
             <polygon
               points={polyPoints}
-              fill={dark ? 'rgba(88,160,138,0.12)' : 'rgba(110,127,92,0.08)'}
+              fill={dark ? 'rgba(100,130,185,0.12)' : 'rgba(110,127,92,0.08)'}
               stroke={GOLD}
               strokeWidth="2"
               strokeOpacity="0.85"
@@ -1529,7 +1529,7 @@ function CivWheel({
           cx={CX} cy={CY}
           r={centreRadius + 4}
           fill="none"
-          stroke={dark ? "rgba(88,160,138,0.22)" : "rgba(110,127,92,0.22)"}
+          stroke={dark ? "rgba(100,130,185,0.22)" : "rgba(110,127,92,0.22)"}
           strokeWidth="1"
           style={{ pointerEvents: 'none' }}
         >
