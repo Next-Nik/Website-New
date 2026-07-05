@@ -64,7 +64,7 @@ const BeaconFire = forwardRef(function BeaconFire({ sparks = 0 }, ref) {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     const st = {
-      nodes: [], links: [], frontier: [], pulses: [], risers: [],
+      nodes: [], links: [], frontier: [], pulses: [],
       rnd: null, K: 1, raf: 0, growQueue: 0, target: 1, running: true,
     }
     state.current = st
@@ -90,13 +90,8 @@ const BeaconFire = forwardRef(function BeaconFire({ sparks = 0 }, ref) {
       st.nodes = []; st.links = []; st.frontier = []; st.pulses = []
       const seed = makeNode(RING.x, RING.y, 0, null)
       st.nodes.push(seed); st.frontier.push(seed)
-      // embers of the flame: rise from the ring, fade near the top
-      st.risers = []
-      const rr = mulberry32(41)
-      for (let i = 0; i < 6; i++) {
-        st.risers.push({ x: RING.x + (rr() - 0.5) * 150, y: 220 + rr() * (RING.y - 60 - 220),
-          vy: 9 + rr() * 9, ph: rr() * 6 })
-      }
+      // No ambient embers, no decorative motes: the beacon is a live read.
+      // Every point of light above the flame is one real spark — nothing else.
     }
     function childCap(n) { return n.depth === 0 ? 6 : (st.nodes.length < 36 ? 3 : 5) }
     function placeable(x, y) {
@@ -209,17 +204,6 @@ const BeaconFire = forwardRef(function BeaconFire({ sparks = 0 }, ref) {
         const n = st.nodes[ni]
         const tw = reduced ? 0.8 : 0.62 + 0.38 * Math.sin(t * n.sp * 2 + n.ph)
         drawStar(n.x, n.y, n.size, 0.5 + 0.5 * tw, tw)
-      }
-
-      // embers rising from the flame
-      for (let mi = 0; mi < st.risers.length; mi++) {
-        const m = st.risers[mi]
-        if (!reduced) {
-          m.y -= m.vy * dt / 1000
-          if (m.y < 230) { m.y = RING.y - 70; m.x = RING.x + (Math.random() - 0.5) * 160 }
-        }
-        const ea = 0.16 + 0.12 * Math.sin(t * 1.3 + m.ph)
-        drawStar(m.x, m.y, 3.4, ea, 0.6)
       }
 
       // energy pulses along the lineage
