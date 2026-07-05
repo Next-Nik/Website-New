@@ -195,7 +195,7 @@ function Invitation({ chapter, gateLine, onClose }) {
                 {[
                   "Your somatic library — the body's record of what they feel like",
                   'The Code — their drivers, values, thoughts, feelings, actions, priorities',
-                  'The Quantum Gap — the patterns they have already collapsed',
+                  'The Gap — the patterns they have already left behind',
                   'Seven Horizon Beliefs — the old belief, and what they know instead',
                   'Your synthesised Horizon Self statement, in your own words',
                 ].map(t => (
@@ -465,7 +465,7 @@ export function NextUJourneyPage() {
         ? `Chapter Three — step ${Math.min(obStep, 7)} of seven.`
         : 'Chapter Three — Horizon Self begins.'
       resumeLabel = ob ? 'CONTINUE WHERE YOU LEFT OFF' : 'BEGIN CHAPTER THREE'
-      resumeLine = ob ? `Horizon Self — step ${Math.min(obStep, 7)}` : 'Horizon Self — the Quantum Leap'
+      resumeLine = ob ? `Horizon Self — step ${Math.min(obStep, 7)}` : 'Horizon Self — Arrival'
       resumeRoute = '/nextu/horizon-self'
     } else if (ch4 === 'current') {
       position = 'Chapter Four — your story, told through their eyes.'
@@ -805,7 +805,7 @@ export function NextUJourneyPage() {
                 {vaultOpen.horizon && (
                   <div style={{ marginTop: '14px', borderTop: `1px solid ${tokens.goldFaint}`, paddingTop: '14px' }}>
                     <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8 }}>
-                      The somatic library · the Code · the Quantum Gap · seven Horizon Beliefs — each step re-opens independently.
+                      The somatic library · the Code · the Gap · seven Horizon Beliefs — each step re-opens independently.
                     </div>
                     <button
                       onClick={() => navigate('/nextu/horizon-self')}

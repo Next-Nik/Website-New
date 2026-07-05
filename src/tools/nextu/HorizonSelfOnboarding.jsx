@@ -34,11 +34,11 @@ import {
 
 // ─── step registry ─────────────────────────────────────────────
 const STEPS = [
-  { n: 1, key: 'arrival',    name: 'Arrival — the Quantum Leap', time: '10–15 MIN' },
-  { n: 2, key: 'avatar',     name: 'Avatar State',               time: '15–25 MIN' },
+  { n: 1, key: 'arrival',    name: 'Arrival',                    time: '10–15 MIN' },
+  { n: 2, key: 'avatar',     name: 'The Shift',                  time: '15–25 MIN' },
   { n: 3, key: 'permission', name: 'Permission & Safety',        time: '15–20 MIN' },
   { n: 4, key: 'code',       name: 'The Code',                   time: '20–30 MIN' },
-  { n: 5, key: 'gap',        name: 'The Quantum Gap',            time: '20–30 MIN' },
+  { n: 5, key: 'gap',        name: 'The Gap',                    time: '20–30 MIN' },
   { n: 6, key: 'beliefs',    name: 'Horizon Beliefs',            time: '20–30 MIN' },
   { n: 7, key: 'leap',       name: 'The Daily Leap',             time: '10 MIN' },
   { n: 8, key: 'biography',  name: 'The Horizon Biography',      time: 'CHAPTER FOUR' },
@@ -97,12 +97,15 @@ function PrimaryBtn({ onClick, disabled, children, outline = false }) {
       disabled={disabled}
       style={{
         ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.14em',
-        color: outline ? tokens.gold : '#FFFFFF',
-        background: outline ? 'none' : tokens.goldChrome,
-        border: outline ? `1.5px solid ${tokens.goldChrome}` : 'none',
+        // Disabled is outlined with dark text — present and legible, clearly
+        // inactive. 0.35-opacity white-on-gold vanished into the parchment
+        // (and broke the 0.55 minimum-opacity law).
+        color: disabled ? tokens.dark : (outline ? tokens.gold : '#FFFFFF'),
+        background: disabled || outline ? 'none' : tokens.goldChrome,
+        border: disabled || outline ? `1.5px solid ${tokens.goldChrome}` : 'none',
         borderRadius: '4px', padding: '12px 24px',
         cursor: disabled ? 'default' : 'pointer',
-        opacity: disabled ? 0.35 : 1,
+        opacity: disabled ? 0.6 : 1,
         transition: 'opacity 0.3s ease',
       }}
     >
@@ -202,7 +205,12 @@ export function HorizonSelfOnboardingPage() {
       setIaRows(iaRes.data || [])
       setLifeStatement(resultRes.data?.life_ia_statement || null)
       setMapResultId(resultRes.data?.id || null)
-      setView(row ? 'map' : 'threshold')
+      // Restore the step from the URL. Mobile browsers discard the tab on
+      // app-switch; the reload used to bounce the user to the step list even
+      // mid-step. The ?step param survives the reload and puts them back.
+      const stepParam = Number(new URLSearchParams(window.location.search).get('step'))
+      const restored = row && Number.isInteger(stepParam) && stepParam >= 1 && stepParam <= 7 ? stepParam : null
+      setView(row ? (restored || 'map') : 'threshold')
       setLoading(false)
     }
     load()
@@ -251,16 +259,29 @@ export function HorizonSelfOnboardingPage() {
     }))
   }
 
+  // Keep ?step= in sync with the surface (replaceState: no history spam,
+  // back button still leaves the tool cleanly).
+  function syncStepParam(n) {
+    try {
+      const url = new URL(window.location.href)
+      if (n) url.searchParams.set('step', String(n))
+      else url.searchParams.delete('step')
+      window.history.replaceState({}, '', url)
+    } catch (_) {}
+  }
+
   async function openStep(n) {
     patch(prev => ({ ...prev, current_step: Math.max(prev.current_step || 1, n) }))
     await flush()
     setView(n)
+    syncStepParam(n)
     window.scrollTo({ top: 0 })
   }
 
   async function stepAway() {
     await flush()
     setView('map')
+    syncStepParam(null)
     window.scrollTo({ top: 0 })
   }
 
@@ -273,8 +294,10 @@ export function HorizonSelfOnboardingPage() {
     await flush()
     if (n === 7) {
       setView('map')
+      syncStepParam(null)
     } else {
       setView(n + 1)
+      syncStepParam(n + 1)
     }
     window.scrollTo({ top: 0 })
   }
@@ -472,12 +495,17 @@ export function HorizonSelfOnboardingPage() {
           {topbar('STEP ONE · ARRIVAL')}
           <div style={{ opacity: committed ? 0.45 : 1, transition: 'opacity 0.4s ease' }}>
             <Frame>
-              Imagine you're Quantum Leaping into your own body from the future. You open
-              your eyes and suddenly you are your Horizon Self — fully expressed, completely
-              alive. Same body. Same resources. Same relationships. A totally different
-              operating consciousness running the show.
+              Imagine the you from your most aligned future came back in time, and their
+              consciousness dropped into your body now. It's you from the future where the
+              work worked, the healing healed, and they've been living the life current you
+              has been dreaming of. They don't arrive with more money, sudden fitness, or
+              any of the things you might wish you had. But the life you're dreaming of is
+              normal life to them. How would that version of you act if they took over your
+              life now? Can you allow yourself to see how they would transform your current
+              circumstances? Are you willing to step into that version of yourself now?
             </Frame>
             <FrameNote>
+              This is a leap of faith. Jump, and we'll figure out the details next.
               This isn't visualisation. You're being asked to actually shift — to let them
               take the wheel for a few minutes. When you've made the shift, not before:
             </FrameNote>
@@ -499,9 +527,13 @@ export function HorizonSelfOnboardingPage() {
           )}
           {visible(0) && (
             <div className="nextu-reveal">
+              <FrameNote>
+                Write as them, not about them. You are the Horizon Self, dropped into
+                their past, which is your present. First person, present tense.
+              </FrameNote>
               <TextField
-                label="FIRST CONTACT"
-                help="What's the first thing you notice?"
+                label="OPEN YOUR EYES"
+                help="They'd take in your current circumstances, maybe a moment of surprise, then lean into recreating their normal. What do you notice first?"
                 placeholder="In their body, right now…"
                 value={a.notice}
                 onChange={v => setField('arrival_notes', 'notice', v)}
@@ -522,7 +554,7 @@ export function HorizonSelfOnboardingPage() {
           {visible(2) && (
             <div className="nextu-reveal">
               <TextField
-                help="What feels different in your body in the first ten seconds?"
+                help="You've had this body for ten seconds now. What shifts as you settle in?"
                 value={a.body_difference}
                 onChange={v => setField('arrival_notes', 'body_difference', v)}
                 whisper={whisper}
@@ -531,7 +563,7 @@ export function HorizonSelfOnboardingPage() {
           )}
           <div style={{ marginTop: '38px' }}>
             <PrimaryBtn disabled={!stepDone[1]} onClick={() => completeStep(1)}>
-              CONTINUE TO AVATAR STATE
+              CONTINUE TO THE SHIFT
             </PrimaryBtn>
           </div>
         </div>
@@ -539,7 +571,7 @@ export function HorizonSelfOnboardingPage() {
     )
   }
 
-  // ════════ STEP 2 — AVATAR STATE ════════
+  // ════════ STEP 2 — THE SHIFT ════════
   if (view === 2) {
     const s = ob.somatic_library || {}
     const fields = [
@@ -561,16 +593,19 @@ export function HorizonSelfOnboardingPage() {
       <NextUShell chapter={3}>
         <style>{ONBOARDING_CSS}</style>
         <div style={wrap}>
-          {topbar('STEP TWO · AVATAR STATE')}
+          {topbar('STEP TWO · THE SHIFT')}
           <Frame>
             Your Horizon Self has full access to your deepest wisdom, experience, and
-            resilience. Nothing new has to be added — it's already within you, waiting
-            to be unleashed.
+            resilience. They have reached and they have lived your dreams. You can
+            imagine it, you can see it, you can be it, because it's already within
+            you, waiting to be unleashed.
           </Frame>
           <FrameNote>
-            This step is written from the body, not the head. Stand up. Adjust your
-            posture. Breathe differently. Speak aloud if you can. After each shift,
-            describe what you find — the description comes second.
+            This step is written from the parts of you that already know. You might
+            have spent a lot of time with those parts squished and silenced, so:
+            stand up. Adjust your posture. Breathe differently, breathe deeply.
+            Speak aloud if you can. After each shift, describe what you find.
+            The description comes second.
           </FrameNote>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '38px' }}>
             <span className="nextu-breath" aria-hidden="true" style={{ width: '18px', height: '18px', borderRadius: '50%', background: tokens.goldChrome, flexShrink: 0, display: 'inline-block' }} />
@@ -705,7 +740,7 @@ export function HorizonSelfOnboardingPage() {
           ))}
           <div style={{ marginTop: '38px' }}>
             <PrimaryBtn disabled={!stepDone[4]} onClick={() => completeStep(4)}>
-              CONTINUE TO THE QUANTUM GAP
+              CONTINUE TO THE GAP
             </PrimaryBtn>
           </div>
         </div>
@@ -713,7 +748,7 @@ export function HorizonSelfOnboardingPage() {
     )
   }
 
-  // ════════ STEP 5 — THE QUANTUM GAP ════════
+  // ════════ STEP 5 — THE GAP ════════
   if (view === 5) {
     const pairs = ob.quantum_gap || []
     const setPair = (i, side, value) => {
@@ -743,15 +778,16 @@ export function HorizonSelfOnboardingPage() {
       <NextUShell chapter={3}>
         <style>{ONBOARDING_CSS}</style>
         <div style={wrap}>
-          {topbar('STEP FIVE · THE QUANTUM GAP')}
+          {topbar('STEP FIVE · THE GAP')}
           <Frame>
-            The difference between Current You and Horizon You isn't resources — same body,
-            same money, same relationships. It's patterns. Make the contrast explicit.
+            What's the gap between where you are now and where you want to be — between
+            who you've been and who you truly are? It isn't resources — same body, same
+            money, same relationships. It's patterns. Make the contrast explicit.
           </Frame>
           <FrameNote>
             Write each pair, then read it aloud — Current Me first, Horizon Me second.
             The reading is half the work: that one I'm done with, that one I'm becoming.
-            Flag the pairs you want to actively collapse; they feed the Daily Leap.
+            Flag the pairs you're working on now; they feed the Daily Leap.
           </FrameNote>
 
           {rows.map((p, i) => (
@@ -788,7 +824,7 @@ export function HorizonSelfOnboardingPage() {
                 value={p.horizon || ''}
                 onChange={e => setPair(i, 'horizon', e.target.value)}
                 rows={2}
-                placeholder="The pattern they have already collapsed…"
+                placeholder="The pattern they've already left behind…"
                 style={{
                   width: '100%', boxSizing: 'border-box', marginTop: '8px',
                   padding: '12px 14px', border: `1px solid ${tokens.goldFaint}`,
@@ -807,7 +843,7 @@ export function HorizonSelfOnboardingPage() {
                   padding: 0, marginTop: '12px',
                 }}
               >
-                {p.focus ? '◆ ACTIVE COLLAPSE WORK' : '◇ MARK FOR ACTIVE COLLAPSE'}
+                {p.focus ? '◆ IN FOCUS' : '◇ MARK AS FOCUS'}
               </button>
             </div>
           ))}
