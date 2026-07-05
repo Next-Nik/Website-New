@@ -37,7 +37,7 @@ function Eyebrow({ children, style = {} }) {
       ...sc,
       fontSize: '13px',
       letterSpacing: '0.2em',
-      color: '#A8721A',
+      color: '#26302A',
       textTransform: 'uppercase',
       display: 'block',
       marginBottom: '6px',
@@ -49,7 +49,7 @@ function Eyebrow({ children, style = {} }) {
 }
 
 function Rule() {
-  return <div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', margin: '28px 0' }} />
+  return <div style={{ height: '1px', background: 'rgba(110,127,92,0.20)', margin: '28px 0' }} />
 }
 
 // ─── Loading skeleton ──────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ function LoadingBar({ width = '100%', height = '16px', borderRadius = '4px' }) {
       width,
       height,
       borderRadius,
-      background: 'rgba(200,146,42,0.05)',
+      background: 'rgba(110,127,92,0.05)',
       animation: 'pulse 1.8s ease-in-out infinite',
     }} />
   )
@@ -84,8 +84,8 @@ function IdentityBar({ user, profile, focusName, loading }) {
       flexWrap: 'wrap',
       gap: '12px',
       padding: '20px 24px',
-      background: 'rgba(200,146,42,0.05)',
-      border: '1px solid rgba(200,146,42,0.20)',
+      background: 'rgba(110,127,92,0.05)',
+      border: '1px solid rgba(110,127,92,0.20)',
       borderRadius: '14px',
       marginBottom: '28px',
     }}>
@@ -136,7 +136,7 @@ function IdentityBar({ user, profile, focusName, loading }) {
             ...sc,
             fontSize: '13px',
             letterSpacing: '0.14em',
-            color: '#A8721A',
+            color: '#26302A',
             textDecoration: 'none',
             paddingTop: '4px',
             flexShrink: 0,
@@ -160,7 +160,7 @@ function HorizonStatePanel({ horizonProfile, loading }) {
     <div style={{
       padding: '18px 20px',
       background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.20)',
+      border: '1px solid rgba(110,127,92,0.20)',
       borderRadius: '14px',
       flex: 1,
       minWidth: 0,
@@ -176,7 +176,7 @@ function HorizonStatePanel({ horizonProfile, loading }) {
           </p>
           <a
             href="/tools/horizon-state"
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A', textDecoration: 'none' }}
           >
             Begin check-in
           </a>
@@ -201,7 +201,7 @@ function HorizonStatePanel({ horizonProfile, loading }) {
           </div>
           <a
             href="/tools/horizon-state"
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A', textDecoration: 'none' }}
           >
             Today's check-in
           </a>
@@ -218,7 +218,7 @@ function TodayPracticeCard({ practice, loading }) {
     <div style={{
       padding: '18px 20px',
       background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.20)',
+      border: '1px solid rgba(110,127,92,0.20)',
       borderRadius: '14px',
       flex: 1,
       minWidth: 0,
@@ -234,7 +234,7 @@ function TodayPracticeCard({ practice, loading }) {
           </p>
           <a
             href="/tools/horizon-practice"
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A', textDecoration: 'none' }}
           >
             Set up Horizon Practice
           </a>
@@ -258,7 +258,7 @@ function TodayPracticeCard({ practice, loading }) {
           )}
           <a
             href="/tools/horizon-practice"
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A', textDecoration: 'none' }}
           >
             Open practice
           </a>
@@ -271,7 +271,7 @@ function TodayPracticeCard({ practice, loading }) {
 // ─── Tier color helper ─────────────────────────────────────────────────────────
 
 function getTierColor(n) {
-  if (n == null) return 'rgba(200,146,42,0.5)'
+  if (n == null) return 'rgba(110,127,92,0.5)'
   if (n >= 9)   return '#3B6B9E'
   if (n >= 7)   return '#5A8AB8'
   if (n >= 5)   return '#8A8070'
@@ -292,7 +292,7 @@ function Footer() {
     <div style={{
       marginTop: '48px',
       paddingTop: '20px',
-      borderTop: '1px solid rgba(200,146,42,0.20)',
+      borderTop: '1px solid rgba(110,127,92,0.20)',
       display: 'flex',
       gap: '24px',
       flexWrap: 'wrap',
@@ -310,7 +310,7 @@ function Footer() {
             textTransform: 'uppercase',
             transition: 'color 150ms ease',
           }}
-          onMouseEnter={e => e.currentTarget.style.color = '#A8721A'}
+          onMouseEnter={e => e.currentTarget.style.color = '#26302A'}
           onMouseLeave={e => e.currentTarget.style.color = 'rgba(15,21,35,0.55)'}
         >
           {l.label}
@@ -620,7 +620,7 @@ function SelfWheelDivider() {
   return (
     <div style={{
       width: '1px',
-      background: 'rgba(200,146,42,0.08)',
+      background: 'rgba(110,127,92,0.08)',
       alignSelf: 'stretch',
       flexShrink: 0,
     }}

@@ -72,8 +72,8 @@ const WHEEL_STAGE_CSS = `
 }
 
 /* Backing pool — lifts the wheel off the map substrate.
-   Light stage: soft parchment pool with faint gold centre.
-   Dark stage:  deep ink pool with warm gold centre glow. */
+   Light stage: soft parchment pool with faint moss centre.
+   Dark stage:  deep ink pool with a darker-blue centre glow. */
 .mc-wheel-stage::before {
   content: '';
   position: absolute;
@@ -84,14 +84,14 @@ const WHEEL_STAGE_CSS = `
 }
 [data-stage="light"] .mc-wheel-stage::before {
   background: radial-gradient(ellipse at center,
-    rgba(88,160,138,0.07) 0%,
+    rgba(110,127,92,0.07) 0%,
     rgba(250,250,247,0.88) 40%,
     transparent 72%
   );
 }
 [data-stage="dark"] .mc-wheel-stage::before {
   background: radial-gradient(ellipse at center,
-    rgba(88,160,138,0.14) 0%,
+    rgba(32,64,100,0.16) 0%,
     rgba(20,26,40,0.92) 40%,
     transparent 72%
   );

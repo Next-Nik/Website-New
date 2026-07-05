@@ -23,8 +23,8 @@ function NorthStarModal({ domainKey, horizonGoal, purposeData, userId, onSelect,
   const [steering, setSteering] = useState(false)
   const [error,    setError]    = useState(null)
 
-  const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
+  const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+  const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
   const archetype = purposeData?.profile?.archetype || purposeData?.session?.tentative?.archetype?.archetype || null
   const domain    = purposeData?.profile?.domain    || purposeData?.session?.tentative?.domain?.domain       || null
@@ -99,7 +99,7 @@ Return ONLY a JSON array of 3 strings, no other text:
     >
       <div style={{
         background: '#FAFAF7', borderRadius: '14px',
-        border: '1px solid rgba(200,146,42,0.25)',
+        border: '1px solid rgba(110,127,92,0.25)',
         width: 'min(480px, 100%)', maxHeight: '80vh',
         overflowY: 'auto', padding: '24px',
         boxShadow: '0 20px 60px rgba(15,21,35,0.25)',
@@ -107,7 +107,7 @@ Return ONLY a JSON array of 3 strings, no other text:
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
           <div>
-            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', marginBottom: '4px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', marginBottom: '4px' }}>
               NORTH STAR · {DOMAIN_LABEL_MAP[domainKey].toUpperCase()}
             </div>
             <div style={{ ...sc, fontSize: '16px', color: '#0F1523', fontWeight: 500 }}>
@@ -118,20 +118,20 @@ Return ONLY a JSON array of 3 strings, no other text:
         </div>
 
         {/* Horizon goal reference */}
-        <div style={{ padding: '10px 14px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '8px', marginBottom: '16px' }}>
+        <div style={{ padding: '10px 14px', background: 'rgba(110,127,92,0.04)', border: '1px solid rgba(110,127,92,0.15)', borderRadius: '8px', marginBottom: '16px' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>Your horizon goal</div>
           <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: 0 }}>{horizonGoal}</p>
         </div>
 
         {/* Drafts */}
         {loading ? (
-          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', textAlign: 'center', padding: '24px 0' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textAlign: 'center', padding: '24px 0' }}>
             North Star is writing…
           </div>
         ) : error ? (
           <div>
             <p style={{ ...body, fontSize: '13px', color: '#8A3030', marginBottom: '12px' }}>{error}</p>
-            <button onClick={() => fetchDrafts()} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.3)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}>
+            <button onClick={() => fetchDrafts()} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', background: 'rgba(110,127,92,0.06)', border: '1px solid rgba(110,127,92,0.3)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}>
               Try again
             </button>
           </div>
@@ -143,14 +143,14 @@ Return ONLY a JSON array of 3 strings, no other text:
                 onClick={() => onSelect(draft)}
                 style={{
                   textAlign: 'left', padding: '12px 14px',
-                  background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.25)',
+                  background: '#FFFFFF', border: '1.5px solid rgba(110,127,92,0.25)',
                   borderRadius: '10px', cursor: 'pointer',
                   transition: 'all 0.15s', width: '100%',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.7)'; e.currentTarget.style.background = 'rgba(200,146,42,0.04)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.25)'; e.currentTarget.style.background = '#FFFFFF' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(110,127,92,0.7)'; e.currentTarget.style.background = 'rgba(110,127,92,0.04)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(110,127,92,0.25)'; e.currentTarget.style.background = '#FFFFFF' }}
               >
-                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', marginBottom: '4px' }}>DRAFT {i + 1}</div>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A', marginBottom: '4px' }}>DRAFT {i + 1}</div>
                 <div style={{ ...body, fontSize: '14px', color: '#0F1523', lineHeight: 1.6 }}>{draft}</div>
               </button>
             ))}
@@ -159,7 +159,7 @@ Return ONLY a JSON array of 3 strings, no other text:
 
         {/* Try again with steer */}
         {!loading && !error && (
-          <div style={{ borderTop: '1px solid rgba(200,146,42,0.12)', paddingTop: '16px' }}>
+          <div style={{ borderTop: '1px solid rgba(110,127,92,0.12)', paddingTop: '16px' }}>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>
               None of these? Steer North Star:
             </div>
@@ -171,14 +171,14 @@ Return ONLY a JSON array of 3 strings, no other text:
                 placeholder="e.g. more grounded, less abstract…"
                 style={{
                   flex: 1, ...body, fontSize: '13px', color: '#0F1523',
-                  border: '1px solid rgba(200,146,42,0.3)', borderRadius: '20px',
+                  border: '1px solid rgba(110,127,92,0.3)', borderRadius: '20px',
                   padding: '6px 14px', outline: 'none', background: '#FFFFFF',
                 }}
               />
               <button
                 onClick={handleTryAgain}
                 disabled={steering || !steer.trim()}
-                style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#FFFFFF', background: steering ? 'rgba(200,146,42,0.4)' : '#A8721A', border: 'none', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer', flexShrink: 0 }}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#FFFFFF', background: steering ? 'rgba(110,127,92,0.4)' : '#26302A', border: 'none', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer', flexShrink: 0 }}
               >{steering ? '…' : 'Go'}</button>
             </div>
           </div>
@@ -200,8 +200,8 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
     try { return !!localStorage.getItem('mc_ia_explained') } catch { return false }
   })
 
-  const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
+  const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+  const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
   function getIa(key) {
     return localIa[key] !== undefined
@@ -278,7 +278,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
         const displayIa   = localLifeIa || null
 
         return (
-          <div style={{ border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', background: '#FFFFFF', marginBottom: '8px', overflow: 'hidden' }}>
+          <div style={{ border: '1px solid rgba(110,127,92,0.25)', borderRadius: '8px', background: '#FFFFFF', marginBottom: '8px', overflow: 'hidden' }}>
 
             {!isEditingLife && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 14px' }}>
@@ -289,9 +289,9 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
                 >
                   {avgCurrent != null && (
                     <>
-                      <span style={{ ...sc, fontSize: '13px', color, textDecoration: lifeHorizon ? 'underline' : 'none', textUnderlineOffset: '2px', textDecorationColor: 'rgba(200,146,42,0.35)' }}>{avgCurrent}</span>
+                      <span style={{ ...sc, fontSize: '13px', color, textDecoration: lifeHorizon ? 'underline' : 'none', textUnderlineOffset: '2px', textDecorationColor: 'rgba(110,127,92,0.35)' }}>{avgCurrent}</span>
                       <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>→</span>
-                      <span style={{ ...sc, fontSize: '13px', color: avgHorizon != null ? '#C8922A' : 'rgba(200,146,42,0.3)' }}>{avgHorizon != null ? avgHorizon : '?'}</span>
+                      <span style={{ ...sc, fontSize: '13px', color: avgHorizon != null ? '#6E7F5C' : 'rgba(110,127,92,0.3)' }}>{avgHorizon != null ? avgHorizon : '?'}</span>
                     </>
                   )}
                 </div>
@@ -306,17 +306,17 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
                 <button
                   onClick={() => { setEditing('life'); setDraft(displayIa || ''); if (!hasEditedOnce) { setHasEditedOnce(true); try { localStorage.setItem('mc_ia_explained', '1') } catch {} } }}
                   style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', background: 'none', border: '1px solid rgba(15,21,35,0.55)', borderRadius: '20px', padding: '3px 9px', cursor: 'pointer', flexShrink: 0 }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#A8721A'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.4)' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#26302A'; e.currentTarget.style.borderColor = 'rgba(110,127,92,0.4)' }}
                   onMouseLeave={e => { e.currentTarget.style.color = 'rgba(15,21,35,0.35)'; e.currentTarget.style.borderColor = 'rgba(15,21,35,0.1)' }}
                 >Edit</button>
               </div>
             )}
 
             {isEditingLife && (
-              <div style={{ padding: '12px 14px', background: 'rgba(200,146,42,0.02)' }}>
-                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px' }}>Life Horizon</div>
+              <div style={{ padding: '12px 14px', background: 'rgba(110,127,92,0.02)' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', textTransform: 'uppercase', marginBottom: '10px' }}>Life Horizon</div>
                 {!hasEditedOnce && (
-                  <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '10px', paddingBottom: '10px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>
+                  <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '10px', paddingBottom: '10px', borderBottom: '1px solid rgba(110,127,92,0.1)' }}>
                     An "I am..." statement is a one-line, present-tense version of where you're going in this domain. Not a goal — a declaration. "I am an athlete, dancer, ninja." Write it as if it's already true. Keep refining it until you feel a spark when you read it back — that's how you know it's yours.
                   </p>
                 )}
@@ -325,16 +325,16 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
                   onChange={e => setDraft(e.target.value)}
                   placeholder="I am..."
                   rows={2}
-                  style={{ width: '100%', ...body, fontSize: '13px', color: '#0F1523', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '6px', padding: '8px 10px', resize: 'vertical', outline: 'none', background: '#FFFFFF', lineHeight: 1.6, boxSizing: 'border-box', marginBottom: '8px' }}
+                  style={{ width: '100%', ...body, fontSize: '13px', color: '#0F1523', border: '1px solid rgba(110,127,92,0.35)', borderRadius: '6px', padding: '8px 10px', resize: 'vertical', outline: 'none', background: '#FFFFFF', lineHeight: 1.6, boxSizing: 'border-box', marginBottom: '8px' }}
                   autoFocus
                 />
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={() => draft.trim() && saveLifeIa(draft.trim())} disabled={saving || !draft.trim()} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#FFFFFF', background: draft.trim() ? '#A8721A' : 'rgba(200,146,42,0.3)', border: 'none', borderRadius: '20px', padding: '5px 14px', cursor: draft.trim() ? 'pointer' : 'not-allowed' }}>{saving ? 'Saving…' : 'Save'}</button>
+                    <button onClick={() => draft.trim() && saveLifeIa(draft.trim())} disabled={saving || !draft.trim()} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#FFFFFF', background: draft.trim() ? '#26302A' : 'rgba(110,127,92,0.3)', border: 'none', borderRadius: '20px', padding: '5px 14px', cursor: draft.trim() ? 'pointer' : 'not-allowed' }}>{saving ? 'Saving…' : 'Save'}</button>
                     <button onClick={() => { setEditing(null); setDraft('') }} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '5px 0' }}>Cancel</button>
                   </div>
                   {lifeHorizon && (
-                    <button onClick={() => { setNsModal('life'); setEditing(null) }} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '20px', padding: '4px 10px', cursor: 'pointer' }}>Draft with North Star</button>
+                    <button onClick={() => { setNsModal('life'); setEditing(null) }} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', background: 'rgba(110,127,92,0.06)', border: '1px solid rgba(110,127,92,0.25)', borderRadius: '20px', padding: '4px 10px', cursor: 'pointer' }}>Draft with North Star</button>
                   )}
                 </div>
               </div>
@@ -354,7 +354,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
 
           return (
             <div key={key} style={{
-              border: '1px solid rgba(200,146,42,0.15)',
+              border: '1px solid rgba(110,127,92,0.15)',
               borderRadius: '8px',
               background: '#FFFFFF',
               overflow: 'hidden',
@@ -380,10 +380,10 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
                           ...sc, fontSize: '13px', color,
                           textDecoration: horizonGoal ? 'underline' : 'none',
                           textUnderlineOffset: '2px',
-                          textDecorationColor: 'rgba(200,146,42,0.35)',
+                          textDecorationColor: 'rgba(110,127,92,0.35)',
                         }}>{score}</span>
                         <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>→</span>
-                        <span style={{ ...sc, fontSize: '13px', color: horizonScores[key] != null ? '#C8922A' : 'rgba(200,146,42,0.3)' }}>
+                        <span style={{ ...sc, fontSize: '13px', color: horizonScores[key] != null ? '#6E7F5C' : 'rgba(110,127,92,0.3)' }}>
                           {horizonScores[key] != null ? horizonScores[key] : '?'}
                         </span>
                       </>
@@ -414,7 +414,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
                       padding: '3px 9px', cursor: 'pointer', flexShrink: 0,
                       transition: 'all 0.12s',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.color = '#A8721A'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.4)' }}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#26302A'; e.currentTarget.style.borderColor = 'rgba(110,127,92,0.4)' }}
                     onMouseLeave={e => { e.currentTarget.style.color = 'rgba(15,21,35,0.35)'; e.currentTarget.style.borderColor = 'rgba(15,21,35,0.1)' }}
                   >
                     Edit
@@ -424,16 +424,16 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
 
               {/* Edit panel — opens inline */}
               {isEditing && (
-                <div style={{ padding: '12px 14px', background: 'rgba(200,146,42,0.02)', borderTop: editing !== key ? 'none' : undefined }}>
+                <div style={{ padding: '12px 14px', background: 'rgba(110,127,92,0.02)', borderTop: editing !== key ? 'none' : undefined }}>
 
                   {/* Domain label in edit mode */}
-                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px' }}>
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', textTransform: 'uppercase', marginBottom: '10px' }}>
                     {DOMAIN_LABEL_MAP[key]}
                   </div>
 
                   {/* Explainer — first time only */}
                   {!hasEditedOnce && (
-                    <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '10px', paddingBottom: '10px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>
+                    <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '10px', paddingBottom: '10px', borderBottom: '1px solid rgba(110,127,92,0.1)' }}>
                       An "I am..." statement is a one-line, present-tense version of where you're going in this domain. Not a goal — a declaration. "I am an athlete, dancer, ninja." Write it as if it's already true. Keep refining it until you feel a spark when you read it back — that's how you know it's yours.
                     </p>
                   )}
@@ -446,7 +446,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
                     rows={2}
                     style={{
                       width: '100%', ...body, fontSize: '13px', color: '#0F1523',
-                      border: '1px solid rgba(200,146,42,0.35)', borderRadius: '6px',
+                      border: '1px solid rgba(110,127,92,0.35)', borderRadius: '6px',
                       padding: '8px 10px', resize: 'vertical', outline: 'none',
                       background: '#FFFFFF', lineHeight: 1.6, boxSizing: 'border-box',
                       marginBottom: '8px',
@@ -460,7 +460,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
                       <button
                         onClick={() => draft.trim() && saveIa(key, draft.trim())}
                         disabled={saving || !draft.trim()}
-                        style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#FFFFFF', background: draft.trim() ? '#A8721A' : 'rgba(200,146,42,0.3)', border: 'none', borderRadius: '20px', padding: '5px 14px', cursor: draft.trim() ? 'pointer' : 'not-allowed' }}
+                        style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#FFFFFF', background: draft.trim() ? '#26302A' : 'rgba(110,127,92,0.3)', border: 'none', borderRadius: '20px', padding: '5px 14px', cursor: draft.trim() ? 'pointer' : 'not-allowed' }}
                       >{saving ? 'Saving…' : 'Save'}</button>
                       <button
                         onClick={() => { setEditing(null); setDraft('') }}
@@ -471,7 +471,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
                     {horizonGoal && (
                       <button
                         onClick={() => { setNsModal(key); setEditing(null) }}
-                        style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '20px', padding: '4px 10px', cursor: 'pointer' }}
+                        style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', background: 'rgba(110,127,92,0.06)', border: '1px solid rgba(110,127,92,0.25)', borderRadius: '20px', padding: '4px 10px', cursor: 'pointer' }}
                       >Draft with North Star</button>
                     )}
                   </div>
@@ -495,14 +495,14 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
           ].map(t => (
             <a key={t.href} href={t.href} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '8px 12px', border: '1px solid rgba(200,146,42,0.18)',
-              borderRadius: '7px', background: 'rgba(200,146,42,0.02)', textDecoration: 'none',
+              padding: '8px 12px', border: '1px solid rgba(110,127,92,0.18)',
+              borderRadius: '7px', background: 'rgba(110,127,92,0.02)', textDecoration: 'none',
             }}>
               <div>
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: '#0F1523', fontWeight: 500 }}>{t.label}</div>
                 <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '1px' }}>{t.sub}</div>
               </div>
-              <span style={{ color: '#A8721A', fontSize: '13px' }}>→</span>
+              <span style={{ color: '#26302A', fontSize: '13px' }}>→</span>
             </a>
           ))}
         </div>
@@ -548,7 +548,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
               onClick={e => e.stopPropagation()}
               style={{
                 background: '#FAFAF7', borderRadius: '14px',
-                border: '1px solid rgba(200,146,42,0.25)',
+                border: '1px solid rgba(110,127,92,0.25)',
                 width: 'min(480px, 100%)', maxHeight: '80vh',
                 overflowY: 'auto', padding: '24px',
                 boxShadow: '0 20px 60px rgba(15,21,35,0.25)',
@@ -557,14 +557,14 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
               {/* Header */}
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
                 <div>
-                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '6px' }}>
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#26302A', marginBottom: '6px' }}>
                     {modalLabel}
                   </div>
                   {/* Score pair */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{ ...sc, fontSize: '20px', color }}>{current}</span>
                     <span style={{ ...sc, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>→</span>
-                    <span style={{ ...sc, fontSize: '20px', color: horizon != null ? '#C8922A' : 'rgba(200,146,42,0.3)' }}>
+                    <span style={{ ...sc, fontSize: '20px', color: horizon != null ? '#6E7F5C' : 'rgba(110,127,92,0.3)' }}>
                       {horizon != null ? horizon : '?'}
                     </span>
                     <span style={{ ...sc, fontSize: '13px', color, marginLeft: '4px' }}>{getTierLabel(current)}</span>
@@ -578,7 +578,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
 
               {/* Where I am now — avatar + reality */}
               {(avatar || reality) && (
-                <div style={{ marginBottom: '16px', padding: '12px 14px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '8px' }}>
+                <div style={{ marginBottom: '16px', padding: '12px 14px', background: 'rgba(110,127,92,0.03)', border: '1px solid rgba(110,127,92,0.15)', borderRadius: '8px' }}>
                   <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '8px' }}>Where I am now</div>
                   {avatar && <p style={{ ...body, fontSize: '13px', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.65, margin: '0 0 8px' }}>"{avatar}"</p>}
                   {reality && <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>{reality}</p>}
@@ -595,7 +595,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 <button
                   onClick={() => { setGoalModal(null); if (goalModal === 'life') { setEditing('life'); setDraft(localLifeIa || '') } else { openEdit(goalModal) } }}
-                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.3)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}
+                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A', background: 'rgba(110,127,92,0.06)', border: '1px solid rgba(110,127,92,0.3)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}
                 >Write my statement →</button>
                 <button
                   onClick={() => setGoalModal(null)}
@@ -630,7 +630,7 @@ function getTierLabel(n) {
 }
 
 function getTierColor(n) {
-  if (n == null) return 'rgba(200,146,42,0.3)'
+  if (n == null) return 'rgba(110,127,92,0.3)'
   if (n >= 9)   return '#3B6B9E'
   if (n >= 7)   return '#5A8AB8'
   if (n >= 5)   return '#8A8070'
@@ -643,7 +643,7 @@ function getTierColor(n) {
 function Eyebrow({ children, style = {} }) {
   return (
     <span style={{
-      ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A',
+      ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A',
       textTransform: 'uppercase', display: 'block', marginBottom: '6px', ...style,
     }}>
       {children}
@@ -652,12 +652,12 @@ function Eyebrow({ children, style = {} }) {
 }
 
 function Rule() {
-  return <div style={{ height: '1px', background: 'rgba(200,146,42,0.15)', margin: '16px 0' }} />
+  return <div style={{ height: '1px', background: 'rgba(110,127,92,0.15)', margin: '16px 0' }} />
 }
 
 function Badge({ children, variant = 'gold' }) {
   const styles = {
-    gold:  { bg: 'rgba(200,146,42,0.08)', border: 'rgba(200,146,42,0.35)', color: '#A8721A' },
+    gold:  { bg: 'rgba(110,127,92,0.08)', border: 'rgba(110,127,92,0.35)', color: '#26302A' },
     green: { bg: 'rgba(45,106,79,0.08)',  border: 'rgba(45,106,79,0.35)',  color: '#2D6A4F' },
     dim:   { bg: 'rgba(15,21,35,0.55)',   border: 'rgba(15,21,35,0.55)',   color: 'rgba(15,21,35,0.55)' },
     blue:  { bg: 'rgba(90,138,184,0.08)', border: 'rgba(90,138,184,0.35)', color: '#5A8AB8' },
@@ -685,8 +685,8 @@ function PulseStrip({ scores }) {
         return (
           <div key={k} style={{
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
-            padding: '8px 4px', background: 'rgba(200,146,42,0.03)',
-            border: '1px solid rgba(200,146,42,0.12)', borderRadius: '8px',
+            padding: '8px 4px', background: 'rgba(110,127,92,0.03)',
+            border: '1px solid rgba(110,127,92,0.12)', borderRadius: '8px',
           }}>
             <div style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
               {DOMAIN_LABELS[i].slice(0, 3)}
@@ -694,7 +694,7 @@ function PulseStrip({ scores }) {
             <div style={{ ...body, fontSize: '16px', fontWeight: 400, color: s != null ? color : 'rgba(15,21,35,0.55)', lineHeight: 1 }}>
               {s != null ? s : '–'}
             </div>
-            <div style={{ width: '100%', height: '3px', background: 'rgba(200,146,42,0.08)', borderRadius: '2px', overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: '3px', background: 'rgba(110,127,92,0.08)', borderRadius: '2px', overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: '2px' }} />
             </div>
           </div>
@@ -714,15 +714,15 @@ function TaskList({ tasks, checked, onCheck }) {
         return (
           <div key={i} style={{
             display: 'flex', alignItems: 'center', gap: '8px',
-            padding: '6px 10px', background: 'rgba(200,146,42,0.03)',
-            border: '1px solid rgba(200,146,42,0.10)', borderRadius: '6px',
+            padding: '6px 10px', background: 'rgba(110,127,92,0.03)',
+            border: '1px solid rgba(110,127,92,0.10)', borderRadius: '6px',
             opacity: done ? 0.55 : 1,
           }}>
             <div
               onClick={() => onCheck?.(i)}
               style={{
                 width: '14px', height: '14px', borderRadius: '3px', flexShrink: 0,
-                border: `1px solid ${done ? 'rgba(45,106,79,0.6)' : 'rgba(200,146,42,0.4)'}`,
+                border: `1px solid ${done ? 'rgba(45,106,79,0.6)' : 'rgba(110,127,92,0.4)'}`,
                 background: done ? 'rgba(45,106,79,0.12)' : 'transparent',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: onCheck ? 'pointer' : 'default',
@@ -734,7 +734,7 @@ function TaskList({ tasks, checked, onCheck }) {
               {text}
             </div>
             {due && (
-              <div style={{ ...sc, fontSize: '13px', color: due === 'Today' ? '#A8721A' : 'rgba(15,21,35,0.55)', fontWeight: due === 'Today' ? 500 : 400, flexShrink: 0 }}>
+              <div style={{ ...sc, fontSize: '13px', color: due === 'Today' ? '#26302A' : 'rgba(15,21,35,0.55)', fontWeight: due === 'Today' ? 500 : 400, flexShrink: 0 }}>
                 {due}
               </div>
             )}
@@ -749,14 +749,14 @@ function NextUpBanner({ label, sub, href }) {
   return (
     <Link to={href} style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '10px 14px', border: '1px solid rgba(200,146,42,0.45)',
-      borderRadius: '8px', background: 'rgba(200,146,42,0.05)', textDecoration: 'none',
+      padding: '10px 14px', border: '1px solid rgba(110,127,92,0.45)',
+      borderRadius: '8px', background: 'rgba(110,127,92,0.05)', textDecoration: 'none',
     }}>
       <div>
-        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', fontWeight: 500 }}>{label}</div>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A', fontWeight: 500 }}>{label}</div>
         {sub && <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '1px' }}>{sub}</div>}
       </div>
-      <span style={{ color: '#A8721A', fontSize: '14px' }}>→</span>
+      <span style={{ color: '#26302A', fontSize: '14px' }}>→</span>
     </Link>
   )
 }
@@ -765,7 +765,7 @@ function EmptySlot({ cta, ctaUrl }) {
   return (
     <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>
       Not yet started.{' '}
-      {cta && ctaUrl && <Link to={ctaUrl} style={{ color: '#A8721A', textDecoration: 'none' }}>{cta} →</Link>}
+      {cta && ctaUrl && <Link to={ctaUrl} style={{ color: '#26302A', textDecoration: 'none' }}>{cta} →</Link>}
     </div>
   )
 }
@@ -791,13 +791,13 @@ function HorizonStatePanel({ foundationData }) {
         style={{
           display: 'flex', alignItems: 'center', gap: '10px',
           padding: '9px 12px', background: 'rgba(250,250,247,1)',
-          border: `1px solid ${open ? 'rgba(200,146,42,0.55)' : 'rgba(200,146,42,0.2)'}`,
+          border: `1px solid ${open ? 'rgba(110,127,92,0.55)' : 'rgba(110,127,92,0.2)'}`,
           borderRadius: open ? '8px 8px 0 0' : '8px', cursor: 'pointer',
           transition: 'border-color 0.15s',
         }}
       >
-        <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(200,146,42,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4" stroke="#A8721A" strokeWidth="1.5"/><circle cx="6" cy="6" r="1.5" fill="#A8721A"/></svg>
+        <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(110,127,92,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4" stroke="#26302A" strokeWidth="1.5"/><circle cx="6" cy="6" r="1.5" fill="#26302A"/></svg>
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#0F1523', fontWeight: 500 }}>Audio</div>
@@ -807,13 +807,13 @@ function HorizonStatePanel({ foundationData }) {
         </div>
         {streak > 0 && <Badge variant="gold">{streak} day streak</Badge>}
         <Badge variant={practicedToday ? 'green' : 'gold'}>{practicedToday ? 'Done' : 'Practice'}</Badge>
-        <span style={{ color: '#A8721A', fontSize: '13px', transform: open ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>›</span>
+        <span style={{ color: '#26302A', fontSize: '13px', transform: open ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>›</span>
       </div>
 
       {open && (
         <div style={{
-          padding: '14px', background: 'rgba(200,146,42,0.03)',
-          border: '1px solid rgba(200,146,42,0.2)', borderTop: 'none',
+          padding: '14px', background: 'rgba(110,127,92,0.03)',
+          border: '1px solid rgba(110,127,92,0.2)', borderTop: 'none',
           borderRadius: '0 0 8px 8px',
         }}>
           {/* Phase strip */}
@@ -822,9 +822,9 @@ function HorizonStatePanel({ foundationData }) {
               <span key={p} style={{
                 ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '3px 7px',
                 borderRadius: '20px', border: '1px solid',
-                borderColor: i === phaseIdx ? 'rgba(200,146,42,0.5)' : 'rgba(200,146,42,0.12)',
-                background: i === phaseIdx ? 'rgba(200,146,42,0.1)' : 'transparent',
-                color: i === phaseIdx ? '#A8721A' : 'rgba(15,21,35,0.55)',
+                borderColor: i === phaseIdx ? 'rgba(110,127,92,0.5)' : 'rgba(110,127,92,0.12)',
+                background: i === phaseIdx ? 'rgba(110,127,92,0.1)' : 'transparent',
+                color: i === phaseIdx ? '#26302A' : 'rgba(15,21,35,0.55)',
                 fontWeight: i === phaseIdx ? 500 : 400,
               }}>
                 {p}
@@ -835,20 +835,20 @@ function HorizonStatePanel({ foundationData }) {
           {/* Player mock */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
             <Link to="/tools/horizon-state" style={{
-              width: '30px', height: '30px', borderRadius: '50%', background: '#A8721A',
+              width: '30px', height: '30px', borderRadius: '50%', background: '#26302A',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, textDecoration: 'none',
             }}>
               <svg width="9" height="11" viewBox="0 0 9 11" fill="white"><path d="M0 0L9 5.5L0 11Z"/></svg>
             </Link>
-            <div style={{ flex: 1, height: '3px', background: 'rgba(200,146,42,0.15)', borderRadius: '2px', position: 'relative' }}>
-              <div style={{ position: 'absolute', left: 0, width: '35%', height: '100%', background: '#A8721A', borderRadius: '2px' }} />
+            <div style={{ flex: 1, height: '3px', background: 'rgba(110,127,92,0.15)', borderRadius: '2px', position: 'relative' }}>
+              <div style={{ position: 'absolute', left: 0, width: '35%', height: '100%', background: '#26302A', borderRadius: '2px' }} />
             </div>
             <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
               {foundationData?.sessions_total ? `${foundationData.sessions_week ?? 0} this week` : '20 min'}
             </span>
           </div>
 
-          <Link to="/tools/horizon-state" style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>
+          <Link to="/tools/horizon-state" style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A', textDecoration: 'none' }}>
             Open full session →
           </Link>
         </div>
@@ -902,36 +902,36 @@ function SprintCard({ sprintData }) {
   }).join(' · ')
 
   return (
-    <div style={{ border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', overflow: 'hidden' }}>
+    <div style={{ border: '1px solid rgba(110,127,92,0.2)', borderRadius: '8px', overflow: 'hidden' }}>
       {/* Header */}
       <div
         onClick={() => setExpanded(o => !o)}
-        style={{ padding: '10px 12px', background: 'rgba(200,146,42,0.03)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+        style={{ padding: '10px 12px', background: 'rgba(110,127,92,0.03)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
       >
         <div style={{ flex: 1 }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#0F1523', fontWeight: 500 }}>Tasks</div>
           <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '1px' }}>{domainNames}</div>
         </div>
         {daysLabel && <Badge variant={daysUrgent ? 'red' : 'gold'}>{daysLabel}</Badge>}
-        <span style={{ ...sc, fontSize: '13px', color: '#A8721A' }}>{pct}%</span>
-        <span style={{ color: '#A8721A', fontSize: '13px', transform: expanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>›</span>
+        <span style={{ ...sc, fontSize: '13px', color: '#26302A' }}>{pct}%</span>
+        <span style={{ color: '#26302A', fontSize: '13px', transform: expanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>›</span>
       </div>
 
       {/* Progress bar */}
-      <div style={{ height: '3px', background: 'rgba(200,146,42,0.08)' }}>
-        <div style={{ height: '100%', width: `${pct}%`, background: '#A8721A', transition: 'width 0.4s' }} />
+      <div style={{ height: '3px', background: 'rgba(110,127,92,0.08)' }}>
+        <div style={{ height: '100%', width: `${pct}%`, background: '#26302A', transition: 'width 0.4s' }} />
       </div>
 
       {/* Upcoming tasks — always visible */}
       {upcoming.length > 0 && (
-        <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(200,146,42,0.08)' }}>
+        <div style={{ padding: '10px 12px', borderTop: '1px solid rgba(110,127,92,0.08)' }}>
           <TaskList tasks={upcoming.map(t => ({ text: `[${t.domain}] ${t.text}`, due: t.due }))} checked={{}} />
         </div>
       )}
 
       {/* Expanded: full domain breakdown */}
       {expanded && (
-        <div style={{ padding: '12px', borderTop: '1px solid rgba(200,146,42,0.1)', background: 'rgba(200,146,42,0.02)' }}>
+        <div style={{ padding: '12px', borderTop: '1px solid rgba(110,127,92,0.1)', background: 'rgba(110,127,92,0.02)' }}>
           {domains.map(id => {
             const d = dd[id] ?? {}
             const tasks = d.tasks ?? []
@@ -942,7 +942,7 @@ function SprintCard({ sprintData }) {
             return (
               <div key={id} style={{ marginBottom: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A' }}>{label}</span>
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A' }}>{label}</span>
                   <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{tDone}/{tasks.length}</span>
                 </div>
                 {d.targetGoal && (
@@ -952,7 +952,7 @@ function SprintCard({ sprintData }) {
               </div>
             )
           })}
-          <Link to="/tools/target-sprint" style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>
+          <Link to="/tools/target-sprint" style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A', textDecoration: 'none' }}>
             Open full sprint →
           </Link>
         </div>
@@ -973,10 +973,10 @@ function PracticeCard({ practiceData }) {
   const tea   = today?.tea ?? {}
 
   return (
-    <div style={{ border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', overflow: 'hidden' }}>
+    <div style={{ border: '1px solid rgba(110,127,92,0.2)', borderRadius: '8px', overflow: 'hidden' }}>
       <div
         onClick={() => setExpanded(o => !o)}
-        style={{ padding: '10px 12px', background: 'rgba(200,146,42,0.03)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
+        style={{ padding: '10px 12px', background: 'rgba(110,127,92,0.03)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
       >
         <div style={{ flex: 1 }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#0F1523', fontWeight: 500 }}>Daily</div>
@@ -985,15 +985,15 @@ function PracticeCard({ practiceData }) {
           </div>
         </div>
         <Badge variant="gold">Today</Badge>
-        <span style={{ color: '#A8721A', fontSize: '13px', transform: expanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>›</span>
+        <span style={{ color: '#26302A', fontSize: '13px', transform: expanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>›</span>
       </div>
 
       {/* T.E.A. strip — always visible */}
       {(tea.think || tea.embody || tea.act) && (
-        <div style={{ padding: '8px 12px', borderTop: '1px solid rgba(200,146,42,0.08)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px' }}>
+        <div style={{ padding: '8px 12px', borderTop: '1px solid rgba(110,127,92,0.08)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px' }}>
           {[['T', 'Think', tea.think], ['E', 'Embody', tea.embody], ['A', 'Act', tea.act]].map(([abbr, label, val]) => (
-            <div key={abbr} style={{ padding: '6px 8px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.1)', borderRadius: '6px' }}>
-              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', marginBottom: '2px' }}>{label}</div>
+            <div key={abbr} style={{ padding: '6px 8px', background: 'rgba(110,127,92,0.03)', border: '1px solid rgba(110,127,92,0.1)', borderRadius: '6px' }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A', marginBottom: '2px' }}>{label}</div>
               <div style={{ ...body, fontSize: '13px', color: '#0F1523', lineHeight: 1.4 }}>{val ?? '–'}</div>
             </div>
           ))}
@@ -1001,7 +1001,7 @@ function PracticeCard({ practiceData }) {
       )}
 
       {expanded && (
-        <div style={{ padding: '12px', borderTop: '1px solid rgba(200,146,42,0.1)', background: 'rgba(200,146,42,0.02)' }}>
+        <div style={{ padding: '12px', borderTop: '1px solid rgba(110,127,92,0.1)', background: 'rgba(110,127,92,0.02)' }}>
           {practiceData?.skill && (
             <div style={{ marginBottom: '10px' }}>
               <Eyebrow>Skill development</Eyebrow>
@@ -1014,7 +1014,7 @@ function PracticeCard({ practiceData }) {
               <div style={{ ...body, fontSize: '13px', color: '#0F1523' }}>{practiceData.identityAnchor}</div>
             </div>
           )}
-          <Link to="/tools/horizon-practice" style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>
+          <Link to="/tools/horizon-practice" style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A', textDecoration: 'none' }}>
             Open full practice →
           </Link>
         </div>
@@ -1045,10 +1045,10 @@ function HorizonWheelMini({ currentScores, horizonScores, size = 180, onDomainCl
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} display="block" overflow="visible">
       {[2, 4, 6, 8, 10].map(v => {
         const pts = DOMAIN_KEYS.map((_, i) => pt(i, v).join(',')).join(' ')
-        return <polygon key={v} points={pts} fill="none" stroke={v === 5 ? 'rgba(138,48,48,0.15)' : 'rgba(200,146,42,0.07)'} strokeWidth={v === 5 ? 1 : 0.5} strokeDasharray={v === 5 ? '2 2' : 'none'} />
+        return <polygon key={v} points={pts} fill="none" stroke={v === 5 ? 'rgba(138,48,48,0.15)' : 'rgba(110,127,92,0.07)'} strokeWidth={v === 5 ? 1 : 0.5} strokeDasharray={v === 5 ? '2 2' : 'none'} />
       })}
-      {hasHorizon && <polygon points={horizonPts} fill="rgba(200,146,42,0.06)" stroke="#C8922A" strokeWidth="1.5" strokeDasharray="3 2" />}
-      <polygon points={currentPts} fill="rgba(200,146,42,0.07)" stroke="rgba(200,146,42,0.55)" strokeWidth="1.5" strokeLinejoin="round" />
+      {hasHorizon && <polygon points={horizonPts} fill="rgba(110,127,92,0.06)" stroke="#6E7F5C" strokeWidth="1.5" strokeDasharray="3 2" />}
+      <polygon points={currentPts} fill="rgba(110,127,92,0.07)" stroke="rgba(110,127,92,0.55)" strokeWidth="1.5" strokeLinejoin="round" />
       {DOMAIN_KEYS.map((k, i) => {
         const s = currentScores[k]
         if (s == null) return null
@@ -1069,7 +1069,7 @@ function HorizonWheelMini({ currentScores, horizonScores, size = 180, onDomainCl
         const anchor = Math.abs(lx - cx) < 8 ? 'middle' : lx < cx ? 'end' : 'start'
         return (
           <text key={k} x={lx} y={ly} textAnchor={anchor} dominantBaseline="middle"
-            fontFamily="'Cormorant SC', Georgia, serif" fontSize="8" letterSpacing="0.5"
+            fontFamily="'IBM Plex Mono', Georgia, serif" fontSize="8" letterSpacing="0.5"
             fill="rgba(15,21,35,0.55)">
             {DOMAIN_LABELS[i].slice(0, 3)}
           </text>
@@ -1102,8 +1102,8 @@ function ProfileView({ user, onSignOut }) {
   return (
     <div>
       {/* Hero */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '10px', marginBottom: '14px' }}>
-        <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(200,146,42,0.12)', border: '2px solid rgba(200,146,42,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, ...sc, fontSize: '20px', color: '#A8721A', fontWeight: 500 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'rgba(110,127,92,0.03)', border: '1px solid rgba(110,127,92,0.15)', borderRadius: '10px', marginBottom: '14px' }}>
+        <div style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(110,127,92,0.12)', border: '2px solid rgba(110,127,92,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, ...sc, fontSize: '20px', color: '#26302A', fontWeight: 500 }}>
           {initials}
         </div>
         <div style={{ flex: 1 }}>
@@ -1114,7 +1114,7 @@ function ProfileView({ user, onSignOut }) {
       </div>
 
       {/* Horizon Self */}
-      <div style={{ padding: '14px 16px', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '10px', background: 'rgba(200,146,42,0.04)', marginBottom: '14px' }}>
+      <div style={{ padding: '14px 16px', border: '1px solid rgba(110,127,92,0.35)', borderRadius: '10px', background: 'rgba(110,127,92,0.04)', marginBottom: '14px' }}>
         <Eyebrow>Horizon Self</Eyebrow>
         {editing ? (
           <div>
@@ -1122,10 +1122,10 @@ function ProfileView({ user, onSignOut }) {
               value={horizonSelf}
               onChange={e => setHorizonSelf(e.target.value)}
               rows={3}
-              style={{ ...body, fontSize: '13px', color: '#0F1523', width: '100%', padding: '8px 10px', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '6px', background: '#FFFFFF', outline: 'none', resize: 'vertical', lineHeight: 1.6, marginBottom: '8px' }}
+              style={{ ...body, fontSize: '13px', color: '#0F1523', width: '100%', padding: '8px 10px', border: '1px solid rgba(110,127,92,0.35)', borderRadius: '6px', background: '#FFFFFF', outline: 'none', resize: 'vertical', lineHeight: 1.6, marginBottom: '8px' }}
             />
             <div style={{ display: 'flex', gap: '8px' }}>
-              <button onClick={saveHorizonSelf} disabled={saving} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#FFFFFF', background: '#C8922A', border: 'none', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}>
+              <button onClick={saveHorizonSelf} disabled={saving} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#FFFFFF', background: '#6E7F5C', border: 'none', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}>
                 {saving ? 'Saving…' : 'Save'}
               </button>
               <button onClick={() => setEditing(false)} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', background: 'transparent', border: '1px solid rgba(15,21,35,0.55)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}>
@@ -1140,7 +1140,7 @@ function ProfileView({ user, onSignOut }) {
             ) : (
               <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', margin: '0 0 8px' }}>Not yet written. Complete Purpose Piece to unlock.</p>
             )}
-            <button onClick={() => setEditing(true)} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            <button onClick={() => setEditing(true)} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               {horizonSelf ? 'Edit statement →' : 'Add statement →'}
             </button>
           </div>
@@ -1148,22 +1148,22 @@ function ProfileView({ user, onSignOut }) {
       </div>
 
       {/* Public profile */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.12)', borderRadius: '8px', marginBottom: '14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(110,127,92,0.03)', border: '1px solid rgba(110,127,92,0.12)', borderRadius: '8px', marginBottom: '14px' }}>
         <div>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#0F1523', fontWeight: 500 }}>Contributor profile</div>
           <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '1px' }}>Visible to organisations on NextUs Planet</div>
         </div>
-        <Link to={`/nextus/contributors/${user?.id}`} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', textDecoration: 'none' }}>View →</Link>
+        <Link to={`/nextus/contributors/${user?.id}`} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textDecoration: 'none' }}>View →</Link>
       </div>
 
       {/* Account */}
       <Eyebrow>Account</Eyebrow>
-      <div style={{ background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.12)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
+      <div style={{ background: 'rgba(110,127,92,0.03)', border: '1px solid rgba(110,127,92,0.12)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
         {[
           ['Email', email],
           ['Subscription', 'Pro · Active'],
         ].map(([label, val], i, arr) => (
-          <div key={label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 14px', borderBottom: i < arr.length - 1 ? '1px solid rgba(200,146,42,0.08)' : 'none' }}>
+          <div key={label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 14px', borderBottom: i < arr.length - 1 ? '1px solid rgba(110,127,92,0.08)' : 'none' }}>
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>{label}</span>
             <span style={{ ...body, fontSize: '13px', color: label === 'Subscription' ? '#2D6A4F' : 'rgba(15,21,35,0.72)' }}>{val}</span>
           </div>
@@ -1171,13 +1171,13 @@ function ProfileView({ user, onSignOut }) {
       </div>
 
       {isFounder && (
-        <Link to="/admin" style={{ display: 'block', textAlign: 'center', padding: '9px', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', marginBottom: '10px', background: 'rgba(200,146,42,0.04)' }}>
+        <Link to="/admin" style={{ display: 'block', textAlign: 'center', padding: '9px', border: '1px solid rgba(110,127,92,0.25)', borderRadius: '8px', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', textDecoration: 'none', marginBottom: '10px', background: 'rgba(110,127,92,0.04)' }}>
           Admin Console →
         </Link>
       )}
 
       {isFounder && (
-        <Link to="/movie-magic" style={{ display: 'block', textAlign: 'center', padding: '9px', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', marginBottom: '10px', background: 'rgba(200,146,42,0.04)' }}>
+        <Link to="/movie-magic" style={{ display: 'block', textAlign: 'center', padding: '9px', border: '1px solid rgba(110,127,92,0.25)', borderRadius: '8px', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', textDecoration: 'none', marginBottom: '10px', background: 'rgba(110,127,92,0.04)' }}>
           Movie Magic →
         </Link>
       )}
@@ -1261,7 +1261,7 @@ function PlanetView({ purposeData, activeView }) {
             </div>
           </div>
         ))}
-        <div style={{ marginTop: '12px', padding: '10px 12px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '8px' }}>
+        <div style={{ marginTop: '12px', padding: '10px 12px', background: 'rgba(110,127,92,0.03)', border: '1px solid rgba(110,127,92,0.15)', borderRadius: '8px' }}>
           <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.5 }}>
             Gap Signals fire when a domain simultaneously has low score, low actor density, and low funding. Your contribution archetype determines which gaps are surfaced for you.
           </div>
@@ -1276,12 +1276,12 @@ function PlanetView({ purposeData, activeView }) {
         <Eyebrow>Organisations in the field</Eyebrow>
         <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
           {CIVILISATIONAL_DOMAINS.slice(0, 4).map(d => (
-            <span key={d.key} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '3px 8px', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '20px', color: '#A8721A', cursor: 'pointer', background: 'rgba(200,146,42,0.04)' }}>{d.label.split(' ')[0]}</span>
+            <span key={d.key} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '3px 8px', border: '1px solid rgba(110,127,92,0.2)', borderRadius: '20px', color: '#26302A', cursor: 'pointer', background: 'rgba(110,127,92,0.04)' }}>{d.label.split(' ')[0]}</span>
           ))}
         </div>
         <NextUpBanner label="Browse all organisations" sub="247 orgs · 43 countries · 7 domains · Preview" href="/nextus/actors" />
         <div style={{ marginTop: '10px' }}>
-          <Link to="/nextus/map" style={{ display: 'block', textAlign: 'center', padding: '10px', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', textDecoration: 'none', background: 'rgba(200,146,42,0.03)' }}>
+          <Link to="/nextus/map" style={{ display: 'block', textAlign: 'center', padding: '10px', border: '1px solid rgba(110,127,92,0.2)', borderRadius: '8px', ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textDecoration: 'none', background: 'rgba(110,127,92,0.03)' }}>
             Open geo map →
           </Link>
         </div>
@@ -1295,9 +1295,9 @@ function PlanetView({ purposeData, activeView }) {
       <Eyebrow>Civilisational domain health</Eyebrow>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '5px', marginBottom: '14px' }}>
         {CIVILISATIONAL_DOMAINS.map(d => (
-          <div key={d.key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', padding: '8px 3px', background: d.alert ? 'rgba(138,48,48,0.04)' : 'rgba(200,146,42,0.03)', border: `1px solid ${d.alert ? 'rgba(138,48,48,0.25)' : 'rgba(200,146,42,0.12)'}`, borderRadius: '6px', cursor: 'pointer' }}>
+          <div key={d.key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px', padding: '8px 3px', background: d.alert ? 'rgba(138,48,48,0.04)' : 'rgba(110,127,92,0.03)', border: `1px solid ${d.alert ? 'rgba(138,48,48,0.25)' : 'rgba(110,127,92,0.12)'}`, borderRadius: '6px', cursor: 'pointer' }}>
             <div style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)', textAlign: 'center', lineHeight: 1.3 }}>{d.label.split(' ').slice(0, 2).join('\n')}</div>
-            <div style={{ ...body, fontSize: '14px', fontWeight: 400, color: d.alert ? '#8A3030' : d.score >= 7 ? '#A8721A' : '#8A7030' }}>{d.score}</div>
+            <div style={{ ...body, fontSize: '14px', fontWeight: 400, color: d.alert ? '#8A3030' : d.score >= 7 ? '#26302A' : '#8A7030' }}>{d.score}</div>
           </div>
         ))}
       </div>
@@ -1314,12 +1314,12 @@ function PlanetView({ purposeData, activeView }) {
 
       <Rule />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-        <div style={{ padding: '10px 12px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.12)', borderRadius: '8px', textAlign: 'center' }}>
-          <div style={{ ...body, fontSize: '22px', fontWeight: 400, color: '#A8721A' }}>247</div>
+        <div style={{ padding: '10px 12px', background: 'rgba(110,127,92,0.03)', border: '1px solid rgba(110,127,92,0.12)', borderRadius: '8px', textAlign: 'center' }}>
+          <div style={{ ...body, fontSize: '22px', fontWeight: 400, color: '#26302A' }}>247</div>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>orgs · 43 countries</div>
         </div>
-        <div style={{ padding: '10px 12px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.12)', borderRadius: '8px', textAlign: 'center' }}>
-          <div style={{ ...sc, fontSize: '13px', fontWeight: 500, color: '#A8721A' }}>{domain ?? '–'}</div>
+        <div style={{ padding: '10px 12px', background: 'rgba(110,127,92,0.03)', border: '1px solid rgba(110,127,92,0.12)', borderRadius: '8px', textAlign: 'center' }}>
+          <div style={{ ...sc, fontSize: '13px', fontWeight: 500, color: '#26302A' }}>{domain ?? '–'}</div>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>your domain</div>
         </div>
       </div>
@@ -1347,12 +1347,12 @@ function WorkView({ purposeData, userId, claimedActor, activeView }) {
       <div>
         <Eyebrow>Organisations I contribute to</Eyebrow>
         {claimedActor ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '8px' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#A8721A', flexShrink: 0 }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', background: 'rgba(110,127,92,0.03)', border: '1px solid rgba(110,127,92,0.2)', borderRadius: '8px', marginBottom: '8px' }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#26302A', flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: '#0F1523', fontWeight: 500 }}>{claimedActor.name}</div>
             </div>
-            <Link to={`/nextus/actors/${claimedActor.id}`} style={{ ...sc, fontSize: '13px', color: '#A8721A', textDecoration: 'none' }}>View →</Link>
+            <Link to={`/nextus/actors/${claimedActor.id}`} style={{ ...sc, fontSize: '13px', color: '#26302A', textDecoration: 'none' }}>View →</Link>
           </div>
         ) : (
           <NextUpBanner label="Find orgs to contribute to" sub="Browse by domain, scale, and horizon goal" href="/nextus/actors" />
@@ -1370,7 +1370,7 @@ function WorkView({ purposeData, userId, claimedActor, activeView }) {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {offers.map(o => (
-              <div key={o.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '6px' }}>
+              <div key={o.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px', background: 'rgba(110,127,92,0.03)', border: '1px solid rgba(110,127,92,0.15)', borderRadius: '6px' }}>
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#5A8AB8', background: 'rgba(90,138,184,0.08)', border: '1px solid rgba(90,138,184,0.25)', borderRadius: '20px', padding: '2px 7px' }}>{o.offer_type}</span>
                 <span style={{ ...body, fontSize: '13px', color: '#0F1523', flex: 1 }}>{o.title}</span>
               </div>
@@ -1378,7 +1378,7 @@ function WorkView({ purposeData, userId, claimedActor, activeView }) {
           </div>
         )}
         <div style={{ marginTop: '10px' }}>
-          <Link to={`/nextus/contributors/${userId}`} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', textDecoration: 'none' }}>Manage offers →</Link>
+          <Link to={`/nextus/contributors/${userId}`} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textDecoration: 'none' }}>Manage offers →</Link>
         </div>
       </div>
     )
@@ -1388,7 +1388,7 @@ function WorkView({ purposeData, userId, claimedActor, activeView }) {
   return (
     <div>
       {statement && (
-        <div style={{ padding: '12px 14px', border: '1px solid rgba(200,146,42,0.3)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '4px 8px 8px 4px', background: 'rgba(200,146,42,0.03)', marginBottom: '14px' }}>
+        <div style={{ padding: '12px 14px', border: '1px solid rgba(110,127,92,0.3)', borderLeft: '3px solid rgba(110,127,92,0.55)', borderRadius: '4px 8px 8px 4px', background: 'rgba(110,127,92,0.03)', marginBottom: '14px' }}>
           <Eyebrow>Civilisational statement</Eyebrow>
           <p style={{ ...body, fontSize: '13px', fontWeight: 400, color: '#0F1523', lineHeight: 1.7, margin: 0 }}>{statement}</p>
         </div>
@@ -1414,14 +1414,14 @@ function WorkView({ purposeData, userId, claimedActor, activeView }) {
           [offers.length.toString(), 'active offers'],
           ['–', 'open needs'],
         ].map(([num, label]) => (
-          <div key={label} style={{ padding: '10px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.12)', borderRadius: '8px', textAlign: 'center' }}>
-            <div style={{ ...body, fontSize: '20px', fontWeight: 400, color: '#A8721A' }}>{num}</div>
+          <div key={label} style={{ padding: '10px', background: 'rgba(110,127,92,0.03)', border: '1px solid rgba(110,127,92,0.12)', borderRadius: '8px', textAlign: 'center' }}>
+            <div style={{ ...body, fontSize: '20px', fontWeight: 400, color: '#26302A' }}>{num}</div>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>{label}</div>
           </div>
         ))}
       </div>
 
-      <Link to={`/nextus/contributors/${userId}`} style={{ display: 'block', textAlign: 'center', padding: '9px', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', textDecoration: 'none', background: 'rgba(200,146,42,0.03)' }}>
+      <Link to={`/nextus/contributors/${userId}`} style={{ display: 'block', textAlign: 'center', padding: '9px', border: '1px solid rgba(110,127,92,0.2)', borderRadius: '8px', ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textDecoration: 'none', background: 'rgba(110,127,92,0.03)' }}>
         View contributor profile →
       </Link>
     </div>
@@ -1436,8 +1436,8 @@ const ZONES = ['you', 'work', 'practitioners', 'planet']
 
 // ── SupportView ───────────────────────────────────────────────
 function SupportView({ user }) {
-  const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
+  const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+  const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
   const SUBJECTS = [
     'Question about the platform',
@@ -1477,14 +1477,14 @@ function SupportView({ user }) {
   if (sent) {
     return (
       <div style={{ maxWidth: '480px' }}>
-        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', fontSize: '18px' }}>✦</div>
+        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(110,127,92,0.08)', border: '1.5px solid rgba(110,127,92,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', fontSize: '18px' }}>✦</div>
         <div style={{ ...sc, fontSize: '18px', color: '#0F1523', marginBottom: '8px' }}>Sent.</div>
         <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.6)', lineHeight: 1.7, marginBottom: '20px' }}>
           Your message is with the team. You'll hear back from support@nextus.world.
         </p>
         <button
           onClick={() => { setSent(false); setMessage(''); setSubject(SUBJECTS[0]) }}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
           Send another →
         </button>
@@ -1494,7 +1494,7 @@ function SupportView({ user }) {
 
   return (
     <div style={{ maxWidth: '520px' }}>
-      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '4px', textTransform: 'uppercase' }}>Support</div>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#26302A', marginBottom: '4px', textTransform: 'uppercase' }}>Support</div>
       <div style={{ ...sc, fontSize: '19px', color: '#0F1523', marginBottom: '6px' }}>Get in touch.</div>
       <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '28px' }}>
         Questions, something broken, something unclear — someone from the team will get back to you.
@@ -1508,7 +1508,7 @@ function SupportView({ user }) {
           onChange={e => setSubject(e.target.value)}
           style={{
             width: '100%', padding: '10px 14px',
-            border: '1.5px solid rgba(200,146,42,0.45)',
+            border: '1.5px solid rgba(110,127,92,0.45)',
             borderRadius: '40px', background: '#FFFFFF',
             ...body, fontSize: '14px', color: '#0F1523',
             outline: 'none', cursor: 'pointer',
@@ -1529,14 +1529,14 @@ function SupportView({ user }) {
           rows={5}
           style={{
             width: '100%', padding: '12px 14px',
-            border: '1.5px solid rgba(200,146,42,0.45)',
+            border: '1.5px solid rgba(110,127,92,0.45)',
             borderRadius: '14px', background: '#FFFFFF',
             ...body, fontSize: '15px', color: '#0F1523',
             outline: 'none', resize: 'vertical', boxSizing: 'border-box',
             lineHeight: 1.65,
           }}
-          onFocus={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
-          onBlur={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.45)' }}
+          onFocus={e => { e.currentTarget.style.borderColor = 'rgba(110,127,92,0.78)' }}
+          onBlur={e => { e.currentTarget.style.borderColor = 'rgba(110,127,92,0.45)' }}
         />
       </div>
 
@@ -1545,7 +1545,7 @@ function SupportView({ user }) {
       </p>
 
       {error && (
-        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginBottom: '12px', padding: '10px 14px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '8px' }}>
+        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginBottom: '12px', padding: '10px 14px', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.35)', borderRadius: '8px' }}>
           {error}
         </p>
       )}
@@ -1556,8 +1556,8 @@ function SupportView({ user }) {
           disabled={sending}
           style={{
             padding: '11px 24px', borderRadius: '40px',
-            border: '1px solid rgba(168,114,26,0.8)',
-            background: '#C8922A', color: '#FFFFFF',
+            border: '1px solid rgba(38,48,42,0.8)',
+            background: '#6E7F5C', color: '#FFFFFF',
             ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em',
             cursor: sending ? 'default' : 'pointer',
             opacity: sending ? 0.6 : 1,
@@ -1591,8 +1591,8 @@ const INVITE_GROUPS = new Set(['beta_tester', 'beta_core', 'early_bird'])
 const INVITE_PRICE  = 'price_1TKOqcCWnSAIfnqOXXzytZiC'
 
 function InviteCard({ referralCode, betaGroup }) {
-  const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
+  const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+  const body = { fontFamily: "'Newsreader', Georgia, serif" }
   const [copied, setCopied] = useState(false)
 
   if (!INVITE_GROUPS.has(betaGroup) || !referralCode) return null
@@ -1609,11 +1609,11 @@ function InviteCard({ referralCode, betaGroup }) {
   return (
     <div style={{
       padding: '14px 16px',
-      background: 'rgba(200,146,42,0.04)',
-      border: '1px solid rgba(200,146,42,0.25)',
+      background: 'rgba(110,127,92,0.04)',
+      border: '1px solid rgba(110,127,92,0.25)',
       borderRadius: '8px',
     }}>
-      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '4px' }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#26302A', marginBottom: '4px' }}>
         INVITE A FRIEND
       </div>
       <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.6)', lineHeight: 1.5, margin: '0 0 10px' }}>
@@ -1622,7 +1622,7 @@ function InviteCard({ referralCode, betaGroup }) {
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
         <div style={{
           flex: 1, ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
-          background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.20)',
+          background: '#FFFFFF', border: '1px solid rgba(110,127,92,0.20)',
           borderRadius: '6px', padding: '6px 10px',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
@@ -1630,7 +1630,7 @@ function InviteCard({ referralCode, betaGroup }) {
         </div>
         <button onClick={copyLink} style={{
           flexShrink: 0, padding: '6px 14px',
-          background: copied ? 'rgba(45,106,79,0.08)' : '#C8922A',
+          background: copied ? 'rgba(45,106,79,0.08)' : '#6E7F5C',
           border: copied ? '1px solid rgba(45,106,79,0.4)' : 'none',
           borderRadius: '6px', ...sc, fontSize: '13px', letterSpacing: '0.12em',
           color: copied ? '#2D6A4F' : '#FFFFFF', cursor: 'pointer', transition: 'all 0.15s',
@@ -1798,15 +1798,15 @@ export function DashboardPage() {
 
   function pipColor(status) {
     if (status === 'done')  return '#2D6A4F'
-    if (status === 'alert') return '#C8922A'  // gold — next step waiting
-    if (status === 'on')    return '#A8721A'
-    return 'rgba(200,146,42,0.25)'
+    if (status === 'alert') return '#6E7F5C'  // gold — next step waiting
+    if (status === 'on')    return '#26302A'
+    return 'rgba(110,127,92,0.25)'
   }
 
   if (authLoading || dataLoading) {
     return (
       <div style={{ minHeight: '100dvh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A' }}>Loading…</div>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A' }}>Loading…</div>
       </div>
     )
   }
@@ -1887,7 +1887,7 @@ export function DashboardPage() {
           const lag = timeElapsedPct - taskPct
           if (daysLeft < 0)        sprintHealth = { label: 'Overdue', color: '#8A3030' }
           else if (lag > 20)       sprintHealth = { label: 'At risk', color: '#8A7030' }
-          else if (lag > 10)       sprintHealth = { label: 'Slightly behind', color: '#A8721A' }
+          else if (lag > 10)       sprintHealth = { label: 'Slightly behind', color: '#26302A' }
           else                     sprintHealth = { label: 'On track', color: '#2D6A4F' }
         }
 
@@ -1899,18 +1899,18 @@ export function DashboardPage() {
               <a href={focusHref} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 padding: '10px 16px',
-                background: focusUrgent ? 'rgba(138,48,48,0.05)' : 'rgba(200,146,42,0.06)',
-                border: `1px solid ${focusUrgent ? 'rgba(138,48,48,0.35)' : 'rgba(200,146,42,0.55)'}`,
+                background: focusUrgent ? 'rgba(138,48,48,0.05)' : 'rgba(110,127,92,0.06)',
+                border: `1px solid ${focusUrgent ? 'rgba(138,48,48,0.35)' : 'rgba(110,127,92,0.55)'}`,
                 borderRadius: '8px', textDecoration: 'none',
               }}>
                 <div>
-                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: focusUrgent ? '#8A3030' : '#A8721A', marginBottom: '2px' }}>
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: focusUrgent ? '#8A3030' : '#26302A', marginBottom: '2px' }}>
                     FOCUS NOW
                   </div>
                   <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', color: '#0F1523', fontWeight: 500 }}>{focusLabel}</div>
                   {focusSub && <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '1px' }}>{focusSub}</div>}
                 </div>
-                <span style={{ color: focusUrgent ? '#8A3030' : '#A8721A', fontSize: '16px' }}>→</span>
+                <span style={{ color: focusUrgent ? '#8A3030' : '#26302A', fontSize: '16px' }}>→</span>
               </a>
             )}
 
@@ -1928,7 +1928,7 @@ export function DashboardPage() {
                   )}
                 </div>
                 {hasScores ? (
-                  <div style={{ border: '1px solid rgba(200,146,42,0.15)', borderRadius: '8px', padding: '8px', background: 'rgba(200,146,42,0.02)' }}>
+                  <div style={{ border: '1px solid rgba(110,127,92,0.15)', borderRadius: '8px', padding: '8px', background: 'rgba(110,127,92,0.02)' }}>
                     <HorizonWheelMini
                       currentScores={currentScores}
                       horizonScores={horizonScores}
@@ -1937,21 +1937,21 @@ export function DashboardPage() {
                     {Object.values(horizonScores).some(v => v > 0) && (
                       <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', marginTop: '6px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <div style={{ width: '16px', height: '2px', background: 'rgba(200,146,42,0.55)' }} />
+                          <div style={{ width: '16px', height: '2px', background: 'rgba(110,127,92,0.55)' }} />
                           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>Now</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <div style={{ width: '16px', height: '0', borderTop: '2px dashed #C8922A' }} />
+                          <div style={{ width: '16px', height: '0', borderTop: '2px dashed #6E7F5C' }} />
                           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>Horizon</span>
                         </div>
                       </div>
                     )}
                     {mapData?.horizon_goal_user && (
-                      <p style={{ ...body, fontSize: '13px', fontStyle: 'italic', color: '#A8721A', lineHeight: 1.6, margin: '10px 4px 4px', textAlign: 'center' }}>
+                      <p style={{ ...body, fontSize: '13px', fontStyle: 'italic', color: '#26302A', lineHeight: 1.6, margin: '10px 4px 4px', textAlign: 'center' }}>
                         "{mapData.horizon_goal_user}"
                       </p>
                     )}
-                    <a href="/tools/map" style={{ display: 'block', textAlign: 'center', marginTop: '8px', ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', textDecoration: 'none' }}>
+                    <a href="/tools/map" style={{ display: 'block', textAlign: 'center', marginTop: '8px', ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textDecoration: 'none' }}>
                       Rescore →
                     </a>
                   </div>
@@ -2046,7 +2046,7 @@ export function DashboardPage() {
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '14px' }}>
                 {[archetype, domain, scale].filter(Boolean).map((v, i) => <Badge key={i} variant="gold">{v}</Badge>)}
               </div>
-              <Link to="/tools/purpose-piece" style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', textDecoration: 'none' }}>Revisit →</Link>
+              <Link to="/tools/purpose-piece" style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textDecoration: 'none' }}>Revisit →</Link>
             </div>
           ) : (
             <NextUpBanner label="Begin Purpose Piece" sub="20 min · one-time · unlocks Your Work profile" href="/tools/purpose-piece" />
@@ -2077,7 +2077,7 @@ export function DashboardPage() {
       gridTemplateColumns: '200px 1fr',
       gridTemplateRows: '48px 1fr',
       height: 'calc(100dvh - 60px)',
-      border: '1px solid rgba(200,146,42,0.18)',
+      border: '1px solid rgba(110,127,92,0.18)',
       borderRadius: '12px',
       overflow: 'hidden',
       background: '#FFFFFF',
@@ -2088,12 +2088,12 @@ export function DashboardPage() {
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: '0 16px',
-      borderBottom: '1px solid rgba(200,146,42,0.12)',
-      background: 'rgba(200,146,42,0.02)',
+      borderBottom: '1px solid rgba(110,127,92,0.12)',
+      background: 'rgba(110,127,92,0.02)',
     },
     rail: {
-      borderRight: '1px solid rgba(200,146,42,0.12)',
-      background: 'rgba(200,146,42,0.02)',
+      borderRight: '1px solid rgba(110,127,92,0.12)',
+      background: 'rgba(110,127,92,0.02)',
       display: 'flex',
       flexDirection: 'column',
       overflowY: 'auto',
@@ -2113,8 +2113,8 @@ export function DashboardPage() {
           {/* TOP BAR */}
           <div style={s.topbar}>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#0F1523', fontWeight: 500 }}>
-              Next<span style={{ color: '#A8721A' }}>Us</span>
-              <span style={{ color: 'rgba(200,146,42,0.4)', margin: '0 8px' }}>·</span>
+              Next<span style={{ color: '#26302A' }}>Us</span>
+              <span style={{ color: 'rgba(110,127,92,0.4)', margin: '0 8px' }}>·</span>
               <span style={{ color: 'rgba(15,21,35,0.55)' }}>Mission Control</span>
             </div>
 
@@ -2126,9 +2126,9 @@ export function DashboardPage() {
                   onClick={() => handleZoneChange(z)}
                   style={{
                     ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '3px 10px',
-                    borderRadius: '20px', border: `1px solid ${activeZone === z && !showProfile ? 'rgba(200,146,42,0.5)' : 'transparent'}`,
-                    background: activeZone === z && !showProfile ? 'rgba(200,146,42,0.08)' : 'transparent',
-                    color: activeZone === z && !showProfile ? '#A8721A' : 'rgba(15,21,35,0.55)',
+                    borderRadius: '20px', border: `1px solid ${activeZone === z && !showProfile ? 'rgba(110,127,92,0.5)' : 'transparent'}`,
+                    background: activeZone === z && !showProfile ? 'rgba(110,127,92,0.08)' : 'transparent',
+                    color: activeZone === z && !showProfile ? '#26302A' : 'rgba(15,21,35,0.55)',
                     cursor: 'pointer', transition: 'all 0.12s',
                   }}
                 >
@@ -2153,11 +2153,11 @@ export function DashboardPage() {
                 onClick={() => setShowProfile(o => !o)}
                 style={{
                   width: '26px', height: '26px', borderRadius: '50%',
-                  background: showProfile ? '#A8721A' : 'rgba(200,146,42,0.15)',
-                  border: `1.5px solid ${showProfile ? '#A8721A' : 'rgba(200,146,42,0.4)'}`,
+                  background: showProfile ? '#26302A' : 'rgba(110,127,92,0.15)',
+                  border: `1.5px solid ${showProfile ? '#26302A' : 'rgba(110,127,92,0.4)'}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: 'pointer', ...sc, fontSize: '13px',
-                  color: showProfile ? '#FFFFFF' : '#A8721A', fontWeight: 500,
+                  color: showProfile ? '#FFFFFF' : '#26302A', fontWeight: 500,
                   transition: 'all 0.15s',
                 }}
               >
@@ -2186,11 +2186,11 @@ export function DashboardPage() {
                     style={{
                       display: 'flex', alignItems: 'center', gap: '8px',
                       padding: '6px 14px', width: '100%', textAlign: 'left',
-                      background: isActive ? 'rgba(200,146,42,0.06)' : 'transparent',
-                      border: 'none', borderLeft: `2px solid ${isActive ? '#A8721A' : 'transparent'}`,
+                      background: isActive ? 'rgba(110,127,92,0.06)' : 'transparent',
+                      border: 'none', borderLeft: `2px solid ${isActive ? '#26302A' : 'transparent'}`,
                       cursor: 'pointer',
                       ...sc, fontSize: '13px', letterSpacing: '0.06em',
-                      color: isActive ? '#A8721A' : 'rgba(15,21,35,0.55)',
+                      color: isActive ? '#26302A' : 'rgba(15,21,35,0.55)',
                       fontWeight: isActive ? 500 : 400,
                       transition: 'all 0.1s',
                     }}
@@ -2201,7 +2201,7 @@ export function DashboardPage() {
                         <div style={{
                           position: 'absolute', inset: '-3px',
                           borderRadius: '50%',
-                          border: '1.5px solid #C8922A',
+                          border: '1.5px solid #6E7F5C',
                           opacity: 0.6,
                           animation: 'pulse-ring 1.8s ease-out infinite',
                         }} />
@@ -2217,14 +2217,14 @@ export function DashboardPage() {
             <button
               onClick={() => setShowProfile(o => !o)}
               style={{
-                borderTop: '1px solid rgba(200,146,42,0.1)', padding: '12px 14px',
-                background: showProfile ? 'rgba(200,146,42,0.06)' : 'transparent',
+                borderTop: '1px solid rgba(110,127,92,0.1)', padding: '12px 14px',
+                background: showProfile ? 'rgba(110,127,92,0.06)' : 'transparent',
                 cursor: 'pointer', textAlign: 'left', border: 'none',
                 width: '100%', transition: 'background 0.1s',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: showProfile ? '#A8721A' : 'rgba(200,146,42,0.15)', border: `1.5px solid ${showProfile ? '#A8721A' : 'rgba(200,146,42,0.4)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, ...sc, fontSize: '13px', color: showProfile ? '#FFFFFF' : '#A8721A', fontWeight: 500 }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: showProfile ? '#26302A' : 'rgba(110,127,92,0.15)', border: `1.5px solid ${showProfile ? '#26302A' : 'rgba(110,127,92,0.4)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, ...sc, fontSize: '13px', color: showProfile ? '#FFFFFF' : '#26302A', fontWeight: 500 }}>
                   {initials}
                 </div>
                 <div>
