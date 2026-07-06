@@ -3312,6 +3312,27 @@ function FloorTab({ toast }) {
 
   useEffect(() => { load() }, [filter, sort])
 
+  async function sendOutreach() {
+    if (!outreachModal || !outreachEmail.trim() || outreachSending) return
+    setOutreachSending(true)
+    try {
+      let token = null
+      try { token = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
+      const r = await fetch('/api/actor-outreach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ actorId: outreachModal.id, toEmail: outreachEmail.trim(), toName: outreachName.trim() || null }),
+      })
+      const d = await r.json().catch(() => ({}))
+      if (r.ok && d.sent) { toast(`Outreach sent to ${d.to}`); setOutreachModal(null) }
+      else toast('Outreach failed: ' + (d.error || `HTTP ${r.status}`))
+    } catch (e) {
+      toast('Outreach failed: ' + (e?.message || 'network error'))
+    } finally {
+      setOutreachSending(false)
+    }
+  }
+
   const floorCount = actors.length
   const criticalCount = actors.filter(a => a.gaps.includes('image') || a.gaps.includes('description') || a.gaps.includes('domain')).length
 

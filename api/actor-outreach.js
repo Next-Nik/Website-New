@@ -11,6 +11,7 @@
 
 const { createClient } = require('@supabase/supabase-js')
 const { Resend }       = require('resend')
+const { resolveUserId } = require('./_auth')
 
 const supabase = createClient(process.env.SUPABASE_URL, (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY))
 const resend   = new Resend(process.env.RESEND_API_KEY)
@@ -20,8 +21,23 @@ const BASE_URL = process.env.NEXTUS_BASE_URL || 'https://nextus.world'
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { actorId, toEmail, toName, adminUserId } = req.body || {}
+  const { actorId, toEmail, toName } = req.body || {}
   if (!actorId || !toEmail) return res.status(400).json({ error: 'actorId and toEmail required' })
+
+  // Founder-gated. Identity from the verified token, never the body — an
+  // ungated version of this endpoint lets anyone send claim emails to
+  // arbitrary addresses from outreach@nextus.world.
+  const callerId = await resolveUserId(req)
+  if (!callerId) return res.status(401).json({ error: 'Sign-in required' })
+  const { data: founderRows } = await supabase
+    .from('nextus_actors')
+    .select('id')
+    .eq('is_platform_founder', true)
+    .eq('profile_owner', callerId)
+    .limit(1)
+  if (!founderRows || founderRows.length === 0) {
+    return res.status(403).json({ error: 'Not authorised' })
+  }
 
   // Load actor
   const { data: actor } = await supabase
@@ -118,7 +134,7 @@ module.exports = async (req, res) => {
     await supabase.from('actor_outreach_log').insert({
       actor_id:     actorId,
       to_email:     toEmail,
-      sent_by:      adminUserId || null,
+      sent_by:      callerId,
       sent_at:      new Date().toISOString(),
     }).catch(() => {})  // log table may not exist yet — fails silently
 

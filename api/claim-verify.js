@@ -44,11 +44,13 @@ function generateCode() {
 }
 
 async function approveClaim(actorId, userId) {
+  // profile_owner ONLY — nextus_actors has no owner_id column (live schema,
+  // June 2026). Including it makes PostgREST reject the whole update, which
+  // failed every claim at the final step regardless of path.
   const { error } = await supabase
     .from('nextus_actors')
     .update({
       profile_owner: userId,
-      owner_id:      userId,
       updated_at:    new Date().toISOString(),
     })
     .eq('id', actorId)
