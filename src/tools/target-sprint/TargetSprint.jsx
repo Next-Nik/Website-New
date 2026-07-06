@@ -100,7 +100,7 @@ function Btn({ onClick, disabled, children, style = {}, variant = 'solid' }) {
     ...sc, fontSize: '15px', letterSpacing: '0.14em', padding: '11px 28px',
     borderRadius: '40px', cursor: disabled ? 'not-allowed' : 'pointer',
     border: '1.5px solid rgba(110,127,92,0.78)', transition: 'all 0.2s',
-    opacity: disabled ? 0.45 : 1,
+    opacity: disabled ? 0.6 : 1,
   }
   const styles = variant === 'ghost'
     ? { ...base, background: 'transparent', color: fn.moss }
@@ -1402,7 +1402,7 @@ function WindowClosedBanner({ onReview, onExtend }) {
 // own clock, its own lifecycle: it can start months after the personal
 // stretch and outlive it. The same Horizon Self, pointed outward.
 
-function PlanetSprintPanel({ civ, onCreate, onUpdateData, onComplete, onSaveAway }) {
+function PlanetSprintPanel({ civ, onCreate, onUpdateData, onComplete, onExtendClock, onSaveAway }) {
   const ps = civ?.data || {}
   const [draftServes,     setDraftServes]     = useState('')
   const [draftCommitment, setDraftCommitment] = useState('')
@@ -1471,10 +1471,25 @@ function PlanetSprintPanel({ civ, onCreate, onUpdateData, onComplete, onSaveAway
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', flexWrap: 'wrap' }}>
         <Eyebrow style={{ marginBottom: '4px' }}>Planet Sprint · The Outer Arc</Eyebrow>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-          {days !== null && (
+          {days !== null && days > 0 && (
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: fn.moss, border: '1px solid rgba(110,127,92,0.4)', borderRadius: '20px', padding: '3px 10px', whiteSpace: 'nowrap' }}>
               {days} days left
             </span>
+          )}
+          {days === 0 && (
+            <>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost, whiteSpace: 'nowrap' }}>
+                Window closed · extend:
+              </span>
+              <button type="button" onClick={() => onExtendClock(computeClock('rolling'))}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '3px 12px', borderRadius: '20px', cursor: 'pointer', border: '1px solid rgba(110,127,92,0.45)', background: 'transparent', color: fn.moss, whiteSpace: 'nowrap' }}>
+                90 days
+              </button>
+              <button type="button" onClick={() => onExtendClock(computeClock('calendar'))}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '3px 12px', borderRadius: '20px', cursor: 'pointer', border: '1px solid rgba(110,127,92,0.45)', background: 'transparent', color: fn.moss, whiteSpace: 'nowrap' }}>
+                to quarter end
+              </button>
+            </>
           )}
           {ps.serves && (
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost, whiteSpace: 'nowrap' }}>For {ps.serves}</span>
@@ -2582,7 +2597,17 @@ export function TargetSprintPage() {
                   />
                 </div>
 
-                <PlanetSprintPanel civ={civ} onCreate={createCivSession} onUpdateData={updateCivData} onComplete={completeCivSession} onSaveAway={() => queueSave({})} />
+                <PlanetSprintPanel civ={civ} onCreate={createCivSession} onUpdateData={updateCivData} onComplete={completeCivSession} onSaveAway={() => queueSave({})}
+                  onExtendClock={async clk => {
+                    setCiv(c => c ? { ...c, quarterType: clk.quarterType, targetDate: clk.targetDate, endDateLabel: clk.endDateLabel } : c)
+                    if (civ?.id) {
+                      try {
+                        await supabase.from('target_sprint_sessions')
+                          .update({ quarter_type: clk.quarterType, target_date: clk.targetDate, end_date_label: clk.endDateLabel, updated_at: new Date().toISOString() })
+                          .eq('id', civ.id)
+                      } catch {}
+                    }
+                  }} />
 
                 {pendingFeedback && user && (
                   <FeedbackPrompt

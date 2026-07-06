@@ -53,7 +53,7 @@ function Btn({ onClick, disabled, children, style = {}, variant = 'solid' }) {
     ...sc, fontSize: '15px', letterSpacing: '0.14em', padding: '12px 28px',
     borderRadius: '40px', cursor: disabled ? 'not-allowed' : 'pointer',
     border: '1.5px solid rgba(217,178,74,0.78)', transition: 'all 0.2s',
-    opacity: disabled ? 0.45 : 1,
+    opacity: disabled ? 0.6 : 1,
   }
   const styles =
       variant === 'ghost'   ? { ...base, background: 'transparent', color: at.brass }

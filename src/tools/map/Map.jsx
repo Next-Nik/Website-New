@@ -810,7 +810,7 @@ function ChatInput({ value, onChange, onSend, placeholder, disabled }) {
         disabled={disabled}
         style={{ flex: 1, padding: '10px 14px', fontFamily: "'Fraunces', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.25)', borderRadius: '10px', outline: 'none', resize: 'none', lineHeight: 1.55 }}
       />
-      <button onClick={() => onSend(value)} disabled={!value.trim() || disabled} style={{ ...btnStyle, padding: '10px 16px', alignSelf: 'flex-end', opacity: !value.trim() || disabled ? 0.4 : 1, fontSize: '1.125rem', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>Send</button>
+      <button onClick={() => onSend(value)} disabled={!value.trim() || disabled} style={{ ...btnStyle, padding: '10px 16px', alignSelf: 'flex-end', opacity: !value.trim() || disabled ? 0.6 : 1, fontSize: '1.125rem', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>Send</button>
     </div>
   )
 }

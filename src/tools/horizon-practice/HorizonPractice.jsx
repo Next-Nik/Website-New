@@ -256,7 +256,7 @@ function GhostButton({ children, onClick, style = {}, disabled = false }) {
         letterSpacing: '0.18em', transition: 'all 0.2s',
         position: 'relative', overflow: 'hidden',
         cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.4 : 1, ...style,
+        opacity: disabled ? 0.6 : 1, ...style,
       }}
       onMouseEnter={(e) => { if (!disabled) e.currentTarget.style.borderColor = tokens.goldChrome }}
       onMouseLeave={(e) => { if (!disabled) e.currentTarget.style.borderColor = tokens.goldFaint }}
@@ -277,7 +277,7 @@ function SolidButton({ children, onClick, style = {}, disabled = false }) {
         letterSpacing: '0.18em', transition: 'all 0.2s',
         position: 'relative', overflow: 'hidden',
         cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.4 : 1, ...style,
+        opacity: disabled ? 0.6 : 1, ...style,
       }}
     >{children}</button>
   )
