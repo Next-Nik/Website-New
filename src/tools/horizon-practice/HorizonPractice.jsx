@@ -2079,6 +2079,23 @@ export function HorizonPracticePage() {
   const [thresholds, setThresholds] = useState([])
   const [entries, setEntries] = useState([])  // last ~30 days
   const [view, setView] = useState('loading')  // loading | hub | morning | evening
+
+  // ── Session restore across reloads ──
+  function restoreSession() {
+    try {
+      const v = new URLSearchParams(window.location.search).get('session')
+      return (v === 'morning' || v === 'evening') ? v : null
+    } catch { return null }
+  }
+  useEffect(() => {
+    if (view === 'loading') return
+    try {
+      const url = new URL(window.location.href)
+      if (view === 'morning' || view === 'evening') url.searchParams.set('session', view)
+      else url.searchParams.delete('session')
+      window.history.replaceState({}, '', url)
+    } catch {}
+  }, [view])
   const [activeSprint, setActiveSprint] = useState(null)
   const [civSprint,    setCivSprint]    = useState(null)   // Planet Sprint sibling row (scale='civ')
 
@@ -2237,13 +2254,15 @@ export function HorizonPracticePage() {
           }
         }
 
-        // Always land on hub
-        setView('hub')
+        // Land on hub — unless a session was open when the tab reloaded.
+        // Mobile browsers discard the tab on app-switch; the ?session param
+        // puts the person back at their entrance instead of bouncing to hub.
+        setView(restoreSession() || 'hub')
         recordEngagement()
 
       } catch (err) {
         console.error('Horizon Practice load error:', err)
-        setView('hub')  // graceful fallback
+        setView(restoreSession() || 'hub')  // graceful fallback
       } finally {
         if (!cancelled) setProfileLoading(false)
       }

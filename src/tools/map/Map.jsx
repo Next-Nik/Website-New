@@ -1992,6 +1992,9 @@ export function MapPage() {
         }
         // Only restore 'results' phase if Supabase will have mapData — otherwise show mapping
         if (parsed.phase && parsed.phase !== 'results') setPhase(parsed.phase)
+        if (Number.isInteger(parsed.activeIndex) && parsed.activeIndex >= 0 && parsed.activeIndex < DOMAINS.length && parsed.phase === 'mapping') {
+          setActiveIndex(parsed.activeIndex)
+        }
       }
     } catch {}
   }, [])
@@ -2058,8 +2061,12 @@ export function MapPage() {
 
   // Persist to localStorage on every change
   useEffect(() => {
-    try { localStorage.setItem(LS_KEY, JSON.stringify({ domainData, phase })) } catch {}
-  }, [domainData, phase])
+    // activeIndex included so an app-switch reload lands back inside the
+    // open domain instead of bouncing to the wheel. Domain-level step already
+    // self-restores from saved data (initStep), so this is the last missing
+    // piece of the resume path.
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ domainData, phase, activeIndex })) } catch {}
+  }, [domainData, phase, activeIndex])
 
   if (authLoading || accessLoading) return <div className="loading" />
 
