@@ -666,6 +666,11 @@ export function HorizonSelfOnboardingPage() {
             The parts that resist are not enemies. They have been keeping you safe, often
             for decades. This step is the negotiation — honest, unhurried, on their terms.
           </FrameNote>
+          <FrameNote>
+            One question anchors this exercise: "If I were living as that version of
+            me now, I would…" It's the same move as asking what your hero would do.
+            The hero is you.
+          </FrameNote>
           {show(0) && (
             <TextField
               label="WHAT FEELS UNSAFE"
