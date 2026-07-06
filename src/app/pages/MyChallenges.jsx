@@ -63,7 +63,8 @@ const CADENCE_LABEL = {
 
 // ─── A single challenge card ──────────────────────────────────────────────────
 
-function ChallengeCard({ p, userId, founding }) {
+function ChallengeCard({ p, userId, founding, onLeft }) {
+  const [leaving, setLeaving] = useState(false)   // false | 'confirm' | 'busy'
   const inConstellation = !!(founding && founding.ids && founding.ids.has(p.call_id))
   const closeStr = founding && founding.closes_on
     ? new Date(founding.closes_on + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
@@ -243,6 +244,41 @@ function ChallengeCard({ p, userId, founding }) {
           </div>
         </div>
       )}
+
+      {/* Leave — the mistake-acceptor's way out. Quiet by design: a foot-of-card
+          affordance, one confirm, done. Past check-ins stay recorded; taking
+          the challenge on again later picks the same thread back up. */}
+      {!localComplete && p.status === 'active' && (
+        <div style={{ marginTop: '14px' }}>
+          {leaving === 'confirm' ? (
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <span style={{ ...body, fontSize: '14px', color: at.ghost }}>
+                Leave this challenge? Your check-ins stay recorded, and you can take it on again any time.
+              </span>
+              <button type="button"
+                onClick={async () => {
+                  setLeaving('busy')
+                  try {
+                    const r = await actorCallsRaw({ action: 'leave', userId, call_id: p.call_id })
+                    const d = await r.json()
+                    if (r.ok && d.left) { onLeft && onLeft(p.participant_id) }
+                    else setLeaving('confirm')
+                  } catch { setLeaving('confirm') }
+                }}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#8A3030', background: 'none', border: '1px solid rgba(138,48,48,0.4)', borderRadius: '20px', padding: '4px 14px', cursor: 'pointer' }}>
+                {leaving === 'busy' ? 'Leaving…' : 'Yes, leave'}
+              </button>
+              <button type="button" onClick={() => setLeaving(false)}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
+            </div>
+          ) : (
+            <button type="button" onClick={() => setLeaving('confirm')}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: 0, opacity: 0.75 }}>
+              Leave this challenge
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -319,7 +355,8 @@ export default function MyChallenges() {
             </p>
           </div>
         ) : (
-          rows.map(p => <ChallengeCard key={p.participant_id} p={p} userId={user.id} founding={founding} />)
+          rows.map(p => <ChallengeCard key={p.participant_id} p={p} userId={user.id} founding={founding}
+            onLeft={pid => setRows(prev => prev.filter(r => r.participant_id !== pid))} />)
         )}
       </div>
     </div>

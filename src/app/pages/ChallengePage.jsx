@@ -76,9 +76,10 @@ function Btn({ onClick, disabled, children, style = {}, variant = 'solid' }) {
 
 function AuthorControls({ call, userId, onUpdated, onDeleted }) {
   const [busy,    setBusy]    = useState(false)
-  const [mode,    setMode]    = useState(null)   // null | 'close' | 'confirmDelete'
+  const [mode,    setMode]    = useState(null)   // null | 'edit' | 'close' | 'confirmDelete'
   const [impact,  setImpact]  = useState(null)
   const [err,     setErr]     = useState(null)
+  const [draft,   setDraft]   = useState(null)   // edit-mode field values
 
   const closed = call.lifecycle_state === 'closed'
   const hidden = closed && call.visibility !== 'community'
@@ -92,6 +93,28 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
       return d
     } catch { setErr('Network error.'); return null }
     finally { setBusy(false) }
+  }
+
+  function startEdit() {
+    setDraft({
+      title:           call.title || '',
+      tagline:         call.tagline || '',
+      body_long:       call.body_long || '',
+      video_url:       call.video_url || '',
+      cover_image_url: call.cover_image_url || '',
+    })
+    setMode('edit')
+  }
+  async function saveEdit() {
+    if (!draft || !(draft.title || '').trim()) { setErr('Title cannot be empty.'); return }
+    const d = await api('update', {
+      title:           draft.title.trim(),
+      tagline:         draft.tagline.trim() || null,
+      body_long:       draft.body_long.trim() || null,
+      video_url:       draft.video_url.trim() || null,
+      cover_image_url: draft.cover_image_url.trim() || null,
+    })
+    if (d?.call) { onUpdated(d.call); setMode(null); setDraft(null) }
   }
 
   async function doClose(keep_listed) {
@@ -127,11 +150,44 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
         )}
       </div>
 
-      {/* Active: offer Close + Delete */}
+      {/* Active: offer Edit + Close + Delete */}
       {!closed && mode === null && (
         <div style={{ display: 'flex', gap: '18px', marginTop: '12px', flexWrap: 'wrap' }}>
+          <button style={{ ...link, ...gold }} disabled={busy} onClick={startEdit}>Edit details</button>
           <button style={{ ...link, ...gold }} disabled={busy} onClick={() => setMode('close')}>Close challenge</button>
           <button style={{ ...link, color: '#8A3030' }} disabled={busy} onClick={startDelete}>Delete</button>
+        </div>
+      )}
+
+      {/* Edit: the copy fields — title, tagline, longer piece, media. The
+          structure (what people do, cadence, duration) is locked once
+          public; a structural mistake with nobody in it yet is a delete
+          and re-make. */}
+      {mode === 'edit' && draft && (
+        <div style={{ marginTop: '12px' }}>
+          {[
+            { k: 'title',           label: 'Title' },
+            { k: 'tagline',         label: 'Tagline' },
+            { k: 'video_url',       label: 'Video URL' },
+            { k: 'cover_image_url', label: 'Cover image URL' },
+          ].map(f => (
+            <div key={f.k} style={{ marginBottom: '10px' }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(234,241,237,0.55)', textTransform: 'uppercase', marginBottom: '4px' }}>{f.label}</div>
+              <input type="text" value={draft[f.k]}
+                onChange={e => setDraft(prev => ({ ...prev, [f.k]: e.target.value }))}
+                style={{ ...body, width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '8px', border: '1px solid rgba(234,241,237,0.22)', background: 'rgba(234,241,237,0.05)', color: '#EAF1ED', fontSize: '14px' }} />
+            </div>
+          ))}
+          <div style={{ marginBottom: '12px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(234,241,237,0.55)', textTransform: 'uppercase', marginBottom: '4px' }}>The longer piece</div>
+            <textarea rows={5} value={draft.body_long}
+              onChange={e => setDraft(prev => ({ ...prev, body_long: e.target.value }))}
+              style={{ ...body, width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '8px', border: '1px solid rgba(234,241,237,0.22)', background: 'rgba(234,241,237,0.05)', color: '#EAF1ED', fontSize: '14px', resize: 'vertical' }} />
+          </div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <Btn variant="ghost" disabled={busy} onClick={saveEdit} style={{ fontSize: '13px', padding: '8px 18px' }}>{busy ? 'Saving…' : 'Save changes'}</Btn>
+            <button style={{ ...link, color: 'rgba(234,241,237,0.55)' }} disabled={busy} onClick={() => { setMode(null); setDraft(null) }}>Cancel</button>
+          </div>
         </div>
       )}
 
@@ -151,9 +207,10 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
         </div>
       )}
 
-      {/* Closed: offer Reopen + Delete */}
+      {/* Closed: offer Edit + Reopen + Delete */}
       {closed && mode === null && (
         <div style={{ display: 'flex', gap: '18px', marginTop: '12px', flexWrap: 'wrap' }}>
+          <button style={{ ...link, ...gold }} disabled={busy} onClick={startEdit}>Edit details</button>
           <button style={{ ...link, ...gold }} disabled={busy} onClick={doReopen}>Reopen</button>
           <button style={{ ...link, color: '#8A3030' }} disabled={busy} onClick={startDelete}>Delete</button>
         </div>

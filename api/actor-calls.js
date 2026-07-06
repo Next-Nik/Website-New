@@ -109,7 +109,9 @@ async function refreshCounts(callId) {
   const { data: rows } = await supabase.from('actor_call_participants').select('status').eq('call_id', callId)
   const all = rows || []
   await supabase.from('actor_calls').update({
-    taken_on_count:  all.length,
+    // Withdrawn participations don't count as "in" — leaving must be honest
+    // in both directions.
+    taken_on_count:  all.filter(r => r.status !== 'withdrawn').length,
     active_count:    all.filter(r => r.status === 'active').length,
     completed_count: all.filter(r => r.status === 'complete').length,
     updated_at:      new Date().toISOString(),
@@ -423,7 +425,12 @@ module.exports = async (req, res) => {
     let owned = existing.user_id === userId
     if (!owned && existing.actor_id) owned = await ownsActor(existing.actor_id, userId)
     if (!owned) return res.status(403).json({ error: 'Not your call' })
-    if (existing.visibility !== 'draft') return res.status(409).json({ error: 'Published calls cannot be edited (withdraw first).' })
+    // Drafts: everything is editable. Published: the copy fields only — the
+    // typo-fixing set. Structural fields (type, cadence, strands, duration,
+    // measure, lineage) stay locked once public; existing participants run on
+    // a frozen protocol snapshot, and structural mistakes with zero
+    // participants are covered by delete-and-recreate.
+    const published = existing.visibility !== 'draft'
     // Lineage cycle guard: a challenge can't build on itself or one of its own branches.
     if (patch.parent_call_id) {
       if (patch.parent_call_id === call_id) return res.status(400).json({ error: 'A challenge cannot build on itself.' })
@@ -433,8 +440,11 @@ module.exports = async (req, res) => {
       }
     }
     const safe = {}
-    const editable = ['title','tagline','type','scale','domain','horizon_goal_text','the_move','cadence','cadence_note','duration_days','measure','mechanism','protocol','ask_quantity','ask_deadline','ask_details','parent_call_id','author_statement','body_long','video_url','cover_image_url','intensity_level']
+    const FULL = ['title','tagline','type','scale','domain','horizon_goal_text','the_move','cadence','cadence_note','duration_days','measure','mechanism','protocol','ask_quantity','ask_deadline','ask_details','parent_call_id','author_statement','body_long','video_url','cover_image_url','intensity_level']
+    const COPY = ['title','tagline','author_statement','body_long','video_url','cover_image_url','cadence_note']
+    const editable = published ? COPY : FULL
     editable.forEach(k => { if (k in patch) safe[k] = patch[k] })
+    if ('title' in safe && !(safe.title || '').trim()) return res.status(422).json({ error: 'Title cannot be empty.' })
     safe.updated_at = new Date().toISOString()
     const { data, error } = await supabase.from('actor_calls').update(safe).eq('id', call_id).select('*').single()
     if (error) return res.status(500).json({ error: error.message })
@@ -487,6 +497,15 @@ module.exports = async (req, res) => {
 
     // Idempotent — existing participation returns the existing row
     const { data: existing } = await supabase.from('actor_call_participants').select('*').eq('call_id', call_id).eq('user_id', userId).maybeSingle()
+    if (existing && existing.status === 'withdrawn') {
+      // They left and came back — reactivate the same row so their earlier
+      // check-ins stay attached and honest.
+      const { data: revived } = await supabase.from('actor_call_participants')
+        .update({ status: 'active', updated_at: new Date().toISOString() })
+        .eq('id', existing.id).select('*').single()
+      await refreshCounts(call_id)
+      return res.json({ participant: revived || existing, rejoined: true })
+    }
     if (existing) return res.json({ participant: existing, already_joined: true })
 
     // Compute clock. Inside the founding constellation, the clock is not the
@@ -519,6 +538,27 @@ module.exports = async (req, res) => {
     await refreshCounts(call_id)
 
     return res.json({ participant })
+  }
+
+  // ── leave ───────────────────────────────────────────────────────────────────
+  // Participant withdraws from a challenge they took on. The row stays
+  // (status='withdrawn') so past check-ins remain attached — they happened —
+  // but the person drops out of live counts and their own /challenges list.
+  // Taking the challenge on again reactivates the same row.
+  if (action === 'leave') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id } = body
+    if (!call_id) return res.status(400).json({ error: 'call_id required' })
+    const { data: existing } = await supabase.from('actor_call_participants')
+      .select('id, status').eq('call_id', call_id).eq('user_id', userId).maybeSingle()
+    if (!existing) return res.status(404).json({ error: 'You are not in this challenge.' })
+    if (existing.status === 'withdrawn') return res.json({ left: true, already: true })
+    const { error } = await supabase.from('actor_call_participants')
+      .update({ status: 'withdrawn', updated_at: new Date().toISOString() })
+      .eq('id', existing.id)
+    if (error) return res.status(500).json({ error: error.message })
+    await refreshCounts(call_id)
+    return res.json({ left: true })
   }
 
   // ── log_strand ─────────────────────────────────────────────────────────────
