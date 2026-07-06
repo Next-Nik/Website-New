@@ -1136,9 +1136,71 @@ export function OrgManagePage() {
         {activeTab === 'events'        && <EventsTab        actorId={actor.id} actorName={actor.name} toast={showToast} />}
         {activeTab === 'contributions' && <ContributionsTab actorId={actor.id} actorName={actor.name} toast={showToast} />}
         {activeTab === 'needs'         && <OrgNeedsTab      actorId={actor.id} navigate={navigate} toast={showToast} />}
+
+        <RemoveProfileZone actor={actor} navigate={navigate} toast={showToast} />
       </div>
 
       <SiteFooter />
+    </div>
+  )
+}
+
+// ─── Remove profile ────────────────────────────────────────────────────────────
+// The owner's way out. Removal is permanent by intent: the profile comes off
+// the Atlas everywhere, open challenges close (people already in them carry
+// on), and messages already exchanged keep their history. Two-step confirm.
+function RemoveProfileZone({ actor, navigate, toast }) {
+  const [confirming, setConfirming] = useState(false)
+  const [busy, setBusy] = useState(false)
+  async function remove() {
+    setBusy(true)
+    try {
+      let token = null
+      try { token = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
+      const r = await fetch('/api/actor-remove', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ action: 'remove_own', actorId: actor.id }),
+      })
+      const d = await r.json().catch(() => ({}))
+      if (r.ok && d.removed) { navigate('/'); return }
+      toast(d.error || `Remove failed (${r.status})`)
+    } catch (e) {
+      toast(e?.message || 'Remove failed')
+    } finally { setBusy(false) }
+  }
+  return (
+    <div style={{ marginTop: '72px', paddingTop: '28px', borderTop: '1px solid rgba(138,48,48,0.25)' }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#8A3030', textTransform: 'uppercase', marginBottom: '10px' }}>
+        Remove this profile
+      </div>
+      {!confirming ? (
+        <div>
+          <p style={{ ...body, fontSize: '15px', color: at.ghost, lineHeight: 1.6, margin: '0 0 12px', maxWidth: '560px' }}>
+            Takes {actor.name} off the Atlas permanently. Any open challenges it
+            authors close — people already in them carry on — and message history
+            is kept for the people you wrote with.
+          </p>
+          <button type="button" onClick={() => setConfirming(true)}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#8A3030', background: 'none', border: '1px solid rgba(138,48,48,0.4)', borderRadius: '20px', padding: '7px 18px', cursor: 'pointer' }}>
+            Remove profile…
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <span style={{ ...body, fontSize: '15px', color: '#8A3030' }}>
+            This is permanent. Remove {actor.name}?
+          </span>
+          <button type="button" disabled={busy} onClick={remove}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#FFFFFF', background: '#8A3030', border: 'none', borderRadius: '20px', padding: '7px 18px', cursor: 'pointer', opacity: busy ? 0.6 : 1 }}>
+            {busy ? 'Removing…' : 'Yes, remove permanently'}
+          </button>
+          <button type="button" disabled={busy} onClick={() => setConfirming(false)}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, background: 'none', border: 'none', cursor: 'pointer' }}>
+            Cancel
+          </button>
+        </div>
+      )}
     </div>
   )
 }

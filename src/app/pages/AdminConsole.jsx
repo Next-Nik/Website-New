@@ -3287,7 +3287,9 @@ function FloorTab({ toast }) {
       .limit(200)
 
     const statusFilter = filter === 'staged' ? 'staged' : filter === 'live' ? 'live' : null
-    const { data } = statusFilter ? await q.eq('status', statusFilter) : await q.in('status', ['staged', 'live'])
+    // 'suspended' included so moderated actors stay reachable — Restore and
+    // Delete live on these rows.
+    const { data } = statusFilter ? await q.eq('status', statusFilter) : await q.in('status', ['staged', 'live', 'suspended'])
 
     const rows = (data || []).map(a => {
       const gaps = []
@@ -3299,7 +3301,7 @@ function FloorTab({ toast }) {
       const hasDomain = (a.domains || []).length > 0 || a.domain_id
       if (!hasDomain)                                     gaps.push('domain')
       return { ...a, gaps, gapCount: gaps.length }
-    }).filter(a => a.gapCount > 0)
+    }).filter(a => a.gapCount > 0 || a.status === 'suspended')
 
     const sorted = [...rows]
     if (sort === 'gaps')    sorted.sort((a, b) => b.gapCount - a.gapCount)
@@ -3331,6 +3333,24 @@ function FloorTab({ toast }) {
     } finally {
       setOutreachSending(false)
     }
+  }
+
+  async function actorModerate(action, a) {
+    if (action === 'admin_remove' && !window.confirm(`Permanently remove ${a.name}? Open challenges close; this is a tombstone, not reversible from here.`)) return
+    try {
+      let token = null
+      try { token = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
+      const r = await fetch('/api/actor-remove', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ action, actorId: a.id }),
+      })
+      const d = await r.json().catch(() => ({}))
+      if (r.ok && (d.removed || d.suspended || d.restored)) {
+        toast(d.removed ? `${a.name} removed` : d.suspended ? `${a.name} suspended` : `${a.name} restored`)
+        load()
+      } else toast(d.error || `Failed (${r.status})`)
+    } catch (e) { toast(e?.message || 'Failed') }
   }
 
   const floorCount = actors.length
@@ -3429,6 +3449,21 @@ function FloorTab({ toast }) {
               <button type="button" onClick={() => { setOutreachModal(a); setOutreachEmail(''); setOutreachName('') }}
                 style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: '#2A6A3A', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', padding: '2px 0' }}>
                 Outreach
+              </button>
+              {a.status === 'suspended' ? (
+                <button type="button" onClick={() => actorModerate('admin_restore', a)}
+                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#2A6A3A', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', padding: '2px 0' }}>
+                  Restore
+                </button>
+              ) : (
+                <button type="button" onClick={() => actorModerate('admin_suspend', a)}
+                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#8A7030', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', padding: '2px 0' }}>
+                  Suspend
+                </button>
+              )}
+              <button type="button" onClick={() => actorModerate('admin_remove', a)}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#8A3030', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', padding: '2px 0' }}>
+                Delete
               </button>
               {a.image_provenance === 'hotlink' && (
                 <button type="button" onClick={async () => {
