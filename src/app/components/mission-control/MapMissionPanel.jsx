@@ -293,7 +293,6 @@ export default function MapMissionPanel({ user, onNavigate }) {
           <p style={{
             fontFamily: FONT_DISPLAY,
             fontSize: 18,
-            fontStyle: 'italic',
             color: TEXT_INK,
             lineHeight: 1.55,
             margin: 0,
@@ -414,7 +413,6 @@ export default function MapMissionPanel({ user, onNavigate }) {
                       fontSize: 13,
                       color: TEXT_FAINT,
                       margin: 0,
-                      fontStyle: 'italic',
                       flex: 1,
                     }}>
                       {domain.question}

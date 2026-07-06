@@ -479,7 +479,7 @@ function Question1({ focus, save }) {
           </div>
           {earthSuggestion && query.trim().length === 0 && (
             <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <span style={{ ...body, fontSize: '12.5px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
+              <span style={{ ...body, fontSize: '12.5px', color: 'rgba(15,21,35,0.55)' }}>
                 or focus planetarily:
               </span>
               <button
@@ -631,7 +631,7 @@ function Question2({ focus, save }) {
           </Label>
           {inDomainLoading && <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '8px' }}>Loading…</p>}
           {!inDomainLoading && inDomainResults.length === 0 && (
-            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', marginTop: '8px' }}>
+            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '8px' }}>
               No organisations seeded primarily in {domainSlugs.length === 1 ? 'this domain' : 'these domains'} yet.
             </p>
           )}
@@ -756,7 +756,6 @@ function QuestionBlock({ title, helper, children, last = false }) {
         <p style={{
           ...body, fontSize: '12.5px',
           color: 'rgba(15,21,35,0.55)',
-          fontStyle: 'italic',
           margin: '0 0 12px 0',
         }}>
           {helper}

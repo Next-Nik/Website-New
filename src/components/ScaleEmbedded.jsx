@@ -83,7 +83,6 @@ export function ScaleEmbedded() {
             ...body,
             fontSize:  '13px',
             color:     'rgba(15,21,35,0.55)',
-            fontStyle: 'italic',
           }}>
             this domain is holding you up
           </span>
@@ -117,7 +116,6 @@ export function ScaleEmbedded() {
                     ...body,
                     fontSize:  '13px',
                     color:     'rgba(15,21,35,0.55)',
-                    fontStyle: 'italic',
                   }}>
                     this domain is asking for attention
                   </span>
@@ -161,7 +159,6 @@ export function ScaleEmbedded() {
                       <span style={{
                         ...body,
                         fontSize:  '14px',
-                        fontStyle: 'italic',
                         color:     'rgba(15,21,35,0.6)',
                       }}>
                         {label}
@@ -192,7 +189,6 @@ export function ScaleEmbedded() {
         color:      'rgba(15,21,35,0.55)',
         lineHeight: 1.65,
         margin:     '20px 0 0',
-        fontStyle:  'italic',
         paddingTop: '16px',
         borderTop:  '1px solid rgba(110,127,92,0.12)',
       }}>

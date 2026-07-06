@@ -381,7 +381,6 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
               fontFamily: FONT_BODY,
               fontSize: '14px',
               color: TEXT_META,
-              fontStyle: 'italic',
             }}>
               No target goals set yet for this sprint. Open the full sprint view to set them.
             </div>
@@ -420,7 +419,6 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
                       fontFamily: FONT_BODY,
                       fontSize: '13px',
                       color: TEXT_META,
-                      fontStyle: 'italic',
                     }}>
                       No target goal yet.
                     </div>
@@ -479,7 +477,6 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
               fontFamily: FONT_BODY,
               fontSize: 12,
               color: TEXT_META,
-              fontStyle: 'italic',
             }}>
               Couldn't save remotely just now — your tick is held locally and will retry.
             </div>
@@ -558,7 +555,6 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
                 fontSize: '13px',
                 color: '#C85050',
                 marginBottom: '16px',
-                fontStyle: 'italic',
               }}>
                 {cancelError}
               </div>
@@ -644,7 +640,6 @@ function BearingLog({ user, sprintId }) {
       <div style={{
         fontFamily: FONT_DISPLAY,
         fontSize: '17px',
-        fontStyle: 'italic',
         color: TEXT_INK,
         marginBottom: '10px',
         lineHeight: 1.4,

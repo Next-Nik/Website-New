@@ -121,7 +121,7 @@ function LinksSection({ actorId, toast }) {
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
       ) : links.length === 0 ? (
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
-          fontStyle: 'italic', margin: 0 }}>
+          margin: 0 }}>
           No links yet.
         </p>
       ) : (
@@ -255,7 +255,7 @@ function PressSection({ actorId, toast }) {
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
       ) : press.length === 0 ? (
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
-          fontStyle: 'italic', margin: 0 }}>
+          margin: 0 }}>
           No press mentions yet.
         </p>
       ) : (
@@ -271,7 +271,7 @@ function PressSection({ actorId, toast }) {
               </div>
               {item.title && (
                 <div style={{ ...body, fontSize: '13px',
-                  color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
+                  color: 'rgba(15,21,35,0.55)' }}>
                   {item.title}
                 </div>
               )}

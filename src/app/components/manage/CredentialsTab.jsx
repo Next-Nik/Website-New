@@ -289,7 +289,7 @@ export function CredentialsTab({ actorId, toast }) {
 
       {credentials.length === 0 && (
         <p style={{ ...body, fontSize: '15px',
-          color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
+          color: 'rgba(15,21,35,0.55)' }}>
           No credentials yet.
         </p>
       )}

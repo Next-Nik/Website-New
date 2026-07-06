@@ -123,7 +123,6 @@ export function RosterSection() {
           ...body,
           fontSize: '14.5px',
           color: 'rgba(15,21,35,0.72)',
-          fontStyle: 'italic',
           padding: '16px 18px',
           background: 'rgba(110,127,92,0.04)',
           border: '1px dashed rgba(110,127,92,0.35)',
@@ -244,7 +243,7 @@ function TierRow({ tier, roster, resolved, addingHere, onAdd, onAddCancel, watch
           }}>
             {TIER_LABEL[tier]}
           </span>
-          <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginLeft: '12px', fontStyle: 'italic' }}>
+          <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginLeft: '12px' }}>
             {cost} spoons each &middot; {TIER_DESCRIPTION[tier]}
           </span>
         </div>
@@ -284,7 +283,7 @@ function TierRow({ tier, roster, resolved, addingHere, onAdd, onAddCancel, watch
           </button>
         )}
         {!canAdd && filled.length < cap && (
-          <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', alignSelf: 'center' }}>
+          <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', alignSelf: 'center' }}>
             {roster.free < cost
               ? `Need ${cost} spoons (you have ${roster.free} free)`
               : watchCount === 0
@@ -516,7 +515,7 @@ function RosterPicker({ tier, roster, watches, resolved, onCancel, onAdded }) {
 
       <div style={{ maxHeight: '240px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {filtered.length === 0 && (
-          <div style={{ ...body, fontSize: '13.5px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', padding: '8px 4px' }}>
+          <div style={{ ...body, fontSize: '13.5px', color: 'rgba(15,21,35,0.55)', padding: '8px 4px' }}>
             {candidates.length === 0
               ? 'Everyone you&rsquo;re tuned in to is already in the roster.'
               : 'No matches.'}

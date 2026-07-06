@@ -739,8 +739,7 @@ function PressStrip({ press }) {
     <div>
       <Eyebrow>Featured in</Eyebrow>
       <p style={{ ...body, fontSize: '15px',
-        color: at.meta, lineHeight: 1.7, margin: 0,
-        fontStyle: 'italic' }}>
+        color: at.meta, lineHeight: 1.7, margin: 0 }}>
         {press.map((p, idx) => (
           <span key={p.id}>
             {p.url ? (
@@ -1584,7 +1583,7 @@ function TestimonialsSection({ testimonials, actorMode }) {
           paddingLeft: '24px',
           marginBottom: '32px',
           maxWidth: '620px' }}>
-          <p style={{ ...body, fontSize: '17px', fontStyle: 'italic',
+          <p style={{ ...body, fontSize: '17px',
             color: dark, lineHeight: 1.55, marginBottom: '14px',
             fontWeight: 400 }}>
             "{t.quote}"

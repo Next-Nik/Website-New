@@ -384,7 +384,6 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
                   <span style={{
                     fontFamily: "'Newsreader', Georgia, serif",
                     fontSize: isMobile ? '0.6875rem' : '0.8125rem',
-                    fontStyle: 'italic',
                     color: 'rgba(15,21,35,0.6)',
                     whiteSpace: 'nowrap',
                     maxWidth: isMobile ? '110px' : '160px',
@@ -428,7 +427,6 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
         <span style={{
           fontFamily: "'Newsreader', Georgia, serif",
           fontSize: isMobile ? '0.875rem' : '1rem',
-          fontStyle: 'italic',
           color: 'rgba(15,21,35,0.55)',
           textAlign: 'center',
           maxWidth: isMobile ? '200px' : '260px',

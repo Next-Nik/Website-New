@@ -181,7 +181,6 @@
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 300;
-  font-style: italic;
   color: rgba(15,21,35,0.55);
   margin-bottom: 14px;
   line-height: 1.6;
@@ -282,7 +281,6 @@
   font-family: var(--font-body);
   font-size: 13px;
   font-weight: 300;
-  font-style: italic;
   color: rgba(15,21,35,0.55);
   margin: 0;
 }

@@ -135,12 +135,12 @@ export function WatchingSection() {
       }}>
         {count} of {cap} watched
         {capState === 'soft-warn' && (
-          <span style={{ ...body, fontSize: '13px', color: gold, textTransform: 'none', letterSpacing: 'normal', fontStyle: 'italic', marginLeft: '12px' }}>
+          <span style={{ ...body, fontSize: '13px', color: gold, textTransform: 'none', letterSpacing: 'normal', marginLeft: '12px' }}>
             &nbsp;approaching the cap &mdash; the limit protects this list from becoming noise.
           </span>
         )}
         {capState === 'at-cap' && (
-          <span style={{ ...body, fontSize: '13px', color: '#A23636', textTransform: 'none', letterSpacing: 'normal', fontStyle: 'italic', marginLeft: '12px' }}>
+          <span style={{ ...body, fontSize: '13px', color: '#A23636', textTransform: 'none', letterSpacing: 'normal', marginLeft: '12px' }}>
             &nbsp;at the cap &mdash; remove an entry before adding another.
           </span>
         )}
@@ -163,7 +163,6 @@ export function WatchingSection() {
           ...body,
           fontSize: '14.5px',
           color: 'rgba(15,21,35,0.72)',
-          fontStyle: 'italic',
           padding: '16px 18px',
           background: 'rgba(110,127,92,0.04)',
           border: '1px dashed rgba(110,127,92,0.35)',

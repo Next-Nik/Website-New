@@ -168,7 +168,6 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
               <p style={{
                 fontFamily: "'Newsreader', Georgia, serif",
                 fontSize:   '1rem',
-                fontStyle:  'italic',
                 color:      'rgba(15,21,35,0.55)',
                 lineHeight: 1.5,
               }}>
@@ -232,7 +231,6 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                 fontFamily: "'Newsreader', Georgia, serif",
                 fontSize:   '13px',
                 color:      'rgba(15,21,35,0.55)',
-                fontStyle:  'italic',
               }}>
                 {intro.aboveLine.note}
               </span>
@@ -268,7 +266,6 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                         fontFamily: "'Newsreader', Georgia, serif",
                         fontSize:   '13px',
                         color:      'rgba(15,21,35,0.55)',
-                        fontStyle:  'italic',
                       }}>
                         {intro.belowLine.note}
                       </span>
@@ -333,7 +330,6 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                           <span style={{
                             fontFamily: "'Newsreader', Georgia, serif",
                             fontSize:   '14px',
-                            fontStyle:  'italic',
                             color:      'rgba(15,21,35,0.6)',
                           }}>
                             {label}
@@ -370,7 +366,6 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
               color:      'rgba(15,21,35,0.55)',
               lineHeight: 1.65,
               margin:     0,
-              fontStyle:  'italic',
             }}>
               {intro.footer}
             </p>

@@ -206,7 +206,6 @@ export function AffiliationManager({ userId }) {
           ...body,
           fontSize: '14.5px',
           color: 'rgba(15,21,35,0.72)',
-          fontStyle: 'italic',
           padding: '16px 18px',
           background: 'rgba(110,127,92,0.04)',
           border: '1px dashed rgba(110,127,92,0.35)',

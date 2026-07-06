@@ -344,12 +344,12 @@ function DomainExpanded({ domain, score, detail }) {
           HEADLINE INDICATORS
         </div>
         {loading && (
-          <p style={{ fontFamily: FONT_BODY, fontSize: 13, color: TEXT_WHITE_FAINT, fontStyle: 'italic' }}>
+          <p style={{ fontFamily: FONT_BODY, fontSize: 13, color: TEXT_WHITE_FAINT }}>
             Loading…
           </p>
         )}
         {!loading && !hasHeadlines && (
-          <p style={{ fontFamily: FONT_BODY, fontSize: 13, color: TEXT_WHITE_FAINT, fontStyle: 'italic' }}>
+          <p style={{ fontFamily: FONT_BODY, fontSize: 13, color: TEXT_WHITE_FAINT }}>
             No headline indicators in catalog yet for this domain.
           </p>
         )}

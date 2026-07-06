@@ -55,7 +55,6 @@ const S = {
     color: 'rgba(15,21,35,0.55)',
     marginBottom: '2.5rem',
     textAlign: 'center',
-    fontStyle: 'italic',
   },
   card: {
     background: '#fff',

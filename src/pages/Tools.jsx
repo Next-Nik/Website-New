@@ -96,7 +96,7 @@ export function ToolsPage() {
         {/* Header */}
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '16px' }}>The Horizon Suite</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          Five tools.<br /><em style={{ fontStyle: 'italic', color: '#26302A' }}>One navigation system.</em>
+          Five tools.<br /><em style={{ fontStyle: 'normal', color: '#26302A' }}>One navigation system.</em>
         </h1>
         <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '48px', maxWidth: '560px' }}>
           Each tool is built for a specific stage of the journey. You don't need all of them — and you don't need to start at the beginning.

@@ -79,7 +79,7 @@ function FullChat({ messages, input, setInput, waiting, done, send, messagesRef,
                     {r.link && r.link !== 'null' && <a href={r.link} style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: GOLD_TEXT, textDecoration: 'none' }}>{r.link_text || 'Go there →'}</a>}
                   </div>
                 ))}
-                {d.closing && <div style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(110,127,92,0.20)' }}>{d.closing}</div>}
+                {d.closing && <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(110,127,92,0.20)' }}>{d.closing}</div>}
               </div>
             )
           }

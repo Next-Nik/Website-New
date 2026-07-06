@@ -99,7 +99,7 @@ export default function MyInterestsPanel({ userId }) {
             textAlign: 'center', marginTop: '20px' }}>Loading…</p>
         ) : filtered.length === 0 ? (
           <p style={{ ...body, fontSize: '13px', color: TEXT_META,
-            textAlign: 'center', marginTop: '40px', fontStyle: 'italic' }}>
+            textAlign: 'center', marginTop: '40px' }}>
             No tabs pulled yet. When you see offers or needs that interest you, pull the tab on their card.
           </p>
         ) : (
@@ -156,7 +156,7 @@ export default function MyInterestsPanel({ userId }) {
                     {item.active === false && (
                       <span style={{ ...sc, fontSize: '13px',
                         letterSpacing: '0.10em',
-                        color: TEXT_META, fontStyle: 'italic' }}>
+                        color: TEXT_META }}>
                         no longer active
                       </span>
                     )}

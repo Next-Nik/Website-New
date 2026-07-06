@@ -455,7 +455,7 @@ export default function PracticeContribute() {
             </div>
             {kindCfg && (
               <div style={{ marginTop: '12px', padding: '10px 14px', background: 'rgba(110,127,92,0.04)', border: '1px solid rgba(110,127,92,0.20)', borderRadius: '8px' }}>
-                <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: 0, fontStyle: 'italic' }}>
+                <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: 0 }}>
                   {kindCfg.contributePrompt}
                 </p>
               </div>

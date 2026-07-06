@@ -401,7 +401,6 @@ export function InvitationPage() {
               ...body,
               fontSize: '14px',
               color: 'rgba(15,21,35,0.55)',
-              fontStyle: 'italic',
               lineHeight: 1.65,
             }}>
               Actor placement is a curatorial decision. Actors engaging with this practice will be named here as the platform develops.
@@ -432,7 +431,6 @@ export function InvitationPage() {
             color: 'rgba(15,21,35,0.55)',
             lineHeight: 1.6,
             margin: '0 0 24px',
-            fontStyle: 'italic',
           }}>
             Not best stated with false certainty, but the most promising alternative at this stage of evidence, with known limitations named.
           </p>
@@ -462,7 +460,6 @@ export function InvitationPage() {
               ...body,
               fontSize: '14px',
               color: 'rgba(15,21,35,0.55)',
-              fontStyle: 'italic',
               lineHeight: 1.65,
             }}>
               Actors working on this regenerative practice will be named here as curation develops.
@@ -492,7 +489,6 @@ export function InvitationPage() {
             color: 'rgba(15,21,35,0.55)',
             lineHeight: 1.6,
             margin: '0 0 28px',
-            fontStyle: 'italic',
           }}>
             The honest distance between the extractive incumbent and the regenerative alternative. Named without exaggerating the difficulty or pretending it does not exist.
           </p>

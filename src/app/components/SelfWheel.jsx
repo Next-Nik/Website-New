@@ -713,7 +713,7 @@ function Popover({ popover, getPopoverStyle, horizonGoals, currentReflections, a
         </div>
         <div style={{ ...body, fontSize: '15px', lineHeight: 1.5, color: '#0F1523' }}>
           {text || (
-            <span style={{ color: 'rgba(15,21,35,0.72)', fontStyle: 'italic' }}>
+            <span style={{ color: 'rgba(15,21,35,0.72)' }}>
               You haven't written a Horizon for {label} yet.
             </span>
           )}
@@ -746,7 +746,7 @@ function Popover({ popover, getPopoverStyle, horizonGoals, currentReflections, a
         </div>
         <div style={{ ...body, fontSize: '15px', lineHeight: 1.5, color: '#0F1523' }}>
           {text || (
-            <span style={{ color: 'rgba(15,21,35,0.72)', fontStyle: 'italic' }}>
+            <span style={{ color: 'rgba(15,21,35,0.72)' }}>
               No current reflection captured yet.
             </span>
           )}

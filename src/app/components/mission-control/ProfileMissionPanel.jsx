@@ -412,7 +412,6 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
                 fontSize: 13.5,
                 color: TEXT_FAINT,
                 margin: '0 0 8px',
-                fontStyle: 'italic',
               }}>
                 Not yet written. A short statement of who you are when you're moving in your direction.
               </p>
@@ -537,7 +536,6 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
             <p style={{
               fontFamily: FONT_BODY,
               fontSize: 12,
-              fontStyle: 'italic',
               color: TEXT_FAINT,
               margin: '10px 0 0',
               lineHeight: 1.5,
@@ -607,7 +605,6 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
                 fontSize: 13.5,
                 color: TEXT_FAINT,
                 margin: '0 0 8px',
-                fontStyle: 'italic',
               }}>
                 Optional. Used only to surface region-appropriate resources when you need them.
               </p>

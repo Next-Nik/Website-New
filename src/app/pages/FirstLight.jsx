@@ -63,7 +63,7 @@ function Track({ d, now, onSet }){
           <span style={{ color:INK }}>{fmt(now)}</span>
           {reaching
             ? <><span style={{ color:GHOST, margin:'0 5px' }}>→</span><span style={{ color:focus?RED:GOLD }}>{fmt(aim)}</span></>
-            : <span style={{ color:GHOST, fontStyle:'italic' }}> · at the top</span>}
+            : <span style={{ color:GHOST }}> · at the top</span>}
         </div>
       </div>
       <div style={{ fontSize:12.5, color:GHOST, marginTop:-7, marginBottom:12, minHeight:16 }}>
@@ -157,7 +157,7 @@ export default function FirstLight(){
             <div style={{ marginTop:18 }}>
               {SELF_DOMAINS.map(d => <Track key={d.key} d={d} now={scores[d.key]} onSet={v => setOne(d.key, v)} />)}
             </div>
-            <p style={{ fontSize:13, color:GHOST, textAlign:'center', marginTop:16, fontStyle:'italic' }}>
+            <p style={{ fontSize:13, color:GHOST, textAlign:'center', marginTop:16 }}>
               The system aims you until the Map. The Map is where you set real targets.
             </p>
             <div style={{ position:'fixed', left:0, right:0, bottom:0, padding:'14px 22px calc(16px + env(safe-area-inset-bottom))', background:'linear-gradient(to top, #FAFAF7 72%, rgba(250,250,247,0))' }}>

@@ -391,7 +391,7 @@ function ItemSection({ actorId, kind, toast }) {
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
       ) : items.length === 0 && editing !== 'new' ? (
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
-          fontStyle: 'italic', margin: 0 }}>
+          margin: 0 }}>
           {kind === 'offer'
             ? 'No offers yet. What do you bring to the ecosystem?'
             : 'No needs yet. What are you looking for?'}

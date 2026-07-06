@@ -613,7 +613,7 @@ export default function Journal() {
             )}
 
             {loading && (
-              <p style={{ color: tokens.inkFaint, fontStyle: 'italic' }}>
+              <p style={{ color: tokens.inkFaint }}>
                 Loading your record…
               </p>
             )}

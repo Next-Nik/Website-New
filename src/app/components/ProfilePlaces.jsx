@@ -122,7 +122,7 @@ function PlaceWithBreadcrumb({ focus, ancestors }) {
         {focus.name}
       </Link>
       {trimmedAncestors.length > 0 && (
-        <span style={{ ...body, fontSize: '14.5px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
+        <span style={{ ...body, fontSize: '14.5px', color: 'rgba(15,21,35,0.55)' }}>
           {' · '}
           {trimmedAncestors.map((a, i) => (
             <span key={a.id}>

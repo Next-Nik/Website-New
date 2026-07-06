@@ -112,7 +112,6 @@ export default function PurposePieceMissionPanel({ purposeData, onNavigate }) {
           <p style={{
             fontFamily: FONT_DISPLAY,
             fontSize: 18,
-            fontStyle: 'italic',
             color: TEXT_INK,
             lineHeight: 1.55,
             margin: 0,

@@ -92,7 +92,7 @@ function Header({ domain, subdomain, field, atFocus }) {
       }}>
         {field.name}
         {atFocus && (
-          <span style={{ ...body, fontSize: '0.55em', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginLeft: '12px' }}>
+          <span style={{ ...body, fontSize: '0.55em', color: 'rgba(15,21,35,0.55)', marginLeft: '12px' }}>
             in {atFocus.name}
           </span>
         )}
@@ -189,7 +189,7 @@ function ActorsLayer({ field, atFocus, accentColor }) {
       {!loading && actors.length === 0 && (
         <div style={{
           ...body, fontSize: '14.5px',
-          color: 'rgba(15,21,35,0.72)', fontStyle: 'italic',
+          color: 'rgba(15,21,35,0.72)',
           padding: '18px',
           background: 'rgba(110,127,92,0.04)',
           border: '1px dashed rgba(110,127,92,0.30)',
@@ -356,7 +356,7 @@ function Quiet({ text }) {
   return (
     <div style={{
       ...body, fontSize: '14.5px',
-      color: 'rgba(15,21,35,0.72)', fontStyle: 'italic',
+      color: 'rgba(15,21,35,0.72)',
       padding: '18px',
       background: 'rgba(110,127,92,0.04)',
       border: '1px dashed rgba(110,127,92,0.30)',

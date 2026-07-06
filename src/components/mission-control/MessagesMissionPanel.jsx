@@ -331,7 +331,7 @@ export default function MessagesMissionPanel({ userId }) {
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {activeThreads.length === 0 ? (
             <p style={{ ...body, fontSize: '14px', color: TEXT_META,
-              textAlign: 'center', marginTop: '40px', fontStyle: 'italic' }}>
+              textAlign: 'center', marginTop: '40px' }}>
               No messages here yet. When someone reaches out,
               they'll appear in the appropriate lane.
             </p>

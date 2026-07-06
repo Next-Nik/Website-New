@@ -196,7 +196,6 @@ export default function TargetSprintSlider({ user, sprintData, onNavigate }) {
             fontFamily: FONT_BODY,
             fontSize: '14px',
             color: TEXT_META,
-            fontStyle: 'italic',
           }}>
             No target goals set yet for this sprint.
           </div>
@@ -236,7 +235,6 @@ export default function TargetSprintSlider({ user, sprintData, onNavigate }) {
                     fontFamily: FONT_BODY,
                     fontSize: '13px',
                     color: TEXT_META,
-                    fontStyle: 'italic',
                   }}>
                     No target goal yet.
                   </div>
@@ -338,7 +336,6 @@ function BearingLog({ user, sprintId }) {
       <div style={{
         fontFamily: FONT_DISPLAY,
         fontSize: '17px',
-        fontStyle: 'italic',
         color: TEXT_INK,
         marginBottom: '10px',
         lineHeight: 1.4,

@@ -290,7 +290,7 @@ export function FocusIndex() {
             })}
           </div>
           {selectedDomains.size > 0 && (
-            <div style={{ ...body, fontSize: '12.5px', color: at.ghost, fontStyle: 'italic', marginTop: '8px' }}>
+            <div style={{ ...body, fontSize: '12.5px', color: at.ghost, marginTop: '8px' }}>
               Showing {filteredCount} of {totalCount} nested entities.
             </div>
           )}
@@ -363,7 +363,7 @@ export function FocusIndex() {
         {!loading && filteredCount === 0 && (
           <div style={{
             ...body, fontSize: '15px',
-            color: at.meta, fontStyle: 'italic',
+            color: at.meta,
             padding: '20px',
             background: 'rgba(217,178,74,0.04)',
             border: '1px dashed rgba(217,178,74,0.35)',

@@ -73,7 +73,6 @@ export function InfoButton({ title, children, size = 'sm', ariaLabel }) {
           justifyContent: 'center',
           fontFamily: "'Fraunces', Georgia, serif",
           fontSize,
-          fontStyle: 'italic',
           lineHeight: 1,
           transition: 'background 120ms ease',
           verticalAlign: 'middle',

@@ -155,7 +155,7 @@ function IdentityHeader({ focus, ancestors }) {
           ...sc,
           fontSize: '11px',
           letterSpacing: '0.18em',
-          color: 'at.ghost',
+          color: at.ghost,
           textTransform: 'uppercase',
           marginBottom: '14px',
         }}>
@@ -163,11 +163,11 @@ function IdentityHeader({ focus, ancestors }) {
             <span key={a.id}>
               <Link
                 to={`/focus/${a.slug}`}
-                style={{ color: 'at.meta', textDecoration: 'none' }}
+                style={{ color: at.meta, textDecoration: 'none' }}
               >
                 {a.name}
               </Link>
-              {i < breadcrumbChain.length - 1 ? <span style={{ color: 'at.ghost' }}> &nbsp;/&nbsp; </span> : null}
+              {i < breadcrumbChain.length - 1 ? <span style={{ color: at.ghost }}> &nbsp;/&nbsp; </span> : null}
             </span>
           ))}
         </div>
@@ -197,8 +197,8 @@ function IdentityHeader({ focus, ancestors }) {
         {typeLabel}
         {kindLabel && (
           <>
-            <span style={{ color: 'at.ghost', margin: '0 10px' }}>·</span>
-            <span style={{ color: 'at.meta' }}>{kindLabel}</span>
+            <span style={{ color: at.ghost, margin: '0 10px' }}>·</span>
+            <span style={{ color: at.meta }}>{kindLabel}</span>
           </>
         )}
       </div>
@@ -232,14 +232,14 @@ function WheelLayer({ focus }) {
         border: '1px dashed rgba(217,178,74,0.35)',
         borderRadius: '10px',
       }}>
-        <p style={{ ...body, fontSize: '15px', color: 'at.meta', lineHeight: 1.7, margin: 0 }}>
+        <p style={{ ...body, fontSize: '15px', color: at.meta, lineHeight: 1.7, margin: 0 }}>
           Every Focus has a seven-domain wheel describing the state of the
           place across Human Being, Society, Nature, Technology, Economy,
           Legacy, and Vision. Scores will arrive as the indicator pipeline
           fills them &mdash; sourced from credible monitors, never originated
           by the platform itself.
         </p>
-        <p style={{ ...body, fontSize: '13.5px', color: 'at.ghost', fontStyle: 'italic', marginTop: '12px', marginBottom: 0 }}>
+        <p style={{ ...body, fontSize: '13.5px', color: at.ghost, marginTop: '12px', marginBottom: 0 }}>
           {focus.name}&rsquo;s wheel is not yet populated.
         </p>
       </div>
@@ -269,7 +269,7 @@ function NestedLayer({ focus, children }) {
               ...sc,
               fontSize: '11px',
               letterSpacing: '0.14em',
-              color: 'at.ghost',
+              color: at.ghost,
               textTransform: 'uppercase',
               marginBottom: '8px',
             }}>
@@ -295,7 +295,7 @@ function NestedLayer({ focus, children }) {
                 </Link>
               ))}
               {grouped[t].length > 40 && (
-                <span style={{ ...body, fontSize: '13.5px', color: 'at.ghost', alignSelf: 'center', fontStyle: 'italic' }}>
+                <span style={{ ...body, fontSize: '13.5px', color: at.ghost, alignSelf: 'center' }}>
                   + {grouped[t].length - 40} more
                 </span>
               )}
@@ -363,7 +363,7 @@ function AffiliationsLayer({ counts, focusName }) {
           </div>
         ))}
       </div>
-      <p style={{ ...body, fontSize: '13px', color: 'at.ghost', fontStyle: 'italic', marginTop: '12px', marginBottom: 0 }}>
+      <p style={{ ...body, fontSize: '13px', color: at.ghost, marginTop: '12px', marginBottom: 0 }}>
         Counts reflect public affiliations to {focusName} and everything nested
         within it, except citizenship which is counted only at the polity scale
         where it was declared.
@@ -482,8 +482,7 @@ function StewardshipFooter() {
       <p style={{
         ...body,
         fontSize: '13px',
-        color: 'at.ghost',
-        fontStyle: 'italic',
+        color: at.ghost,
         margin: 0,
         lineHeight: 1.7,
       }}>
@@ -533,7 +532,7 @@ function LoadingShell() {
         padding: '160px 24px',
         textAlign: 'center',
       }}>
-        <p style={{ ...body, fontSize: '15px', color: 'at.ghost' }}>
+        <p style={{ ...body, fontSize: '15px', color: at.ghost }}>
           Loading&hellip;
         </p>
       </div>
@@ -555,7 +554,7 @@ function NotFoundShell({ slug }) {
           ...body,
           fontSize: '17px',
           fontWeight: 400,
-          color: 'at.ghost',
+          color: at.ghost,
           lineHeight: 1.75,
           marginBottom: '24px',
         }}>

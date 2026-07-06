@@ -103,7 +103,7 @@ export function CrisisRedirectCard({ message, onExit }) {
           Save and exit
         </button>
         <p style={{
-          ...body, fontSize: '13px', fontStyle: 'italic',
+          ...body, fontSize: '13px',
           color: 'rgba(15,21,35,0.55)', textAlign: 'center', margin: 0,
         }}>
           Your Map is saved. You can return to it any time.

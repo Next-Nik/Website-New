@@ -273,7 +273,7 @@ function MirrorPanel({ mirrorText, onRevealed }) {
       </div>
       {!revealed ? (
         <>
-          <p style={{ ...body, fontSize: '17px', color: INK, lineHeight: 1.8, marginBottom: '18px', fontStyle: 'italic' }}>
+          <p style={{ ...body, fontSize: '17px', color: INK, lineHeight: 1.8, marginBottom: '18px' }}>
             There's a mirror waiting for you. It's not going to tell you what you are — you already know. It's going to say back what I saw clearly enough that you can decide what to do with it.
           </p>
           <button
@@ -458,7 +458,7 @@ export function PlacementCard({ placement, session, onChooseReadiness }) {
           Which path is yours?
         </div>
         {placement.readiness_reasoning && (
-          <p style={{ ...body, fontSize: '15px', color: MUTE, lineHeight: 1.7, marginBottom: '14px', fontStyle: 'italic' }}>
+          <p style={{ ...body, fontSize: '15px', color: MUTE, lineHeight: 1.7, marginBottom: '14px' }}>
             Suggested: <strong style={{ color: INK, fontStyle: 'normal' }}>{suggested}</strong> — {placement.readiness_reasoning}
           </p>
         )}
@@ -547,7 +547,7 @@ export function PlacementCard({ placement, session, onChooseReadiness }) {
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', marginBottom: '6px' }}>
             A note
           </div>
-          <p style={{ ...body, fontSize: '15px', color: INK, lineHeight: 1.8, margin: 0, fontStyle: 'italic' }}>
+          <p style={{ ...body, fontSize: '15px', color: INK, lineHeight: 1.8, margin: 0 }}>
             {placement.node_invitation}
           </p>
         </div>

@@ -569,7 +569,6 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
         color: TEXT_FAINT,
         lineHeight: 1.6,
         padding: '0 4px 4px',
-        fontStyle: 'italic',
       }}>
         Notification preferences and data export will live here when those surfaces are wired. For anything else, use Support.
       </div>

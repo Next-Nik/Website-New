@@ -97,7 +97,7 @@ export function InvitePage() {
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {actor.image_url
               ? <img src={actor.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-              : <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.4)' }}>No image</span>}
+              : <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)' }}>No image</span>}
           </div>
           <div>
             <div style={{ ...serif, fontSize: '22px', fontWeight: 400, color: dark, lineHeight: 1.2 }}>{actor.name}</div>

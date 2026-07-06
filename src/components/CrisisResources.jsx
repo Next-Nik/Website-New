@@ -53,7 +53,7 @@ export function CrisisResources({ variant = 'compact', defaultCountry = null }) 
 
   if (loading) {
     return (
-      <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
+      <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
         Loading resources...
       </p>
     )
@@ -81,7 +81,7 @@ export function CrisisResources({ variant = 'compact', defaultCountry = null }) 
           {localResources.map(r => <ResourceCard key={r.id} resource={r} />)}
         </div>
       ) : (
-        <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '24px', fontStyle: 'italic' }}>
+        <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '24px' }}>
           We don't yet have specific resources for this region. Please use the international resources below.
         </p>
       )}

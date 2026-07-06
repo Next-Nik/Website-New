@@ -447,7 +447,7 @@ export default function PracticeDetail() {
         {/* Attestation count — structural, not competitive */}
         {practice.attestation_count > 0 && (
           <div style={{ marginBottom: '24px' }}>
-            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)', fontStyle: 'italic', margin: 0 }}>
+            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)', margin: 0 }}>
               {practice.attestation_count} {practice.attestation_count === 1 ? 'practitioner has' : 'practitioners have'} attested to this practice.
             </p>
           </div>

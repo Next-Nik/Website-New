@@ -211,7 +211,7 @@ function EndOfFeedNotice() {
   return (
     <div style={{ textAlign: 'center', padding: '56px 24px 24px', borderTop: '1px solid rgba(110,127,92,0.10)', marginTop: '32px' }}>
       <p style={{
-        ...body, fontSize: '17px', fontWeight: 400, fontStyle: 'italic',
+        ...body, fontSize: '17px', fontWeight: 400,
         color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, margin: 0,
         maxWidth: '420px', marginLeft: 'auto', marginRight: 'auto',
       }}>

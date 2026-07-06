@@ -61,7 +61,7 @@ function TestimonialRow({ testimonial, onSave, onDelete, toast }) {
         paddingLeft: '20px', marginBottom: '18px',
         opacity: testimonial.active ? 1 : 0.55 }}>
 
-        <p style={{ ...body, fontSize: '15.5px', fontStyle: 'italic',
+        <p style={{ ...body, fontSize: '15.5px',
           color: dark, lineHeight: 1.7, marginBottom: '10px',
           fontWeight: 400 }}>
           "{testimonial.quote}"
@@ -310,7 +310,7 @@ export function TestimonialsTab({ actorId, toast }) {
 
       {testimonials.length === 0 && (
         <p style={{ ...body, fontSize: '15px',
-          color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
+          color: 'rgba(15,21,35,0.55)' }}>
           No testimonials yet.
         </p>
       )}

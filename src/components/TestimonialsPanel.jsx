@@ -138,7 +138,7 @@ export function TestimonialsPanel() {
               </div>
 
               <div style={{ borderLeft: '2px solid rgba(110,127,92,0.35)', padding: '16px 0 16px 20px' }}>
-                <p style={{ ...body, fontSize: '1.25rem', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.75, margin: '0 0 12px' }}>
+                <p style={{ ...body, fontSize: '1.25rem', color: '#0F1523', lineHeight: 1.75, margin: '0 0 12px' }}>
                   "{t.quote}"
                 </p>
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#26302A' }}>{t.name}</span>

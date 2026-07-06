@@ -382,7 +382,7 @@ function CombinedAnchor({ focus, pp, onEditFocus, onEditPurposePiece }) {
           {participationLabels.length > 0 && (
             <>
               <span style={{ color: 'rgba(15,21,35,0.55)' }}> · </span>
-              <span style={{ fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>
+              <span style={{ color: 'rgba(15,21,35,0.72)' }}>
                 {participationLabels.join(', ')}
               </span>
             </>
@@ -495,7 +495,7 @@ function FocusSummary({ focus, onEdit, onClear }) {
         {participationLabels.length > 0 && (
           <>
             <span style={{ color: 'rgba(15,21,35,0.55)' }}> · </span>
-            <span style={{ fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>
+            <span style={{ color: 'rgba(15,21,35,0.72)' }}>
               {participationLabels.join(', ')}
             </span>
           </>

@@ -9,7 +9,7 @@ import { serif, body, sc } from '../lib/designTokens'
 function Quote({ text, cite }) {
   return (
     <div style={{ borderLeft: '2px solid rgba(110,127,92,0.20)', padding: '14px 0 14px 28px', margin: '0 0 28px', maxWidth: '600px' }}>
-      <p style={{ ...body, fontSize: '16px', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.75, marginBottom: '10px' }}>{text}</p>
+      <p style={{ ...body, fontSize: '16px', color: '#0F1523', lineHeight: 1.75, marginBottom: '10px' }}>{text}</p>
       <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#26302A' }}>{'—'} {cite}</span>
     </div>
   )
@@ -48,7 +48,7 @@ function TestimonialCard({ q, cite }) {
       marginRight: '20px',
     }}>
       <Stars />
-      <p style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '16px' }}>{q}</p>
+      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '16px' }}>{q}</p>
       <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A' }}>{'—'} {cite}</span>
     </div>
   )
@@ -138,7 +138,7 @@ export function WorkWithNikPage() {
           <div style={{ flex: '1 1 320px' }}>
             <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '16px' }}>Work with Nik</span>
             <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-              From circling<br /><em style={{ fontStyle: 'italic', color: '#26302A' }}>to building.</em>
+              From circling<br /><em style={{ fontStyle: 'normal', color: '#26302A' }}>to building.</em>
             </h1>
             <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '40px', maxWidth: '480px' }}>One-on-one work for people who are ready to move {'—'} not just understand.</p>
             <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(38,48,42,0.8)', background: '#6E7F5C', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Book a discovery call {'→'}</a>

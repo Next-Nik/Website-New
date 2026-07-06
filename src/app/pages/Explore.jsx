@@ -229,7 +229,7 @@ function NotFound({ message }) {
   return (
     <div style={{
       ...body, fontSize: '15px',
-      color: 'rgba(15,21,35,0.72)', fontStyle: 'italic',
+      color: 'rgba(15,21,35,0.72)',
       padding: '20px',
       background: 'rgba(110,127,92,0.04)',
       border: '1px dashed rgba(110,127,92,0.35)',
@@ -279,7 +279,7 @@ function Breadcrumb({ level, domain, subdomain, field, atFocus }) {
       {atFocus && (
         <>
           <span style={{ color: 'rgba(15,21,35,0.55)', margin: '0 14px' }}>·</span>
-          <span style={{ color: GOLD, ...body, textTransform: 'none', letterSpacing: 'normal', fontStyle: 'italic' }}>
+          <span style={{ color: GOLD, ...body, textTransform: 'none', letterSpacing: 'normal' }}>
             in {atFocus.name}
           </span>
         </>

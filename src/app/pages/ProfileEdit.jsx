@@ -888,7 +888,6 @@ function FounderToolsLinks() {
         style={{
           ...body,
           fontSize: '14px',
-          fontStyle: 'italic',
           color: '#777',
           margin: '0 0 6px',
           lineHeight: 1.55,
@@ -991,7 +990,6 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
       <p style={{
         fontFamily: "'Newsreader', Georgia, serif",
         fontSize: '14px',
-        fontStyle: 'italic',
         color: '#777',
         margin: '0 0 6px',
         lineHeight: 1.55,

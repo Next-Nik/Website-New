@@ -42,7 +42,40 @@ const SRC = path.join(__dirname, '..', 'src')
 // only after a human confirms the italic wraps the user's words.
 const ITALIC_WHITELIST = [
   'components/Wheel.jsx', // Horizon Goal text in the node detail card — user-authored
-  // e.g. 'components/NorthStarPortal.jsx' — user messages in the chat
+  'pages/Dashboard.jsx', // avatar/Horizon Self/horizon-goal/purpose statement quotes — all user-authored
+  'tools/map/Map.jsx', // avatar/reality/horizon draft text — all user-authored, including the horizon textarea itself
+  'mission-control/TargetSprintMissionPanel.jsx', // {goal} — the user's own target-goal text
+  'tools/purpose-piece/PurposePiece.jsx', // {horizonGoal} and the user chat bubble — user-authored
+  'tools/nextu/HorizonSelfOnboarding.jsx', // user text-input fields + I Am/life statements — user-authored
+  'tools/horizon-state/HorizonState.jsx', // {lifeIaStatement} — the user's own I Am statement
+  'mission-control/ProfileMissionPanel.jsx', // Horizon Self text input + the user's own quoted statement
+  'self-explorer/SelfPanel.module.css', // .horizonGoal / .lifeMission — user's own goal/mission text
+  'mission-control/TargetSprintSlider.jsx', // {goal} — the user's own target-goal text
+  'tools/target-sprint/TargetSprint.jsx', // {ia}/{horizonSelfStatement}/{iaStatements} — user-authored statements
+  'tools/nextu/IAmChapter.jsx', // I Am statement text inputs + declared statements — user-authored
+  'domain-explorer/DomainPanel.module.css', // .horizonGoal / .goalScope — the user's own goal sentence
+  'app/pages/OrgPublic.jsx', // {item.why} — the actor's own self-authored "why" statement
+  'app/pages/AdminConsole.jsx', // {c.note}/{s}/{r.message} — real people's own submitted messages/quotes
+  'mission-control/MapMissionPanel.jsx', // {previewText} — the user's own horizon text
+  'mission-control/HorizonPracticeMissionPanel.jsx', // horizonSelf/lifeHorizon/iaStatement — user-authored
+  'tools/nextu/NextUJourney.jsx', // I Am statements + synthesised statement — user-authored
+  'tools/nextu/HorizonBiography.jsx', // user's own biography textarea and text
+  'lib/designTokens.js', // the userVoice preset definition itself (fnText.userVoice / atText.userVoice)
+  'self-explorer/SelfExplorer.module.css', // .overviewGoal / .idleItemMission — user's own goal/mission text
+  'app/pages/Search.jsx', // {actor.tagline} — the actor's own self-authored tagline
+  'ProfileIAStatements.jsx', // {statement} — the user's own I Am statement
+  'ProfileIdentityStrip.jsx', // {primaryIAStatement} — the user's own I Am statement
+  'SprintSlate.jsx', // {dd[domains[0]].goal} — the user's own target-sprint goal
+  'daily/DailySessionPanel.jsx', // {lifeIaStatement} — the user's own I Am statement
+  'daily/MiddayRecenter.jsx', // {horizonSelfStatement} — explicitly commented user-authored
+  'daily/blocks/Readiness.jsx', // {horizonSelfStatement} — the user's own Horizon Self statement
+  'feed/items/IAStatementItem.jsx', // {cleanStatement} — the user's own I Am statement
+  'feed/items/SprintLaunchedItem.jsx', // {horizonGoal} — the user's own horizon goal
+  'mission-control/ComposeMessage.jsx', // {recipient.tagline} — the recipient's own self-authored tagline
+  'app/pages/ChallengePage.jsx', // {r.reflection} — participants' own shared reflections
+  'app/pages/Claim.jsx', // {actor.tagline} — the actor's own self-authored tagline
+  'tools/horizon-practice/HorizonPractice.jsx', // {orderedIam[iamIdx].full} — the user's own I Am statement
+  'components/NorthStarPortal.jsx', // user chat bubble (m.role === 'user') — the user's own message
 ]
 
 // Files where heritage gold is legal (Master Spec §4). Keep this

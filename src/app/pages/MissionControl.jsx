@@ -368,7 +368,7 @@ function ResourcesNextStepsInput({ onSubmit }) {
           }}
         >→</button>
       </div>
-      <div style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '6px', fontStyle: 'italic' }}>
+      <div style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '6px' }}>
         Press enter or → to begin
       </div>
     </div>
@@ -1382,7 +1382,7 @@ export default function MissionControl() {
             <span style={{ color: '#26302A', fontSize: '14px' }}>✦</span>
             <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '10px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)' }}>YOUR FEED</span>
           </div>
-          <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0, lineHeight: 1.6 }}>
             Articles, conversations, practitioners, and exercises — surfaced as your work moves.
           </p>
         </div>

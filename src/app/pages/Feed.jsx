@@ -173,7 +173,6 @@ function EndOfFeedNotice() {
         ...body,
         fontSize: '17px',
         fontWeight: 400,
-        fontStyle: 'italic',
         color: 'rgba(15,21,35,0.65)',
         lineHeight: 1.7,
         margin: 0,

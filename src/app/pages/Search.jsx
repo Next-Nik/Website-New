@@ -388,7 +388,7 @@ export function SearchPage() {
 
         {!loading && !searched && (
           <p style={{ ...body, fontSize: '14px', color: at.ghost,
-            margin: '40px 0', textAlign: 'center', fontStyle: 'italic' }}>
+            margin: '40px 0', textAlign: 'center' }}>
             Search by typing above or applying filters.
           </p>
         )}

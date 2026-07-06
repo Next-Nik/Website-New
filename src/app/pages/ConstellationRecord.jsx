@@ -107,7 +107,7 @@ export default function ConstellationRecord() {
               ))}
             </div>
 
-            <p style={{ ...serif, fontStyle: 'italic', fontSize: '26px', color: AMBER_DEEP, textAlign: 'center', margin: '36px 0 0' }}>
+            <p style={{ ...serif, fontSize: '26px', color: AMBER_DEEP, textAlign: 'center', margin: '36px 0 0' }}>
               We weren&rsquo;t caring alone.
             </p>
 

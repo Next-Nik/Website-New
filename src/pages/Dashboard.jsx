@@ -300,7 +300,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
                   {displayIa ? (
                     <p style={{ ...body, fontSize: '13px', color: '#0F1523', lineHeight: 1.55, margin: 0 }}>{displayIa}</p>
                   ) : (
-                    <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', margin: 0 }}>No statement yet</p>
+                    <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>No statement yet</p>
                   )}
                 </div>
                 <button
@@ -400,7 +400,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
                     {ia ? (
                       <p style={{ ...body, fontSize: '13px', color: '#0F1523', lineHeight: 1.55, margin: 0 }}>{ia}</p>
                     ) : (
-                      <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', margin: 0 }}>No statement yet</p>
+                      <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>No statement yet</p>
                     )}
                   </div>
 

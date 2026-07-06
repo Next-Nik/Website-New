@@ -702,7 +702,7 @@ function FoundationReports({ user, sessions, phase = 'baseline' }) {
 
       {/* Empty state when no past reviews and current period below threshold */}
       {!loadingStored && pastPeriodReviews.length === 0 && !reviewBelow && !meetsThreshold && (
-        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
           Nothing to reflect on yet at this cadence. Keep checking in.
         </p>
       )}
@@ -730,7 +730,7 @@ function FoundationLogs({ sessions }) {
 
   if (days.length === 0) {
     return (
-      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
+      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
         No check-ins yet.
       </p>
     )
@@ -787,7 +787,7 @@ function FoundationLogs({ sessions }) {
               </div>
             )}
             {!before?.note && !after?.note && (
-              <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', margin: 0 }}>
+              <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
                 No notes recorded.
               </p>
             )}
@@ -1826,7 +1826,7 @@ function FirstTimePitch() {
       <p style={{ ...body, fontSize: '17px', fontWeight: 300, ...meta, lineHeight: 1.7, marginBottom: '20px' }}>
         Most frameworks assume baseline stability is already there. This builds it. The daily check-in lives on Mission Control. This page is where your reflections and logs accumulate over time.
       </p>
-      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, fontStyle: 'italic', margin: 0 }}>
+      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, margin: 0 }}>
         Once you've done your first check-in, this introduction won't appear again.
       </p>
     </div>

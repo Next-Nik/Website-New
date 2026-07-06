@@ -161,7 +161,7 @@ export function PageHeader({ eyebrow, title, opener, sub }) {
       <h1 style={{ ...SERIF, fontSize: 'clamp(30px, 5vw, 44px)', fontWeight: 300, color: DARK, lineHeight: 1.12, margin: '0 0 24px' }}>
         {title}
       </h1>
-      <p style={{ ...SERIF, fontSize: '20px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55, margin: '0 0 20px', borderLeft: `2px solid ${GOLD}`, paddingLeft: '18px' }}>
+      <p style={{ ...SERIF, fontSize: '20px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.55, margin: '0 0 20px', borderLeft: `2px solid ${GOLD}`, paddingLeft: '18px' }}>
         {opener}
       </p>
       <p style={{ ...BODY, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, margin: 0 }}>
@@ -180,7 +180,7 @@ export function Beats({ items }) {
       <ol style={{ margin: 0, padding: 0, listStyle: 'none' }}>
         {items.map((text, i) => (
           <li key={i} style={{ display: 'flex', gap: '14px', marginBottom: '16px', alignItems: 'flex-start' }}>
-            <span style={{ ...SERIF, fontSize: '20px', fontWeight: 300, color: GOLD, flexShrink: 0, lineHeight: 1.65, fontStyle: 'italic' }}>
+            <span style={{ ...SERIF, fontSize: '20px', fontWeight: 300, color: GOLD, flexShrink: 0, lineHeight: 1.65 }}>
               {String(i + 1).padStart(2, '0')}
             </span>
             <p style={{ ...BODY, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.80)', lineHeight: 1.7, margin: 0 }}>
@@ -204,7 +204,7 @@ export function PreFormLine({ children }) {
 export function CloserAndSubmit({ saving, error, submitLabel, onSubmit }) {
   return (
     <>
-      <p style={{ ...SERIF, fontSize: '18px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '32px 0 24px', borderLeft: `2px solid ${GOLD}`, paddingLeft: '18px' }}>
+      <p style={{ ...SERIF, fontSize: '18px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '32px 0 24px', borderLeft: `2px solid ${GOLD}`, paddingLeft: '18px' }}>
         {SHARED_CLOSER}
       </p>
 

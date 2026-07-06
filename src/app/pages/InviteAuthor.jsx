@@ -205,7 +205,7 @@ export function InviteAuthorPage() {
                             border: '1px solid rgba(110,127,92,0.2)', background: '#FAFAF7' }}>
                           <span style={{ ...body, fontSize: '15px', color: dark }}>{r.name}</span>
                           <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em',
-                            color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase' }}>{r.type}</span>
+                            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>{r.type}</span>
                         </button>
                       ))}
                     </div>

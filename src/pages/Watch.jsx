@@ -187,7 +187,7 @@ export function WatchPage() {
 
         {/* A gentle link out to the broader actor browser — not a CTA, just a door left ajar */}
         {actorCount !== null && actorCount > 0 && (
-          <p style={{ ...body, fontSize: '15px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, marginTop: '24px', fontStyle: 'italic' }}>
+          <p style={{ ...body, fontSize: '15px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, marginTop: '24px' }}>
             {actorCount} organisation{actorCount === 1 ? '' : 's'} and practitioner{actorCount === 1 ? '' : 's'} have been placed on the map so far. You can{' '}
             <Link to="/nextus/actors" style={{ color: '#26302A', fontStyle: 'normal', textDecoration: 'none', borderBottom: '1px solid rgba(110,127,92,0.35)' }}>
               browse who's here
@@ -247,7 +247,7 @@ export function WatchPage() {
           border: '1px solid rgba(110,127,92,0.18)',
           borderRadius: '14px',
         }}>
-          <p style={{ ...body, fontSize: '17px', fontWeight: 400, fontStyle: 'italic', color: '#0F1523', lineHeight: 1.7, marginBottom: '14px', maxWidth: '520px' }}>
+          <p style={{ ...body, fontSize: '17px', fontWeight: 400, color: '#0F1523', lineHeight: 1.7, marginBottom: '14px', maxWidth: '520px' }}>
             When something pulls — when you've watched enough and want to try something — the door home is just here.
           </p>
           <Link to="/" style={{
