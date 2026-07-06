@@ -1364,6 +1364,39 @@ function planetDaysLeft(targetDate) {
   return Math.max(0, Math.ceil((new Date(targetDate + 'T23:59:59') - new Date()) / 86400000))
 }
 
+// ─── Window-closed banner ─────────────────────────────────────────────────────
+// Shown on an active stretch whose target date has passed. Before this, the
+// page sat silently at "0 days left" with no visible way forward: the
+// complete/debrief flow existed but only behind the quiet "Review my stretch"
+// pill, and the clock could never be changed after creation. Both paths are
+// now explicit at the moment they're needed.
+function WindowClosedBanner({ onReview, onExtend }) {
+  const chip = { ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '7px 16px',
+    borderRadius: '20px', cursor: 'pointer', border: '1px solid rgba(110,127,92,0.45)',
+    background: 'transparent', color: fn.moss }
+  return (
+    <div style={{ background: 'rgba(110,127,92,0.07)', border: '1.5px solid rgba(110,127,92,0.4)',
+      borderRadius: '14px', padding: '20px 24px', margin: '0 0 22px' }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: fn.moss, marginBottom: '8px' }}>
+        WINDOW CLOSED
+      </div>
+      <p style={{ ...serif, fontSize: '16px', color: tokens.dark, lineHeight: 1.55, margin: '0 0 16px' }}>
+        This stretch reached its end date. Close it out with a debrief, or set a new
+        window and keep going. Your work here stays either way.
+      </p>
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <Btn onClick={onReview}>Review and complete →</Btn>
+        <button type="button" style={chip} onClick={() => onExtend(computeClock('rolling'))}>
+          New window · rolling 90 days
+        </button>
+        <button type="button" style={chip} onClick={() => onExtend(computeClock('calendar'))}>
+          New window · to quarter end
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ─── Planet Sprint panel ──────────────────────────────────────────────────────
 // The outer arc — a SIBLING SESSION, not an embedded blob. Its own row, its
 // own clock, its own lifecycle: it can start months after the personal
@@ -2511,6 +2544,17 @@ export function TargetSprintPage() {
                 {d.label}
               </h1>
             </div>
+
+            {planetDaysLeft(targetDate) === 0 && (
+              <WindowClosedBanner
+                onReview={() => setShowSummary(true)}
+                onExtend={clk => {
+                  setQuarterType(clk.quarterType)
+                  setTargetDate(clk.targetDate)
+                  setEndDateLabel(clk.endDateLabel)
+                }}
+              />
+            )}
 
             <IdentityBanner domainId={selectedDomain} iaStatements={iaStatements} horizonSelfStatement={horizonSelfStatement} practiceStreak={practiceStreak} />
 
