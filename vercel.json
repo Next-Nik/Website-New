@@ -197,6 +197,17 @@
       "destination": "/api/add-actor"
     },
     {
+      "source": "/org/:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(WhatsApp|facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Slackbot|Slack-ImgProxy|TelegramBot|Discordbot|SkypeUriPreview|Pinterestbot|redditbot|Embedly|Iframely|Applebot|Googlebot|bingbot|vkShare).*"
+        }
+      ],
+      "destination": "/api/og-org?slug=:slug"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
