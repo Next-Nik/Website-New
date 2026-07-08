@@ -97,6 +97,7 @@ export default function BeaconStrip({ userId }) {
   const [showMeaning, setShowMeaning] = useState(false)
   const [askPush, setAskPush] = useState(false)
   const [expanded, setExpanded] = useState(null)
+  const [runsOpen, setRunsOpen] = useState(false)
   const [feed, setFeed] = useState(null)
   const [copied, setCopied] = useState(null)
   const panelRef = useRef(null)
@@ -110,15 +111,20 @@ export default function BeaconStrip({ userId }) {
     return b
   }, [])
 
+  // One gathered load. Everything fetches in parallel and commits in a single
+  // synchronous block, so the panel paints once — no beacon-then-runs-then-feed
+  // staging, no height jumps. Every fetch fails soft; prior state holds.
   const reload = useCallback(async () => {
-    const b = await loadTally()
-    if (!b || !b.rooted) { setReady(true); return }
-    if (userId) {
-      try {
-        const [parts, bd] = await Promise.all([
-          postJSON('/api/actor-calls', { action: 'my_participations', userId }),
-          postJSON('/api/beacon', { action: 'breakdown', slug: 'founding-nature' }),
-        ])
+    try {
+      const [b, a, parts, bd] = await Promise.all([
+        postJSON('/api/beacon', { action: 'get', slug: 'founding-nature' }).catch(() => null),
+        postJSON('/api/actor-calls', { action: 'constellation_activity', limit: 6 }).catch(() => null),
+        userId ? postJSON('/api/actor-calls', { action: 'my_participations', userId }).catch(() => null) : Promise.resolve(null),
+        userId ? postJSON('/api/beacon', { action: 'breakdown', slug: 'founding-nature' }).catch(() => null) : Promise.resolve(null),
+      ])
+      if (b) setBeacon(b)
+      if (a && a.events) setFeed(a)
+      if (userId && parts && bd) {
         const treeIds = new Set((bd.challenges || []).map((c) => c.call_id))
         const runs = (parts.participations || []).filter(
           (p) => treeIds.has(p.call_id) && p.status === 'active',
@@ -129,17 +135,10 @@ export default function BeaconStrip({ userId }) {
           const firstOpen = runs.find((r) => !runKeptToday(r)) || runs[0]
           return firstOpen ? firstOpen.participant_id : null
         })
-      } catch (_) { /* keep prior state */ }
-    }
+      }
+    } catch (_) { /* keep prior state */ }
     setReady(true)
-  }, [userId, loadTally])
-
-  const loadFeed = useCallback(async () => {
-    try {
-      const a = await postJSON('/api/actor-calls', { action: 'constellation_activity', limit: 6 })
-      if (a && a.events) setFeed(a)
-    } catch (_) { /* the fire still shows without the ticker */ }
-  }, [])
+  }, [userId])
 
   useEffect(() => {
     reload()
@@ -236,7 +235,7 @@ export default function BeaconStrip({ userId }) {
     const next = !open
     setOpen(next)
     setPanelHeight(next ? measure() : 0, true)
-    if (next) { reload(); if (!mine.length) loadFeed() }
+    if (next) reload() // background refresh · commits atomically, no repaint staging
   }
   const onGripDown = (e) => {
     drag.current = { on: true, startY: e.clientY, startH: parseFloat(panelRef.current?.style.maxHeight || '0') || 0, moved: 0, max: measure() }
@@ -262,7 +261,7 @@ export default function BeaconStrip({ userId }) {
   }
 
   // keep height correct when content changes while open
-  useEffect(() => { if (open) setPanelHeight(measure(), false) }, [mine, feed, expanded, copied, askPush, open])
+  useEffect(() => { if (open) setPanelHeight(measure(), false) }, [mine, feed, expanded, copied, askPush, open, runsOpen])
 
   // ── click-off / Escape close ──
   // The panel closes from anywhere, not only the toggle: any pointer press
@@ -339,9 +338,18 @@ export default function BeaconStrip({ userId }) {
               </div>
             )}
             {mine.length > 0 && (
+              <button type="button" className={`bcn-door${runsOpen ? ' open' : ''}`} onClick={() => setRunsOpen((o) => !o)}>
+                <span className="bcn-door-t">Your challenges</span>
+                <span className="bcn-door-n">
+                  {openCount > 0
+                    ? `${openCount} waiting today`
+                    : 'all done for the day \u2713'}
+                </span>
+                <span className="bcn-door-a">{runsOpen ? '\u2193' : '\u2192'}</span>
+              </button>
+            )}
+            {mine.length > 0 && runsOpen && (
               <>
-                <div className="bcn-today-h">Your runs &middot; today</div>
-                {openCount === 0 && <p className="bcn-alldone">All done for today. Well done!</p>}
                 {mine.map((run) => {
                   const chain = computeChain({ doneDates: run.done_dates || [], cadence: run.cadence })
                   const kept = runKeptToday(run)
@@ -372,7 +380,7 @@ export default function BeaconStrip({ userId }) {
                     voice = VOICE[stage](chain.kept)
                   }
                   const chipLabel = kept
-                    ? 'Kept today'
+                    ? 'Done today'
                     : (run.cadence === 'weekly' ? 'Week open' : run.cadence === 'monthly' ? 'Month open' : 'Today open')
                   const chainLabel = chain.unit === 'summit'
                     ? 'one summit'
@@ -560,6 +568,12 @@ const CSS = `
 .bcn-move.done{border-color:rgba(74,140,111,.5)}
 .bcn-move-t{font-family:'Newsreader',Georgia,serif;font-size:14px;color:rgba(250,241,222,.88);line-height:1.4;min-width:0;flex:1 1 220px}
 .bcn-livein.after-runs{margin-top:20px;padding-top:18px;border-top:1px solid rgba(242,196,90,.18)}
+.bcn-door{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;background:linear-gradient(180deg,rgba(242,196,90,.10),rgba(242,196,90,.04));border:1.5px solid rgba(242,196,90,.55);border-radius:13px;padding:15px 16px;margin-bottom:14px;cursor:pointer;transition:all .25s}
+.bcn-door:hover{border-color:rgba(242,196,90,.85);box-shadow:0 0 16px rgba(242,196,90,.18)}
+.bcn-door.open{border-color:rgba(242,196,90,.85)}
+.bcn-door-t{font-family:'IBM Plex Mono',Georgia,serif;font-size:13.5px;letter-spacing:.18em;text-transform:uppercase;color:#F2C45A}
+.bcn-door-n{font-family:'IBM Plex Mono',Georgia,serif;font-size:13px;letter-spacing:.1em;color:rgba(250,241,222,.72);margin-left:auto}
+.bcn-door-a{font-family:'IBM Plex Mono',Georgia,serif;font-size:14px;color:#F2C45A}
 .keep-btn{position:relative;font-family:'IBM Plex Mono',Georgia,serif;font-size:13.5px;letter-spacing:.12em;text-transform:uppercase;color:#241703;border:none;border-radius:26px;padding:13px 20px;cursor:pointer;white-space:nowrap;background:linear-gradient(180deg,${A.glow},${A.bright});box-shadow:0 2px 0 rgba(122,74,18,.8);transition:all .3s}
 .stage-afternoon .keep-btn{background:linear-gradient(180deg,#FFF0BE,#FFD86B);box-shadow:0 2px 0 rgba(122,74,18,.8),0 0 18px rgba(242,196,90,.35)}
 .stage-evening .keep-btn{background:linear-gradient(180deg,#FFF4CC,#FFD86B);box-shadow:0 2px 0 rgba(122,74,18,.8),0 0 26px rgba(255,216,107,.55);animation:bcncheer 2.2s ease-in-out infinite}
