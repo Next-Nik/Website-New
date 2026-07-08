@@ -24,7 +24,7 @@ const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
 const body = { fontFamily: "'Newsreader', Georgia, serif" }
 const gold = '#26302A'
 
-export function WatchButton({ entityType, entityId, entityName, size = 'md' }) {
+export function WatchButton({ entityType, entityId, entityName, size = 'md', tone = 'light' }) {
   const { user } = useAuth()
   const { isWatching, toggle, capState, count, cap, loading } = useWatch()
   const [busy, setBusy]       = useState(false)
@@ -64,9 +64,19 @@ export function WatchButton({ entityType, entityId, entityName, size = 'md' }) {
     }
   }
 
-  const fontSize     = size === 'sm' ? '12px' : '13px'
+  const fontSize     = '13px'
   const padding      = size === 'sm' ? '7px 16px' : '10px 22px'
   const letterSpace  = '0.16em'
+
+  // Palette by surface. 'light' = Field Notes paper (graphite ink);
+  // 'dark' = Atlas sea ink (cream outline, verdigris fill when active).
+  const dark = tone === 'dark'
+  const inkIdle    = dark ? '#EAF1ED' : gold
+  const edgeIdle   = dark ? 'rgba(234,241,237,0.45)' : gold
+  const bgIdle     = dark ? 'transparent' : 'rgba(110,127,92,0.04)'
+  const inkActive  = dark ? '#0F1A15' : '#FFFFFF'
+  const bgActive   = dark ? '#58A08A' : gold
+  const edgeActive = dark ? '#58A08A' : gold
 
   // Label logic:
   //   - Tuned in + hover → "Un-tune {name}"  (signals the action available)
@@ -93,9 +103,9 @@ export function WatchButton({ entityType, entityId, entityName, size = 'md' }) {
           ...sc,
           fontSize,
           letterSpacing: letterSpace,
-          color: watching ? '#FFFFFF' : gold,
-          background: watching ? gold : 'rgba(110,127,92,0.04)',
-          border: '1.5px solid ' + gold,
+          color: watching ? inkActive : inkIdle,
+          background: watching ? bgActive : bgIdle,
+          border: '1.5px solid ' + (watching ? edgeActive : edgeIdle),
           borderRadius: '30px',
           padding,
           cursor: busy ? 'wait' : 'pointer',
@@ -106,7 +116,7 @@ export function WatchButton({ entityType, entityId, entityName, size = 'md' }) {
         {label}
       </button>
 
-      <InfoButton title="Tuning in" size={size}>
+      <InfoButton title="Tuning in" size={size} tone={tone}>
         <p style={{ margin: '0 0 10px' }}>
           When you tune in to {entityName}, their published activity shows up
           in your Tuned In feed &mdash; chronologically, with no ranking
@@ -125,7 +135,7 @@ export function WatchButton({ entityType, entityId, entityName, size = 'md' }) {
       </InfoButton>
 
       {errMsg && (
-        <span style={{ ...body, fontSize: '12.5px', color: '#A23636' }}>
+        <span style={{ ...body, fontSize: '13px', color: dark ? '#E08A8A' : '#A23636' }}>
           {errMsg}
         </span>
       )}

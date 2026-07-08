@@ -393,6 +393,7 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
                 entityId={actor.id}
                 entityName={actor.name}
                 size="sm"
+                tone="dark"
               />
               <MessageButton actor={actor} />
             </div>

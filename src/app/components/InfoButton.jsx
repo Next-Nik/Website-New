@@ -23,7 +23,8 @@ import { useEffect, useRef, useState } from 'react'
 const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
 const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
-export function InfoButton({ title, children, size = 'sm', ariaLabel }) {
+export function InfoButton({ title, children, size = 'sm', ariaLabel, tone = 'light' }) {
+  const darkTone = tone === 'dark'
   const [open, setOpen] = useState(false)
   const buttonRef = useRef(null)
   const popoverRef = useRef(null)
@@ -48,7 +49,7 @@ export function InfoButton({ title, children, size = 'sm', ariaLabel }) {
   }, [open])
 
   const dim = size === 'md' ? 20 : 16
-  const fontSize = size === 'md' ? '13px' : '11px'
+  const fontSize = '13px'
   const label = ariaLabel || (typeof title === 'string' ? `More information about ${title}` : 'More information')
 
   return (
@@ -63,9 +64,11 @@ export function InfoButton({ title, children, size = 'sm', ariaLabel }) {
           width: `${dim}px`,
           height: `${dim}px`,
           borderRadius: '50%',
-          border: '1.2px solid rgba(110,127,92,0.55)',
-          background: open ? 'rgba(110,127,92,0.10)' : 'rgba(110,127,92,0.04)',
-          color: '#26302A',
+          border: darkTone ? '1.2px solid rgba(234,241,237,0.45)' : '1.2px solid rgba(110,127,92,0.55)',
+          background: darkTone
+            ? (open ? 'rgba(234,241,237,0.12)' : 'rgba(234,241,237,0.05)')
+            : (open ? 'rgba(110,127,92,0.10)' : 'rgba(110,127,92,0.04)'),
+          color: darkTone ? '#EAF1ED' : '#26302A',
           cursor: 'pointer',
           padding: 0,
           display: 'inline-flex',
@@ -102,7 +105,7 @@ export function InfoButton({ title, children, size = 'sm', ariaLabel }) {
           {title && (
             <div style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.18em',
               color: '#26302A',
               marginBottom: '10px',

@@ -150,6 +150,7 @@ export function LadderRail({ watchEntity, exploreHref, dark = false }) {
             entityId={watchEntity.id}
             entityName={watchEntity.name}
             size="sm"
+            tone={dark ? 'dark' : 'light'}
           />
           {sep}
         </>
