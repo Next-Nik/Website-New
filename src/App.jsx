@@ -5,6 +5,7 @@ import { ActingAsProvider } from './app/context/ActingAsContext'
 import { SiteCopyProvider } from './lib/siteCopy'
 import { useEffect, useState, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
+import { InstallPrompt } from './app/components/InstallPrompt'
 
 // Error boundary
 class ErrorBoundary extends Component {
@@ -421,6 +422,11 @@ function AppInner() {
           bar menu and rail tiles already cover navigation. Hidden on
           desktop via CSS. */}
       {!hideBottomTabs && <BottomTabs />}
+
+      {/* Add-to-home-screen invitation · mobile browsers only, never when
+          already installed. Chromium gets the native prompt via our button;
+          iOS Safari gets a Share → Add to Home Screen instruction card. */}
+      <InstallPrompt />
 
       {/* Terms acceptance — appears once for signed-in users when version changes */}
     </>
