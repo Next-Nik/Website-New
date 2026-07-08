@@ -5,6 +5,7 @@ import { ActingAsProvider } from './app/context/ActingAsContext'
 import { SiteCopyProvider } from './lib/siteCopy'
 import { useEffect, useState, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
+import { TermsAcceptanceModal } from './components/TermsAcceptanceModal'
 import { InstallPrompt } from './app/components/InstallPrompt'
 
 // Error boundary
@@ -429,6 +430,7 @@ function AppInner() {
       <InstallPrompt />
 
       {/* Terms acceptance — appears once for signed-in users when version changes */}
+      <TermsAcceptanceModal />
     </>
   )
 }
