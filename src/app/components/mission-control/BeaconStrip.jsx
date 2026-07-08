@@ -74,6 +74,11 @@ function runSweptToday(run) {
   return total > 0 && (run.done_today || []).length >= total
 }
 
+// Freshness window for the strip payload. Remounts and tab-switches inside it
+// reuse the last response instead of refetching; a check-in busts it.
+const STRIP_TTL_MS = 60 * 1000
+let stripCache = { at: 0, userId: null, data: null }
+
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
@@ -111,34 +116,42 @@ export default function BeaconStrip({ userId }) {
     return b
   }, [])
 
-  // One gathered load. Everything fetches in parallel and commits in a single
-  // synchronous block, so the panel paints once — no beacon-then-runs-then-feed
-  // staging, no height jumps. Every fetch fails soft; prior state holds.
-  const reload = useCallback(async () => {
+  // One call, one paint. /api/beacon action 'strip' gathers the tally, the
+  // live feed, and the user's runs server-side in parallel — the strip used to
+  // make four round-trips for this. A short module-level freshness window
+  // means remounts and tab-switches inside it cost zero network; a check-in
+  // invalidates the window so the next look is fresh.
+  const reload = useCallback(async (force = false) => {
+    const cached = stripCache.data
+    if (!force && cached && stripCache.userId === (userId || null) &&
+        Date.now() - stripCache.at < STRIP_TTL_MS) {
+      applyStrip(cached)
+      setReady(true)
+      return
+    }
     try {
-      const [b, a, parts, bd] = await Promise.all([
-        postJSON('/api/beacon', { action: 'get', slug: 'founding-nature' }).catch(() => null),
-        postJSON('/api/actor-calls', { action: 'constellation_activity', limit: 6 }).catch(() => null),
-        userId ? postJSON('/api/actor-calls', { action: 'my_participations', userId }).catch(() => null) : Promise.resolve(null),
-        userId ? postJSON('/api/beacon', { action: 'breakdown', slug: 'founding-nature' }).catch(() => null) : Promise.resolve(null),
-      ])
-      if (b) setBeacon(b)
-      if (a && a.events) setFeed(a)
-      if (userId && parts && bd) {
-        const treeIds = new Set((bd.challenges || []).map((c) => c.call_id))
-        const runs = (parts.participations || []).filter(
-          (p) => treeIds.has(p.call_id) && p.status === 'active',
-        )
-        setMine(runs)
-        setExpanded((cur) => {
-          if (cur && runs.some((r) => r.participant_id === cur)) return cur
-          const firstOpen = runs.find((r) => !runKeptToday(r)) || runs[0]
-          return firstOpen ? firstOpen.participant_id : null
-        })
+      const s = await postJSON('/api/beacon', { action: 'strip', slug: 'founding-nature', userId, limit: 6 })
+      if (s && s.beacon) {
+        stripCache = { at: Date.now(), userId: userId || null, data: s }
+        applyStrip(s)
       }
     } catch (_) { /* keep prior state */ }
     setReady(true)
-  }, [userId])
+  }, [userId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  function applyStrip(s) {
+    setBeacon(s.beacon)
+    if (s.feed && s.feed.events) setFeed(s.feed)
+    const runs = s.runs || []
+    setMine(runs)
+    if (runs.length) {
+      setExpanded((cur) => {
+        if (cur && runs.some((r) => r.participant_id === cur)) return cur
+        const firstOpen = runs.find((r) => !runKeptToday(r)) || runs[0]
+        return firstOpen ? firstOpen.participant_id : null
+      })
+    }
+  }
 
   useEffect(() => {
     reload()
@@ -180,6 +193,7 @@ export default function BeaconStrip({ userId }) {
       await postJSON('/api/actor-calls', {
         action: 'log_strand', userId, call_id: run.call_id, strand_id: strand.id, done: true,
       })
+      stripCache = { at: 0, userId: null, data: null } // a spark changes the tally · next look is fresh
       await loadTally()
       try {
         if (PUSH_SUPPORTED && Notification.permission === 'default'

@@ -24,6 +24,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 const { createClient } = require('@supabase/supabase-js')
+const { constellationActivity, myParticipations } = require('./_beaconStrip')
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -70,11 +71,50 @@ module.exports = async (req, res) => {
   // Pending (not yet rooted): everything is zero, honestly.
   if (!beacon.root_call_id) {
     if (action === 'breakdown') return res.json({ ...base, challenges: [] })
+    if (action === 'strip') {
+      return res.json({
+        beacon: { ...base, sparks: 0, checkins: 0, completions: 0, people: 0, orgs: 0, challenges: 0 },
+        feed: { events: [], field: { challenges: [], orgs: [] }, sparks_today: 0, tree_ids: [], beacon: null },
+        runs: [],
+      })
+    }
     return res.json({ ...base, sparks: 0, checkins: 0, completions: 0, people: 0, orgs: 0, challenges: 0 })
   }
 
   const spark = (checkins, completions) =>
     Number(checkins) * beacon.checkin_sparks + Number(completions) * beacon.completion_sparks
+
+  // ── strip ──────────────────────────────────────────────────────────────────
+  // One round-trip for the Mission Control strip: the headline tally, the live
+  // feed, and (when signed in) the user's active runs in the founding tree.
+  // Everything the strip paints, gathered server-side in parallel — replaces
+  // four client calls (beacon get + activity + participations + breakdown).
+  if (action === 'strip') {
+    const { userId } = req.body || {}
+    const [tallyRes, feed, participations] = await Promise.all([
+      supabase.rpc('beacon_tally', { p_root_call_id: beacon.root_call_id }),
+      constellationActivity(supabase, req.body?.limit || 6).catch(() => null),
+      userId ? myParticipations(supabase, userId).catch(() => []) : Promise.resolve([]),
+    ])
+    const t = (tallyRes.data && tallyRes.data[0]) || { checkins: 0, completions: 0, people: 0, orgs: 0, challenges: 0 }
+    const treeIds = new Set(feed?.tree_ids || [])
+    const runs = (participations || []).filter(
+      (p) => treeIds.has(p.call_id) && p.status === 'active',
+    )
+    return res.json({
+      beacon: {
+        ...base,
+        sparks: spark(t.checkins, t.completions),
+        checkins: Number(t.checkins),
+        completions: Number(t.completions),
+        people: Number(t.people),
+        orgs: Number(t.orgs),
+        challenges: Number(t.challenges),
+      },
+      feed,
+      runs,
+    })
+  }
 
   if (action === 'breakdown') {
     const { data, error } = await supabase.rpc('beacon_breakdown', { p_root_call_id: beacon.root_call_id })
