@@ -338,65 +338,7 @@ export default function BeaconStrip({ userId }) {
                 </span>
               </div>
             )}
-            {newcomer ? (
-              <div className="bcn-livein">
-                <p className="bcn-livetoday">
-                  {feed && feed.sparks_today > 0
-                    ? <><b>{feed.sparks_today}</b> sparks today, and counting</>
-                    : 'The beacon is lit. Every check-in adds a spark.'}
-                </p>
-                <div className="bcn-live-cta">
-                  <button className="bcn-go" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}` : '/challenges/browse')}>See the challenge &rarr;</button>
-                  <button className="bcn-go ghost" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}?accept=1` : '/challenges/browse')}>Accept the challenge &rarr;</button>
-                </div>
-                {feed && (feed.field?.challenges || []).length > 0 && (
-                  <div className="bcn-chals">
-                    {(feed.field.challenges || []).slice(0, 4).map((c) => (
-                      <button className="bcn-chal" key={c.call_id}
-                        onClick={() => c.slug && navigate(`/stretch/c/${c.slug}`)}>
-                        <span className="bcn-chal-t">{c.title}</span>
-                        <span className="bcn-chal-by">{c.actor_name || 'Community'}</span>
-                        <span className="bcn-chal-n">
-                          {c.people > 0 ? `${c.people} in \u00b7 ${c.checkins} sparks` : 'open to you'}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {(feed?.events || []).length > 0 && (
-                  <div className="bcn-now">
-                    <div className="bcn-orgs-k">Now &middot; as it happens</div>
-                    {(feed.events || []).slice(0, 4).map((e, i) => (
-                      <div className="bcn-ev" key={i}>
-                        <span className={`bcn-ev-who${e.kind === 'spark' ? ' hot' : ''}`}>{e.name}</span>
-                        <span className="bcn-ev-what">
-                          {e.kind === 'spark' ? `checked in on ${e.title}`
-                            : e.kind === 'join' ? `took on ${e.title}`
-                            : `published ${e.title}`}
-                        </span>
-                        <span className="bcn-ev-when">{ago(e.at)}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {feed && (feed.field?.orgs || []).length > 0 && (
-                  <div className="bcn-orgs">
-                    <div className="bcn-orgs-k">Participating organisations</div>
-                    <div className="bcn-orgs-row">
-                      {(feed.field.orgs || []).slice(0, 6).map((o, i) => (
-                        <span className="bcn-org" key={i}>{o.name}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {feed?.beacon?.closes_on && (
-                  <div className="bcn-arc">
-                    <span>{feed.beacon.opens_on ? `Lit ${fmtShort(feed.beacon.opens_on)}` : 'Lit'}</span>
-                    <span>Closes {fmtShort(feed.beacon.closes_on)}</span>
-                  </div>
-                )}
-              </div>
-            ) : (
+            {mine.length > 0 && (
               <>
                 <div className="bcn-today-h">Your runs &middot; today</div>
                 {openCount === 0 && <p className="bcn-alldone">All done for today. Well done!</p>}
@@ -489,6 +431,68 @@ export default function BeaconStrip({ userId }) {
                 </div>
               </>
             )}
+            {/* The beacon feed · always present. Your runs sit above it; they
+                never replace it. Only the see/accept CTA pair is newcomer-only. */}
+            <div className={`bcn-livein${mine.length > 0 ? ' after-runs' : ''}`}>
+              {mine.length > 0 && <div className="bcn-today-h">The beacon &middot; live</div>}
+              <p className="bcn-livetoday">
+                {feed && feed.sparks_today > 0
+                  ? <><b>{feed.sparks_today}</b> sparks today, and counting</>
+                  : 'The beacon is lit. Every check-in adds a spark.'}
+              </p>
+              {newcomer && (
+                <div className="bcn-live-cta">
+                  <button className="bcn-go" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}` : '/challenges/browse')}>See the challenge &rarr;</button>
+                  <button className="bcn-go ghost" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}?accept=1` : '/challenges/browse')}>Accept the challenge &rarr;</button>
+                </div>
+              )}
+              {feed && (feed.field?.challenges || []).length > 0 && (
+                <div className="bcn-chals">
+                  {(feed.field.challenges || []).slice(0, 4).map((c) => (
+                    <button className="bcn-chal" key={c.call_id}
+                      onClick={() => c.slug && navigate(`/stretch/c/${c.slug}`)}>
+                      <span className="bcn-chal-t">{c.title}</span>
+                      <span className="bcn-chal-by">{c.actor_name || 'Community'}</span>
+                      <span className="bcn-chal-n">
+                        {c.people > 0 ? `${c.people} in \u00b7 ${c.checkins} sparks` : 'open to you'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {(feed?.events || []).length > 0 && (
+                <div className="bcn-now">
+                  <div className="bcn-orgs-k">Now &middot; as it happens</div>
+                  {(feed.events || []).slice(0, 4).map((e, i) => (
+                    <div className="bcn-ev" key={i}>
+                      <span className={`bcn-ev-who${e.kind === 'spark' ? ' hot' : ''}`}>{e.name}</span>
+                      <span className="bcn-ev-what">
+                        {e.kind === 'spark' ? `checked in on ${e.title}`
+                          : e.kind === 'join' ? `took on ${e.title}`
+                          : `published ${e.title}`}
+                      </span>
+                      <span className="bcn-ev-when">{ago(e.at)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {feed && (feed.field?.orgs || []).length > 0 && (
+                <div className="bcn-orgs">
+                  <div className="bcn-orgs-k">Participating organisations</div>
+                  <div className="bcn-orgs-row">
+                    {(feed.field.orgs || []).slice(0, 6).map((o, i) => (
+                      <span className="bcn-org" key={i}>{o.name}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {feed?.beacon?.closes_on && (
+                <div className="bcn-arc">
+                  <span>{feed.beacon.opens_on ? `Lit ${fmtShort(feed.beacon.opens_on)}` : 'Lit'}</span>
+                  <span>Closes {fmtShort(feed.beacon.closes_on)}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className="bcn-grip in-panel" onPointerDown={onGripDown} onPointerMove={onGripMove} onPointerUp={onGripUp} onPointerCancel={onGripUp}>
@@ -552,9 +556,10 @@ const CSS = `
 .bcn-chip.k{color:#7FC7A4;border-color:rgba(74,140,111,.6)}
 .bcn-card-in{padding:2px 15px 14px}
 .bcn-voice{font-family:'Fraunces',Georgia,serif;font-size:18px;color:#FAF1DE;padding-bottom:10px}
-.bcn-move{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid rgba(242,196,90,.25);border-radius:12px;padding:11px 13px;margin-bottom:8px}
+.bcn-move{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;border:1px solid rgba(242,196,90,.25);border-radius:12px;padding:11px 13px;margin-bottom:8px}
 .bcn-move.done{border-color:rgba(74,140,111,.5)}
-.bcn-move-t{font-family:'Newsreader',Georgia,serif;font-size:14px;color:rgba(250,241,222,.88);line-height:1.4;min-width:0}
+.bcn-move-t{font-family:'Newsreader',Georgia,serif;font-size:14px;color:rgba(250,241,222,.88);line-height:1.4;min-width:0;flex:1 1 220px}
+.bcn-livein.after-runs{margin-top:20px;padding-top:18px;border-top:1px solid rgba(242,196,90,.18)}
 .keep-btn{position:relative;font-family:'IBM Plex Mono',Georgia,serif;font-size:13.5px;letter-spacing:.12em;text-transform:uppercase;color:#241703;border:none;border-radius:26px;padding:13px 20px;cursor:pointer;white-space:nowrap;background:linear-gradient(180deg,${A.glow},${A.bright});box-shadow:0 2px 0 rgba(122,74,18,.8);transition:all .3s}
 .stage-afternoon .keep-btn{background:linear-gradient(180deg,#FFF0BE,#FFD86B);box-shadow:0 2px 0 rgba(122,74,18,.8),0 0 18px rgba(242,196,90,.35)}
 .stage-evening .keep-btn{background:linear-gradient(180deg,#FFF4CC,#FFD86B);box-shadow:0 2px 0 rgba(122,74,18,.8),0 0 26px rgba(255,216,107,.55);animation:bcncheer 2.2s ease-in-out infinite}
