@@ -15,7 +15,7 @@ import { tokens, serif, body, sc, at } from '../../lib/designTokens'
 
 const GOLD_C = at.verdigris
 const hair   = `1px solid ${at.verdigrisEdge}`
-const muted  = { color: 'rgba(15,21,35,0.78)' }
+const muted  = { color: 'rgba(234,241,237,0.78)' }
 
 // ─── Date helpers (UTC, matching the server's date keys) ──────────────────────
 
@@ -167,7 +167,7 @@ function ChallengeCard({ p, userId, founding, onLeft }) {
               style={{
                 width: '9px', height: '9px', borderRadius: '50%', flexShrink: 0,
                 background: d.filled ? GOLD_C : 'transparent',
-                border: d.filled ? `1px solid ${GOLD_C}` : `1px solid rgba(15,21,35,0.16)`,
+                border: d.filled ? `1px solid ${GOLD_C}` : `1px solid rgba(234,241,237,0.18)`,
                 boxShadow: d.isToday ? `0 0 0 2px rgba(217,178,74,0.30)` : 'none',
                 opacity: d.future ? 0.5 : 1,
               }} />
@@ -192,7 +192,7 @@ function ChallengeCard({ p, userId, founding, onLeft }) {
                   onChange={() => toggle(s.id)}
                   style={{ marginTop: '4px', accentColor: GOLD_C, flexShrink: 0, width: '16px', height: '16px' }} />
                 <span style={{ flex: 1 }}>
-                  <span style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.82)', lineHeight: 1.5, textDecoration: done ? 'line-through' : 'none', opacity: done ? 0.45 : 1, transition: 'all 0.25s' }}>
+                  <span style={{ ...body, fontSize: '1.0625rem', color: 'rgba(234,241,237,0.85)', lineHeight: 1.5, textDecoration: done ? 'line-through' : 'none', opacity: done ? 0.45 : 1, transition: 'all 0.25s' }}>
                     {s.text}
                   </span>
                   {cadence && (
@@ -207,15 +207,18 @@ function ChallengeCard({ p, userId, founding, onLeft }) {
             {!finishing ? (
               <button type="button" onClick={() => setFinishing(true)}
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.brass, background: 'none', border: 'none', cursor: 'pointer', padding: 0, textTransform: 'uppercase' }}>
-                Mark complete
+                Finish this challenge
               </button>
             ) : (
               <div>
+                <div style={{ ...body, fontSize: '14px', color: 'rgba(234,241,237,0.66)', lineHeight: 1.55, marginBottom: '12px' }}>
+                  This closes the whole challenge, not just today. Today's check-in is the box above.
+                </div>
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: at.ghost, textTransform: 'uppercase', marginBottom: '10px' }}>How did it go?</div>
                 <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginBottom: '10px' }}>
                   <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)}
                     style={{ marginTop: '3px', accentColor: GOLD_C, width: '15px', height: '15px', flexShrink: 0 }} />
-                  <span style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.78)', lineHeight: 1.5 }}>
+                  <span style={{ ...body, fontSize: '15px', color: 'rgba(234,241,237,0.78)', lineHeight: 1.5 }}>
                     Share how it went with {p.author?.name || 'the author'} (optional)
                   </span>
                 </label>
@@ -234,7 +237,7 @@ function ChallengeCard({ p, userId, founding, onLeft }) {
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '4px' }}>
                   <button type="button" onClick={finish} disabled={savingDone}
                     style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: '#fff', background: at.brass, border: 'none', borderRadius: '30px', padding: '9px 22px', cursor: 'pointer', opacity: savingDone ? 0.5 : 1 }}>
-                    {savingDone ? 'Saving…' : 'Complete challenge'}
+                    {savingDone ? 'Saving…' : 'Finish the whole challenge'}
                   </button>
                   <button type="button" onClick={() => setFinishing(false)}
                     style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>

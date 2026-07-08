@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { actorCallsRaw } from '../../lib/actorCallsClient'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
@@ -404,6 +404,7 @@ function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
   const [loading, setLoading] = useState(false)
   const [joined,  setJoined]  = useState(false)
   const closeStr = fmtCloseDate(foundingClose)
+  const autoRan  = useRef(false)
 
   async function join() {
     setLoading(true)
@@ -414,6 +415,18 @@ function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
     } catch {}
     setLoading(false)
   }
+
+  // Shared-close challenges carry no decision (no clock to choose), so a second
+  // "accept" screen is pure friction. Join on open · the modal becomes the
+  // confirmation. Rolling-clock challenges keep the step: the clock is a real
+  // choice. Ref guard so StrictMode's double-mount can't join twice.
+  useEffect(() => {
+    if (closeStr && !autoRan.current) {
+      autoRan.current = true
+      join()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const cadenceLabel = CADENCE_LABELS[call.cadence] || call.cadence
 
