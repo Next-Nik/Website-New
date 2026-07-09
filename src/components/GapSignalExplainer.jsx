@@ -1,5 +1,8 @@
-import { serif, body, sc, at} from '../../lib/designTokens'
+import { at } from '../../lib/designTokens'
 // Design tokens
+const serif = { fontFamily: "'Fraunces', Georgia, serif" }
+const body  = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc    = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
 const dark     = at.text
 const goldDark = at.brass
 const success  = '#2A6B3A'
@@ -138,8 +141,8 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
         {/* Tier 3 transparency — only shown when relevant */}
         {payload.contributor_density > 0 && (
           <div style={{
-            background: 'rgba(15,21,35,0.03)',
-            border: '1px solid rgba(15,21,35,0.08)',
+            background: 'rgba(234,241,237,0.04)',
+            border: '1px solid rgba(234,241,237,0.10)',
             borderRadius: '8px',
             padding: '12px 14px',
             marginBottom: '20px',

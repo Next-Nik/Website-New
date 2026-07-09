@@ -19,8 +19,9 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../hooks/useSupabase'
 import { useActiveFocus } from '../hooks/useActiveFocus'
-import { body, sc } from '../../lib/designTokens'
 
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
 const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
 const GOLD = '#26302A'

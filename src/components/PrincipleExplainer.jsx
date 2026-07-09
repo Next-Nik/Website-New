@@ -5,7 +5,6 @@ import {
   isValidPrincipleSlug,
 } from '../constants/principles'
 import { fetchEntitiesEngagingPrinciple } from '../hooks/useTaggedPrinciples'
-import { body, sc } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PrincipleExplainer
@@ -35,6 +34,8 @@ import { body, sc } from '../../lib/designTokens'
 //   maxPerType — number of entities to fetch per type (default 50)
 // ─────────────────────────────────────────────────────────────────────────────
 
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
 const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
 const TYPE_LABELS = {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchAllIndicators } from '../hooks/useDomainIndicators'
 import SuggestSourceCTA from './SuggestSourceCTA'
-import { body, sc, at} from '../../lib/designTokens'
+import { at } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // IndicatorTable
@@ -30,6 +30,9 @@ import { body, sc, at} from '../../lib/designTokens'
 //   focusId    — optional Focus context for value resolution
 //   className  — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
+
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
 
 const TIER_LABEL  = { api: 'Live', scrape: 'Pending', contributor: 'Contributor' }
 const TIER_COLOUR = {

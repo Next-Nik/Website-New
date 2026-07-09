@@ -13,8 +13,9 @@
 
 import { useState } from 'react'
 import { CONTRIBUTOR_ROLES } from '../../constants/practices'
-import { body, sc } from '../../../lib/designTokens'
 
+const sc       = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body     = { fontFamily: "'Newsreader', Georgia, serif" }
 const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
 
 export default function AttestationForm({ practice, supabase, user, onClose, onAttested }) {

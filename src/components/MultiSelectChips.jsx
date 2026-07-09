@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { body, sc } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MultiSelectChips
@@ -23,6 +22,9 @@ import { body, sc } from '../../lib/designTokens'
 //   columns            — render hint, integer 1-3, default 'auto'
 //   className          — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
+
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 function arraysEqual(a = [], b = []) {
   if (a.length !== b.length) return false

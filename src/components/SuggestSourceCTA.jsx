@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { body, sc, at} from '../../lib/designTokens'
+import { at } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SuggestSourceCTA
@@ -19,7 +19,10 @@ import { body, sc, at} from '../../lib/designTokens'
 //   className    — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
 const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
+
 export default function SuggestSourceCTA({
   indicatorId,
   indicatorName,

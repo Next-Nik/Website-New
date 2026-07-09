@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { fetchPriorValue } from '../hooks/useDomainIndicators'
-import { body, sc, at} from '../../lib/designTokens'
+import { at } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // IndicatorCard
@@ -33,6 +33,8 @@ import { body, sc, at} from '../../lib/designTokens'
 //   className — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
 const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
 // Score palette per Design System v3.

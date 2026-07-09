@@ -1,6 +1,8 @@
-import { body, sc } from '../../lib/designTokens'
 // src/beta/components/ProfileSprintReceipts.jsx
 // Sprint receipts: completed sprints marked visible.
+
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 const SELF_DOMAIN_LABELS = {
   path:       'Path',

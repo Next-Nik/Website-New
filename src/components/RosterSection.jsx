@@ -16,8 +16,9 @@ import { useRoster } from '../hooks/useRoster'
 import { useWatch } from '../hooks/useWatch'
 import { supabase } from '../../hooks/useSupabase'
 import { InfoButton } from './InfoButton'
-import { body, sc } from '../../lib/designTokens'
 
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
 const display = { fontFamily: "'Fraunces', Georgia, serif" }
 const gold    = '#26302A'
 const dark    = '#0F1523'

@@ -18,8 +18,9 @@
 
 import PrincipleBadge from '../PrincipleBadge'
 import { detectsTraditionalLineage } from '../../constants/practices'
-import { body, sc } from '../../../lib/designTokens'
 
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
 const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
 
 export default function LineageBlock({ text, forceTraditional = false, className }) {

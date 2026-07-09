@@ -4,7 +4,9 @@
 
 import { ProfileIAStatements } from './ProfileIAStatements'
 import { ProfilePrincipleAlignment } from './ProfilePrincipleAlignment'
-import { body, sc } from '../../lib/designTokens'
+
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 export function ProfileStands({ iaStatements, whatIStandFor, principleTaggings }) {
   const hasIA        = iaStatements && iaStatements.length > 0

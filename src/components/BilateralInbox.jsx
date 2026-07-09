@@ -16,8 +16,9 @@ import {
 } from '../hooks/useBilateral'
 import { BilateralCard } from './BilateralCard'
 import { BilateralCardEditor } from './BilateralCardEditor'
-import { body, sc } from '../../lib/designTokens'
 
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
 const gold = '#26302A'
 const dark = '#0F1523'
 

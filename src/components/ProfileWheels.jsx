@@ -3,7 +3,9 @@
 // Only domains marked public render. Omit section if both empty.
 
 import { CIV_DOMAINS, DOMAIN_COLORS, SELF_DOMAINS } from '../constants/domains'
-import { body, sc } from '../../lib/designTokens'
+
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 // Tier colour for Self wheel
 function selfTierColor(v) {

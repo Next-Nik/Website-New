@@ -24,8 +24,8 @@
 // hit areas. Designed to render at /explore at any depth.
 
 import { useMemo } from 'react'
-import { sc } from '../../lib/designTokens'
 
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
 const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
 const GOLD = '#26302A'

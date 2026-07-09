@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { body, sc } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // WheelsToggleSection
@@ -23,6 +22,8 @@ import { body, sc } from '../../lib/designTokens'
 //   className     — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
 const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
 export default function WheelsToggleSection({

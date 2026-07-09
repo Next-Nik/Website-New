@@ -9,10 +9,10 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../../hooks/useSupabase'
-import { body, sc } from '../../../lib/designTokens'
 import {
   GOLD, GOLD_DK, GOLD_RULE, TEXT_INK, TEXT_META, FONT_DISPLAY,
 } from './tokens'
+import { body, sc } from '../../../lib/designTokens'
 
 function fmtDate(ts) {
   if (!ts) return ''

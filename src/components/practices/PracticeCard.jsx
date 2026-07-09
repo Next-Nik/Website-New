@@ -16,8 +16,9 @@ import { Link } from 'react-router-dom'
 import PrincipleStrip from '../PrincipleStrip'
 import { PRACTICE_KIND_BY_SLUG, VETTING_BY_SLUG } from '../../constants/practices'
 import { CIV_DOMAIN_BY_SLUG } from '../../constants/domains'
-import { body, sc } from '../../../lib/designTokens'
 
+const sc       = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body     = { fontFamily: "'Newsreader', Georgia, serif" }
 const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
 
 function previewText(text, max = 180) {

@@ -1,7 +1,9 @@
-import { body, sc } from '../../lib/designTokens'
 // src/beta/components/ProfileIAStatements.jsx
 // Renders published "I am" statements from horizon_profile per domain.
 // Only domains with visibility = public render.
+
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 const SELF_DOMAIN_LABELS = {
   path:       'Path',

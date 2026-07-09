@@ -1,5 +1,4 @@
 import { getHorizonFloor, isValidDomainSlug } from '../constants/horizonFloor'
-import { body, sc } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HorizonFloorCard
@@ -26,6 +25,8 @@ import { body, sc } from '../../lib/designTokens'
 //   className        — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
 const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
 export default function HorizonFloorCard({

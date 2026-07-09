@@ -1,6 +1,8 @@
-import { body, sc } from '../../lib/designTokens'
 // src/beta/components/ProfileIdentityStrip.jsx
 // Identity strip: name, focus, headline, primary "I am" statement.
+
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 export function ProfileIdentityStrip({ displayName, focusName, headline, primaryIAStatement, archetype, civDomain, scale }) {
   return (

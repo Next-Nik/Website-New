@@ -12,8 +12,9 @@
 // those three names and land on that Focus's page.
 
 import { Link } from 'react-router-dom'
-import { body, sc } from '../../lib/designTokens'
 
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 const display = { fontFamily: "'Fraunces', Georgia, serif" }
 const gold = '#26302A'
 const dark = '#0F1523'

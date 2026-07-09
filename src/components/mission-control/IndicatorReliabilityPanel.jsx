@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { body, sc } from '../../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // IndicatorReliabilityPanel
@@ -18,7 +17,10 @@ import { body, sc } from '../../../lib/designTokens'
 //   className    — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
+const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
 const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const body    = { fontFamily: "'Newsreader', Georgia, serif" }
+
 export default function IndicatorReliabilityPanel({ hours = 24, className }) {
   const [data, setData]       = useState(null)
   const [loading, setLoading] = useState(true)

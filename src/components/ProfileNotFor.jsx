@@ -1,6 +1,8 @@
-import { body, sc } from '../../lib/designTokens'
 // src/beta/components/ProfileNotFor.jsx
 // "What I am not for" — dont_count_on_me_for free-text.
+
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 export function ProfileNotFor({ dontCountOnMeFor }) {
   if (!dontCountOnMeFor) return null

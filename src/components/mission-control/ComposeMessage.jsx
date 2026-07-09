@@ -20,17 +20,23 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../hooks/useSupabase'
-import { body, sc } from '../../../lib/designTokens'
+import { useActingAs } from '../../context/ActingAsContext'
 import {
   GOLD, GOLD_DK, GOLD_RULE, TEXT_INK, TEXT_META, FONT_DISPLAY,
 } from './tokens'
+import { body, sc } from '../../../lib/designTokens'
 
 export function ComposeMessage({
   inboxes, defaultSenderInboxId,
   recipientActor: prefilledRecipient,
   onSend, onClose,
 }) {
-  const [senderInboxId, setSenderInboxId] = useState(defaultSenderInboxId || 'personal')
+  const { actingAsId } = useActingAs()
+  // Default the hat to whoever you're acting as; the active inbox or
+  // personal is the fallback. Still overridable per message below.
+  const [senderInboxId, setSenderInboxId] = useState(
+    actingAsId || defaultSenderInboxId || 'personal'
+  )
   const [recipient, setRecipient] = useState(prefilledRecipient || null)
   const [search, setSearch]       = useState('')
   const [searchResults, setSearchResults] = useState([])
@@ -184,13 +190,17 @@ export function ComposeMessage({
                   <div style={{ marginTop: '8px', background: '#FFFFFF',
                     border: `1px solid ${GOLD_RULE}`, borderRadius: '8px',
                     maxHeight: '220px', overflowY: 'auto' }}>
-                    {searchResults.map(r => (
-                      <button key={r.id} onClick={() => setRecipient(r)}
+                    {searchResults.map(r => {
+                      const unclaimed = !r.profile_owner
+                      return (
+                      <button key={r.id} onClick={() => { if (!unclaimed) setRecipient(r) }}
+                        title={unclaimed ? 'Not yet claimed — this profile cannot receive messages until its owner claims it.' : undefined}
                         style={{ display: 'flex', width: '100%',
                           alignItems: 'center', gap: '10px',
                           padding: '8px 12px', background: 'none',
                           border: 'none', borderBottom: `1px solid ${GOLD_RULE}`,
-                          cursor: 'pointer', textAlign: 'left' }}>
+                          cursor: unclaimed ? 'default' : 'pointer',
+                          opacity: unclaimed ? 0.6 : 1, textAlign: 'left' }}>
                         {r.image_url ? (
                           <img src={r.image_url} alt=""
                             style={{ width: '28px', height: '28px',
@@ -205,10 +215,13 @@ export function ComposeMessage({
                             color: TEXT_INK }}>{r.name}</div>
                           <div style={{ ...sc, fontSize: '13px',
                             letterSpacing: '0.08em', color: TEXT_META,
-                            textTransform: 'uppercase' }}>{r.type}</div>
+                            textTransform: 'uppercase' }}>
+                            {unclaimed ? 'Not yet claimed · cannot receive messages' : r.type}
+                          </div>
                         </div>
                       </button>
-                    ))}
+                      )
+                    })}
                   </div>
                 )}
               </>

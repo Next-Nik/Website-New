@@ -23,7 +23,9 @@ import { useState, useEffect } from 'react'
 import { PRINCIPLES_ORDERED, PRINCIPLE_WEIGHTS } from '../../constants/principles'
 import PrincipleBadge from '../PrincipleBadge'
 import TierChip from './TierChip'
-import { body, sc } from '../../../lib/designTokens'
+
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 function Eyebrow({ children, style = {} }) {
   return (

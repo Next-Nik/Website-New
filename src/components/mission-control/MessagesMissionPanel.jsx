@@ -19,10 +19,10 @@
 import { useState, useMemo } from 'react'
 import { useMessages } from '../../hooks/useMessages'
 import { ComposeMessage } from './ComposeMessage'
-import { body, sc } from '../../../lib/designTokens'
 import {
   GOLD, GOLD_DK, GOLD_RULE, TEXT_INK, TEXT_META, FONT_DISPLAY,
 } from './tokens'
+import { body, sc } from '../../../lib/designTokens'
 
 const LANE_LABELS = {
   inner_circle: 'Inner circle',
@@ -129,8 +129,8 @@ function MessageDetail({
     setSending(true)
     try {
       await onReply({
-        recipientUserId:  thread.otherUserId,
-        recipientActorId: null,
+        recipientUserId:  thread.otherActorId ? null : thread.otherUserId,
+        recipientActorId: thread.otherActorId || null,
         body:             replyBody.trim(),
         senderActorId:    ibx?.actorId || null,
       })
@@ -295,7 +295,7 @@ export default function MessagesMissionPanel({ userId }) {
         alignItems: 'center', marginBottom: '14px' }}>
         <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: '22px',
           fontWeight: 500, color: TEXT_INK, margin: 0 }}>
-          Messages
+          Mail
         </h2>
         <button onClick={m.openCompose}
           style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',

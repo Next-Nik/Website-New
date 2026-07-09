@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../../hooks/useSupabase'
+import { SHOW_LENSES_PUBLIC } from '../constants/domains'
 import {
   body, sc, gold, dark,
   DOMAIN_LIST, DOMAIN_LABEL, SUBDOMAIN_MAP, LENSES_PER_DOMAIN,
@@ -375,8 +376,8 @@ export function OrgDomainsTab({ actorId, toast }) {
         </SectionCard>
       )}
 
-      {/* ── LENSES ───────────────────────────────────────────── */}
-      {domains.length > 0 && (
+      {/* ── LENSES (hidden from user-facing surfaces for now) ── */}
+      {SHOW_LENSES_PUBLIC && domains.length > 0 && (
         <SectionCard style={{ marginBottom: '20px' }}>
           <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
             Lenses <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '13px' }}>(how you relate to the substrate)</span>

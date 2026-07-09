@@ -2,10 +2,11 @@
 // Shared UI primitives used by OrgManage and OrgPublic.
 // Extracted so both pages stay lean and consistent.
 // Atlas rail — actor profile pages per Master Spec §1.
-import { at } from '../lib/designTokens'
+import { at } from '../../lib/designTokens'
 
-export const body = { fontFamily: "'Newsreader', Georgia, serif" }
-export const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+export const body  = { fontFamily: "'Newsreader', Georgia, serif" }
+export const serif = { fontFamily: "'Fraunces', Georgia, serif" }
+export const sc    = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
 export const gold = at.brass
 export const dark = at.text
 export const parch = at.ground
@@ -89,6 +90,14 @@ export const PLATFORM_PRINCIPLE_LIST = [
   { value: 'legacy-temporal-dimension',label: 'Legacy as Temporal Dimension' },
 ]
 
+// Public visibility of alignment scores and placement tiers.
+// Held false while the scoring is still being calibrated. The score is still
+// computed on extraction and stored on the actor; this only governs whether
+// it is shown on public-facing surfaces (the OrgPublic tier badge and the
+// /add review score). Flip to true to surface them again. Admin Console always
+// shows them regardless of this flag.
+export const SHOW_ALIGNMENT_PUBLIC = false
+
 // Placement tier display
 export const PLACEMENT_TIER = {
   exemplar:         { label: 'Exemplar',         color: '#3B6B9E', bg: 'rgba(59,107,158,0.08)'  },
@@ -129,7 +138,7 @@ export function SectionCard({ children, style }) {
 export function Btn({ onClick, children, variant = 'primary', disabled, small }) {
   const styles = {
     primary: { background: 'rgba(217,178,74,0.05)', border: '1.5px solid rgba(217,178,74,0.78)', color: gold },
-    solid:   { background: at.verdigris, border: '1.5px solid rgba(217,178,74,0.8)', color: '#FFFFFF' },
+    solid:   { background: at.verdigris, border: '1.5px solid rgba(217,178,74,0.8)', color: at.object },
     ghost:   { background: 'transparent', border: `1px solid ${at.ghost}`, color: at.ghost },
     danger:  { background: 'rgba(138,48,48,0.05)', border: '1.5px solid rgba(138,48,48,0.40)', color: '#8A3030' },
   }
@@ -187,7 +196,7 @@ export function ModeSelector({ value, onChange }) {
 
 export function Eyebrow({ children, style = {} }) {
   return (
-    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: at.ghost, textTransform: 'uppercase', ...style }}>
+    <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: at.brass, textTransform: 'uppercase', ...style }}>
       {children}
     </div>
   )

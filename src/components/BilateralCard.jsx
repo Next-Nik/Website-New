@@ -6,8 +6,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ARTEFACT_TYPE_LABEL, revoke, republish } from '../hooks/useBilateral'
-import { body, sc } from '../../lib/designTokens'
 
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
 const gold = '#26302A'
 const dark = '#0F1523'
 

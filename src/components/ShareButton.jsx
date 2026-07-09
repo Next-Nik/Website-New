@@ -18,7 +18,8 @@
 //   placement?   — visual hint for sizing; 'inline' | 'corner' (default 'inline')
 
 import { useState, useRef, useEffect } from 'react'
-import { sc } from '../../lib/designTokens'
+
+const sc = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
 
 function ShareGlyph({ size = 16 }) {
   return (

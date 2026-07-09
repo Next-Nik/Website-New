@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { fetchContributorSignals } from '../hooks/useDomainIndicators'
-import { body, sc, at} from '../../lib/designTokens'
+import { at } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ContributorSignalsList
@@ -22,6 +22,9 @@ import { body, sc, at} from '../../lib/designTokens'
 //                       prompt rather than nothing
 //   className         — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
+
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 const TYPE_LABEL = {
   observation: 'Observation',

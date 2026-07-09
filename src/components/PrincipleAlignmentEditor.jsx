@@ -6,7 +6,6 @@ import {
   isValidPrincipleWeight,
 } from '../constants/principles'
 import { tagPrinciple, untagPrinciple } from '../hooks/useTaggedPrinciples'
-import { body, sc } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PrincipleAlignmentEditor
@@ -35,6 +34,9 @@ import { body, sc } from '../../lib/designTokens'
 //   onSaved(rows)     — optional callback after a successful save
 //   className         — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
+
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 const WEIGHT_LABEL = {
   primary: 'Primary',

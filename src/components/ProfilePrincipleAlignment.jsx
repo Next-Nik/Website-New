@@ -2,7 +2,9 @@
 // Renders engaged platform principles using Module 1.5 PrincipleStrip.
 
 import { PrincipleStrip } from './PrincipleStrip'
-import { body, sc } from '../../lib/designTokens'
+
+const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Newsreader', Georgia, serif" }
 
 export function ProfilePrincipleAlignment({ principleTaggings }) {
   if (!principleTaggings || principleTaggings.length === 0) return null
