@@ -176,9 +176,20 @@ for (const f of files) {
   // ── size: fontSize below 13 ───────────────────────────────
   // JSX: fontSize: '11px' | fontSize: 11 | fontSize: `${x}px` (skipped — dynamic)
   // CSS: font-size: 11px
+  // The lookahead requires the number (with optional "px") to be
+  // immediately followed by an actual value terminator — a quote,
+  // comma, brace, paren, semicolon, whitespace, or end of string.
+  // Anchoring on real terminators (not just "not a letter") matters
+  // because \d+ backtracks: on 'fontSize: "1.25rem"' a naive
+  // not-a-letter check still lets the engine shrink the match to
+  // "1.2" and accept it, since the next character ("5") is a digit,
+  // not a letter — reading a ~17px rem value as if it were 1.2px.
+  // Requiring a real terminator makes every backtracked length fail
+  // too, so the whole token is correctly skipped as non-px.
+  const TERM = String.raw`(?=['"\`,}\)\s;]|$)`
   const sizeRe = isCss
     ? /font-size:\s*(\d+(?:\.\d+)?)px/g
-    : /fontSize:\s*['"`]?(\d+(?:\.\d+)?)(?:px)?['"`]?/g
+    : new RegExp(String.raw`fontSize:\s*['"\`]?(\d+(?:\.\d+)?)(?:px)?${TERM}`, 'g')
   for (const m of src.matchAll(sizeRe)) {
     const v = parseFloat(m[1])
     if (v > 0 && v < 13) {
