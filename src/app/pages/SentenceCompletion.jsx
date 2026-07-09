@@ -1,8 +1,10 @@
 // ─────────────────────────────────────────────────────────────
 // SentenceCompletion.jsx — /tools/sentence-completion
 //
-// A nine-week writing practice on Branden's skeleton. Three ways in:
-//   • Practice — the linear nine-week loop. Advances by completion,
+// An eighteen-week writing practice on Branden's skeleton — each
+// theme runs as two short weeks so a session is two or three stems,
+// never a wall. Three ways in:
+//   • Practice — the linear loop. Advances by completion,
 //     not calendar. A week stays current until you choose to move on.
 //   • Free     — drop into any week, or write your own stem.
 //   • Map      — the practice points you at the domain your latest
@@ -165,14 +167,75 @@ function SentenceCompletion({ embedded = false } = {}, ref) {
   const hasSessionThisWeek = weekStat.sessions > 0
   const reflectedThisWeek  = weekStat.reflected
 
-  function resetInputs() {
+  // ── Draft persistence ─────────────────────────────────────────
+  // Endings live in React state, which iOS/iPadOS happily discards
+  // when the app is backgrounded. So every keystroke also lands in
+  // localStorage (debounced), keyed per user + mode + week, and is
+  // restored on mount or whenever the active block changes. Cleared
+  // when the work is actually saved to Supabase.
+  const draftKey = user && activeWeek
+    ? `sc-draft:${user.id}:${mode}:${activeWeek.week}`
+    : null
+
+  // Hydrate on block change. No draft → clean slate (this replaces
+  // the old resetInputs-on-navigation behaviour).
+  useEffect(() => {
+    if (!draftKey) return
+    try {
+      const raw = localStorage.getItem(draftKey)
+      if (raw) {
+        const d = JSON.parse(raw)
+        setEndings(d && typeof d.endings === 'object' ? d.endings : {})
+        setReflectionText(typeof d?.reflection === 'string' ? d.reflection : '')
+        return
+      }
+    } catch { /* fall through to clean slate */ }
     setEndings({})
     setReflectionText('')
+  }, [draftKey])
+
+  function writeDraft() {
+    if (!draftKey) return
+    try {
+      const hasContent =
+        Object.values(endings).some(t => (t || '').trim().length > 0) ||
+        reflectionText.trim().length > 0
+      if (hasContent) {
+        localStorage.setItem(draftKey, JSON.stringify({ endings, reflection: reflectionText }))
+      } else {
+        localStorage.removeItem(draftKey)
+      }
+    } catch { /* storage full or unavailable — nothing to do */ }
+  }
+
+  // Debounced write while typing.
+  useEffect(() => {
+    if (!draftKey) return
+    const t = setTimeout(writeDraft, 500)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draftKey, endings, reflectionText])
+
+  // Immediate flush when the app is backgrounded or the page hides —
+  // the debounce window is exactly when a glance-away would bite.
+  useEffect(() => {
+    function flushNow() { writeDraft() }
+    window.addEventListener('pagehide', flushNow)
+    document.addEventListener('visibilitychange', flushNow)
+    return () => {
+      window.removeEventListener('pagehide', flushNow)
+      document.removeEventListener('visibilitychange', flushNow)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draftKey, endings, reflectionText])
+
+  function clearDraft() {
+    if (!draftKey) return
+    try { localStorage.removeItem(draftKey) } catch { /* */ }
   }
 
   function switchMode(next) {
     setMode(next)
-    resetInputs()
   }
 
   // ── Save a session: one row per stem with non-empty endings ───
@@ -200,7 +263,8 @@ function SentenceCompletion({ embedded = false } = {}, ref) {
       const w = prev[activeWeek.week] || { sessions: 0, reflected: false }
       return { ...prev, [activeWeek.week]: { ...w, sessions: w.sessions + 1 } }
     })
-    resetInputs()
+    setEndings({})
+    if (!reflectionText.trim()) clearDraft()
     flashSaved()
   }
 
@@ -224,6 +288,7 @@ function SentenceCompletion({ embedded = false } = {}, ref) {
       return { ...prev, [activeWeek.week]: { ...w, reflected: true } }
     })
     setReflectionText('')
+    if (!Object.values(endings).some(t => (t || '').trim())) clearDraft()
     flashSaved()
   }
 
@@ -235,7 +300,6 @@ function SentenceCompletion({ embedded = false } = {}, ref) {
       .from('sentence_completion_progress')
       .upsert({ user_id: user.id, current_week: target }, { onConflict: 'user_id' })
     setCurrentWeek(target)
-    resetInputs()
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -305,14 +369,14 @@ function SentenceCompletion({ embedded = false } = {}, ref) {
 
             {mode === 'free' && (
               <FreePicker
-                freeWeek={freeWeek} setFreeWeek={(w) => { setFreeWeek(w); resetInputs() }}
+                freeWeek={freeWeek} setFreeWeek={setFreeWeek}
               />
             )}
 
             {mode === 'map' && (
               <MapPicker
                 mapDomain={mapDomain} mapReason={mapReason}
-                setMapDomain={(d) => { setMapDomain(d); resetInputs() }}
+                setMapDomain={setMapDomain}
               />
             )}
 
@@ -518,7 +582,7 @@ function AdvanceRow({ currentWeek, onAdvance, onFree, onMap }) {
       {atEnd ? (
         <>
           <p style={{ ...body, fontSize: 14.5, lineHeight: 1.6, color: tokens.inkMid, margin: '0 0 14px' }}>
-            That’s the full nine. The stems don’t change; you do. You can begin again as
+            That’s the full arc. The stems don’t change; you do. You can begin again as
             the person these weeks have made, follow your Map to wherever the work is now,
             or roam freely.
           </p>

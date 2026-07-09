@@ -149,6 +149,22 @@ export const tokens = {
   meta:        fn.meta,
   ghost:       fn.ghost,
   whisper:     fn.ghost,
+
+  /* Legacy `gold*` names — REQUIRED. Kept as Field Notes moss/ink
+   * aliases (NOT heritage gold). ~170 call sites across the daily
+   * suite, Journal, Training, and challenge surfaces still reference
+   * these; removing them resolves every one to `undefined` and
+   * renders solid buttons invisible (white text, no background).
+   * New code should import fn.* directly — these exist so existing
+   * surfaces stay visible until each is migrated. */
+  gold:        fn.ink,                      // emphasis text
+  goldDk:      fn.ink,                      // stronger emphasis text
+  goldChrome:  fn.moss,                     // primary actions, active borders
+  goldRule:    fn.mossEdge,                 // hairlines on interactive cards
+  goldFaint:   'rgba(110,127,92,0.12)',     // resting borders, quiet fills
+  goldTint:    fn.mossTint,                 // tinted panels
+  goldStrong:  'rgba(110,127,92,0.45)',     // pulse/glow start colour
+  goldGlow:    'rgba(110,127,92,0.30)',     // soft glow
 }
 export const serif = display
 export const body  = bodyFont
