@@ -522,7 +522,7 @@ export function NextUJourneyPage() {
     return (
       <div style={{ minHeight: '100dvh', background: tokens.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '18px', padding: '24px', textAlign: 'center' }}>
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: tokens.ghost }}>NEXTU</span>
-        <p style={{ ...body, fontSize: '15px', lineHeight: 1.6, color: tokens.inkMid || 'rgba(15,21,35,0.60)', margin: 0, maxWidth: '320px' }}>
+        <p style={{ ...body, fontSize: '15px', lineHeight: 1.6, color: 'rgba(15,21,35,0.60)', margin: 0, maxWidth: '320px' }}>
           The connection stalled before everything loaded. This is usually a weak signal, not your work.
         </p>
         <button

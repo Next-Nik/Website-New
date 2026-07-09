@@ -8,7 +8,8 @@
 //   node scripts/audit-design.js            — full report
 //   node scripts/audit-design.js --summary  — counts only
 //   node scripts/audit-design.js --law=size — one law only
-//                  (laws: size, opacity, italic, svg, vh, gold, legacyfont)
+//                  (laws: size, opacity, italic, svg, vh, gold, legacyfont,
+//                   orphantoken)
 //
 // Exit code 1 if any violations — wire into CI/build when the
 // backlog reaches zero:  "build": "node scripts/audit-design.js && vite build"
@@ -30,6 +31,17 @@
 //   legacyfont any Cormorant Garamond / Cormorant SC / Lora font-family
 //              string — the retired type system. Fraunces / Newsreader
 //              / IBM Plex Mono replace them everywhere.
+//   orphantoken  a dot-access on a shared token object (tokens/fn/at/
+//              gold/space/shadow/fnText/atText, imported from
+//              designTokens.js, or a same-named local const in the
+//              same file) whose property doesn't exist in that
+//              object's current key set. THIS IS THE NO-BACKSLIDE
+//              MECHANISM for the invisible-button class of bug: a
+//              missing key resolves to `undefined`, not an error —
+//              `background: undefined` renders as no background at
+//              all, silently, on whatever surface sits behind it.
+//              Caught here at build time instead of by a screenshot.
+//              See "Shared token contract" rule in Working_With_Nik.
 // ─────────────────────────────────────────────────────────────
 
 const fs = require('fs')
@@ -108,6 +120,33 @@ const GOLD_HEX_RE = /#C8922A|#A8721A|#c8922a|#a8721a/g
 const GOLD_RGBA_RE = /rgba\(\s*200,\s*146,\s*42|rgba\(\s*168,\s*114,\s*26/g
 const LEGACYFONT_RE = /Cormorant(?:\s|\+)?Garamond|Cormorant(?:\s|\+)?SC|(?<![a-zA-Z-])Lora(?!x)/g
 
+// ── orphantoken: canonical keys from the single source of truth ──
+// Regex-parsed (this script has no ESM/TS loader) — one level deep,
+// which is all these objects ever nest. Add a name here if
+// designTokens.js grows a new shared object.
+const TRACKED_TOKEN_NAMES = ['tokens', 'fn', 'at', 'gold', 'space', 'shadow', 'fnText', 'atText']
+
+function extractObjectKeys(src, constName) {
+  const re = new RegExp(`(?:export\\s+)?const\\s+${constName}\\s*=\\s*\\{`)
+  const m = re.exec(src)
+  if (!m) return null
+  let depth = 0, i = m.index + m[0].length - 1
+  const start = i
+  for (; i < src.length; i++) {
+    if (src[i] === '{') depth++
+    else if (src[i] === '}') { depth--; if (depth === 0) break }
+  }
+  const body = src.slice(start + 1, i)
+  return new Set([...body.matchAll(/^\s{0,4}([A-Za-z_][A-Za-z0-9_]*)\s*:/gm)].map(mm => mm[1]))
+}
+
+const designTokensSrc = fs.readFileSync(path.join(SRC, 'lib', 'designTokens.js'), 'utf8')
+const CANONICAL_KEYS = {}
+for (const name of TRACKED_TOKEN_NAMES) {
+  const keys = extractObjectKeys(designTokensSrc, name)
+  if (keys) CANONICAL_KEYS[name] = keys
+}
+
 const args = process.argv.slice(2)
 const summaryOnly = args.includes('--summary')
 const lawFilter = (args.find(a => a.startsWith('--law=')) || '').replace('--law=', '') || null
@@ -124,7 +163,7 @@ function walk(dir, out = []) {
 }
 
 const files = walk(SRC)
-const violations = { size: [], opacity: [], italic: [], svg: [], vh: [], gold: [], legacyfont: [] }
+const violations = { size: [], opacity: [], italic: [], svg: [], vh: [], gold: [], legacyfont: [], orphantoken: [] }
 
 function rel(f) { return path.relative(path.join(__dirname, '..'), f) }
 function lineOf(src, idx) { return src.slice(0, idx).split('\n').length }
@@ -197,6 +236,35 @@ for (const f of files) {
   for (const m of src.matchAll(LEGACYFONT_RE)) {
     violations.legacyfont.push(`${r}:${lineOf(src, m.index)}  retired font "${m[0]}" — use Fraunces/Newsreader/IBM Plex Mono (designTokens.js: display/bodyFont/mono)`)
   }
+
+  // ── orphantoken: dot-access on a shared token object whose key ─
+  // doesn't exist. A local `const tokens = {...}` (or fn/at/etc.)
+  // in the same file shadows the import and is checked against its
+  // OWN keys instead — several files (SentenceCompletion.jsx, the
+  // breath components' local `T`) intentionally define self-contained
+  // token sets and that's legal; what's never legal is a name that
+  // resolves to nothing at all.
+  if (!isCss && r !== 'lib/designTokens.js') {
+    // Strip comments first — a filename like "tokens.js" in a code
+    // comment isn't a property access, and scanning it produces a
+    // false "no such key: js" hit.
+    const codeOnly = src.replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '))
+                         .replace(/\/\/[^\n]*/g, m => ' '.repeat(m.length))
+    for (const name of TRACKED_TOKEN_NAMES) {
+      if (!codeOnly.includes(`${name}.`)) continue
+      const localKeys = extractObjectKeys(src, name)
+      const keys = localKeys || CANONICAL_KEYS[name]
+      if (!keys) continue
+      // Negative lookbehind for a preceding "." so a nested property
+      // chain (shadow.at.rest) can't be mistaken for the top-level
+      // `at` object — only a bare reference to `name` counts.
+      for (const m of codeOnly.matchAll(new RegExp(`(?<!\\.)\\b${name}\\.([A-Za-z_][A-Za-z0-9_]*)`, 'g'))) {
+        if (!keys.has(m[1])) {
+          violations.orphantoken.push(`${r}:${lineOf(src, m.index)}  ${name}.${m[1]} — no such key (renders as undefined, e.g. invisible on a light surface)`)
+        }
+      }
+    }
+  }
 }
 
 // ── Report ───────────────────────────────────────────────────
@@ -208,6 +276,7 @@ const LAW_TITLES = {
   vh:         '100vh (use 100dvh)',
   gold:       'HERITAGE GOLD OUTSIDE WHITELIST (no-backslide law — see Master Spec §4)',
   legacyfont: 'RETIRED FONT (Cormorant/Lora — use Fraunces/Newsreader/IBM Plex Mono)',
+  orphantoken: 'ORPHAN TOKEN KEY (no-backslide law — undefined resolves silently, not an error)',
 }
 
 let total = 0
