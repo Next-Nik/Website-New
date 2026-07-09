@@ -26,6 +26,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
+import useDraftGuard from '../hooks/useDraftGuard'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import WorldMapSubstrate from '../components/mission-control/WorldMapSubstrate'
@@ -290,6 +291,10 @@ export default function Journal() {
     ]
   }, [hsRows])
 
+  // Backgrounding must never eat an entry mid-write — mirror the
+  // draft into localStorage; cleared on save.
+  const clearDraft = useDraftGuard(user ? `journal-draft:${user.id}` : null, draft, setDraft)
+
   // ── Save a journal entry ─────────────────────────────────────
   async function handleSave() {
     if (!user) return
@@ -310,6 +315,7 @@ export default function Journal() {
     // Optimistic prepend; the Read view will reflect the new entry
     if (data) setJournalRows(prev => [data, ...prev])
     setDraft('')
+    clearDraft()
     setDraftDomain(null)
     setTab('read')
   }

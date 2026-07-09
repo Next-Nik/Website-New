@@ -16,6 +16,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import WorldMapSubstrate from '../components/mission-control/WorldMapSubstrate'
 import BreathPacer from '../components/daily/BreathPacer'
+import useDraftGuard from '../hooks/useDraftGuard'
 import { serif, body, sc } from '../../lib/designTokens'
 
 const tokens = {
@@ -37,6 +38,10 @@ function MorningPages({ embedded = false } = {}, ref) {
   const [written, setWritten]   = useState('')
   const [saving, setSaving]     = useState(false)
   const [savedFlash, setSavedFlash] = useState(false)
+
+  // Backgrounding the app must never eat the pages — mirror the draft
+  // into localStorage; cleared on save.
+  const clearDraft = useDraftGuard(user ? `mp-draft:${user.id}` : null, written, setWritten)
 
   // The runner's Continue calls flush() before advancing, so a walk
   // never drops the pages. No-op when empty or already saving.
@@ -60,6 +65,7 @@ function MorningPages({ embedded = false } = {}, ref) {
     setSaving(false)
     if (error) return
     setWritten('')
+    clearDraft()
     setSavedFlash(true)
     setTimeout(() => setSavedFlash(false), 2200)
   }

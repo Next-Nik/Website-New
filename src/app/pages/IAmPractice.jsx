@@ -16,6 +16,7 @@
 import { useEffect, useMemo, useState, forwardRef, useImperativeHandle } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
+import useDraftGuard from '../hooks/useDraftGuard'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import WorldMapSubstrate from '../components/mission-control/WorldMapSubstrate'
@@ -105,6 +106,13 @@ function IAmPractice({ embedded = false } = {}, ref) {
   const hasMore = fullText.trim() && fullText.trim() !== line.trim()
   const title = domainKey ? (DOMAIN_COPY[domainKey]?.title || domainKey) : ''
 
+  // Backgrounding must never eat the reps — one draft per domain,
+  // mirrored into localStorage; cleared on save.
+  const clearDraft = useDraftGuard(
+    user && domainKey ? `iam-draft:${user.id}:${domainKey}` : null,
+    written, setWritten,
+  )
+
   // A gentle line count, never a score.
   const reps = written.split('\n').filter(l => l.trim().length > 0).length
 
@@ -127,6 +135,7 @@ function IAmPractice({ embedded = false } = {}, ref) {
     setSaving(false)
     if (error) return
     setWritten('')
+    clearDraft()
     flashSaved()
   }
 
