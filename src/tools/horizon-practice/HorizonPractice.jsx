@@ -825,7 +825,7 @@ function StretchTasksRail({ activeSprint, civSprint, thresholds, onChange }) {
               background: added ? tokens.goldChrome : 'transparent',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              {added && <span style={{ color: '#FFFFFF', fontSize: '11px', lineHeight: 1 }}>✓</span>}
+              {added && <span style={{ color: '#FFFFFF', fontSize: '13px', lineHeight: 1 }}>✓</span>}
             </span>
             <span style={{ flex: 1 }}>
               <span style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.5, display: 'block' }}>{item.text}</span>
