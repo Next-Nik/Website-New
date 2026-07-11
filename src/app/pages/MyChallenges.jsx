@@ -186,33 +186,45 @@ function ChallengeCard({ p, userId, founding, onLeft }) {
             const done = doneToday.has(s.id)
             const cadence = CADENCE_LABEL[s.cadence] || ''
             return (
-              <label key={s.id}
-                style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', cursor: 'pointer', padding: '8px 0', borderBottom: hair }}>
-                <input type="checkbox" checked={done} disabled={busy === s.id}
-                  onChange={() => toggle(s.id)}
-                  style={{ marginTop: '4px', accentColor: GOLD_C, flexShrink: 0, width: '16px', height: '16px' }} />
-                <span style={{ flex: 1 }}>
-                  <span style={{ ...body, fontSize: '1.0625rem', color: 'rgba(234,241,237,0.85)', lineHeight: 1.5, textDecoration: done ? 'line-through' : 'none', opacity: done ? 0.45 : 1, transition: 'all 0.25s' }}>
-                    {s.text}
-                  </span>
+              <div key={s.id} style={{ padding: '10px 0 16px', borderBottom: hair }}>
+                <div style={{ ...body, fontSize: '1.0625rem', color: 'rgba(234,241,237,0.85)', lineHeight: 1.5, textDecoration: done ? 'line-through' : 'none', opacity: done ? 0.55 : 1, transition: 'all 0.25s' }}>
+                  {s.text}
                   {cadence && (
-                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: at.ghost, marginLeft: '10px', whiteSpace: 'nowrap' }}>{cadence}</span>
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: at.ghost, marginLeft: '10px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none' }}>{cadence}</span>
                   )}
-                </span>
-              </label>
+                </div>
+                <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+                  {done ? (
+                    <>
+                      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase', color: at.verdigris, border: `1px solid ${at.verdigrisEdge}`, borderRadius: '26px', padding: '9px 18px' }}>
+                        Complete for today
+                      </span>
+                      <button type="button" onClick={() => toggle(s.id)} disabled={busy === s.id}
+                        style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: at.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                        undo
+                      </button>
+                    </>
+                  ) : (
+                    <button type="button" onClick={() => toggle(s.id)} disabled={busy === s.id}
+                      style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#0F241D', background: at.verdigris, border: 'none', borderRadius: '26px', padding: '12px 24px', cursor: 'pointer', opacity: busy === s.id ? 0.6 : 1, transition: 'opacity 0.2s' }}>
+                      I did this today
+                    </button>
+                  )}
+                </div>
+              </div>
             )
           })}
 
           <div style={{ marginTop: '18px', paddingTop: '14px', borderTop: hair }}>
             {!finishing ? (
               <button type="button" onClick={() => setFinishing(true)}
-                style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.brass, background: 'none', border: 'none', cursor: 'pointer', padding: 0, textTransform: 'uppercase' }}>
-                Finish this challenge
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                Mark the whole challenge complete
               </button>
             ) : (
               <div>
                 <div style={{ ...body, fontSize: '14px', color: 'rgba(234,241,237,0.66)', lineHeight: 1.55, marginBottom: '12px' }}>
-                  This closes the whole challenge, not just today. Today's check-in is the box above.
+                  This closes the whole challenge, not just today. Today's check-in is the button above.
                 </div>
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: at.ghost, textTransform: 'uppercase', marginBottom: '10px' }}>How did it go?</div>
                 <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginBottom: '10px' }}>
