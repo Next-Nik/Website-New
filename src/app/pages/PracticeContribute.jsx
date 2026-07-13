@@ -44,7 +44,7 @@ const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
 function Eyebrow({ children, style = {} }) {
   return (
     <span style={{
-      ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#26302A',
+      ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#26302A',
       textTransform: 'uppercase', display: 'block', marginBottom: '8px',
       ...style,
     }}>
@@ -87,7 +87,7 @@ function ChipToggle({ label, active, onClick, color = '#26302A' }) {
   return (
     <button type="button" onClick={onClick} aria-pressed={active}
       style={{
-        ...sc, fontSize: '12px', letterSpacing: '0.04em',
+        ...sc, fontSize: '13px', letterSpacing: '0.04em',
         color: active ? color : 'rgba(15,21,35,0.72)',
         background: active ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
         border: active ? `1px solid ${color}` : '1px solid rgba(110,127,92,0.25)',
@@ -359,7 +359,7 @@ export default function PracticeContribute() {
         <div style={{ maxWidth: '600px', margin: '0 auto', padding: 'clamp(72px, 10vw, 96px) 24px 60px' }}>
           <div style={{ marginBottom: '24px' }}>
             <button onClick={() => setShowFloor(false)}
-              style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}>
               ← Back to the form
             </button>
           </div>
@@ -398,7 +398,7 @@ export default function PracticeContribute() {
         {/* Back link */}
         <div style={{ marginBottom: '20px' }}>
           <Link to="/practices"
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
             ← All practices
           </Link>
         </div>
@@ -556,7 +556,7 @@ export default function PracticeContribute() {
                       const next = form.problem_chains.filter((_, idx) => idx !== i)
                       set('problem_chains', next)
                     }}
-                    style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', background: 'transparent', border: '1px solid rgba(15,21,35,0.55)', borderRadius: '6px', padding: '6px 12px', cursor: 'pointer' }}>
+                    style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', background: 'transparent', border: '1px solid rgba(15,21,35,0.55)', borderRadius: '6px', padding: '6px 12px', cursor: 'pointer' }}>
                     Remove
                   </button>
                 )}
@@ -564,7 +564,7 @@ export default function PracticeContribute() {
             ))}
             <button type="button"
               onClick={() => set('problem_chains', [...form.problem_chains, ''])}
-              style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: '#26302A', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, marginTop: '4px' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, marginTop: '4px' }}>
               + Add another chain
             </button>
           </FieldGroup>

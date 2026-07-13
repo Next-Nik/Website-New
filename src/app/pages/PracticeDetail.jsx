@@ -55,7 +55,7 @@ function KindBadge({ kindSlug }) {
   return (
     <span style={{
       ...sc,
-      fontSize: '11px',
+      fontSize: '13px',
       letterSpacing: '0.16em',
       textTransform: 'uppercase',
       color: k.color,
@@ -76,7 +76,7 @@ function VettingBadge({ vettingSlug, attestationCount }) {
   return (
     <span title={vettingSlug === 'community_attested' ? `${attestationCount} attestations` : undefined}
       style={{
-        ...sc, fontSize: '10px', letterSpacing: '0.14em',
+        ...sc, fontSize: '13px', letterSpacing: '0.14em',
         color: v.color, padding: '2px 10px',
         border: `1px solid ${v.color}30`, borderRadius: '40px',
         background: `${v.color}08`,
@@ -101,7 +101,7 @@ function PlacementBreadcrumb({ practice }) {
   const secondaryDomains = domains.slice(1)
 
   return (
-    <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6 }}>
+    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6 }}>
       {primaryDomain ? primaryDomain.label : primaryDomainSlug}
       {primarySubdomainSlug && (
         <>
@@ -130,7 +130,7 @@ function LensChips({ lenses = [] }) {
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
       {lenses.map((l, i) => (
         <span key={l} style={{
-          ...sc, fontSize: '11px', letterSpacing: '0.06em',
+          ...sc, fontSize: '13px', letterSpacing: '0.06em',
           color: i === 0 ? '#26302A' : 'rgba(15,21,35,0.65)',
           background: i === 0 ? 'rgba(110,127,92,0.06)' : '#FFFFFF',
           border: `1px solid ${i === 0 ? 'rgba(110,127,92,0.40)' : 'rgba(110,127,92,0.18)'}`,
@@ -159,11 +159,11 @@ function AttestationItem({ attestation, attesterName }) {
       marginBottom: '10px',
     }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
-        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#26302A', fontWeight: 600 }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', fontWeight: 600 }}>
           {display}
         </span>
         {attestation.attester_role && (
-          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>
             {attestation.attester_role}
           </span>
         )}
@@ -188,10 +188,10 @@ function OutcomeItem({ report, reporterName }) {
       marginBottom: '10px',
     }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
-        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#2A6B3A', fontWeight: 600 }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#2A6B3A', fontWeight: 600 }}>
           {display}
         </span>
-        <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>
           {formatDate(report.created_at)}
         </span>
       </div>
@@ -212,7 +212,7 @@ function SectionHeading({ children, count }) {
       paddingBottom: '10px',
       borderBottom: '1px solid rgba(110,127,92,0.18)',
     }}>
-      <h2 style={{ ...sc, fontSize: '12px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase', margin: 0, fontWeight: 600 }}>
+      <h2 style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase', margin: 0, fontWeight: 600 }}>
         {children}
       </h2>
       {typeof count === 'number' && (
@@ -368,7 +368,7 @@ export default function PracticeDetail() {
             This practice may have been withdrawn, or the link is mistyped.
           </p>
           <Link to="/practices"
-            style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: '#26302A', textDecoration: 'none' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', textDecoration: 'none' }}>
             Back to practices
           </Link>
         </div>
@@ -408,7 +408,7 @@ export default function PracticeDetail() {
         {/* Back link */}
         <div style={{ marginBottom: '24px' }}>
           <Link to="/practices"
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
             ← All practices
           </Link>
         </div>
@@ -480,7 +480,7 @@ export default function PracticeDetail() {
         {isBestForAll && practice.evidence_summary && (
           <div style={{ marginBottom: '32px' }}>
             <span style={{
-              ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)',
+              ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)',
               textTransform: 'uppercase', display: 'block', marginBottom: '10px',
             }}>
               Evidence
@@ -500,7 +500,7 @@ export default function PracticeDetail() {
 
         {/* Contributor attribution (small footer to description) */}
         <div style={{ paddingTop: '14px', borderTop: '1px solid rgba(110,127,92,0.15)', marginBottom: '14px' }}>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>
             Contributed by {contributorName || 'an anonymous contributor'}
             {practice.contributor_role && (
               <span style={{ color: 'rgba(15,21,35,0.55)' }}> · {practice.contributor_role}</span>
@@ -521,7 +521,7 @@ export default function PracticeDetail() {
                 Attest to this practice
               </button>
             ) : (
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#2A6B3A', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#2A6B3A', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                 <CheckMark /> You have attested.
               </span>
             )}

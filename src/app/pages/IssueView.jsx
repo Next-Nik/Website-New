@@ -31,7 +31,7 @@ function PracticeCard({ p, accent }) {
 
       {tiers.length > 0 && (
         <div style={{ marginBottom: actors.length ? '14px' : 0 }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: gold, marginBottom: '8px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', textTransform: 'uppercase', color: gold, marginBottom: '8px' }}>
             Ways to do it
           </div>
           {tiers.map((t, i) => (
@@ -55,7 +55,7 @@ function PracticeCard({ p, accent }) {
 
       {actors.length > 0 && (
         <div>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: gold, marginBottom: '6px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', textTransform: 'uppercase', color: gold, marginBottom: '6px' }}>
             Doing this
           </div>
           <div style={{ ...body, fontSize: '14px', lineHeight: 1.6 }}>
@@ -118,7 +118,7 @@ function RuledOutCard({ p }) {
         state === 'done' ? (
           <div style={{ ...body, fontSize: '13px', color: '#2A6A3A' }}>Submitted for review. Thank you for the substance.</div>
         ) : !open ? (
-          <button onClick={() => setOpen(true)} style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em',
+          <button onClick={() => setOpen(true)} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
             color: gold, background: 'none', border: 'none', cursor: 'pointer', padding: 0, textTransform: 'uppercase' }}>
             Propose a reconsideration
           </button>
@@ -133,7 +133,7 @@ function RuledOutCard({ p }) {
                 border: '1px solid rgba(88,160,138,0.3)', borderRadius: '8px', marginBottom: '8px', resize: 'vertical' }} />
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               <button onClick={submit} disabled={state === 'sending' || basis.trim().length < 40}
-                style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', textTransform: 'uppercase',
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase',
                   color: '#FFF', background: gold, border: 'none', borderRadius: '20px',
                   padding: '8px 18px', cursor: basis.trim().length < 40 ? 'not-allowed' : 'pointer',
                   opacity: basis.trim().length < 40 ? 0.5 : 1 }}>
@@ -197,7 +197,7 @@ export function IssueViewPage() {
 
         {!loading && chain && (
           <>
-            <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)', marginBottom: '14px' }}>The issue</div>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)', marginBottom: '14px' }}>The issue</div>
             <h1 style={{ ...serif, fontSize: '40px', lineHeight: 1.15, color: dark, margin: '0 0 12px' }}>{chain.label}</h1>
             {chain.description && (
               <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, marginBottom: '40px', maxWidth: '620px' }}>{chain.description}</p>

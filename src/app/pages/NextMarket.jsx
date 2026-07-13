@@ -44,7 +44,7 @@ const bg    = '#FAFAF7'
 
 function Eyebrow({ children, color = gold }) {
   return (
-    <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em',
+    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em',
       color, textTransform: 'uppercase', marginBottom: '12px' }}>
       {children}
     </div>
@@ -57,7 +57,7 @@ function FilterPill({ label, active, onClick }) {
   return (
     <button onClick={onClick}
       style={{
-        ...sc, fontSize: '12px', letterSpacing: '0.10em',
+        ...sc, fontSize: '13px', letterSpacing: '0.10em',
         color: active ? '#FFFFFF' : 'rgba(15,21,35,0.65)',
         background: active ? gold : 'rgba(110,127,92,0.06)',
         border: `1px solid ${active ? gold : 'rgba(110,127,92,0.25)'}`,
@@ -88,21 +88,21 @@ function OfferingCard({ offering, actor }) {
       <div>
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px', alignItems: 'center' }}>
           {offering.is_flagship && (
-            <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em',
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
               background: goldB, color: '#FFFFFF', padding: '2px 10px', borderRadius: '40px' }}>
               Flagship
             </span>
           )}
-          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', color: gold,
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
             background: 'rgba(110,127,92,0.07)', border: '1px solid rgba(110,127,92,0.22)',
             borderRadius: '4px', padding: '2px 8px' }}>
             {typeLabel}
           </span>
-          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)',
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)',
             background: 'rgba(15,21,35,0.04)', borderRadius: '4px', padding: '2px 8px' }}>
             {modeLabel}
           </span>
-          <span style={{ ...sc, fontSize: '10px', color: 'rgba(15,21,35,0.55)' }}>
+          <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
             {accessLabel}
           </span>
         </div>
@@ -111,7 +111,7 @@ function OfferingCard({ offering, actor }) {
         </h3>
         {actor && (
           <Link to={`/org/${actor.id}`}
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold,
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold,
               textDecoration: 'none', display: 'block', marginBottom: '10px' }}>
             From {actor.name}
           </Link>
@@ -124,7 +124,7 @@ function OfferingCard({ offering, actor }) {
       </div>
       {offering.url && (
         <a href={offering.url} target="_blank" rel="noopener noreferrer"
-          style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: gold,
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold,
             textDecoration: 'none', marginTop: '14px',
             paddingTop: '14px', borderTop: '1px solid rgba(110,127,92,0.18)' }}>
           Learn more →
@@ -241,7 +241,7 @@ export function NextMarketPage() {
 
           {/* ── Filters ── */}
           <div style={{ marginBottom: '40px' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
               color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '10px' }}>
               Domain
             </div>
@@ -254,7 +254,7 @@ export function NextMarketPage() {
               ))}
             </div>
 
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
               color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '10px' }}>
               Type
             </div>
@@ -292,7 +292,7 @@ export function NextMarketPage() {
             </div>
           ) : (
             <>
-              <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
                 color: 'rgba(15,21,35,0.55)', marginBottom: '18px' }}>
                 {filtered.length} {filtered.length === 1 ? 'entry' : 'entries'}
               </div>

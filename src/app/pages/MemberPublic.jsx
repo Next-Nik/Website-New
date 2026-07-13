@@ -39,7 +39,7 @@ const RULE   = at.verdigrisEdge
 
 function SectionLabel({ children }) {
   return (
-    <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em',
+    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
       textTransform: 'uppercase', color: GOLD_DK, marginBottom: '14px' }}>
       {children}
     </div>
@@ -241,7 +241,7 @@ export function MemberPublicPage() {
         )}
 
         {/* Eyebrow */}
-        <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em',
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em',
           textTransform: 'uppercase', color: GOLD_DK, marginBottom: '18px' }}>
           NextUs · Member
         </div>
@@ -320,7 +320,7 @@ export function MemberPublicPage() {
                         </div>
                       )}
                     </div>
-                    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
                       textTransform: 'uppercase', color: GOLD_DK }}>{a.type}</span>
                   </div>
                 </Link>
@@ -356,7 +356,7 @@ export function MemberPublicPage() {
                   background: at.object, border: `1px solid ${RULE}`,
                   borderRadius: '12px', padding: '14px 18px' }}>
                   <span style={{ ...body, fontSize: '16px', color: DARK }}>{s.title}</span>
-                  <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
                     textTransform: 'uppercase', color: GOLD_DK, whiteSpace: 'nowrap' }}>
                     Planet Sprint
                   </span>

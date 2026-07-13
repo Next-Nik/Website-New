@@ -360,7 +360,7 @@ export default function Journal() {
                 borderRadius: '50%',
                 cursor: 'pointer',
                 ...sc,
-                fontSize: 12,
+                fontSize: 13,
                 lineHeight: '20px',
                 padding: 0,
                 fontWeight: 600,
@@ -466,13 +466,13 @@ export default function Journal() {
             <div style={{ marginTop: 18 }}>
               <div style={{
                 ...sc,
-                fontSize: 11,
+                fontSize: 13,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: tokens.inkFaint,
                 marginBottom: 8,
               }}>
-                Tag a domain <span style={{ textTransform: 'none', letterSpacing: 0, fontSize: 12 }}>(optional)</span>
+                Tag a domain <span style={{ textTransform: 'none', letterSpacing: 0, fontSize: 13 }}>(optional)</span>
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {DOMAINS.map(d => {
@@ -484,7 +484,7 @@ export default function Journal() {
                       onClick={() => setDraftDomain(active ? null : d.key)}
                       style={{
                         ...sc,
-                        fontSize: 12,
+                        fontSize: 13,
                         letterSpacing: '0.10em',
                         padding: '6px 12px',
                         borderRadius: 14,
@@ -583,7 +583,7 @@ export default function Journal() {
               <div style={{ marginBottom: 26 }}>
                 <div style={{
                   ...sc,
-                  fontSize: 11,
+                  fontSize: 13,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
                   color: tokens.inkFaint,
@@ -599,7 +599,7 @@ export default function Journal() {
                       onClick={() => navigate('/tools/horizon-state')}
                       style={{
                         ...sc,
-                        fontSize: 12,
+                        fontSize: 13,
                         letterSpacing: '0.10em',
                         padding: '8px 14px',
                         borderRadius: 4,
@@ -706,7 +706,7 @@ function StreamItem({ item }) {
       }}>
         <span style={{
           ...sc,
-          fontSize: 11,
+          fontSize: 13,
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
           color: tokens.inkMid,
@@ -715,7 +715,7 @@ function StreamItem({ item }) {
         </span>
         <span style={{
           ...sc,
-          fontSize: 11,
+          fontSize: 13,
           color: tokens.inkFaint,
         }}>
           {dateLabel(item.when)} · {timeOnly(item.when)}
@@ -743,7 +743,7 @@ function DomainPill({ label }) {
     <span style={{
       ...sc,
       display: 'inline-block',
-      fontSize: 11,
+      fontSize: 13,
       letterSpacing: '0.10em',
       padding: '3px 10px',
       borderRadius: 12,

@@ -130,7 +130,7 @@ export function EventManagePage() {
           <div style={{ ...body, fontSize: '15px', color: dark, marginBottom: '24px' }}>
             You don't have permission to edit this Event, or it doesn't exist.
           </div>
-          <Link to="/" style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: gold, textTransform: 'uppercase' }}>
+          <Link to="/" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, textTransform: 'uppercase' }}>
             ← Back to Mission Control
           </Link>
         </div>
@@ -147,7 +147,7 @@ export function EventManagePage() {
           <Link
             to={`/org/${actorId}/manage`}
             style={{
-              ...sc, fontSize: '12px', letterSpacing: '0.14em',
+              ...sc, fontSize: '13px', letterSpacing: '0.14em',
               color: 'rgba(15,21,35,0.55)', textDecoration: 'none',
               textTransform: 'uppercase',
             }}

@@ -342,7 +342,7 @@ function ResourcesNextStepsInput({ onSubmit }) {
   }
   return (
     <div>
-      <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '11px', letterSpacing: '0.2em', color: '#26302A', marginBottom: '10px' }}>NEXT STEPS</div>
+      <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', marginBottom: '10px' }}>NEXT STEPS</div>
       <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
         <textarea
           value={val}
@@ -363,7 +363,7 @@ function ResourcesNextStepsInput({ onSubmit }) {
           style={{
             background: val.trim() ? '#6E7F5C' : 'rgba(15,21,35,0.55)', color: val.trim() ? '#FFFFFF' : 'rgba(15,21,35,0.55)',
             border: 'none', borderRadius: '3px', padding: '10px 16px', cursor: val.trim() ? 'pointer' : 'not-allowed',
-            fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '10px', letterSpacing: '0.16em', textTransform: 'uppercase',
+            fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase',
             transition: 'background 0.15s', flexShrink: 0,
           }}
         >→</button>
@@ -1314,7 +1314,7 @@ export default function MissionControl() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <span style={{ color: '#26302A', fontSize: '14px' }}>✦</span>
-            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '11px', letterSpacing: '0.2em', color: '#26302A' }}>WHAT'S BEEN PULLING AT YOU</span>
+            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#26302A' }}>WHAT'S BEEN PULLING AT YOU</span>
           </div>
           <MyInterestsPanel userId={data.user?.id} />
         </div>
@@ -1380,7 +1380,7 @@ export default function MissionControl() {
         <div style={{ borderTop: '1px solid rgba(110,127,92,0.15)', paddingTop: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <span style={{ color: '#26302A', fontSize: '14px' }}>✦</span>
-            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '10px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)' }}>YOUR FEED</span>
+            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)' }}>YOUR FEED</span>
           </div>
           <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0, lineHeight: 1.6 }}>
             Articles, conversations, practitioners, and exercises — surfaced as your work moves.

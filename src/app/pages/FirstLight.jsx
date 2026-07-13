@@ -57,7 +57,7 @@ function Track({ d, now, onSet }){
         <div style={{ display:'flex', alignItems:'center', gap:9 }}>
           <span style={{ width:9, height:9, borderRadius:'50%', background:d.hex }} />
           <b style={{ fontFamily:SERIF, fontWeight:600, fontSize:20, color:INK }}>{d.name}</b>
-          {focus && <span style={{ fontFamily:SC, fontWeight:700, fontSize:10.5, letterSpacing:'0.12em', color:RED, border:'1px solid rgba(138,48,48,0.4)', borderRadius:20, padding:'1px 7px', marginLeft:3 }}>FOCUS</span>}
+          {focus && <span style={{ fontFamily:SC, fontWeight:700, fontSize:13, letterSpacing:'0.12em', color:RED, border:'1px solid rgba(138,48,48,0.4)', borderRadius:20, padding:'1px 7px', marginLeft:3 }}>FOCUS</span>}
         </div>
         <div style={{ fontFamily:SC, fontWeight:600, fontSize:15, letterSpacing:'0.04em', color:META, whiteSpace:'nowrap' }}>
           <span style={{ color:INK }}>{fmt(now)}</span>
@@ -66,7 +66,7 @@ function Track({ d, now, onSet }){
             : <span style={{ color:GHOST }}> · at the top</span>}
         </div>
       </div>
-      <div style={{ fontSize:12.5, color:GHOST, marginTop:-7, marginBottom:12, minHeight:16 }}>
+      <div style={{ fontSize:13, color:GHOST, marginTop:-7, marginBottom:12, minHeight:16 }}>
         {focus
           ? <><span style={{ color:RED, fontWeight:500 }}>below the line</span> · cross to <b style={{ color:GOLD, fontWeight:500 }}>5</b> first — this is the priority</>
           : reaching
@@ -79,7 +79,7 @@ function Track({ d, now, onSet }){
         <div style={{ position:'absolute', top:'50%', left:0, width:'50%', height:4, transform:'translateY(-50%)', background:'rgba(138,48,48,0.10)', borderRadius:'3px 0 0 3px' }} />
         <div style={{ position:'absolute', top:'50%', height:4, transform:'translateY(-50%)', borderRadius:3, left:pct(lo)+'%', width:pct(hi-lo)+'%', background:focus?'rgba(138,48,48,0.30)':'rgba(110,127,92,0.34)' }} />
         <div style={{ position:'absolute', top:'50%', left:'50%', width:2, height:16, transform:'translate(-50%,-50%)', background:'rgba(15,21,35,0.30)' }} />
-        <div style={{ position:'absolute', top:'calc(50% + 12px)', left:'50%', transform:'translateX(-50%)', fontFamily:SC, fontSize:10, letterSpacing:'0.08em', color:GHOST, whiteSpace:'nowrap' }}>THE LINE</div>
+        <div style={{ position:'absolute', top:'calc(50% + 12px)', left:'50%', transform:'translateX(-50%)', fontFamily:SC, fontSize:13, letterSpacing:'0.08em', color:GHOST, whiteSpace:'nowrap' }}>THE LINE</div>
         {reaching && <div style={{ position:'absolute', top:'50%', left:pct(aim)+'%', width:15, height:15, transform:'translate(-50%,-50%)', borderRadius:'50%', background:CARD, border:`2.5px solid ${focus?RED:CHROME}`, boxShadow:'0 1px 4px rgba(15,21,35,0.18)', pointerEvents:'none' }} />}
         <div style={{ position:'absolute', top:'50%', left:pct(now)+'%', width:26, height:26, transform:'translate(-50%,-50%)', borderRadius:'50%', background:scoreColor(now), border:'2px solid #FFFFFF', boxShadow:'0 1px 5px rgba(15,21,35,0.28)', cursor:'grab', zIndex:3 }} />
       </div>
@@ -147,7 +147,7 @@ export default function FirstLight(){
           {cover && (
             <div style={{ position:'absolute', top:'46%', left:'50%', transform:'translate(-50%,-50%)', zIndex:5, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
               <button onClick={() => setPhase('place')} style={{ fontFamily:SC, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', fontSize:16, color:'#fff', background:GOLD, border:'none', borderRadius:40, padding:'16px 40px', cursor:'pointer', boxShadow:'0 6px 22px -6px rgba(38,48,42,0.7), 0 0 0 6px rgba(110,127,92,0.12)' }}>Start</button>
-              <span style={{ fontFamily:LORA, fontSize:12.5, color:META, background:'rgba(250,250,247,0.86)', padding:'2px 10px', borderRadius:20 }}>about two minutes</span>
+              <span style={{ fontFamily:LORA, fontSize:13, color:META, background:'rgba(250,250,247,0.86)', padding:'2px 10px', borderRadius:20 }}>about two minutes</span>
             </div>
           )}
         </div>

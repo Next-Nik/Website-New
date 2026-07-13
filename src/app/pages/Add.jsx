@@ -97,7 +97,7 @@ function normaliseUrl(raw) {
 
 function FieldLabel({ children, required }) {
   return (
-    <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold,
+    <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold,
       display: 'block', marginBottom: '6px' }}>
       {children}{required && <span style={{ color: '#8A3030', marginLeft: '3px' }}>*</span>}
     </label>
@@ -140,7 +140,7 @@ function Field({ children, style }) {
 function LabelBadge({ label }) {
   const cfg = LABEL_COLORS[label] || LABEL_COLORS.Planet
   return (
-    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
+    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
       padding: '2px 10px', borderRadius: '40px',
       color: cfg.color, background: cfg.bg, border: `1px solid ${cfg.border}` }}>
       {label}
@@ -163,7 +163,7 @@ function DuplicateCard({ actor }) {
         )}
       </div>
       <Link to={`/org/${actor.slug || actor.id}`} target="_blank"
-        style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold,
+        style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
           textDecoration: 'none', whiteSpace: 'nowrap', padding: '5px 12px',
           borderRadius: '40px', border: '1px solid rgba(217,178,74,0.35)',
           background: 'rgba(217,178,74,0.05)' }}>
@@ -190,9 +190,9 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
             border: checked ? '2px solid at.brass' : '2px solid rgba(217,178,74,0.35)',
             background: checked ? at.brass : at.object,
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {checked && <span style={{ color: at.object, fontSize: '12px', lineHeight: 1 }}>✓</span>}
+          {checked && <span style={{ color: at.object, fontSize: '13px', lineHeight: 1 }}>✓</span>}
         </button>
-        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
           color: gold, background: 'rgba(217,178,74,0.08)',
           border: '1px solid rgba(217,178,74,0.25)',
           padding: '2px 10px', borderRadius: '40px' }}>
@@ -200,7 +200,7 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
         </span>
         <span style={{ ...body, fontSize: '15px', color: dark }}>{proposal.name}</span>
         {SHOW_ALIGNMENT_PUBLIC && proposal.alignment_score != null && (
-          <span style={{ ...sc, fontSize: '11px', color: at.ghost, marginLeft: 'auto' }}>
+          <span style={{ ...sc, fontSize: '13px', color: at.ghost, marginLeft: 'auto' }}>
             Score {proposal.alignment_score}
           </span>
         )}
@@ -244,7 +244,7 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
           {(proposal.relationships?.length > 0 || proposal.links?.length > 0 || proposal.press?.length > 0) && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', paddingTop: '4px' }}>
               {proposal.relationships?.map((r, idx) => (
-                <span key={idx} style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+                <span key={idx} style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
                   color: at.ghost, background: 'rgba(217,178,74,0.06)',
                   border: '1px solid rgba(217,178,74,0.20)',
                   borderRadius: '40px', padding: '2px 9px' }}>
@@ -252,7 +252,7 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
                 </span>
               ))}
               {proposal.links?.length > 0 && (
-                <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
                   color: at.ghost, background: 'rgba(42,107,58,0.06)',
                   border: '1px solid rgba(42,107,58,0.20)',
                   borderRadius: '40px', padding: '2px 9px' }}>
@@ -260,7 +260,7 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
                 </span>
               )}
               {proposal.press?.length > 0 && (
-                <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
                   color: at.ghost, background: 'rgba(42,74,138,0.06)',
                   border: '1px solid rgba(42,74,138,0.20)',
                   borderRadius: '40px', padding: '2px 9px' }}>
@@ -606,7 +606,7 @@ export function AddPage() {
       <div style={{ background: parch, minHeight: '100dvh' }}>
         <Nav />
         <div style={{ maxWidth: '560px', margin: '0 auto', padding: '120px 24px 80px', textAlign: 'center' }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold,
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold,
             textTransform: 'uppercase', marginBottom: '18px' }}>Added to the Atlas</div>
           <h1 style={{ ...serif, fontSize: 'clamp(26px,4vw,38px)', fontWeight: 400,
             color: dark, lineHeight: 1.1, marginBottom: '24px' }}>
@@ -618,7 +618,7 @@ export function AddPage() {
                 {s.label !== 'Primary' && <LabelBadge label={s.label} />}
                 <span style={{ ...body, fontSize: '15px', color: dark }}>{s.name}</span>
                 <Link to={`/org/${s.slug || s.id}`} target="_blank"
-                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}>
+                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}>
                   View
                 </Link>
               </div>
@@ -667,7 +667,7 @@ export function AddPage() {
       <div style={{ maxWidth: '640px', margin: '0 auto', padding: '96px 24px 120px' }}>
 
         {/* Header */}
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold,
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold,
           textTransform: 'uppercase', marginBottom: '12px' }}>{mineMode ? 'Your author profile' : 'Atlas'}</div>
         <h1 style={{ ...serif, fontSize: 'clamp(30px,5vw,46px)', fontWeight: 400,
           color: dark, lineHeight: 1.08, marginBottom: '10px' }}>
@@ -695,7 +695,7 @@ export function AddPage() {
         {!mineMode && (
         <div style={{ background: at.object, border: '1.5px solid rgba(217,178,74,0.22)',
           borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.20em',
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em',
             color: at.ghost, textTransform: 'uppercase', marginBottom: '12px' }}>
             Your relationship to this entry
           </div>
@@ -758,7 +758,7 @@ export function AddPage() {
         {/* ── Optional URL autofill ─────────────────────────── */}
         <div style={{ background: at.object, border: '1.5px solid rgba(217,178,74,0.22)',
           borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.20em',
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em',
             color: at.ghost, textTransform: 'uppercase', marginBottom: '8px' }}>
             {mineMode ? 'Have a website?' : 'Start from any source'}
           </div>
@@ -839,7 +839,7 @@ export function AddPage() {
                   : 'Filling in manually.'}
               </span>
               <button type="button" onClick={startOver}
-                style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold,
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
                   background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>
                 Start over
               </button>
@@ -851,7 +851,7 @@ export function AddPage() {
             borderRadius: '12px', padding: '16px 18px', marginBottom: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               marginBottom: '10px' }}>
-              <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold }}>
                 Already on the map
               </div>
               <button onClick={() => setDupDismissed(true)}
@@ -955,7 +955,7 @@ export function AddPage() {
               <div style={{ marginTop: '10px', padding: '11px 13px',
                 background: 'rgba(217,178,74,0.04)', border: '1px solid rgba(217,178,74,0.18)',
                 borderRadius: '8px' }}>
-                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
                   color: at.ghost, marginBottom: '4px' }}>HORIZON GOAL</div>
                 <p style={{ ...body, fontSize: '13px', color: at.meta,
                   lineHeight: 1.65, margin: 0 }}>{selectedGoal}</p>
@@ -973,7 +973,7 @@ export function AddPage() {
                   const isOn = form.secondary_domains.includes(d.slug)
                   return (
                     <button key={d.slug} type="button" onClick={() => toggleSecondary(d.slug)}
-                      style={{ ...sc, fontSize: '12px', letterSpacing: '0.04em',
+                      style={{ ...sc, fontSize: '13px', letterSpacing: '0.04em',
                         padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
                         color: isOn ? gold : at.meta,
                         background: isOn ? 'rgba(217,178,74,0.08)' : at.object,
@@ -1020,7 +1020,7 @@ export function AddPage() {
           {/* ── AI-detected extra records ─────────────────────── */}
           {extras.length > 0 && (
             <div style={{ marginBottom: '24px' }}>
-              <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
                 color: gold, marginBottom: '10px' }}>
                 Also identified — add these too?
               </div>

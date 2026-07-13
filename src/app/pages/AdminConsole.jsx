@@ -381,7 +381,7 @@ function NowTab({ onNavigate }) {
               {u.email}
               {u.first_name && <span style={{ color: 'rgba(15,21,35,0.55)', marginLeft: '8px' }}>{u.first_name} {u.last_name}</span>}
             </span>
-            <span style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>{u.created_at?.slice(0, 10)}</span>
+            <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{u.created_at?.slice(0, 10)}</span>
           </div>
         </Card>
       ))}
@@ -468,7 +468,7 @@ function PlatformTab({ onNavigate }) {
                   </div>
                 ) : showIllustrative ? (
                   <div>
-                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
                       Illustrative
                     </span>
                     <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>
@@ -477,7 +477,7 @@ function PlatformTab({ onNavigate }) {
                   </div>
                 ) : (
                   <div>
-                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
                       Insufficient data
                     </span>
                     <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>
@@ -540,7 +540,7 @@ function ResolverNote({ claimId, onResolve }) {
 
   return (
     <div style={{ marginTop: '16px' }}>
-      <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '11px', letterSpacing: '0.16em', color: '#26302A', textTransform: 'uppercase', marginBottom: '6px' }}>
+      <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#26302A', textTransform: 'uppercase', marginBottom: '6px' }}>
         Your message to them (optional but encouraged)
       </div>
       <textarea
@@ -951,7 +951,7 @@ function ActorsTab({ toast }) {
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '6px' }}>
                     {(a.domains || [a.domain_id]).filter(Boolean).map((d, i) => (
                       <span key={d} style={{
-                        ...sc, fontSize: '11px', letterSpacing: '0.08em',
+                        ...sc, fontSize: '13px', letterSpacing: '0.08em',
                         color: i === 0 ? gold : 'rgba(15,21,35,0.55)',
                         background: i === 0 ? 'rgba(110,127,92,0.08)' : 'rgba(15,21,35,0.04)',
                         border: `1px solid ${i === 0 ? 'rgba(110,127,92,0.35)' : 'rgba(15,21,35,0.15)'}`,
@@ -994,18 +994,18 @@ function ActorsTab({ toast }) {
 
           <div style={{ display: 'grid', gap: '16px' }}>
             <div>
-              <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Name *</label>
+              <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Name *</label>
               <Input value={form.name} onChange={v => setFormField('name', v)} placeholder="Actor name" />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <div>
-                <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Type</label>
+                <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Type</label>
                 <Select value={form.type} onChange={v => setFormField('type', v)}
                   options={ACTOR_TYPES.map(t => ({ value: t, label: t }))} />
               </div>
               <div>
-                <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Scale</label>
+                <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Scale</label>
                 <Select value={form.scale || ''} onChange={v => setFormField('scale', v)}
                   options={[{ value: '', label: '-- Select --' }, ...SCALE_OPTIONS.map(s => ({ value: s, label: s }))]} />
               </div>
@@ -1013,7 +1013,7 @@ function ActorsTab({ toast }) {
 
             {/* Four-dim: Primary domain (legacy + array) */}
             <div>
-              <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Primary domain *</label>
+              <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Primary domain *</label>
               <Select value={form.domain_id || ''} onChange={v => {
                 setFormField('domain_id', v)
                 // Also write as domains[0]
@@ -1028,7 +1028,7 @@ function ActorsTab({ toast }) {
 
             {/* Four-dim: Secondary domains */}
             <div>
-              <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Secondary domains</label>
+              <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Secondary domains</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 {DOMAIN_LIST.map(d => {
                   if (d.value === form.domain_id) return null
@@ -1041,7 +1041,7 @@ function ActorsTab({ toast }) {
                         setFormField('domains', next)
                       }}
                       style={{
-                        ...sc, fontSize: '11px', letterSpacing: '0.06em',
+                        ...sc, fontSize: '13px', letterSpacing: '0.06em',
                         padding: '4px 10px', borderRadius: '40px', cursor: 'pointer',
                         color: isOn ? gold : 'rgba(15,21,35,0.72)',
                         background: isOn ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
@@ -1056,7 +1056,7 @@ function ActorsTab({ toast }) {
 
             {/* Four-dim: Platform principles */}
             <div>
-              <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Platform principles engaged</label>
+              <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Platform principles engaged</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 {PRINCIPLES_ORDERED.map(p => {
                   const isOn = (form.platform_principles || []).includes(p.slug)
@@ -1067,7 +1067,7 @@ function ActorsTab({ toast }) {
                         setFormField('platform_principles', isOn ? curr.filter(x => x !== p.slug) : [...curr, p.slug])
                       }}
                       style={{
-                        ...sc, fontSize: '11px', letterSpacing: '0.06em',
+                        ...sc, fontSize: '13px', letterSpacing: '0.06em',
                         padding: '4px 10px', borderRadius: '40px', cursor: 'pointer',
                         color: isOn ? gold : 'rgba(15,21,35,0.72)',
                         background: isOn ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
@@ -1081,23 +1081,23 @@ function ActorsTab({ toast }) {
             </div>
 
             <div>
-              <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Alignment score (0–10)</label>
+              <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Alignment score (0–10)</label>
               <Input value={form.alignment_score} onChange={v => setFormField('alignment_score', v)} type="number" step="0.5" placeholder="0–10" />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <div>
-                <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Location</label>
+                <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Location</label>
                 <Input value={form.location_name} onChange={v => setFormField('location_name', v)} placeholder="City, Country" />
               </div>
               <div>
-                <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Website</label>
+                <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Website</label>
                 <Input value={form.website} onChange={v => setFormField('website', v)} placeholder="https://..." />
               </div>
             </div>
 
             <div>
-              <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Description</label>
+              <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Description</label>
               <textarea value={form.description} onChange={e => setFormField('description', e.target.value)} rows={3}
                 style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px', borderRadius: '8px',
                   border: '1.5px solid rgba(110,127,92,0.35)', background: '#FFFFFF', outline: 'none',
@@ -1149,7 +1149,7 @@ function ActorsTab({ toast }) {
               {/* Role */}
               {c.role && (
                 <div style={{ marginBottom: '12px' }}>
-                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Their role</div>
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Their role</div>
                   <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>{c.role}</div>
                 </div>
               )}
@@ -1157,7 +1157,7 @@ function ActorsTab({ toast }) {
               {/* Note */}
               {c.note && (
                 <div style={{ marginBottom: '12px' }}>
-                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Their message</div>
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Their message</div>
                   <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, fontStyle: 'italic' }}>{c.note}</div>
                 </div>
               )}
@@ -1165,7 +1165,7 @@ function ActorsTab({ toast }) {
               {/* Evidence link */}
               {c.evidence && (
                 <div style={{ marginBottom: '16px' }}>
-                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Evidence</div>
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Evidence</div>
                   <a href={c.evidence} target="_blank" rel="noreferrer" style={{ ...body, fontSize: '14px', color: gold }}>{c.evidence}</a>
                 </div>
               )}
@@ -1190,7 +1190,7 @@ function ActorsTab({ toast }) {
 function ExTierBadge({ tier }) {
   const c = TIER_CFG[tier]; if (!c) return null
   return (
-    <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px', letterSpacing:'0.12em',
+    <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.12em',
       padding:'3px 10px', borderRadius:'40px', border:`1px solid ${c.border}`, color:c.color, background:c.bg }}>
       {c.label}
     </span>
@@ -1215,7 +1215,7 @@ function ExPill({ label, variant = 'green' }) {
   }
   const c = cols[variant] || cols.green
   return (
-    <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px', letterSpacing:'0.10em',
+    <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.10em',
       padding:'2px 9px', borderRadius:'40px', border:`1px solid ${c.border}`,
       color:c.color, background:c.bg, display:'inline-block', margin:'2px' }}>
       {label}
@@ -1228,13 +1228,13 @@ function DimPills({ label, values = [], color = gold }) {
   if (!values || values.length === 0) return null
   return (
     <div style={{ marginBottom: '6px' }}>
-      <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'10px', letterSpacing:'0.16em',
+      <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.16em',
         color: 'rgba(15,21,35,0.55)', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>
         {label}
       </span>
       <div>
         {values.map((v, i) => (
-          <span key={v} style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'11px', letterSpacing:'0.08em',
+          <span key={v} style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.08em',
             padding:'2px 8px', borderRadius:'40px', margin:'2px', display:'inline-block',
             color: i === 0 ? color : 'rgba(15,21,35,0.55)',
             background: i === 0 ? `${color}14` : 'rgba(15,21,35,0.04)',
@@ -1297,7 +1297,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
             <ExLabelBadge label={proposal.label} />
             <ExTierBadge tier={proposal.placement_tier} />
             {proposal._duplicate && (
-              <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+              <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.10em', textTransform:'uppercase', color:'#8A6020',
                 background:'rgba(110,127,92,0.10)', border:'1px solid rgba(110,127,92,0.40)',
                 borderRadius:'40px', padding:'2px 10px' }}>
@@ -1319,7 +1319,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
                     style={{ width:'100%', height:'100%', objectFit:'contain' }}
                     onError={e => { e.currentTarget.style.display = 'none'
                       e.currentTarget.parentNode.dataset.broken = '1' }} />
-                : <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'11px',
+                : <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                     letterSpacing:'0.10em', color:'rgba(15,21,35,0.55)', textAlign:'center' }}>NO IMAGE</span>}
             </div>
             <div style={{ flex:1, minWidth:0 }}>
@@ -1334,7 +1334,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
                 </div>
               )}
               {proposal.floor_check?.has_favicon_fallback && (
-                <div style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'11px',
+                <div style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                   letterSpacing:'0.10em', color:'#8A6020', marginTop:'4px' }}>
                   FAVICON FALLBACK · NO LOGO FOUND
                 </div>
@@ -1354,7 +1354,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
              that should read like the actor's own site, not a review. */}
           {proposal.description && (
             <div style={{ marginBottom:'12px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'11px',
+              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px',
                 textTransform:'uppercase' }}>
                 Profile
@@ -1369,7 +1369,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           {/* Story — the longer narrative, shown so it's reviewable before placing */}
           {proposal.story && (
             <div style={{ marginBottom:'12px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'11px',
+              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px',
                 textTransform:'uppercase' }}>
                 Story
@@ -1385,7 +1385,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           {proposal.score_reasoning && (
             <div style={{ borderLeft:'2px solid rgba(15,21,35,0.14)', paddingLeft:'12px', marginBottom:'12px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'11px',
+              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'4px',
                 textTransform:'uppercase' }}>
                 Why this score · internal
@@ -1405,7 +1405,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
             {lenses.length > 0 && <DimPills label="Lenses"  values={lenses}    color="#6B2A9E" />}
             {problems.length > 0 && (
               <div style={{ marginBottom: '6px' }}>
-                <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'10px', letterSpacing:'0.16em',
+                <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.16em',
                   color: 'rgba(15,21,35,0.55)', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>
                   Problem chains
                 </span>
@@ -1428,7 +1428,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           {/* HAL signals (preserved — canonical structural-integrity surface) */}
           {proposal.hal_signals?.length > 0 && (
             <div style={{ marginBottom:'8px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'11px',
+              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'#2A6B3A', marginBottom:'5px' }}>
                 HAL conditions
               </p>
@@ -1438,7 +1438,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           {/* SFP patterns (preserved — canonical structural-integrity surface) */}
           {proposal.sfp_patterns?.length > 0 && (
             <div style={{ marginBottom:'8px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'11px',
+              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'#8A6020', marginBottom:'5px' }}>
                 SFP patterns
               </p>
@@ -1450,7 +1450,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
              before placement. Written on save by linkRelationships(). */}
           {proposal.relationships?.length > 0 && (
             <div style={{ marginBottom:'8px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'11px',
+              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px' }}>
                 Linked to
               </p>
@@ -1470,14 +1470,14 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
              socials, contact). Shown so they're reviewable before placing. */}
           {proposal.links?.length > 0 && (
             <div style={{ marginBottom:'8px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'11px',
+              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px' }}>
                 Channels · {proposal.links.length}
               </p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:'5px' }}>
                 {proposal.links.map((l, i) => (
                   <a key={i} href={l.url} target="_blank" rel="noreferrer"
-                    style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'11px',
+                    style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                       letterSpacing:'0.08em', textTransform:'uppercase', textDecoration:'none',
                       color:gold, background:'rgba(110,127,92,0.06)',
                       border:'1px solid rgba(110,127,92,0.30)', borderRadius:'40px', padding:'3px 10px' }}>
@@ -1501,26 +1501,26 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
       {expanded && (
         <div style={{ borderTop:'1px solid rgba(110,127,92,0.15)', padding:'18px 20px 20px', display:'grid', gap:'14px' }}>
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Name</label>
             <Input value={proposal.name} onChange={v => set('name', v)} placeholder="Name" />
           </div>
 
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'10px' }}>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Type</label>
               <Select value={proposal.type} onChange={v => set('type', v)}
                 options={TYPES_EX.map(t => ({ value:t, label:t }))} />
             </div>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Track</label>
               <Select value={proposal.track} onChange={v => { set('track', v); set('domain_id','') }}
                 options={[{ value:'planet', label:'Planet' }, { value:'self', label:'Self' }]} />
             </div>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Scale</label>
               <Select value={proposal.scale || ''} onChange={v => set('scale', v)}
                 options={[{ value:'', label:'-- Select --' }, ...SCALES_EX.map(s => ({ value:s, label:s }))]} />
@@ -1528,7 +1528,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           </div>
 
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Primary domain *</label>
             <Select value={domains[0] || ''} onChange={v => {
               set('domain_id', v)
@@ -1539,7 +1539,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           {/* Secondary domains */}
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'6px' }}>Secondary domains</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
               {PLANET_DOMAINS_EX.filter(d => d.value !== domains[0]).map(d => {
@@ -1552,7 +1552,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
                       set('domains', [domains[0], ...next].filter(Boolean))
                     }}
                     style={{
-                      fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'11px', letterSpacing:'0.06em',
+                      fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.06em',
                       padding:'3px 9px', borderRadius:'40px', cursor:'pointer',
                       color: isOn ? gold : 'rgba(15,21,35,0.72)',
                       background: isOn ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
@@ -1567,7 +1567,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           {/* Platform principles */}
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'6px' }}>Platform principles</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
               {PRINCIPLES_ORDERED.map(p => {
@@ -1578,7 +1578,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
                       set('platform_principles', isOn ? principles.filter(x => x !== p.slug) : [...principles, p.slug])
                     }}
                     style={{
-                      fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'11px', letterSpacing:'0.06em',
+                      fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.06em',
                       padding:'3px 9px', borderRadius:'40px', cursor:'pointer',
                       color: isOn ? gold : 'rgba(15,21,35,0.72)',
                       background: isOn ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
@@ -1593,20 +1593,20 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Location</label>
               <Input value={proposal.location_name || ''} onChange={v => set('location_name', v)}
                 placeholder="e.g. Mexico City, Mexico" />
             </div>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Website</label>
               <Input value={proposal.website || ''} onChange={v => set('website', v)} placeholder="https://..." />
             </div>
           </div>
 
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Description</label>
             <textarea value={proposal.description || ''} onChange={e => set('description', e.target.value)}
               rows={3} style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'15px', color:'#0F1523',
@@ -1618,7 +1618,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           {/* Source — provenance for seeding (optional, free-text).
               Format suggestion: "podcast | Episode 47 — Guest Name | https://..." */}
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Source (optional)</label>
             <input type="text" value={proposal.data_source || ''}
               onChange={e => set('data_source', e.target.value)}
@@ -1630,7 +1630,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           </div>
 
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Impact summary</label>
             <textarea value={proposal.impact_summary || ''} onChange={e => set('impact_summary', e.target.value)}
               rows={2} style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'15px', color:'#0F1523',
@@ -1641,7 +1641,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           <div style={{ display:'grid', gridTemplateColumns:'120px 1fr', gap:'12px', alignItems:'end' }}>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'12px',
+              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Score (0–10)</label>
               <Input value={proposal.alignment_score ?? ''} onChange={handleScoreChange}
                 type="number" step="0.5" placeholder="0–10" />
@@ -2010,7 +2010,7 @@ function AddTab({ toast }) {
       {saved.length > 0 && (
         <div style={{ background:'rgba(42,107,58,0.06)', border:'1px solid rgba(42,107,58,0.30)',
           borderRadius:'14px', padding:'24px', marginBottom:'28px' }}>
-          <div style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em', color:'#2A6B3A', marginBottom:'12px' }}>
+          <div style={{ ...sc, fontSize:'13px', letterSpacing:'0.16em', color:'#2A6B3A', marginBottom:'12px' }}>
             Placed on the map
           </div>
           {saved.map(s => (
@@ -2018,7 +2018,7 @@ function AddTab({ toast }) {
               <ExLabelBadge label={s.label} />
               <span style={{ ...body, fontSize:'17px', color:'#0F1523' }}>{s.name}</span>
               <a href={`/nextus/actors/${s.id}`} target="_blank" rel="noopener noreferrer"
-                style={{ ...sc, fontSize:'12px', letterSpacing:'0.12em', color:gold }}>
+                style={{ ...sc, fontSize:'13px', letterSpacing:'0.12em', color:gold }}>
                 View
               </a>
             </div>
@@ -2068,7 +2068,7 @@ function AddTab({ toast }) {
 
           {proposals.length > 0 && (
             <>
-              <div style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em',
+              <div style={{ ...sc, fontSize:'13px', letterSpacing:'0.16em',
                 color:'rgba(15,21,35,0.55)', marginBottom:'16px' }}>
                 {proposals.length} record{proposals.length !== 1 ? 's' : ''} identified. Tick the ones you want to place.
               </div>
@@ -2248,7 +2248,7 @@ function PlaceTab({ toast }) {
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '8px' }}>
                   {domains.map((d, i) => (
                     <span key={d} style={{
-                      ...sc, fontSize: '11px', letterSpacing: '0.08em',
+                      ...sc, fontSize: '13px', letterSpacing: '0.08em',
                       color: i === 0 ? gold : 'rgba(15,21,35,0.55)',
                       background: i === 0 ? 'rgba(110,127,92,0.08)' : 'rgba(15,21,35,0.04)',
                       border: `1px solid ${i === 0 ? 'rgba(110,127,92,0.35)' : 'rgba(15,21,35,0.15)'}`,
@@ -2262,13 +2262,13 @@ function PlaceTab({ toast }) {
                 {/* HAL signals and SFP patterns (canonical structural-integrity surfaces preserved) */}
                 {a.alignment_reasoning?.hal_signals?.length > 0 && (
                   <div style={{ marginBottom: '6px' }}>
-                    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: '#2A6B3A', marginRight: '6px' }}>HAL:</span>
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#2A6B3A', marginRight: '6px' }}>HAL:</span>
                     {a.alignment_reasoning.hal_signals.map(s => <ExPill key={s} label={s} variant="green" />)}
                   </div>
                 )}
                 {a.alignment_reasoning?.sfp_patterns?.length > 0 && (
                   <div style={{ marginBottom: '6px' }}>
-                    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: '#8A6020', marginRight: '6px' }}>SFP:</span>
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#8A6020', marginRight: '6px' }}>SFP:</span>
                     {a.alignment_reasoning.sfp_patterns.map(s => <ExPill key={s} label={s} variant="amber" />)}
                   </div>
                 )}
@@ -2334,7 +2334,7 @@ function FlagBadge({ level }) {
   const cfg = FLAG_CFG[level] || FLAG_CFG[3]
   return (
     <span style={{
-      ...sc, fontSize: '11px', letterSpacing: '0.12em',
+      ...sc, fontSize: '13px', letterSpacing: '0.12em',
       padding: '2px 8px', borderRadius: '40px',
       color: cfg.color, background: cfg.bg, border: `1px solid ${cfg.border}`,
     }}>
@@ -2463,7 +2463,7 @@ function CallFlagsSection({ toast }) {
                 {call?.slug && (
                   <div style={{ marginBottom: '8px' }}>
                     <a href={`/stretch/c/${call.slug}`} target="_blank" rel="noopener noreferrer"
-                      style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold }}>
+                      style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold }}>
                       /stretch/c/{call.slug}
                     </a>
                   </div>
@@ -2471,7 +2471,7 @@ function CallFlagsSection({ toast }) {
                 {flag.reason && (
                   <div style={{ background: 'rgba(110,127,92,0.04)', border: '1px solid rgba(110,127,92,0.18)',
                     borderRadius: '8px', padding: '10px 12px', marginBottom: '8px' }}>
-                    <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Reason</p>
+                    <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Reason</p>
                     <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
                       {flag.reason}
                     </p>
@@ -2494,7 +2494,7 @@ function CallFlagsSection({ toast }) {
                   )}
                   {call?.slug && (
                     <a href={`/stretch/c/${call.slug}`} target="_blank" rel="noopener noreferrer"
-                      style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold,
+                      style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
                         textAlign: 'center', textDecoration: 'none', marginTop: '2px' }}>
                       View call
                     </a>
@@ -2588,7 +2588,7 @@ function ClaimRequestsSection({ toast }) {
                   {a && <span style={{ ...body, fontSize: '17px', color: '#0F1523' }}>{a.name}</span>}
                   {a?.website && (
                     <a href={a.website} target="_blank" rel="noopener noreferrer"
-                      style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}>
+                      style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}>
                       {a.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
                     </a>
                   )}
@@ -2600,14 +2600,14 @@ function ClaimRequestsSection({ toast }) {
                 )}
                 {req.note && (
                   <div style={{ background: 'rgba(110,127,92,0.04)', border: '1px solid rgba(110,127,92,0.18)', borderRadius: '8px', padding: '10px 12px', marginBottom: '8px' }}>
-                    <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Their connection</p>
+                    <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Their connection</p>
                     <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>{req.note}</p>
                   </div>
                 )}
                 {req.evidence_url && (
                   <div style={{ marginBottom: '8px' }}>
                     <a href={req.evidence_url} target="_blank" rel="noopener noreferrer"
-                      style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold }}>
+                      style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold }}>
                       Evidence: {req.evidence_url.slice(0, 80)}
                     </a>
                   </div>
@@ -2622,7 +2622,7 @@ function ClaimRequestsSection({ toast }) {
                   <Btn small variant="ghost" onClick={() => reject(req)}>Reject</Btn>
                   {a?.slug && (
                     <a href={`/org/${a.slug}`} target="_blank" rel="noopener noreferrer"
-                      style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, textAlign: 'center', textDecoration: 'none', marginTop: '2px' }}>
+                      style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, textAlign: 'center', textDecoration: 'none', marginTop: '2px' }}>
                       View profile
                     </a>
                   )}
@@ -2778,7 +2778,7 @@ function ChainsTab({ toast }) {
               marginBottom: '10px', flexWrap: 'wrap' }}>
               <Badge label={isDemand ? 'demand' : 'supply'} color={isDemand ? '#2A6A3A' : gold} />
               <span style={{ ...body, fontSize: '18px', color: '#0F1523' }}>{p.label}</span>
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em',
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em',
                 color: 'rgba(15,21,35,0.55)' }}>{p.proposed_slug}</span>
               {isDemand && typeof p.people_count === 'number' && (
                 <Badge label={`${p.people_count} people`} color="#2A4A8A" />
@@ -2798,7 +2798,7 @@ function ChainsTab({ toast }) {
 
             {isDemand && samples.length > 0 && (
               <div style={{ marginBottom: '10px' }}>
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold,
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold,
                   textTransform: 'uppercase', marginBottom: '6px' }}>How people said it</div>
                 {samples.map((s, i) => (
                   <div key={i} style={{ ...body, fontSize: '13px', fontStyle: 'italic',
@@ -2808,7 +2808,7 @@ function ChainsTab({ toast }) {
             )}
 
             {aliases.length > 0 && (
-              <div style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.55)',
+              <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                 lineHeight: 1.6, marginBottom: '12px' }}>
                 Aliases on promotion: {aliases.join(', ')}
               </div>
@@ -2882,18 +2882,18 @@ function SupplyDemandSection({ toast }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <span style={{ ...body, fontSize: '17px', color: '#0F1523' }}>{r.label}</span>
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>{r.slug}</span>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>{r.slug}</span>
               {r.is_demand_origin && <Badge label="demand-born" color="#2A6A3A" />}
               {(r.domains || []).map(d => <Badge key={d} label={domainLabel(d)} color="#2A4A8A" />)}
             </div>
             <div style={{ display: 'flex', gap: '24px', marginTop: '10px' }}>
               <div>
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase',
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase',
                   color: noSupply ? '#8A3030' : gold }}>Actors</div>
                 <div style={{ ...body, fontSize: '18px', color: noSupply ? '#8A3030' : '#0F1523' }}>{r.actor_count}</div>
               </div>
               <div>
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: gold }}>People arriving</div>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: gold }}>People arriving</div>
                 <div style={{ ...body, fontSize: '18px', color: '#0F1523' }}>{r.track_count}</div>
               </div>
             </div>
@@ -3006,9 +3006,9 @@ function PracticesTab({ toast }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
               <Badge label={slabel} color={scolor} />
               <span style={{ ...body, fontSize: '18px', color: '#0F1523' }}>{p.name}</span>
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>{p.slug}</span>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>{p.slug}</span>
               {(p.domains || []).map(dm => <Badge key={dm} label={domainLabel(dm)} color="#2A4A8A" />)}
-              <span style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>{p.embodiment_count} embodying</span>
+              <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{p.embodiment_count} embodying</span>
             </div>
 
             {p.statement && (
@@ -3016,14 +3016,14 @@ function PracticesTab({ toast }) {
             )}
 
             {(p.problem_chains || []).length > 0 && (
-              <div style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
+              <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
                 Answers: {p.problem_chains.join(', ')}
               </div>
             )}
 
             {(p.tiers || []).length > 0 && (
               <div style={{ marginBottom: '10px' }}>
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Tier ladder</div>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Tier ladder</div>
                 {p.tiers.map(t => (
                   <div key={t.id} style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                     {t.position}. {t.label}{t.resource_level ? ` · ${t.resource_level}` : ''}{t.scale ? ` · ${t.scale}` : ''}
@@ -3035,7 +3035,7 @@ function PracticesTab({ toast }) {
             {/* Redemption door — the way forward for an actor on this practice */}
             {(p.redemption_door || []).length > 0 && (
               <div style={{ marginBottom: '10px', padding: '8px 12px', background: 'rgba(42,106,58,0.06)', borderRadius: '8px' }}>
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: '#2A6A3A', textTransform: 'uppercase', marginBottom: '4px' }}>Door forward (same issue)</div>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#2A6A3A', textTransform: 'uppercase', marginBottom: '4px' }}>Door forward (same issue)</div>
                 <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                   {p.redemption_door.map(b => b.name).join(' · ')}
                 </div>
@@ -3205,7 +3205,7 @@ function FlagsTab({ toast }) {
                 {actor?.website && (
                   <div style={{ marginBottom: '8px' }}>
                     <a href={actor.website} target="_blank" rel="noopener noreferrer"
-                      style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold }}>
+                      style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold }}>
                       {actor.website}
                     </a>
                   </div>
@@ -3213,7 +3213,7 @@ function FlagsTab({ toast }) {
                 {flag.reason && (
                   <div style={{ background: 'rgba(110,127,92,0.04)', border: '1px solid rgba(110,127,92,0.18)',
                     borderRadius: '8px', padding: '10px 12px', marginBottom: '8px' }}>
-                    <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Reason</p>
+                    <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Reason</p>
                     <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
                       {flag.reason}
                     </p>
@@ -3237,7 +3237,7 @@ function FlagsTab({ toast }) {
                   <Btn small variant="ghost" onClick={() => dismiss(flag)}>Dismiss</Btn>
                   {actor && (
                     <a href={`/org/${actor.slug || actor.id}`} target="_blank" rel="noopener noreferrer"
-                      style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold,
+                      style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
                         textAlign: 'center', textDecoration: 'none' }}>
                       View entry
                     </a>
@@ -3362,7 +3362,7 @@ function FloorTab({ toast }) {
         <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
           onClick={e => { if (e.target === e.currentTarget) setOutreachModal(null) }}>
           <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(110,127,92,0.3)', borderRadius: '12px', padding: '28px 24px', maxWidth: '440px', width: '100%' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: gold, marginBottom: '10px' }}>SEND OUTREACH — {outreachModal.name}</div>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: gold, marginBottom: '10px' }}>SEND OUTREACH — {outreachModal.name}</div>
             <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, marginBottom: '16px' }}>
               Rate-limited to once per 7 days per actor.
             </p>
@@ -3381,7 +3381,7 @@ function FloorTab({ toast }) {
         ))}
         <span style={{ flex: 1 }} />
         <select value={sort} onChange={e => setSort(e.target.value)}
-          style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', border: '1px solid rgba(110,127,92,0.3)', borderRadius: '4px', padding: '4px 8px', background: 'transparent', color: gold, cursor: 'pointer' }}>
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', border: '1px solid rgba(110,127,92,0.3)', borderRadius: '4px', padding: '4px 8px', background: 'transparent', color: gold, cursor: 'pointer' }}>
           <option value="gaps">Sort by gap count</option>
           <option value="name">Sort by name</option>
           <option value="created">Sort by date</option>
@@ -3418,7 +3418,7 @@ function FloorTab({ toast }) {
               </div>
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '6px' }}>
                 {a.gaps.map(g => (
-                  <span key={g} style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', padding: '2px 8px', borderRadius: '20px',
+                  <span key={g} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '2px 8px', borderRadius: '20px',
                     background: ['image','domain','description'].includes(g) ? 'rgba(138,48,48,0.08)' : 'rgba(110,127,92,0.08)',
                     border: ['image','domain','description'].includes(g) ? '1px solid rgba(138,48,48,0.25)' : '1px solid rgba(110,127,92,0.25)',
                     color: ['image','domain','description'].includes(g) ? '#8A3030' : '#8A6020' }}>
@@ -3428,7 +3428,7 @@ function FloorTab({ toast }) {
               </div>
               {a.website && (
                 <a href={a.website} target="_blank" rel="noopener noreferrer"
-                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold }}>
+                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold }}>
                   {a.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
                 </a>
               )}
@@ -3436,18 +3436,18 @@ function FloorTab({ toast }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
               {a.slug && (
                 <a href={`/org/${a.slug}/manage`} target="_blank" rel="noopener noreferrer"
-                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, textDecoration: 'none', textAlign: 'center' }}>
+                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, textDecoration: 'none', textAlign: 'center' }}>
                   Edit
                 </a>
               )}
               {a.slug && (
                 <a href={`/org/${a.slug}`} target="_blank" rel="noopener noreferrer"
-                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', textAlign: 'center' }}>
+                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', textAlign: 'center' }}>
                   View
                 </a>
               )}
               <button type="button" onClick={() => { setOutreachModal(a); setOutreachEmail(''); setOutreachName('') }}
-                style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: '#2A6A3A', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', padding: '2px 0' }}>
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#2A6A3A', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', padding: '2px 0' }}>
                 Outreach
               </button>
               {a.status === 'suspended' ? (
@@ -3474,7 +3474,7 @@ function FloorTab({ toast }) {
                   d.uploaded ? toast('Image uploaded to storage') : toast('Upload failed: ' + d.error)
                   load()
                 }}
-                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: '#5F8DAA', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', padding: '2px 0' }}>
+                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#5F8DAA', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', padding: '2px 0' }}>
                   Upload img
                 </button>
               )}
@@ -3522,7 +3522,7 @@ function DomainDataTab({ toast }) {
               <div style={{ ...body, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>{d.name}</div>
               {editing === d.id ? (
                 <div style={{ display: 'grid', gap: '10px', marginTop: '10px' }}>
-                  <div><label style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, display: 'block', marginBottom: '4px' }}>Horizon goal</label>
+                  <div><label style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, display: 'block', marginBottom: '4px' }}>Horizon goal</label>
                     <textarea value={form.horizon_goal || ''} onChange={e => setForm(f => ({ ...f, horizon_goal: e.target.value }))} rows={2}
                       style={{ ...body, fontSize: '14px', color: '#0F1523', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(110,127,92,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.55, boxSizing: 'border-box' }} />
                   </div>
@@ -3594,7 +3594,7 @@ function IndicatorsTab({ toast }) {
             onClick={() => setView(id)}
             style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
               padding: '8px 14px',
@@ -3784,7 +3784,7 @@ function IndicatorCatalogView({ toast }) {
       {/* Add form */}
       {adding && (
         <Card style={{ borderColor: gold, borderWidth: '2px' }}>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: gold, marginBottom: '12px', fontWeight: 600 }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginBottom: '12px', fontWeight: 600 }}>
             ADD NEW INDICATOR
           </div>
           <IndicatorForm form={form} setForm={setForm} />
@@ -3818,11 +3818,11 @@ function IndicatorCatalogView({ toast }) {
                 {row.source_name}{row.unit ? ` · ${row.unit}` : ''} · {row.tier} · {row.refresh_cadence}{row.direction_preferred !== 'context' ? ` · ${row.direction_preferred}` : ' · context'}
               </div>
               {(row.target_value != null || row.floor_value != null) && (
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: gold, marginBottom: '6px' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: gold, marginBottom: '6px' }}>
                   TARGET {row.target_value ?? '—'} · FLOOR {row.floor_value ?? '—'} · WEIGHT {row.rollup_weight ?? 1.0}
                 </div>
               )}
-              <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
                 {valueCounts[row.id] || 0} VALUE ROWS COLLECTED
               </div>
               {editing === row.id && (
@@ -3857,7 +3857,7 @@ function IndicatorCatalogView({ toast }) {
 
 function IndicatorForm({ form, setForm }) {
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
-  const fieldLabel = { ...sc, fontSize: '10px', letterSpacing: '0.14em', color: gold, display: 'block', marginBottom: '4px', fontWeight: 600 }
+  const fieldLabel = { ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, display: 'block', marginBottom: '4px', fontWeight: 600 }
   const fieldInput = { ...body, fontSize: '13px', color: '#0F1523', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(110,127,92,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', boxSizing: 'border-box' }
   return (
     <div style={{ display: 'grid', gap: '12px' }}>
@@ -3954,7 +3954,7 @@ function IndicatorForm({ form, setForm }) {
       </div>
 
       <div style={{ paddingTop: '8px', borderTop: '1px dashed rgba(110,127,92,0.20)' }}>
-        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: gold, fontWeight: 600, marginBottom: '10px' }}>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, fontWeight: 600, marginBottom: '10px' }}>
           ROLLUP &amp; STATUS
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '12px' }}>
@@ -4083,11 +4083,11 @@ function IndicatorValuesView({ toast }) {
 
       {selectedId && rows.length > 0 && (
         <div>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, marginBottom: '10px', fontWeight: 600 }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginBottom: '10px', fontWeight: 600 }}>
             {rows.length} VALUE ROW{rows.length === 1 ? '' : 'S'} · MOST RECENT 50
           </div>
           <div style={{ background: '#FFFFFF', border: '1px solid rgba(110,127,92,0.20)', borderRadius: '14px', overflow: 'hidden' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr 140px 140px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.20)', background: 'rgba(110,127,92,0.04)', ...sc, fontSize: '10px', letterSpacing: '0.14em', color: gold, fontWeight: 600 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr 140px 140px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.20)', background: 'rgba(110,127,92,0.04)', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, fontWeight: 600 }}>
               <div>OBSERVED</div>
               <div>VALUE</div>
               <div>FETCHED</div>
@@ -4098,8 +4098,8 @@ function IndicatorValuesView({ toast }) {
               <div key={r.id} style={{ display: 'grid', gridTemplateColumns: '140px 1fr 140px 140px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.10)', ...body, fontSize: '13px', color: '#0F1523' }}>
                 <div style={{ color: 'rgba(15,21,35,0.72)' }}>{formatTimestamp(r.observed_at)}</div>
                 <div>{r.value_numeric != null ? `${r.value_numeric}${selected?.unit ? ' ' + selected.unit : ''}` : (r.value_text || '—')}</div>
-                <div style={{ color: 'rgba(15,21,35,0.55)', fontSize: '12px' }}>{formatTimestamp(r.fetched_at)}</div>
-                <div style={{ color: 'rgba(15,21,35,0.55)', fontSize: '12px' }}>{r.confidence || '—'}</div>
+                <div style={{ color: 'rgba(15,21,35,0.55)', fontSize: '13px' }}>{formatTimestamp(r.fetched_at)}</div>
+                <div style={{ color: 'rgba(15,21,35,0.55)', fontSize: '13px' }}>{r.confidence || '—'}</div>
                 <div>{r.is_current ? <Badge label="✓" color="rgba(42, 107, 94, 0.85)" /> : null}</div>
               </div>
             ))}
@@ -4176,7 +4176,7 @@ function IndicatorCronLogView({ toast }) {
 
       {!loading && rows.length > 0 && (
         <div style={{ background: '#FFFFFF', border: '1px solid rgba(110,127,92,0.20)', borderRadius: '14px', overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '160px 100px 1fr 80px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.20)', background: 'rgba(110,127,92,0.04)', ...sc, fontSize: '10px', letterSpacing: '0.14em', color: gold, fontWeight: 600 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '160px 100px 1fr 80px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.20)', background: 'rgba(110,127,92,0.04)', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, fontWeight: 600 }}>
             <div>RUN AT</div>
             <div>STATUS</div>
             <div>INDICATOR / MESSAGE</div>
@@ -4187,7 +4187,7 @@ function IndicatorCronLogView({ toast }) {
             const ind = r.indicator_id ? indicatorMap[r.indicator_id] : null
             return (
               <div key={r.id} style={{ display: 'grid', gridTemplateColumns: '160px 100px 1fr 80px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.10)', ...body, fontSize: '13px', color: '#0F1523' }}>
-                <div style={{ color: 'rgba(15,21,35,0.72)', fontSize: '12px' }}>{formatTimestamp(r.run_at)}</div>
+                <div style={{ color: 'rgba(15,21,35,0.72)', fontSize: '13px' }}>{formatTimestamp(r.run_at)}</div>
                 <div>
                   <Badge label={r.status.toUpperCase()} color={statusColour[r.status] || gold} />
                 </div>
@@ -4195,15 +4195,15 @@ function IndicatorCronLogView({ toast }) {
                   {ind ? (
                     <div>
                       <div style={{ color: '#0F1523', fontSize: '13px' }}>{ind.name}</div>
-                      <div style={{ color: 'rgba(15,21,35,0.55)', fontSize: '11px' }}>{DOMAIN_LIST.find(d => d.value === ind.domain_id)?.label || ind.domain_id}</div>
-                      {r.message && <div style={{ color: 'rgba(138, 48, 48, 0.85)', fontSize: '11px', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.message}</div>}
+                      <div style={{ color: 'rgba(15,21,35,0.55)', fontSize: '13px' }}>{DOMAIN_LIST.find(d => d.value === ind.domain_id)?.label || ind.domain_id}</div>
+                      {r.message && <div style={{ color: 'rgba(138, 48, 48, 0.85)', fontSize: '13px', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.message}</div>}
                     </div>
                   ) : (
                     <div style={{ color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>{r.message || '—'}</div>
                   )}
                 </div>
-                <div style={{ color: 'rgba(15,21,35,0.55)', fontSize: '12px' }}>{r.http_status ?? '—'}</div>
-                <div style={{ color: 'rgba(15,21,35,0.55)', fontSize: '12px' }}>{r.duration_ms ?? '—'}</div>
+                <div style={{ color: 'rgba(15,21,35,0.55)', fontSize: '13px' }}>{r.http_status ?? '—'}</div>
+                <div style={{ color: 'rgba(15,21,35,0.55)', fontSize: '13px' }}>{r.duration_ms ?? '—'}</div>
               </div>
             )
           })}
@@ -4286,7 +4286,7 @@ function IndicatorSignalsView({ toast }) {
                     'rgba(38, 48, 42, 0.85)'
                   }
                 />
-                <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
                   {formatTimestamp(r.submitted_at)}
                 </span>
               </div>
@@ -4294,7 +4294,7 @@ function IndicatorSignalsView({ toast }) {
                 {r.signal_text}
               </p>
               {r.signal_value_numeric != null && (
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: gold, marginTop: '6px' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: gold, marginTop: '6px' }}>
                   VALUE: {r.signal_value_numeric}
                 </div>
               )}
@@ -4398,7 +4398,7 @@ function NeedsTab({ toast }) {
                 <span style={{ ...body, fontSize: '16px', color: '#0F1523' }}>{n.title || n.description?.slice(0, 60)}</span>
                 <Badge label={n.status} color={n.status === 'open' ? '#2A6B3A' : 'rgba(15,21,35,0.55)'} />
               </div>
-              {n.nextus_actors?.name && <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: gold }}>{n.nextus_actors.name}</div>}
+              {n.nextus_actors?.name && <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: gold }}>{n.nextus_actors.name}</div>}
               {n.description && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '4px', lineHeight: 1.6 }}>{n.description.slice(0, 200)}</p>}
             </div>
           </div>
@@ -4494,7 +4494,7 @@ function WaitlistTab({ toast }) {
   return (
     <div>
       {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
-      <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '16px' }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '16px' }}>
         {entries.length} entries
       </div>
       {entries.map(e => (
@@ -4503,7 +4503,7 @@ function WaitlistTab({ toast }) {
             <span style={{ ...body, fontSize: '14px', color: '#0F1523' }}>{e.email}</span>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               {e.source && <Badge label={e.source} color="rgba(15,21,35,0.55)" />}
-              <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)' }}>{e.created_at?.slice(0, 10)}</span>
+              <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{e.created_at?.slice(0, 10)}</span>
               <Btn small variant="ghost" onClick={() => remove(e)}>Remove</Btn>
             </div>
           </div>
@@ -4547,7 +4547,7 @@ function ResourcesTab({ toast }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
             <div>
               <div style={{ ...body, fontSize: '16px', color: '#0F1523', marginBottom: '2px' }}>{r.name}</div>
-              <div style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}>{r.country_code}{r.region ? ` · ${r.region}` : ''}</div>
+              <div style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}>{r.country_code}{r.region ? ` · ${r.region}` : ''}</div>
               {r.phone && <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginTop: '4px' }}>{r.phone}</div>}
               {r.description && <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '4px', lineHeight: 1.5 }}>{r.description}</p>}
             </div>
@@ -4578,7 +4578,7 @@ function GroupsTab({ toast }) {
       {groups.map(g => (
         <Card key={g.id}>
           <div style={{ ...body, fontSize: '16px', color: '#0F1523', marginBottom: '2px' }}>{g.name}</div>
-          <div style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}>{g.type} · {g.created_at?.slice(0, 10)}</div>
+          <div style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}>{g.type} · {g.created_at?.slice(0, 10)}</div>
         </Card>
       ))}
     </div>
@@ -4630,7 +4630,7 @@ function EntitlementsTab({ toast }) {
             <span style={{ ...body, fontSize: '14px', color: '#0F1523' }}>{e.users?.email || e.user_id}</span>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <Badge label={e.entitlement_type} />
-              {e.expires_at && <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)' }}>exp: {e.expires_at?.slice(0,10)}</span>}
+              {e.expires_at && <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>exp: {e.expires_at?.slice(0,10)}</span>}
             </div>
           </div>
         </Card>
@@ -4709,7 +4709,7 @@ function GrantsTab() {
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <Badge label={g.tier || 'access'} />
               <Badge label={g.source || 'admin'} color="rgba(15,21,35,0.55)" />
-              <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)' }}>{g.granted_at?.slice(0,10)}</span>
+              <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{g.granted_at?.slice(0,10)}</span>
             </div>
           </div>
         </Card>

@@ -153,7 +153,7 @@ function IdentityHeader({ focus, ancestors }) {
       {breadcrumbChain.length > 0 && (
         <div style={{
           ...sc,
-          fontSize: '11px',
+          fontSize: '13px',
           letterSpacing: '0.18em',
           color: at.ghost,
           textTransform: 'uppercase',
@@ -189,7 +189,7 @@ function IdentityHeader({ focus, ancestors }) {
       {/* Scale + kind */}
       <div style={{
         ...sc,
-        fontSize: '12px',
+        fontSize: '13px',
         letterSpacing: '0.18em',
         color: gold,
         textTransform: 'uppercase',
@@ -267,7 +267,7 @@ function NestedLayer({ focus, children }) {
           <div key={t}>
             <div style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.14em',
               color: at.ghost,
               textTransform: 'uppercase',
@@ -401,7 +401,7 @@ function ActorsLayer({ actors, focusName }) {
             {a.kind && (
               <span style={{
                 ...sc,
-                fontSize: '10.5px',
+                fontSize: '13px',
                 letterSpacing: '0.12em',
                 color: gold,
                 textTransform: 'uppercase',
@@ -563,7 +563,7 @@ function NotFoundShell({ slug }) {
         <Link
           to="/focus"
           style={{
-            ...sc, fontSize: '12px', letterSpacing: '0.16em',
+            ...sc, fontSize: '13px', letterSpacing: '0.16em',
             color: gold, background: 'rgba(217,178,74,0.05)',
             border: '1px solid rgba(217,178,74,0.55)',
             borderRadius: '30px', padding: '10px 22px',

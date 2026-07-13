@@ -246,7 +246,7 @@ function Breadcrumb({ level, domain, subdomain, field, atFocus }) {
 
   return (
     <div style={{
-      ...sc, fontSize: '11px', letterSpacing: '0.16em',
+      ...sc, fontSize: '13px', letterSpacing: '0.16em',
       color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
       marginBottom: '20px',
       display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0',
@@ -296,7 +296,7 @@ function Header({ eyebrow, title, blurb, color = GOLD }) {
   return (
     <header style={{ marginBottom: '32px' }}>
       <div style={{
-        ...sc, fontSize: '11px', letterSpacing: '0.20em',
+        ...sc, fontSize: '13px', letterSpacing: '0.20em',
         color, textTransform: 'uppercase', marginBottom: '8px',
       }}>
         {eyebrow}

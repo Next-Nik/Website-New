@@ -709,7 +709,7 @@ function Section({ eyebrow, title, children, anchorId }) {
           style={{
             ...sc,
             display: 'block',
-            fontSize: '12px',
+            fontSize: '13px',
             letterSpacing: '0.08em',
             color: '#26302A',
             fontWeight: 600,
@@ -757,7 +757,7 @@ function FieldColumn({ label, children }) {
         style={{
           ...sc,
           display: 'block',
-          fontSize: '12px',
+          fontSize: '13px',
           letterSpacing: '0.08em',
           color: 'rgba(15, 21, 35, 0.72)',
           fontWeight: 600,
@@ -922,7 +922,7 @@ function FounderToolsLinks() {
             style={{
               ...sc,
               display: 'block',
-              fontSize: '12px',
+              fontSize: '13px',
               letterSpacing: '0.14em',
               color: '#26302A',
               fontWeight: 600,
@@ -1051,7 +1051,7 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
                 {isLast && (
                   <span style={{
                     fontFamily: "'IBM Plex Mono', Georgia, serif",
-                    fontSize: '9.5px',
+                    fontSize: '13px',
                     letterSpacing: '0.18em',
                     color: '#999',
                     textTransform: 'uppercase',
@@ -1062,7 +1062,7 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
                 {isSaving && (
                   <span style={{
                     fontFamily: "'IBM Plex Mono', Georgia, serif",
-                    fontSize: '9.5px',
+                    fontSize: '13px',
                     letterSpacing: '0.18em',
                     color: '#26302A',
                     textTransform: 'uppercase',

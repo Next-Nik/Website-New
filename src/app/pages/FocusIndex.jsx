@@ -188,7 +188,7 @@ export function FocusIndex() {
         padding: 'clamp(96px, 12vw, 128px) clamp(20px, 5vw, 48px) 80px',
       }}>
 
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.20em', color: gold, textTransform: 'uppercase', marginBottom: '8px' }}>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: gold, textTransform: 'uppercase', marginBottom: '8px' }}>
           Geographic directory
         </div>
         <h1 style={{
@@ -202,7 +202,7 @@ export function FocusIndex() {
 
         {parent && breadcrumb.length > 0 && (
           <div style={{
-            ...sc, fontSize: '11px', letterSpacing: '0.16em',
+            ...sc, fontSize: '13px', letterSpacing: '0.16em',
             color: at.ghost, textTransform: 'uppercase',
             marginBottom: '12px',
           }}>
@@ -228,7 +228,7 @@ export function FocusIndex() {
             <Link
               to={`/focus/${parent.slug}`}
               style={{
-                ...sc, fontSize: '12px', letterSpacing: '0.16em',
+                ...sc, fontSize: '13px', letterSpacing: '0.16em',
                 color: gold, background: 'rgba(217,178,74,0.05)',
                 border: '1px solid rgba(217,178,74,0.55)',
                 borderRadius: '30px', padding: '8px 18px',
@@ -243,7 +243,7 @@ export function FocusIndex() {
         {/* Domain filter chips */}
         <div style={{ marginBottom: '24px' }}>
           <div style={{
-            ...sc, fontSize: '10.5px', letterSpacing: '0.18em',
+            ...sc, fontSize: '13px', letterSpacing: '0.18em',
             color: at.ghost, textTransform: 'uppercase',
             marginBottom: '10px',
           }}>
@@ -254,7 +254,7 @@ export function FocusIndex() {
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer',
                   color: gold, marginLeft: '10px',
-                  ...sc, fontSize: '10px', letterSpacing: '0.14em',
+                  ...sc, fontSize: '13px', letterSpacing: '0.14em',
                   textTransform: 'uppercase',
                 }}
               >
@@ -272,7 +272,7 @@ export function FocusIndex() {
                   onClick={() => toggleDomain(d.slug)}
                   style={{
                     ...sc,
-                    fontSize: '11.5px',
+                    fontSize: '13px',
                     letterSpacing: '0.14em',
                     textTransform: 'uppercase',
                     color: active ? '#FFFFFF' : d.color,
@@ -290,7 +290,7 @@ export function FocusIndex() {
             })}
           </div>
           {selectedDomains.size > 0 && (
-            <div style={{ ...body, fontSize: '12.5px', color: at.ghost, marginTop: '8px' }}>
+            <div style={{ ...body, fontSize: '13px', color: at.ghost, marginTop: '8px' }}>
               Showing {filteredCount} of {totalCount} nested entities.
             </div>
           )}
@@ -344,7 +344,7 @@ export function FocusIndex() {
                   }}
                 >
                   <span style={{ ...body, fontSize: '14px' }}>{r.name}</span>
-                  <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', color: gold, textTransform: 'uppercase' }}>
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, textTransform: 'uppercase' }}>
                     {TYPE_LABEL[r.type] || r.type}
                   </span>
                 </Link>
@@ -386,7 +386,7 @@ export function FocusIndex() {
               return (
                 <div key={type}>
                   <div style={{
-                    ...sc, fontSize: '12px', letterSpacing: '0.18em',
+                    ...sc, fontSize: '13px', letterSpacing: '0.18em',
                     color: gold, textTransform: 'uppercase',
                     marginBottom: '12px',
                   }}>
@@ -401,7 +401,7 @@ export function FocusIndex() {
                         type="button"
                         onClick={() => toggleExpand(type)}
                         style={{
-                          ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                          ...sc, fontSize: '13px', letterSpacing: '0.14em',
                           color: gold, background: 'none',
                           border: '1px dashed rgba(217,178,74,0.45)',
                           borderRadius: '20px',
@@ -417,7 +417,7 @@ export function FocusIndex() {
                         type="button"
                         onClick={() => toggleExpand(type)}
                         style={{
-                          ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                          ...sc, fontSize: '13px', letterSpacing: '0.14em',
                           color: at.ghost, background: 'none',
                           border: '1px dashed rgba(234,241,237,0.15)',
                           borderRadius: '20px',
@@ -459,7 +459,7 @@ function ChildCard({ focus }) {
       <Link
         to={'/focus/' + focus.slug}
         title={'Open ' + focus.name + "'s profile"}
-        style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: gold, textDecoration: 'none', padding: '0 4px', borderLeft: '1px solid rgba(217,178,74,0.20)' }}
+        style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: gold, textDecoration: 'none', padding: '0 4px', borderLeft: '1px solid rgba(217,178,74,0.20)' }}
       >
         OPEN
       </Link>

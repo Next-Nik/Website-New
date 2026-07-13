@@ -157,6 +157,38 @@ export default function EarthLive() {
             <b style={{ ...serif, fontSize: '18px', color: AMBER, fontWeight: 300 }}>{feed.sparks_today}</b> sparks today, and counting
           </div>
         )}
+
+        {/* ── The shared pulse: one countdown, one close, everyone's clock.
+            Reads closes_on straight from the beacon so the date keeps its
+            single source of truth. Breathes gently; stills for reduced
+            motion. Renders nothing when the beacon has no close. ── */}
+        {closes && days != null && (
+          <div style={{ margin: '0 0 24px' }}>
+            <style>{`
+              .el-count { animation: elCount 3.2s ease-in-out infinite; }
+              @keyframes elCount { 0%,100% { opacity: .82; } 50% { opacity: 1; } }
+              @media (prefers-reduced-motion: reduce) { .el-count { animation: none; } }
+            `}</style>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: GOLD_T, marginBottom: '4px' }}>
+              The shared close
+            </div>
+            {days > 0 ? (
+              <>
+                <div className="el-count" style={{ ...serif, fontWeight: 300, fontSize: 'clamp(44px, 7vw, 64px)', lineHeight: 1, color: CREAM }}>
+                  {days.toLocaleString()}
+                </div>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: CREAM_60, marginTop: '6px' }}>
+                  {days === 1 ? 'day' : 'days'} to {fmtDate(closes)} · one close, held together
+                </div>
+              </>
+            ) : (
+              <div className="el-count" style={{ ...serif, fontWeight: 300, fontSize: 'clamp(26px, 4vw, 34px)', lineHeight: 1.15, color: CREAM }}>
+                The close is today.
+              </div>
+            )}
+          </div>
+        )}
+
         <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link to={`/stretch/c/${rootSlug}`} style={btnSolid}>See the challenge →</Link>
           <Link to={`/stretch/c/${rootSlug}?accept=1`} style={btnGhost}>Accept the challenge →</Link>

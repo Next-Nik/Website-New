@@ -59,7 +59,7 @@ export default function WatchedFeed() {
         <header style={{ marginBottom: '32px' }}>
           <div style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.20em',
             color: gold,
             textTransform: 'uppercase',
@@ -110,7 +110,7 @@ export default function WatchedFeed() {
           {hasFocus && (
             <p style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.16em',
               color: gold,
               textTransform: 'uppercase',
@@ -200,7 +200,7 @@ function LoadMoreButton({ onClick, page }) {
       }}>
         Load more
       </button>
-      <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', margin: '12px 0 0' }}>
+      <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', margin: '12px 0 0' }}>
         Page {page} of {MAX_PAGES}
       </p>
     </div>

@@ -31,7 +31,7 @@ function PageHeader() {
   return (
     <div style={{ marginBottom: '32px' }}>
       <span style={{
-        ...sc, fontSize: '11px', letterSpacing: '0.2em', color: '#26302A',
+        ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A',
         textTransform: 'uppercase', display: 'block', marginBottom: '10px',
       }}>
         Practices
@@ -63,7 +63,7 @@ function PageHeader() {
 function SectionLabel({ children }) {
   return (
     <span style={{
-      ...sc, fontSize: '10px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)',
+      ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)',
       textTransform: 'uppercase', display: 'block', marginBottom: '8px',
     }}>
       {children}
@@ -78,7 +78,7 @@ function ToggleChip({ label, active, onClick, color = '#26302A' }) {
       onClick={onClick}
       aria-pressed={active}
       style={{
-        ...sc, fontSize: '12px', letterSpacing: '0.04em',
+        ...sc, fontSize: '13px', letterSpacing: '0.04em',
         color: active ? color : 'rgba(15,21,35,0.72)',
         background: active ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
         border: active ? `1px solid ${color}` : '1px solid rgba(110,127,92,0.25)',
@@ -140,12 +140,12 @@ function FilterPanel({ filters, onChange, availableLenses }) {
           {hasAny && (
             <button type="button"
               onClick={() => onChange({ kind: null, domains: [], lenses: [], principles: [], vetting: null })}
-              style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px 6px' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px 6px' }}>
               Clear filters
             </button>
           )}
           <button type="button" onClick={() => setExpanded(v => !v)}
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: '#26302A', background: 'transparent', border: '1px solid rgba(110,127,92,0.30)', borderRadius: '40px', padding: '6px 14px', cursor: 'pointer' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', background: 'transparent', border: '1px solid rgba(110,127,92,0.30)', borderRadius: '40px', padding: '6px 14px', cursor: 'pointer' }}>
             {expanded ? 'Hide filters' : 'More filters'}
           </button>
         </div>
@@ -252,7 +252,7 @@ function EmptyState({ filtersActive, isSignedIn }) {
       borderRadius: '14px',
       textAlign: 'left',
     }}>
-      <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase', display: 'block', marginBottom: '14px' }}>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase', display: 'block', marginBottom: '14px' }}>
         Empty by design
       </span>
       <p style={{
@@ -373,7 +373,7 @@ export default function Practices() {
             <Link
               to="/practice/contribute"
               style={{
-                ...sc, fontSize: '12px', letterSpacing: '0.16em',
+                ...sc, fontSize: '13px', letterSpacing: '0.16em',
                 color: '#26302A', background: 'rgba(110,127,92,0.06)',
                 padding: '10px 22px', borderRadius: '40px',
                 textDecoration: 'none', display: 'inline-block',
@@ -411,7 +411,7 @@ export default function Practices() {
           <EmptyState filtersActive={filtersActive} isSignedIn={!!user} />
         ) : (
           <div>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '14px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '14px' }}>
               {filtered.length} {filtered.length === 1 ? 'practice' : 'practices'} held here
             </div>
             <div>

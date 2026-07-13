@@ -76,15 +76,15 @@ function ActorCard({ actor }) {
               {actor.name}
             </span>
             {actor.type && (
-              <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
                 color: at.ghost, textTransform: 'uppercase' }}>
                 {actor.type}
               </span>
             )}
             {actor.location_name && (
               <>
-                <span style={{ color: 'rgba(217,178,74,0.30)', fontSize: '10px' }}>·</span>
-                <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em',
+                <span style={{ color: 'rgba(217,178,74,0.30)', fontSize: '13px' }}>·</span>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
                   color: at.ghost }}>
                   {actor.location_name}
                 </span>
@@ -156,7 +156,7 @@ function OfferOrNeedCard({ item, kind }) {
             color: at.meta }}>
             {item.actor_name}
           </span>
-          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
             color: accent, background: accentBg,
             border: `1px solid ${accentBorder}`,
             padding: '2px 8px', borderRadius: '40px',
@@ -164,7 +164,7 @@ function OfferOrNeedCard({ item, kind }) {
             {kind}
           </span>
           {locationLabel && (
-            <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
               color: at.ghost,
               border: '1px solid rgba(217,178,74,0.20)',
               padding: '2px 8px', borderRadius: '40px' }}>
@@ -327,7 +327,7 @@ export function SearchPage() {
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap',
           marginBottom: '24px', alignItems: 'center' }}>
           <select value={domain} onChange={e => setDomain(e.target.value)}
-            style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em',
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
               padding: '6px 14px', borderRadius: '40px',
               border: '1.5px solid rgba(217,178,74,0.30)',
               background: domain ? 'rgba(217,178,74,0.06)' : at.object,
@@ -342,7 +342,7 @@ export function SearchPage() {
           {mode === 'actors' && (
             <>
               <select value={actorType} onChange={e => setActorType(e.target.value)}
-                style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em',
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
                   padding: '6px 14px', borderRadius: '40px',
                   border: '1.5px solid rgba(217,178,74,0.30)',
                   background: actorType ? 'rgba(217,178,74,0.06)' : at.object,
@@ -354,7 +354,7 @@ export function SearchPage() {
               </select>
 
               <select value={scale} onChange={e => setScale(e.target.value)}
-                style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em',
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
                   padding: '6px 14px', borderRadius: '40px',
                   border: '1.5px solid rgba(217,178,74,0.30)',
                   background: scale ? 'rgba(217,178,74,0.06)' : at.object,
@@ -369,7 +369,7 @@ export function SearchPage() {
 
           {hasFilters && (
             <button onClick={clearFilters}
-              style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
                 padding: '6px 12px', borderRadius: '40px',
                 background: 'none', border: 'none',
                 color: at.ghost, cursor: 'pointer' }}>
@@ -402,7 +402,7 @@ export function SearchPage() {
 
         {!loading && results.length > 0 && (
           <>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em',
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
               color: at.ghost, marginBottom: '14px' }}>
               {results.length} {results.length === 1 ? 'result' : 'results'}
             </div>

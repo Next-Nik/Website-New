@@ -53,7 +53,7 @@ const TYPES = [
 
 function Label({ children, required }) {
   return (
-    <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '6px' }}>
+    <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '6px' }}>
       {children}{required && <span style={{ color: '#8A3030', marginLeft: '4px' }}>*</span>}
     </label>
   )
@@ -300,7 +300,7 @@ export function NominatePage() {
 
         {/* Header */}
         <div style={{ marginBottom: '40px' }}>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>
             Nominate
           </span>
           <h1 style={{ ...serif, fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 300, color: dark, lineHeight: 1.12, margin: '0 0 10px' }}>
@@ -352,7 +352,7 @@ export function NominatePage() {
                 border: '1px solid rgba(217,178,74,0.20)',
                 borderRadius: '8px',
               }}>
-                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: at.ghost, marginBottom: '4px' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.ghost, marginBottom: '4px' }}>
                   HORIZON GOAL
                 </div>
                 <p style={{ ...body, fontSize: '14px', color: at.meta, lineHeight: 1.65, margin: 0 }}>
@@ -376,7 +376,7 @@ export function NominatePage() {
                       type="button"
                       onClick={() => toggleSecondaryDomain(d.slug)}
                       style={{
-                        ...sc, fontSize: '12px', letterSpacing: '0.04em',
+                        ...sc, fontSize: '13px', letterSpacing: '0.04em',
                         padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
                         color: isOn ? gold : at.meta,
                         background: isOn ? 'rgba(217,178,74,0.08)' : at.object,
@@ -419,7 +419,7 @@ export function NominatePage() {
 
           {/* Nominator */}
           <div style={{ paddingTop: '24px', borderTop: '1px solid rgba(217,178,74,0.18)', marginTop: '8px' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: at.ghost, textTransform: 'uppercase', marginBottom: '20px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: at.ghost, textTransform: 'uppercase', marginBottom: '20px' }}>
               Your details
             </div>
 

@@ -250,7 +250,7 @@ function ActorPanel({ actor, onClose, navigate }) {
             const c = DOMAIN_COLOR[d] || goldDark
             return (
               <span key={d} style={{
-                ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                ...sc, fontSize: '13px', letterSpacing: '0.14em',
                 color: i === 0 ? c : at.ghost,
                 background: i === 0 ? `${c}15` : 'rgba(15,21,35,0.05)',
                 border: `1px solid ${i === 0 ? c + '35' : 'rgba(234,241,237,0.15)'}`,
@@ -270,15 +270,15 @@ function ActorPanel({ actor, onClose, navigate }) {
         {/* Type + scale + location */}
         <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
           {actor.type && (
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: at.ghost }}>{actor.type}</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost }}>{actor.type}</span>
           )}
           {actor.scale && (
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: at.ghost }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost }}>
               · {SCALE_LABEL[actor.scale] || actor.scale}
             </span>
           )}
           {actor.location_name && (
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: at.ghost }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost }}>
               · {actor.location_name}
             </span>
           )}
@@ -310,7 +310,7 @@ function ActorPanel({ actor, onClose, navigate }) {
         {actor.winning && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: success, flexShrink: 0 }} />
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: success }}>Succeeding</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: success }}>Succeeding</span>
           </div>
         )}
 
@@ -326,7 +326,7 @@ function ActorPanel({ actor, onClose, navigate }) {
         {/* ── Four-dimensional placement ── */}
         {(subdomains.length > 0 || fields.length > 0 || lenses.length > 0 || problems.length > 0) && (
           <div style={{ borderTop: `1px solid rgba(88,160,138,0.12)`, paddingTop: '14px', marginBottom: '16px' }}>
-            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em', color: at.ghost, marginBottom: '10px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: at.ghost, marginBottom: '10px' }}>
               Placement
             </div>
 
@@ -360,7 +360,7 @@ function ActorPanel({ actor, onClose, navigate }) {
             {/* Problem chains */}
             {problems.length > 0 && (
               <div style={{ marginBottom: '10px' }}>
-                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.13em', color: at.ghost, marginBottom: '5px' }}>Problem</div>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.13em', color: at.ghost, marginBottom: '5px' }}>Problem</div>
                 {problems.map((chain, i) => (
                   <div key={chain} style={{
                     ...body, fontSize: '13px', color: i === 0 ? at.meta : at.ghost,
@@ -383,13 +383,13 @@ function ActorPanel({ actor, onClose, navigate }) {
         {/* Platform principles tagged */}
         {principles.length > 0 && (
           <div style={{ marginBottom: '16px' }}>
-            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em', color: at.ghost, marginBottom: '7px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: at.ghost, marginBottom: '7px' }}>
               Principles
             </div>
             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
               {principles.map(p => (
                 <span key={p} style={{
-                  ...sc, fontSize: '10px', letterSpacing: '0.10em',
+                  ...sc, fontSize: '13px', letterSpacing: '0.10em',
                   color: goldDark,
                   background: `${gold}10`,
                   border: `1px solid ${gold}30`,
@@ -423,11 +423,11 @@ function ActorPanel({ actor, onClose, navigate }) {
 function PlacementRow({ label, items, color }) {
   return (
     <div style={{ marginBottom: '10px' }}>
-      <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.13em', color: at.ghost, marginBottom: '5px' }}>{label}</div>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.13em', color: at.ghost, marginBottom: '5px' }}>{label}</div>
       <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
         {items.map(({ slug, label: itemLabel, primary }) => (
           <span key={slug} style={{
-            ...sc, fontSize: '10px', letterSpacing: '0.10em',
+            ...sc, fontSize: '13px', letterSpacing: '0.10em',
             color: primary ? color : at.ghost,
             background: primary ? `${color}12` : 'rgba(15,21,35,0.05)',
             border: `1px solid ${primary ? color + '30' : 'rgba(0,0,0,0.35)'}`,
@@ -464,7 +464,7 @@ function ActorListItem({ actor, onClick }) {
       </div>
       <div>
         <div style={{ ...body, fontSize: '15px', fontWeight: 400, color: dark, marginBottom: '2px' }}>{actor.name}</div>
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: at.ghost }}>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost }}>
           {DOMAIN_LABEL[prim] || prim}
           {secondaries.length > 0 && (
             <span style={{ color: at.ghost }}> +{secondaries.length}</span>
@@ -727,7 +727,7 @@ export function MapPage() {
 
         {/* Header */}
         <div className="beta-map-header" style={{ maxWidth: '1100px', margin: '0 auto', padding: '72px 32px 0', width: '100%' }}>
-          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: goldDark, display: 'block', marginBottom: '10px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: goldDark, display: 'block', marginBottom: '10px' }}>
             The Atlas
           </span>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '20px', flexWrap: 'wrap', gap: '16px' }}>
@@ -768,7 +768,7 @@ export function MapPage() {
                       }}
                     >
                       <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: isOn ? color : 'rgba(15,21,35,0.20)', flexShrink: 0 }} />
-                      <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.13em', color: isOn ? dark : at.ghost }}>
+                      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.13em', color: isOn ? dark : at.ghost }}>
                         {DOMAIN_LABEL[domain]}
                       </span>
                     </button>
@@ -782,7 +782,7 @@ export function MapPage() {
                           borderLeft: `1px solid ${color}30`,
                           background: isFocus ? `${color}22` : `${color}08`,
                           cursor: 'pointer', color: isFocus ? color : `${color}80`,
-                          fontSize: '11px', lineHeight: 1, transition: 'all 0.15s',
+                          fontSize: '13px', lineHeight: 1, transition: 'all 0.15s',
                           marginLeft: '-1px',
                         }}
                       >
@@ -795,13 +795,13 @@ export function MapPage() {
               <span style={{ color: at.ghost, margin: '0 2px' }}>·</span>
               <button
                 onClick={() => { setActiveDomains(new Set(DOMAIN_SLUGS)); setFocusDomain(''); setFocusSubdomain('') }}
-                style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: at.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
               >
                 All
               </button>
               <button
                 onClick={() => { setActiveDomains(new Set()); setFocusDomain(''); setFocusSubdomain('') }}
-                style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: at.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
               >
                 None
               </button>
@@ -817,10 +817,10 @@ export function MapPage() {
               background: `${DOMAIN_COLOR[focusDomain]}06`,
               borderRadius: '0 8px 8px 0',
             }}>
-              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: DOMAIN_COLOR[focusDomain], marginRight: '2px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: DOMAIN_COLOR[focusDomain], marginRight: '2px' }}>
                 {DOMAIN_LABEL[focusDomain]}
               </span>
-              <span style={{ color: at.ghost, fontSize: '12px' }}>›</span>
+              <span style={{ color: at.ghost, fontSize: '13px' }}>›</span>
               {subdomainOptions.map(({ slug, label }) => {
                 const isActive = focusSubdomain === slug
                 const color    = DOMAIN_COLOR[focusDomain]
@@ -829,7 +829,7 @@ export function MapPage() {
                     key={slug}
                     onClick={() => setFocusSubdomain(isActive ? '' : slug)}
                     style={{
-                      ...sc, fontSize: '11px', letterSpacing: '0.12em',
+                      ...sc, fontSize: '13px', letterSpacing: '0.12em',
                       padding: '4px 10px', borderRadius: '40px',
                       border: `1.5px solid ${isActive ? color : 'rgba(15,21,35,0.15)'}`,
                       background: isActive ? `${color}18` : 'white',
@@ -843,7 +843,7 @@ export function MapPage() {
               })}
               <button
                 onClick={() => { setFocusDomain(''); setFocusSubdomain('') }}
-                style={{ ...sc, fontSize: '11px', color: at.ghost, background: 'none', border: 'none', cursor: 'pointer', marginLeft: '4px' }}
+                style={{ ...sc, fontSize: '13px', color: at.ghost, background: 'none', border: 'none', cursor: 'pointer', marginLeft: '4px' }}
               >
                 Clear ×
               </button>
@@ -857,11 +857,11 @@ export function MapPage() {
                 {mappedVisible} on map · {filteredUnmapped.length} in list
               </span>
               {focusSubdomain && (
-                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: DOMAIN_COLOR[focusDomain], background: `${DOMAIN_COLOR[focusDomain]}12`, borderRadius: '4px', padding: '2px 8px' }}>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: DOMAIN_COLOR[focusDomain], background: `${DOMAIN_COLOR[focusDomain]}12`, borderRadius: '4px', padding: '2px 8px' }}>
                   Highlighting: {SUBDOMAIN_LABEL[focusSubdomain]}
                 </span>
               )}
-              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: at.ghost }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: at.ghost }}>
                 Zoom {Math.round(currentZoom)} · {visibleScales.map(s => SCALE_LABEL[s]?.split(' ')[0] || s).join(', ')}
                 {nextZoom !== undefined && ` · zoom to ${nextZoom}+ for local`}
               </span>
@@ -890,7 +890,7 @@ export function MapPage() {
 
             {/* Scale legend */}
             <div className="beta-map-scale-legend" style={{ position: 'absolute', bottom: '32px', right: '10px', background: 'rgba(250,250,247,0.94)', border: `1px solid rgba(88,160,138,0.20)`, borderRadius: '8px', padding: '10px 13px', zIndex: 700, minWidth: '160px' }}>
-              <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: at.ghost, marginBottom: '7px' }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: at.ghost, marginBottom: '7px' }}>
                 Scale at zoom {Math.round(currentZoom)}
               </div>
               {SCALE_ORDER.map(s => {
@@ -898,7 +898,7 @@ export function MapPage() {
                 return (
                   <div key={s} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', opacity: visible ? 1 : 0.30 }}>
                     <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: visible ? goldDark : 'rgba(15,21,35,0.20)', flexShrink: 0 }} />
-                    <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: visible ? dark : at.ghost }}>
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: visible ? dark : at.ghost }}>
                       {SCALE_LABEL[s] || s}
                     </span>
                   </div>
@@ -951,7 +951,7 @@ export function MapPage() {
                 <div key={domain} style={{ marginBottom: '28px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                     <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: DOMAIN_COLOR[domain] }} />
-                    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.17em', color: at.ghost }}>
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.17em', color: at.ghost }}>
                       {DOMAIN_LABEL[domain]} · {domainActors.length}
                     </span>
                   </div>
@@ -974,7 +974,7 @@ export function MapPage() {
                 <div style={{ marginBottom: '28px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                     <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'rgba(15,21,35,0.25)' }} />
-                    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.17em', color: at.ghost }}>
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.17em', color: at.ghost }}>
                       Unplaced · {noDomain.length}
                     </span>
                   </div>

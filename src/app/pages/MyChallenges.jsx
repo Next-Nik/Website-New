@@ -6,12 +6,13 @@
 // the window, a running-days count, and today's strands to check off.
 // Scale is never shown — a challenge just plugs into your days.
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { actorCallsRaw } from '../../lib/actorCallsClient'
 import { Link }       from 'react-router-dom'
 import { Nav }        from '../../components/Nav'
 import { useAuth }    from '../../hooks/useAuth'
 import { tokens, serif, body, sc, at } from '../../lib/designTokens'
+import PublicBeacon   from '../components/challenge/PublicBeacon'
 
 const GOLD_C = at.verdigris
 const hair   = `1px solid ${at.verdigrisEdge}`
@@ -63,7 +64,7 @@ const CADENCE_LABEL = {
 
 // ─── A single challenge card ──────────────────────────────────────────────────
 
-function ChallengeCard({ p, userId, founding, onLeft }) {
+function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
   const [leaving, setLeaving] = useState(false)   // false | 'confirm' | 'busy'
   const inConstellation = !!(founding && founding.ids && founding.ids.has(p.call_id))
   const closeStr = founding && founding.closes_on
@@ -110,14 +111,19 @@ function ChallengeCard({ p, userId, founding, onLeft }) {
     })
   }, [p.started_on, p.done_dates, window])
 
-  async function toggle(strandId) {
+  async function toggle(strandId, btnEl) {
     const next = new Set(doneToday)
     const willBeDone = !next.has(strandId)
     if (willBeDone) next.add(strandId); else next.delete(strandId)
     setDoneToday(next)
     setBusy(strandId)
+    // The moment made visible: a constellation check-in sends its ember to
+    // the beacon at the top of the page — after the save lands. Every spark
+    // on the beacon is a real, recorded action (data-integrity law); the
+    // checkbox is optimistic, the fire is not.
     try {
       await actorCallsRaw({ action: 'log_strand', userId, call_id: p.call_id, strand_id: strandId, done: willBeDone })
+      if (willBeDone && inConstellation && onSpark) onSpark(btnEl)
     } catch {
       // revert on failure
       const revert = new Set(doneToday)
@@ -205,7 +211,7 @@ function ChallengeCard({ p, userId, founding, onLeft }) {
                       </button>
                     </>
                   ) : (
-                    <button type="button" onClick={() => toggle(s.id)} disabled={busy === s.id}
+                    <button type="button" onClick={e => toggle(s.id, e.currentTarget)} disabled={busy === s.id}
                       style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#0F241D', background: at.verdigris, border: 'none', borderRadius: '26px', padding: '12px 24px', cursor: 'pointer', opacity: busy === s.id ? 0.6 : 1, transition: 'opacity 0.2s' }}>
                       I did this today
                     </button>
@@ -237,7 +243,7 @@ function ChallengeCard({ p, userId, founding, onLeft }) {
                 {consent && (
                   <div style={{ marginBottom: '10px' }}>
                     <textarea value={reflection} onChange={e => setReflection(e.target.value)} rows={3}
-                      placeholder="What happened — in your words"
+                      placeholder="What happened · in your words"
                       style={{ ...body, fontSize: '15px', color: at.text, width: '100%', boxSizing: 'border-box', background: at.object, border: hair, borderRadius: '10px', padding: '10px 12px', resize: 'vertical', lineHeight: 1.5 }} />
                     <label style={{ display: 'flex', gap: '10px', alignItems: 'center', cursor: 'pointer', marginTop: '8px' }}>
                       <input type="checkbox" checked={attributed} onChange={e => setAttributed(e.target.checked)}
@@ -305,6 +311,14 @@ export default function MyChallenges() {
   const [rows, setRows]       = useState([])
   const [loading, setLoading] = useState(true)
   const [founding, setFounding] = useState({ ids: new Set(), closes_on: null })
+  const beaconRef = useRef(null)   // PublicBeacon imperative API — emberFrom()/spark()
+
+  // A check-in, made visible: the beacon flies an ember from the button to
+  // its own fire, pulses, and grows the sky by one star. The beacon owns
+  // the whole moment (and its gold — heritage law); this page just asks.
+  const sendEmber = useCallback((fromEl) => {
+    try { beaconRef.current && beaconRef.current.emberFrom(fromEl) } catch (_) { /* visual only */ }
+  }, [])
 
   useEffect(() => {
     if (!user) { setLoading(false); return }
@@ -354,6 +368,16 @@ export default function MyChallenges() {
           </div>
         )}
 
+        {/* The beacon, present where the work happens. Shows only when one of
+            this person's runs actually feeds it — the sky on this page is the
+            sky their check-ins grow. PublicBeacon renders nothing until the
+            beacon is rooted and live, so the box collapses gracefully. */}
+        {user && rows.some(r => founding.ids.has(r.call_id)) && (
+          <div style={{ marginBottom: '8px' }}>
+            <PublicBeacon ref={beaconRef} />
+          </div>
+        )}
+
         {!user ? (
           <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7 }}>
             Sign in to see the challenges you've taken on.
@@ -371,6 +395,7 @@ export default function MyChallenges() {
           </div>
         ) : (
           rows.map(p => <ChallengeCard key={p.participant_id} p={p} userId={user.id} founding={founding}
+            onSpark={sendEmber}
             onLeft={pid => setRows(prev => prev.filter(r => r.participant_id !== pid))} />)
         )}
       </div>

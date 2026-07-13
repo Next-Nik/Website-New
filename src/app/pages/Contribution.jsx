@@ -80,7 +80,7 @@ function PageHeader() {
     <div style={{ marginBottom: '32px' }}>
       <span style={{
         ...sc,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.2em',
         color: '#26302A',
         textTransform: 'uppercase',
@@ -564,7 +564,7 @@ export default function Contribution() {
                 }}>
                   <span style={{
                     ...sc,
-                    fontSize: '11px',
+                    fontSize: '13px',
                     letterSpacing: '0.14em',
                     color: 'rgba(15,21,35,0.55)',
                     textTransform: 'uppercase',
@@ -574,7 +574,7 @@ export default function Contribution() {
                   {filters.nearMeFirst && userFocusId && (
                     <span style={{
                       ...body,
-                      fontSize: '12px',
+                      fontSize: '13px',
                       color: 'rgba(15,21,35,0.55)',
                     }}>
                       Sorted near you first.

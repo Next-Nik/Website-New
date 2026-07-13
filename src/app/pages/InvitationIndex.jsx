@@ -60,7 +60,7 @@ function InvitationListCard({ invitation }) {
           {domains.map((d, i) => (
             <span key={d} style={{
               ...sc,
-              fontSize: '10px',
+              fontSize: '13px',
               letterSpacing: '0.16em',
               color: i === 0 ? gold : 'rgba(15,21,35,0.55)',
               background: i === 0 ? 'rgba(110,127,92,0.08)' : 'rgba(15,21,35,0.04)',
@@ -107,7 +107,7 @@ function InvitationListCard({ invitation }) {
           {['Surface', 'Current best available', 'The gap', 'The invitation'].map((label, i) => (
             <span key={i} style={{
               ...sc,
-              fontSize: '10px',
+              fontSize: '13px',
               letterSpacing: '0.14em',
               color: 'rgba(15,21,35,0.55)',
             }}>
@@ -133,7 +133,7 @@ function DomainFilter({ selected, onChange }) {
         onClick={() => onChange(null)}
         style={{
           ...sc,
-          fontSize: '11px',
+          fontSize: '13px',
           letterSpacing: '0.14em',
           padding: '6px 14px',
           borderRadius: '40px',
@@ -154,7 +154,7 @@ function DomainFilter({ selected, onChange }) {
             onClick={() => toggle(d.value)}
             style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.14em',
               padding: '6px 14px',
               borderRadius: '40px',
@@ -256,7 +256,7 @@ export function InvitationIndexPage() {
         <div style={{ marginBottom: '52px' }}>
           <p style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.22em',
             color: gold,
             textTransform: 'uppercase',
@@ -309,7 +309,7 @@ export function InvitationIndexPage() {
         {!loading && filtered.length > 0 && (
           <p style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             color: 'rgba(15,21,35,0.55)',
             marginTop: '28px',
