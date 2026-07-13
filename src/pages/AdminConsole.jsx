@@ -4087,7 +4087,7 @@ function IndicatorValuesView({ toast }) {
             {rows.length} VALUE ROW{rows.length === 1 ? '' : 'S'} · MOST RECENT 50
           </div>
           <div style={{ background: '#FFFFFF', border: '1px solid rgba(110,127,92,0.20)', borderRadius: '14px', overflow: 'hidden' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr 140px 140px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.20)', background: 'rgba(110,127,92,0.04)', ...sc, fontSize: '10px', letterSpacing: '0.14em', color: gold, fontWeight: 600 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr 140px 140px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.20)', background: 'rgba(110,127,92,0.04)', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, fontWeight: 600 }}>
               <div>OBSERVED</div>
               <div>VALUE</div>
               <div>FETCHED</div>
@@ -4176,7 +4176,7 @@ function IndicatorCronLogView({ toast }) {
 
       {!loading && rows.length > 0 && (
         <div style={{ background: '#FFFFFF', border: '1px solid rgba(110,127,92,0.20)', borderRadius: '14px', overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '160px 100px 1fr 80px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.20)', background: 'rgba(110,127,92,0.04)', ...sc, fontSize: '10px', letterSpacing: '0.14em', color: gold, fontWeight: 600 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '160px 100px 1fr 80px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.20)', background: 'rgba(110,127,92,0.04)', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, fontWeight: 600 }}>
             <div>RUN AT</div>
             <div>STATUS</div>
             <div>INDICATOR / MESSAGE</div>
