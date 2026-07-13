@@ -103,7 +103,7 @@ export const COPY_GROUPS = [
       { id: 'home.founder.eyebrow', label: 'Founder band · eyebrow', default: 'FROM THE FOUNDER' },
       { id: 'home.founder.heading', label: 'Founder band · heading', default: 'Work with Nik' },
       { id: 'home.founder.body',    label: 'Founder band · body', multiline: true,
-        default: 'Vision and embodiment coaching for people who are ready to move — not just understand.' },
+        default: 'Vision and embodiment coaching for people who are ready to move · not just understand.' },
       { id: 'home.founder.cta',     label: 'Founder band · button', default: 'SEE THE WORK →' },
 
       // Maker band
