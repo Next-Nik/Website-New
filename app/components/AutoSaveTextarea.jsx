@@ -243,7 +243,7 @@ function StatusIndicator({ status }) {
       aria-live="polite"
       style={{
         ...sc,
-        fontSize: '12px',
+        fontSize: '13px',
         letterSpacing: '0.08em',
         color: colour,
         fontWeight: 600,

@@ -77,7 +77,7 @@ function LinksSection({ actorId, toast }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em',
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
           color: gold, textTransform: 'uppercase' }}>
           Links
         </span>
@@ -121,7 +121,7 @@ function LinksSection({ actorId, toast }) {
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
       ) : links.length === 0 ? (
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
-          fontStyle: 'italic', margin: 0 }}>
+          margin: 0 }}>
           No links yet.
         </p>
       ) : (
@@ -135,7 +135,7 @@ function LinksSection({ actorId, toast }) {
                 display: 'flex', alignItems: 'center', gap: '14px' }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                  <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
                     color: gold, background: 'rgba(88,160,138,0.06)',
                     padding: '2px 10px', borderRadius: '40px' }}>
                     {typeLabel}
@@ -155,7 +155,7 @@ function LinksSection({ actorId, toast }) {
                 </a>
               </div>
               <button onClick={() => deleteLink(link.id)} disabled={saving}
-                style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
                   color: '#8A3030', background: 'none', border: 'none',
                   cursor: 'pointer', flexShrink: 0 }}>
                 Remove
@@ -212,7 +212,7 @@ function PressSection({ actorId, toast }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em',
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
         color: gold, textTransform: 'uppercase' }}>
         Press mentions
       </span>
@@ -255,7 +255,7 @@ function PressSection({ actorId, toast }) {
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
       ) : press.length === 0 ? (
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
-          fontStyle: 'italic', margin: 0 }}>
+          margin: 0 }}>
           No press mentions yet.
         </p>
       ) : (
@@ -271,7 +271,7 @@ function PressSection({ actorId, toast }) {
               </div>
               {item.title && (
                 <div style={{ ...body, fontSize: '13px',
-                  color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
+                  color: 'rgba(15,21,35,0.55)' }}>
                   {item.title}
                 </div>
               )}
@@ -286,7 +286,7 @@ function PressSection({ actorId, toast }) {
               )}
             </div>
             <button onClick={() => deleteItem(item.id)} disabled={saving}
-              style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
                 color: '#8A3030', background: 'none', border: 'none',
                 cursor: 'pointer', flexShrink: 0 }}>
               Remove

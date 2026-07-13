@@ -254,7 +254,7 @@ export default function PrincipleExplainer({
                       <span
                         style={{
                           ...sc,
-                          fontSize: '12px',
+                          fontSize: '13px',
                           letterSpacing: '0.06em',
                           color: 'rgba(15, 21, 35, 0.55)',
                           minWidth: '70px',

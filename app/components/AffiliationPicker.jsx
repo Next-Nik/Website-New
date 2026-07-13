@@ -132,7 +132,7 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
     }}>
       <div style={{
         ...sc,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.18em',
         color: gold,
         textTransform: 'uppercase',
@@ -153,7 +153,6 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
           color: 'rgba(15,21,35,0.72)',
           marginTop: '8px',
           paddingLeft: '2px',
-          fontStyle: 'italic',
         }}>
           Cascades through:{' '}
           {ancestors.map((a, i) => (
@@ -180,7 +179,7 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
             ))}
           </div>
           {relationship && (
-            <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginTop: '8px', fontStyle: 'italic' }}>
+            <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginTop: '8px' }}>
               {RELATIONSHIPS.find(r => r.value === relationship)?.helper}
             </div>
           )}
@@ -207,7 +206,7 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
               onClick={switchToCountry}
               style={{
                 ...sc,
-                fontSize: '12px',
+                fontSize: '13px',
                 letterSpacing: '0.14em',
                 color: gold,
                 background: 'rgba(110,127,92,0.10)',
@@ -224,7 +223,7 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
               onClick={() => setDismissedCitizenNudge(true)}
               style={{
                 ...sc,
-                fontSize: '12px',
+                fontSize: '13px',
                 letterSpacing: '0.14em',
                 color: 'rgba(15,21,35,0.55)',
                 background: 'none',
@@ -257,7 +256,7 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
                 <span>
                   <span style={{ ...body, fontSize: '14.5px', color: dark }}>{v.label}</span>
                   <br />
-                  <span style={{ ...body, fontSize: '12.5px', color: 'rgba(15,21,35,0.72)', fontStyle: 'italic' }}>
+                  <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)' }}>
                     {v.helper}
                   </span>
                 </span>
@@ -303,7 +302,7 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
           Cancel
         </button>
         {isDuplicate && (
-          <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
+          <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
             You\u2019ve already declared this.
           </span>
         )}
@@ -321,7 +320,7 @@ function FieldLabel({ n, children }) {
   return (
     <div style={{
       ...sc,
-      fontSize: '11px',
+      fontSize: '13px',
       letterSpacing: '0.16em',
       color: 'rgba(15,21,35,0.72)',
       textTransform: 'uppercase',
@@ -340,7 +339,7 @@ function Chip({ selected, onClick, children }) {
       onClick={onClick}
       style={{
         ...sc,
-        fontSize: '12px',
+        fontSize: '13px',
         letterSpacing: '0.14em',
         color: selected ? '#FFFFFF' : gold,
         background: selected ? gold : 'rgba(110,127,92,0.04)',

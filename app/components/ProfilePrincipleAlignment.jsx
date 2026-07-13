@@ -13,7 +13,7 @@ export function ProfilePrincipleAlignment({ principleTaggings }) {
     <div>
       <div style={{
         ...sc,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.18em',
         color: 'rgba(15,21,35,0.55)',
         marginBottom: '12px',

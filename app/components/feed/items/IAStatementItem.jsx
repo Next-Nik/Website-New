@@ -44,7 +44,7 @@ export function IAStatementItem({ item }) {
         <div style={{ marginTop: '10px' }}>
           <span style={{
             ...sc,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             color: '#26302A',
             background: 'rgba(110,127,92,0.06)',

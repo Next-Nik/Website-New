@@ -23,7 +23,7 @@ export function NeedPostedItem({ item }) {
         {tierLabel && (
           <span style={{
             ...sc,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             color: gold,
             background: 'rgba(110,127,92,0.07)',
@@ -39,7 +39,7 @@ export function NeedPostedItem({ item }) {
         {need?.need_type && (
           <span style={{
             ...sc,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.12em',
             color: 'rgba(15,21,35,0.55)',
             background: 'rgba(15,21,35,0.04)',
@@ -54,7 +54,7 @@ export function NeedPostedItem({ item }) {
         {isInPerson && (
           <span style={{
             ...sc,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.16em',
             color: '#FFFFFF',
             background: gold,
@@ -69,7 +69,7 @@ export function NeedPostedItem({ item }) {
         {need?.time_estimate && (
           <span style={{
             ...sc,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.12em',
             color: 'rgba(15,21,35,0.55)',
           }}>

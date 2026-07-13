@@ -28,7 +28,7 @@ export function PrincipleStrip({ taggings = [], maxVisible = 4 }) {
           onClick={() => setExpanded(true)}
           style={{
             fontFamily: "'IBM Plex Mono', Georgia, serif",
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.12em',
             color: 'rgba(15,21,35,0.55)',
             background: 'none',

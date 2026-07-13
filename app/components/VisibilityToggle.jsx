@@ -44,7 +44,7 @@ export default function VisibilityToggle({
         <span
           style={{
             ...sc,
-            fontSize: '12px',
+            fontSize: '13px',
             letterSpacing: '0.08em',
             color: 'rgba(15, 21, 35, 0.55)',
             fontWeight: 600,

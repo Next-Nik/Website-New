@@ -103,7 +103,7 @@ export function EventsTab({ actorId, actorName, toast }) {
         <Link
           to={`/org/${actorId}/events/new`}
           style={{
-            ...sc, fontSize: '12px', letterSpacing: '0.14em',
+            ...sc, fontSize: '13px', letterSpacing: '0.14em',
             color: '#FFFFFF', textDecoration: 'none', background: gold,
             padding: '10px 20px', borderRadius: '40px',
             textTransform: 'uppercase',
@@ -122,7 +122,7 @@ export function EventsTab({ actorId, actorName, toast }) {
               key={f.key}
               onClick={() => setFilter(f.key)}
               style={{
-                ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                ...sc, fontSize: '13px', letterSpacing: '0.14em',
                 padding: '6px 14px', borderRadius: '40px', cursor: 'pointer',
                 border: on ? '1.5px solid rgba(88,160,138,0.78)' : '1.5px solid rgba(88,160,138,0.25)',
                 background: on ? 'rgba(88,160,138,0.10)' : 'transparent',

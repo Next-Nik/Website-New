@@ -77,7 +77,7 @@ export function ProfilePlaces({ affiliations }) {
             <div key={rel}>
               <span style={{
                 ...sc,
-                fontSize: '11px',
+                fontSize: '13px',
                 letterSpacing: '0.16em',
                 color: 'rgba(15,21,35,0.72)',
                 textTransform: 'uppercase',
@@ -122,7 +122,7 @@ function PlaceWithBreadcrumb({ focus, ancestors }) {
         {focus.name}
       </Link>
       {trimmedAncestors.length > 0 && (
-        <span style={{ ...body, fontSize: '14.5px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
+        <span style={{ ...body, fontSize: '14.5px', color: 'rgba(15,21,35,0.55)' }}>
           {' · '}
           {trimmedAncestors.map((a, i) => (
             <span key={a.id}>

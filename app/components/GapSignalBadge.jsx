@@ -63,7 +63,7 @@ export function GapSignalBadge({ domainId, focusId, focusName }) {
           flexShrink: 0,
           animation: 'gapsignal-pulse 2.4s ease-in-out infinite',
         }} />
-        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: goldDark, flexShrink: 0 }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: goldDark, flexShrink: 0 }}>
           Gap Signal
         </span>
         <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.45 }}>

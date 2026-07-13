@@ -153,7 +153,7 @@ export default function AddOverlay({ open, onClose, context }) {
   }
 
   const eyebrow = {
-    fontFamily: FONT_SC, fontSize: '12px',
+    fontFamily: FONT_SC, fontSize: '13px',
     letterSpacing: '0.18em', textTransform: 'uppercase',
     color: GOLD_DK, margin: 0,
   }
