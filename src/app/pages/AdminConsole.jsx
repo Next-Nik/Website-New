@@ -4742,7 +4742,7 @@ export function AdminConsolePage() {
     <div style={{ background: bg, minHeight: '100dvh' }}>
       <Nav />
       <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '96px 40px 120px' }}>
-        <Eyebrow>Admin Beta</Eyebrow>
+        <Eyebrow>Admin</Eyebrow>
         <h1 style={{ ...body, fontSize: 'clamp(32px,4vw,48px)', fontWeight: 400,
           color: '#0F1523', marginBottom: '8px', lineHeight: 1.08 }}>
           Console
@@ -4751,6 +4751,9 @@ export function AdminConsolePage() {
           marginBottom: '48px' }}>
           Platform health, actors, domains, needs, contributions, waitlist, access.
           Horizon Floor checks on all actor saves.
+        </p>
+        <p style={{ ...body, fontSize: '15px', marginBottom: '40px' }}>
+          <a href="/me/export" style={{ color: 'rgba(15,21,35,0.75)' }}>Horizon Export · your personal work as one document →</a>
         </p>
 
         <TabBar active={tab} setActive={setTab} />
