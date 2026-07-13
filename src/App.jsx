@@ -124,6 +124,7 @@ import PartnerInbox                                 from './app/pages/PartnerInb
 import { HorizonPracticePage }                     from './tools/horizon-practice/HorizonPractice'
 import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import JournalPage                                 from './app/pages/Journal'
+import HorizonExport                               from './app/pages/HorizonExport'
 import SentenceCompletion                          from './app/pages/SentenceCompletion'
 import IAmPractice                                 from './app/pages/IAmPractice'
 import IAmSpoken                                    from './app/pages/IAmSpoken'
@@ -308,6 +309,7 @@ function AppInner() {
         <Route path="/atlas/goals/:domain"      element={<HorizonGoalsPage />} />
         <Route path="/tools/horizon-practice"    element={<RequirePersonal><HorizonPracticePage /></RequirePersonal>} />
         <Route path="/journal"                   element={<RequirePersonal><JournalPage /></RequirePersonal>} />
+        <Route path="/me/export"                 element={<HorizonExport />} />
         <Route path="/tools/sentence-completion" element={<SentenceCompletion />} />
         <Route path="/tools/i-am"                element={<IAmPractice />} />
         <Route path="/tools/i-am-spoken"         element={<IAmSpoken />} />
