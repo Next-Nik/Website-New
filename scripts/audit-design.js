@@ -68,6 +68,9 @@ const ITALIC_WHITELIST = [
   'domain-explorer/DomainPanel.module.css', // .horizonGoal / .goalScope — the user's own goal sentence
   'app/pages/OrgPublic.jsx', // {item.why} — the actor's own self-authored "why" statement
   'app/pages/AdminConsole.jsx', // {c.note}/{s}/{r.message} — real people's own submitted messages/quotes
+  'pages/OrgPublic.jsx', // duplicate tree (src/pages) — same {item.why} user-voice as app/pages copy
+  'pages/AdminConsole.jsx', // duplicate tree (src/pages) — same {c.note}/{s}/{r.message} user-voice
+  'pages/Search.jsx', // duplicate tree (src/pages) — same {actor.tagline} user-voice as app/pages copy
   'mission-control/MapMissionPanel.jsx', // {previewText} — the user's own horizon text
   'mission-control/HorizonPracticeMissionPanel.jsx', // horizonSelf/lifeHorizon/iaStatement — user-authored
   'tools/nextu/NextUJourney.jsx', // I Am statements + synthesised statement — user-authored
