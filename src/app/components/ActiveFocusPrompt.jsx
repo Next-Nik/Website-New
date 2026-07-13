@@ -130,7 +130,7 @@ function CompactSummary({ focus, onEdit, onClear, bare = false, errToShow = null
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '12px', flexWrap: 'wrap' }}>
         {!bare && (
           <div style={{
-            ...sc, fontSize: '10.5px', letterSpacing: '0.20em',
+            ...sc, fontSize: '13px', letterSpacing: '0.20em',
             color: GOLD, textTransform: 'uppercase',
           }}>
             Your focus
@@ -141,7 +141,7 @@ function CompactSummary({ focus, onEdit, onClear, bare = false, errToShow = null
             type="button"
             onClick={onEdit}
             style={{
-              ...sc, fontSize: '10.5px', letterSpacing: '0.16em',
+              ...sc, fontSize: '13px', letterSpacing: '0.16em',
               color: GOLD, background: 'none',
               border: 'none', cursor: 'pointer',
               textTransform: 'uppercase', padding: 0,
@@ -223,7 +223,7 @@ const chipStyle = {
 function Label({ children }) {
   return (
     <div style={{
-      ...sc, fontSize: '9.5px', letterSpacing: '0.16em',
+      ...sc, fontSize: '13px', letterSpacing: '0.16em',
       color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
     }}>
       {children}
@@ -257,7 +257,7 @@ function PromptOpen({ focus, save, hasFocus, onCollapse, bare = false, errToShow
           padding: '10px 14px',
           marginBottom: '16px',
         }}>
-          <strong style={{ ...sc, fontSize: '10.5px', letterSpacing: '0.16em', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+          <strong style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
             Save error
           </strong>
           {errToShow}
@@ -267,7 +267,7 @@ function PromptOpen({ focus, save, hasFocus, onCollapse, bare = false, errToShow
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '20px', gap: '12px' }}>
           <div>
             <div style={{
-              ...sc, fontSize: '10.5px', letterSpacing: '0.20em',
+              ...sc, fontSize: '13px', letterSpacing: '0.20em',
               color: GOLD, textTransform: 'uppercase', marginBottom: '4px',
             }}>
               For now
@@ -286,7 +286,7 @@ function PromptOpen({ focus, save, hasFocus, onCollapse, bare = false, errToShow
               type="button"
               onClick={onCollapse}
               style={{
-                ...sc, fontSize: '10.5px', letterSpacing: '0.16em',
+                ...sc, fontSize: '13px', letterSpacing: '0.16em',
                 color: 'rgba(15,21,35,0.55)', background: 'none',
                 border: 'none', cursor: 'pointer',
                 textTransform: 'uppercase', padding: 0,
@@ -479,7 +479,7 @@ function Question1({ focus, save }) {
           </div>
           {earthSuggestion && query.trim().length === 0 && (
             <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <span style={{ ...body, fontSize: '12.5px', color: 'rgba(15,21,35,0.55)' }}>
+              <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
                 or focus planetarily:
               </span>
               <button
@@ -606,7 +606,7 @@ function Question2({ focus, save }) {
               onClick={() => toggleDomain(d.slug)}
               style={{
                 ...sc,
-                fontSize: '11.5px',
+                fontSize: '13px',
                 letterSpacing: '0.14em',
                 textTransform: 'uppercase',
                 color: active ? '#FFFFFF' : d.color,
@@ -718,7 +718,7 @@ function Question3({ focus, save }) {
               type="button"
               onClick={() => toggle(p.slug)}
               style={{
-                ...sc, fontSize: '11.5px', letterSpacing: '0.14em',
+                ...sc, fontSize: '13px', letterSpacing: '0.14em',
                 color: active ? '#FFFFFF' : GOLD,
                 background: active ? GOLD : 'rgba(110,127,92,0.04)',
                 border: `1.5px solid ${GOLD}`,
@@ -754,7 +754,7 @@ function QuestionBlock({ title, helper, children, last = false }) {
       </h3>
       {helper && (
         <p style={{
-          ...body, fontSize: '12.5px',
+          ...body, fontSize: '13px',
           color: 'rgba(15,21,35,0.55)',
           margin: '0 0 12px 0',
         }}>
@@ -802,7 +802,7 @@ const inputStyle = {
 }
 
 const suggestionStyle = {
-  ...sc, fontSize: '11px', letterSpacing: '0.14em',
+  ...sc, fontSize: '13px', letterSpacing: '0.14em',
   color: GOLD, background: 'rgba(110,127,92,0.04)',
   border: '1px dashed rgba(110,127,92,0.45)',
   borderRadius: '14px', padding: '4px 11px',
@@ -844,7 +844,7 @@ function ResultsDropdown({ searching, results, onPick }) {
           }}
         >
           <span style={{ ...body, fontSize: '13.5px', color: INK }}>{r.name}</span>
-          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', color: GOLD, textTransform: 'uppercase' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: GOLD, textTransform: 'uppercase' }}>
             {r.type || r.kind || ''}
           </span>
         </button>

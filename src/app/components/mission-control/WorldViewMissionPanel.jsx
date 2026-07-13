@@ -106,7 +106,7 @@ function ScorePill({ score, contributing, total }) {
       </span>
       <span style={{
         fontFamily: FONT_SC,
-        fontSize: 9,
+        fontSize: 13,
         letterSpacing: '0.18em',
         color: TEXT_WHITE_META,
       }}>
@@ -115,7 +115,7 @@ function ScorePill({ score, contributing, total }) {
       {total > 0 && (
         <span style={{
           fontFamily: FONT_SC,
-          fontSize: 9,
+          fontSize: 13,
           letterSpacing: '0.16em',
           color: TEXT_WHITE_FAINT,
           marginLeft: 4,
@@ -145,7 +145,7 @@ export default function WorldViewMissionPanel() {
       }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 10.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: at.brass,
         }}>
@@ -153,7 +153,7 @@ export default function WorldViewMissionPanel() {
         </div>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: TEXT_WHITE_FAINT,
         }}>
@@ -213,7 +213,7 @@ export default function WorldViewMissionPanel() {
       }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: TEXT_WHITE_FAINT,
         }}>
@@ -262,7 +262,7 @@ function DomainRow({ domain, score, detail, isExpanded, onToggle }) {
           {detail && detail.total > 0 && (
             <div style={{
               fontFamily: FONT_SC,
-              fontSize: 9.5,
+              fontSize: 13,
               letterSpacing: '0.16em',
               color: TEXT_WHITE_FAINT,
               marginTop: 4,
@@ -276,7 +276,7 @@ function DomainRow({ domain, score, detail, isExpanded, onToggle }) {
           {(!detail || detail.total === 0) && (
             <div style={{
               fontFamily: FONT_SC,
-              fontSize: 9.5,
+              fontSize: 13,
               letterSpacing: '0.16em',
               color: TEXT_WHITE_FAINT,
               marginTop: 4,
@@ -336,7 +336,7 @@ function DomainExpanded({ domain, score, detail }) {
       <div>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 10,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: at.brass,
           marginBottom: 10,

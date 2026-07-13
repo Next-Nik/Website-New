@@ -57,7 +57,7 @@ export function PracticeContributedItem({ item }) {
         {primaryDomain && (
           <span style={{
             ...sc,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             color: '#FFFFFF',
             background: domainColor || gold,
@@ -72,7 +72,7 @@ export function PracticeContributedItem({ item }) {
         {kindLabel && (
           <span style={{
             ...sc,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.12em',
             color: 'rgba(15,21,35,0.55)',
             background: 'rgba(15,21,35,0.04)',

@@ -125,7 +125,7 @@ export function WatchingSection() {
       {/* Counter + cap state */}
       <div style={{
         ...sc,
-        fontSize: '12px',
+        fontSize: '13px',
         letterSpacing: '0.14em',
         color: capState === 'at-cap' ? '#A23636'
               : capState === 'soft-warn' ? gold
@@ -182,7 +182,7 @@ export function WatchingSection() {
               <div key={type}>
                 <div style={{
                   ...sc,
-                  fontSize: '11px',
+                  fontSize: '13px',
                   letterSpacing: '0.16em',
                   color: 'rgba(15,21,35,0.72)',
                   textTransform: 'uppercase',

@@ -76,7 +76,7 @@ function ToolCard({ name, status, body, meta, locked, onClick }) {
         </span>
         <span style={{
           fontFamily: FONT_SC,
-          fontSize: 10.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: GOLD_DK,
           whiteSpace: 'nowrap',
@@ -106,7 +106,7 @@ function ToolCard({ name, status, body, meta, locked, onClick }) {
       }}>
         <span style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: TEXT_FAINT,
         }}>
@@ -114,7 +114,7 @@ function ToolCard({ name, status, body, meta, locked, onClick }) {
         </span>
         <span style={{
           fontFamily: FONT_SC,
-          fontSize: 10.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: hover ? GOLD : GOLD_DK,
           transition: 'color 0.2s ease',

@@ -162,7 +162,7 @@ export function ProfileWheels({ selfWheelPublic, civWheelPublic, horizonByDomain
           <div>
             <div style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.22em',
               color: 'rgba(15,21,35,0.55)',
               marginBottom: '20px',
@@ -186,7 +186,7 @@ export function ProfileWheels({ selfWheelPublic, civWheelPublic, horizonByDomain
           <div>
             <div style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.22em',
               color: 'rgba(15,21,35,0.55)',
               marginBottom: '20px',
@@ -221,7 +221,7 @@ export function ProfileWheels({ selfWheelPublic, civWheelPublic, horizonByDomain
                   }} />
                   <span style={{
                     ...sc,
-                    fontSize: '10px',
+                    fontSize: '13px',
                     letterSpacing: '0.10em',
                     color: 'rgba(15,21,35,0.55)',
                   }}>

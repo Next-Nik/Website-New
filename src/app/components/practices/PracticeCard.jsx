@@ -69,7 +69,7 @@ export default function PracticeCard({ practice }) {
         {kind && (
           <span style={{
             ...sc,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             textTransform: 'uppercase',
             color: kind.color,
@@ -85,7 +85,7 @@ export default function PracticeCard({ practice }) {
         {domainConfig && (
           <span style={{
             ...sc,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.1em',
             color: 'rgba(15,21,35,0.55)',
             background: 'rgba(110,127,92,0.04)',
@@ -100,7 +100,7 @@ export default function PracticeCard({ practice }) {
         {vetting && (
           <span style={{
             ...sc,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.1em',
             color: vetting.color,
             marginLeft: 'auto',
@@ -154,7 +154,7 @@ export default function PracticeCard({ practice }) {
         {(practice.attestation_count > 0) && (
           <span style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.1em',
             color: 'rgba(15,21,35,0.55)',
           }}>

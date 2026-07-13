@@ -31,7 +31,7 @@ function Eyebrow({ children, style = {} }) {
   return (
     <span style={{
       ...sc,
-      fontSize: '11px',
+      fontSize: '13px',
       letterSpacing: '0.2em',
       color: '#26302A',
       textTransform: 'uppercase',
@@ -86,7 +86,7 @@ function FreeTextField({ label, hint, value, placeholder, onSave, rows = 3 }) {
         <Eyebrow style={{ marginBottom: 0 }}>{label}</Eyebrow>
         <span style={{
           ...sc,
-          fontSize: '10px',
+          fontSize: '13px',
           letterSpacing: '0.1em',
           color: saving ? '#26302A' : savedRecently ? '#2D6A4F' : 'rgba(15,21,35,0.55)',
           transition: 'color 200ms ease',
@@ -138,7 +138,7 @@ function MediumRadio({ value, onChange }) {
           aria-pressed={value === o.v}
           style={{
             ...sc,
-            fontSize: '12px',
+            fontSize: '13px',
             letterSpacing: '0.04em',
             color: value === o.v ? '#26302A' : 'rgba(15,21,35,0.72)',
             background: value === o.v ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
@@ -189,7 +189,7 @@ function PrincipleRow({ principle, selected, weight, onToggle, onWeightChange })
             onChange={e => onWeightChange(e.target.value)}
             style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.08em',
               color: '#26302A',
               background: '#FFFFFF',
@@ -226,7 +226,7 @@ function DomainChips({ domains, selected = [], onToggle }) {
             aria-pressed={active}
             style={{
               ...sc,
-              fontSize: '12px',
+              fontSize: '13px',
               letterSpacing: '0.04em',
               color: active ? (d.color || '#26302A') : 'rgba(15,21,35,0.72)',
               background: active ? 'rgba(110,127,92,0.08)' : '#FFFFFF',

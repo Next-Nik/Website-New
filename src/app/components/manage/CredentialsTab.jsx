@@ -78,7 +78,7 @@ function CredentialRow({ credential, onSave, onDelete, toast }) {
         display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
         gap: '14px' }}>
         <div style={{ flex: 1 }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
             color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
             marginBottom: '4px' }}>
             {KIND_OPTIONS.find(k => k.value === credential.kind)?.label || credential.kind}
@@ -88,7 +88,7 @@ function CredentialRow({ credential, onSave, onDelete, toast }) {
             {credential.title}
           </div>
           {(credential.institution || credential.year) && (
-            <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
               color: 'rgba(15,21,35,0.55)' }}>
               {credential.institution}
               {credential.institution && credential.year && ' · '}
@@ -98,14 +98,14 @@ function CredentialRow({ credential, onSave, onDelete, toast }) {
         </div>
         <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
           <button onClick={() => setEditing(true)}
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
               padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
               border: '1px solid rgba(88,160,138,0.30)',
               background: 'rgba(88,160,138,0.04)', color: gold }}>
             Edit
           </button>
           <button onClick={remove}
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
               padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
               border: '1px solid rgba(138,48,48,0.30)',
               background: 'rgba(138,48,48,0.04)', color: '#8A3030' }}>

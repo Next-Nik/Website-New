@@ -5,8 +5,13 @@
 // and challenges feeding it, and the one shared close — read straight from
 // the beacon so the date has a single source of truth. No auth; a cold
 // visitor from a QR code sees the collective fire before signing in.
+//
+// Imperative API via ref: spark() pulses the fire and ticks the count by
+// one, so a surface that hosts a check-in can make the moment visible —
+// the ember lands, the sky grows by one real star. Purely additive; every
+// existing refless usage is unchanged.
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react'
 import { serif, sc, body } from '../../../lib/designTokens'
 import BeaconFire from './BeaconFire'
 
@@ -32,8 +37,51 @@ function daysUntil(iso) {
   return Math.max(0, Math.ceil((end.getTime() - Date.now()) / 86400000))
 }
 
-export default function PublicBeacon() {
+const PublicBeacon = forwardRef(function PublicBeacon(_props, ref) {
   const [beacon, setBeacon] = useState(null)
+  const fireRef = useRef(null)
+  const boxRef  = useRef(null)
+
+  useImperativeHandle(ref, () => {
+    // One real action, one spark: pulse the fire and tick the tally so the
+    // check-in is felt at the moment it happens, not on the next reload.
+    const spark = () => {
+      try { fireRef.current && fireRef.current.fireSpark() } catch (_) { /* visual only */ }
+      setBeacon(b => (b ? { ...b, sparks: Number(b.sparks || 0) + 1 } : b))
+    }
+    return {
+      spark,
+      // The check-in, made visible: a small ember leaves the given element,
+      // crosses the page, and lands here — then the fire pulses and the sky
+      // grows by one star. The beacon owns its own gold (heritage law: gold
+      // lives in beacon components only). Reduced-motion users get the
+      // pulse without the flight. Purely visual; safe to call blind.
+      emberFrom(fromEl) {
+        const target = boxRef.current
+        let reduced = false
+        try { reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch (_) { /* default: animate */ }
+        if (!fromEl || !target || !target.offsetHeight || reduced) { spark(); return }
+        const r  = fromEl.getBoundingClientRect()
+        const tr = target.getBoundingClientRect()
+        const ember = document.createElement('div')
+        ember.setAttribute('aria-hidden', 'true')
+        Object.assign(ember.style, {
+          position: 'fixed', zIndex: 9999, pointerEvents: 'none',
+          left: `${r.left + r.width / 2 - 5}px`, top: `${r.top + r.height / 2 - 5}px`,
+          width: '10px', height: '10px', borderRadius: '50%',
+          background: `radial-gradient(circle at 40% 35%, ${AMBER_BRIGHT}, ${AMBER})`,
+          boxShadow: `0 0 12px 3px rgba(242,196,90,0.55)`,
+          transition: 'transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.65s ease',
+        })
+        document.body.appendChild(ember)
+        requestAnimationFrame(() => {
+          ember.style.transform = `translate(${tr.left + tr.width / 2 - (r.left + r.width / 2)}px, ${tr.top + tr.height / 2 - (r.top + r.height / 2)}px) scale(0.5)`
+          ember.style.opacity = '0.25'
+        })
+        setTimeout(() => { ember.remove(); spark() }, 660)
+      },
+    }
+  })
 
   useEffect(() => {
     let live = true
@@ -62,14 +110,14 @@ export default function PublicBeacon() {
       </div>
       {/* The night plate — the lantern lives on dark ground, as in the beacon
           artwork and the founding doors. The lantern itself carries the glow. */}
-      <div style={{
+      <div ref={boxRef} style={{
         position: 'relative', overflow: 'hidden',
         border: `1.5px solid ${AMBER}`, borderRadius: '16px',
         background: `radial-gradient(ellipse at 50% 30%, rgba(242,196,90,0.10), rgba(242,196,90,0) 65%), ${NIGHT}`,
         padding: '26px 22px 24px', textAlign: 'center',
       }}>
         <div style={{ maxWidth: '320px', margin: '0 auto' }}>
-          <BeaconFire sparks={sparks} />
+          <BeaconFire ref={fireRef} sparks={sparks} />
         </div>
         <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: GOLD_T, textTransform: 'uppercase', marginTop: '14px' }}>
           The beacon
@@ -105,4 +153,6 @@ export default function PublicBeacon() {
       </div>
     </div>
   )
-}
+})
+
+export default PublicBeacon

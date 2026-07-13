@@ -77,7 +77,7 @@ export function ProfilePlaces({ affiliations }) {
             <div key={rel}>
               <span style={{
                 ...sc,
-                fontSize: '11px',
+                fontSize: '13px',
                 letterSpacing: '0.16em',
                 color: 'rgba(15,21,35,0.72)',
                 textTransform: 'uppercase',

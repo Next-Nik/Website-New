@@ -174,7 +174,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
             background: GOLD,
             color: '#FAFAF7',
             fontFamily: FONT_SC,
-            fontSize: 12,
+            fontSize: 13,
             letterSpacing: '0.16em',
             textTransform: 'uppercase',
             textDecoration: 'none',
@@ -212,7 +212,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
       }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 10.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: GOLD_DK,
         }}>
@@ -220,7 +220,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
         </div>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: savingPulse ? GOLD : 'transparent',
           transition: 'color 0.25s ease',
@@ -284,7 +284,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
           published and has no opt-in. */}
       <div style={{
         fontFamily: FONT_SC,
-        fontSize: 10,
+        fontSize: 13,
         letterSpacing: '0.18em',
         textTransform: 'uppercase',
         color: TEXT_FAINT,
@@ -310,7 +310,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
         }}>
           <span style={{
             fontFamily: FONT_SC,
-            fontSize: 9.5,
+            fontSize: 13,
             letterSpacing: '0.18em',
             color: TEXT_FAINT,
           }}>
@@ -318,7 +318,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
           </span>
           <span style={{
             fontFamily: FONT_SC,
-            fontSize: 9,
+            fontSize: 13,
             letterSpacing: '0.14em',
             textTransform: 'uppercase',
             color: TEXT_FAINT,
@@ -361,7 +361,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
                   color: '#0F1523',
                   padding: '8px 16px',
                   fontFamily: FONT_SC,
-                  fontSize: 11,
+                  fontSize: 13,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
                   cursor: saving ? 'default' : 'pointer',
@@ -382,7 +382,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
                   color: TEXT_META,
                   padding: '8px 16px',
                   fontFamily: FONT_SC,
-                  fontSize: 11,
+                  fontSize: 13,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
                   cursor: 'pointer',
@@ -424,7 +424,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
                 color: GOLD_DK,
                 padding: 0,
                 fontFamily: FONT_SC,
-                fontSize: 10.5,
+                fontSize: 13,
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
                 cursor: 'pointer',
@@ -454,7 +454,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
         }}>
           <div style={{
             fontFamily: FONT_SC,
-            fontSize: 9.5,
+            fontSize: 13,
             letterSpacing: '0.18em',
             color: TEXT_FAINT,
           }}>
@@ -462,7 +462,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
           </div>
           <div style={{
             fontFamily: FONT_SC,
-            fontSize: 9,
+            fontSize: 13,
             letterSpacing: '0.18em',
             color: locationPulse ? GOLD : 'transparent',
             transition: 'color 0.25s ease',
@@ -496,7 +496,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
             <div style={{ marginTop: 10 }}>
               <div style={{
                 fontFamily: FONT_SC,
-                fontSize: 9,
+                fontSize: 13,
                 letterSpacing: '0.18em',
                 color: TEXT_FAINT,
                 marginBottom: 6,
@@ -535,7 +535,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
             </div>
             <p style={{
               fontFamily: FONT_BODY,
-              fontSize: 12,
+              fontSize: 13,
               color: TEXT_FAINT,
               margin: '10px 0 0',
               lineHeight: 1.5,
@@ -552,7 +552,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
                   color: '#0F1523',
                   padding: '8px 16px',
                   fontFamily: FONT_SC,
-                  fontSize: 11,
+                  fontSize: 13,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
                   cursor: savingLocation ? 'default' : 'pointer',
@@ -574,7 +574,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
                   color: TEXT_META,
                   padding: '8px 16px',
                   fontFamily: FONT_SC,
-                  fontSize: 11,
+                  fontSize: 13,
                   letterSpacing: '0.14em',
                   textTransform: 'uppercase',
                   cursor: 'pointer',
@@ -617,7 +617,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
                 color: GOLD_DK,
                 padding: 0,
                 fontFamily: FONT_SC,
-                fontSize: 10.5,
+                fontSize: 13,
                 letterSpacing: '0.18em',
                 textTransform: 'uppercase',
                 cursor: 'pointer',
@@ -633,7 +633,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
           The contribution-rail surface others can see. */}
       <div style={{
         fontFamily: FONT_SC,
-        fontSize: 10,
+        fontSize: 13,
         letterSpacing: '0.18em',
         textTransform: 'uppercase',
         color: TEXT_FAINT,
@@ -643,7 +643,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
       </div>
       <div style={{
         fontFamily: FONT_BODY,
-        fontSize: 12.5,
+        fontSize: 13,
         color: TEXT_META,
         lineHeight: 1.6,
         margin: '0 2px 12px',
@@ -672,7 +672,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
         <div>
           <div style={{
             fontFamily: FONT_SC,
-            fontSize: 11,
+            fontSize: 13,
             letterSpacing: '0.16em',
             color: TEXT_INK,
             fontWeight: 500,
@@ -682,7 +682,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
           </div>
           <div style={{
             fontFamily: FONT_BODY,
-            fontSize: 12.5,
+            fontSize: 13,
             color: TEXT_META,
             marginTop: 2,
           }}>
@@ -701,7 +701,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
       <div style={{ marginBottom: 14 }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: TEXT_FAINT,
           marginBottom: 8,
@@ -728,7 +728,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
             }}>
               <span style={{
                 fontFamily: FONT_SC,
-                fontSize: 10,
+                fontSize: 13,
                 letterSpacing: '0.16em',
                 color: TEXT_FAINT,
                 textTransform: 'uppercase',
@@ -766,7 +766,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
             borderRadius: 14,
             cursor: 'pointer',
             fontFamily: FONT_SC,
-            fontSize: 11,
+            fontSize: 13,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             color: GOLD_DK,
@@ -791,7 +791,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
             borderRadius: 14,
             cursor: 'pointer',
             fontFamily: FONT_SC,
-            fontSize: 11,
+            fontSize: 13,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             color: GOLD_DK,
@@ -815,7 +815,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
           borderRadius: 14,
           cursor: 'pointer',
           fontFamily: FONT_SC,
-          fontSize: 11,
+          fontSize: 13,
           letterSpacing: '0.18em',
           textTransform: 'uppercase',
           color: TEXT_META,
@@ -838,7 +838,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
       }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: TEXT_FAINT,
         }}>
@@ -852,7 +852,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
             color: GOLD_DK,
             padding: '6px 0',
             fontFamily: FONT_SC,
-            fontSize: 10.5,
+            fontSize: 13,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             cursor: 'pointer',

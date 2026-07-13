@@ -41,7 +41,7 @@ export function PracticeAttestedItem({ item }) {
       {attesterRole && (
         <p style={{
           ...sc,
-          fontSize: '11px',
+          fontSize: '13px',
           letterSpacing: '0.12em',
           color: 'rgba(15,21,35,0.55)',
           margin: '8px 0 0',

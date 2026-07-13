@@ -219,7 +219,7 @@ function SignalRow({ signal }) {
         <span
           style={{
             ...sc,
-            fontSize: '12px',
+            fontSize: '13px',
             letterSpacing: '0.08em',
             color: at.brass,
             fontWeight: 600,
@@ -230,7 +230,7 @@ function SignalRow({ signal }) {
         <span
           style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.06em',
             color: at.ghost,
           }}
@@ -265,7 +265,7 @@ function SignalRow({ signal }) {
       <p
         style={{
           ...sc,
-          fontSize: '11px',
+          fontSize: '13px',
           letterSpacing: '0.06em',
           color: at.ghost,
           fontWeight: 600,

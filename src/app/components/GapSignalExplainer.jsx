@@ -72,7 +72,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '22px' }}>
           <div>
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: goldDark, display: 'block', marginBottom: '6px' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: goldDark, display: 'block', marginBottom: '6px' }}>
               Gap Signal
             </span>
             <h2 style={{ ...serif, fontSize: '26px', fontWeight: 300, color: dark, margin: 0, lineHeight: 1.2 }}>
@@ -107,7 +107,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
               borderBottom: '1px solid rgba(88,160,138,0.10)',
             }}>
               <div>
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: dark, marginBottom: '2px' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: dark, marginBottom: '2px' }}>
                   {row.label}
                 </div>
                 <div style={{ ...body, fontSize: '13px', color: at.ghost, lineHeight: 1.5 }}>
@@ -122,7 +122,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
                 }}>
                   {row.format(row.value)}
                 </div>
-                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.12em', color: at.ghost, marginTop: '4px' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, marginTop: '4px' }}>
                   Current
                 </div>
               </div>
@@ -130,7 +130,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
                 <div style={{ ...body, fontSize: '13px', color: at.ghost, lineHeight: 1 }}>
                   &lt; {row.format(row.threshold)}
                 </div>
-                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.12em', color: at.ghost, marginTop: '4px' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, marginTop: '4px' }}>
                   Threshold
                 </div>
               </div>
@@ -147,7 +147,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
             padding: '12px 14px',
             marginBottom: '20px',
           }}>
-            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: at.ghost, marginBottom: '4px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: at.ghost, marginBottom: '4px' }}>
               Contributor signals
             </div>
             <p style={{ ...body, fontSize: '13px', color: at.meta, lineHeight: 1.55, margin: 0 }}>
@@ -163,7 +163,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
           paddingLeft: '14px',
           marginBottom: '24px',
         }}>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: success, marginBottom: '6px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: success, marginBottom: '6px' }}>
             What this signals
           </div>
           <p style={{ ...body, fontSize: '13px', color: at.meta, lineHeight: 1.7, margin: 0 }}>
@@ -173,14 +173,14 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
 
         {/* Footer — methodology link, indicator count */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: at.ghost }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.ghost }}>
             Computed from {payload.indicator_count} indicator{payload.indicator_count === 1 ? '' : 's'}
             {payload.fresh === false ? ' \u00b7 cached' : ' \u00b7 fresh'}
           </div>
           <button
             onClick={onClose}
             style={{
-              ...sc, fontSize: '12px', letterSpacing: '0.16em',
+              ...sc, fontSize: '13px', letterSpacing: '0.16em',
               padding: '8px 18px', borderRadius: '40px',
               border: `1.5px solid ${goldDark}80`,
               background: 'transparent', color: goldDark,

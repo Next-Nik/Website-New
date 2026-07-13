@@ -19,7 +19,7 @@ export function ProfileStands({ iaStatements, whatIStandFor, principleTaggings }
     <div style={{ marginBottom: '72px' }}>
       <div style={{
         ...sc,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.22em',
         color: 'rgba(15,21,35,0.55)',
         marginBottom: '28px',

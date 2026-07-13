@@ -27,7 +27,7 @@ export function ProfileIAStatements({ iaStatements }) {
             {SELF_DOMAIN_LABELS[domain] && (
               <div style={{
                 ...sc,
-                fontSize: '11px',
+                fontSize: '13px',
                 letterSpacing: '0.18em',
                 color: 'rgba(15,21,35,0.55)',
                 marginBottom: '6px',

@@ -101,7 +101,7 @@ export default function HorizonStateMissionPanel({ user, onNavigate }) {
       }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 10.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: GOLD_DK,
         }}>
@@ -109,7 +109,7 @@ export default function HorizonStateMissionPanel({ user, onNavigate }) {
         </div>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: savingPulse ? GOLD : 'transparent',
           transition: 'color 0.25s ease',
@@ -143,7 +143,7 @@ export default function HorizonStateMissionPanel({ user, onNavigate }) {
       }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: TEXT_FAINT,
         }}>
@@ -157,7 +157,7 @@ export default function HorizonStateMissionPanel({ user, onNavigate }) {
             color: GOLD_DK,
             padding: '6px 0',
             fontFamily: FONT_SC,
-            fontSize: 10.5,
+            fontSize: 13,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             cursor: 'pointer',

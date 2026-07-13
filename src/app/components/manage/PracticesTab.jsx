@@ -71,7 +71,7 @@ export function PracticesTab({ actorId, toast }) {
     return (
       <SectionCard style={{ borderLeft: `3px solid ${scolor}`, marginBottom: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '6px' }}>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: scolor }}>{slabel}</span>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: scolor }}>{slabel}</span>
           <span style={{ ...body, fontSize: '17px', color: dark }}>{p.name}</span>
         </div>
         {p.statement && (
@@ -87,7 +87,7 @@ export function PracticesTab({ actorId, toast }) {
             )}
             {e.redemption_door?.length > 0 && (
               <div>
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#2A6A3A', marginBottom: '4px' }}>A door forward, same goal</div>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#2A6A3A', marginBottom: '4px' }}>A door forward, same goal</div>
                 <div style={{ ...body, fontSize: '14px', color: dark, lineHeight: 1.6 }}>
                   {e.redemption_door.map(b => b.name).join(' · ')}
                 </div>
@@ -130,21 +130,21 @@ export function PracticesTab({ actorId, toast }) {
 
       {pending.length > 0 && (
         <div style={{ marginBottom: '24px' }}>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', textTransform: 'uppercase', color: gold, marginBottom: '10px' }}>To review</div>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: gold, marginBottom: '10px' }}>To review</div>
           {pending.map(e => <Row key={e.id} e={e} showActions />)}
         </div>
       )}
 
       {confirmed.length > 0 && (
         <div style={{ marginBottom: '24px' }}>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', textTransform: 'uppercase', color: gold, marginBottom: '10px' }}>Confirmed</div>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: gold, marginBottom: '10px' }}>Confirmed</div>
           {confirmed.map(e => <Row key={e.id} e={e} />)}
         </div>
       )}
 
       {declined.length > 0 && (
         <div>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)', marginBottom: '10px' }}>Declined</div>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)', marginBottom: '10px' }}>Declined</div>
           {declined.map(e => <Row key={e.id} e={e} />)}
         </div>
       )}

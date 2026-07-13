@@ -161,7 +161,7 @@ export default function PurposePieceMissionPanel({ purposeData, onNavigate }) {
           }}>
             <div style={{
               fontFamily: FONT_SC,
-              fontSize: 9.5,
+              fontSize: 13,
               letterSpacing: '0.18em',
               color: TEXT_FAINT,
               marginBottom: 6,
@@ -231,7 +231,7 @@ export default function PurposePieceMissionPanel({ purposeData, onNavigate }) {
       }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 10.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: GOLD_DK,
         }}>
@@ -274,7 +274,7 @@ export default function PurposePieceMissionPanel({ purposeData, onNavigate }) {
       }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: TEXT_FAINT,
         }}>
@@ -294,7 +294,7 @@ const primaryBtnStyle = {
   color: GOLD_DK,
   padding: '12px 20px',
   fontFamily: FONT_SC,
-  fontSize: 12,
+  fontSize: 13,
   letterSpacing: '0.12em',
   textTransform: 'uppercase',
   cursor: 'pointer',
@@ -307,7 +307,7 @@ const ghostBtnStyle = {
   color: GOLD_DK,
   padding: '6px 0',
   fontFamily: FONT_SC,
-  fontSize: 10.5,
+  fontSize: 13,
   letterSpacing: '0.18em',
   textTransform: 'uppercase',
   cursor: 'pointer',

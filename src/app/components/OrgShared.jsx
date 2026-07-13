@@ -115,7 +115,7 @@ export const CONTRIBUTION_TYPE_LABEL = {
 
 export function Label({ children, required }) {
   return (
-    <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '6px' }}>
+    <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '6px' }}>
       {children}{required && <span style={{ color: '#8A3030', marginLeft: '4px' }}>*</span>}
     </label>
   )
@@ -185,7 +185,7 @@ export function ModeSelector({ value, onChange }) {
         return (
           <button key={m.value} type="button" onClick={() => onChange(m.value)}
             style={{ textAlign: 'left', padding: '12px 14px', borderRadius: '10px', cursor: 'pointer', border: on ? '1.5px solid rgba(217,178,74,0.78)' : '1.5px solid rgba(217,178,74,0.20)', background: on ? 'rgba(217,178,74,0.07)' : at.object, transition: 'all 0.15s' }}>
-            <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: on ? gold : 'rgba(234,241,237,0.70)', marginBottom: '3px' }}>{m.label}</div>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: on ? gold : 'rgba(234,241,237,0.70)', marginBottom: '3px' }}>{m.label}</div>
             <div style={{ ...body, fontSize: '13px', color: at.ghost, lineHeight: 1.4 }}>{m.desc}</div>
           </button>
         )

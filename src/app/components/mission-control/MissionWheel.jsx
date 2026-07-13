@@ -689,7 +689,7 @@ function SelfWheel({
             x={labelX.toFixed(1)}
             y={labelY.toFixed(1)}
             textAnchor={labelAnchor}
-            style={{ fontFamily: FONT_SC, fontSize: 9, letterSpacing: '0.12em', fill: walkerLabelFill, pointerEvents: 'none' }}
+            style={{ fontFamily: FONT_SC, fontSize: 13, letterSpacing: '0.12em', fill: walkerLabelFill, pointerEvents: 'none' }}
           >
             {count} walking
           </text>
@@ -1519,7 +1519,7 @@ function CivWheel({
               textAnchor={labelAnchor}
               style={{
                 fontFamily: FONT_SC,
-                fontSize: 9,
+                fontSize: 13,
                 letterSpacing: '0.12em',
                 fill: accentText,
               }}

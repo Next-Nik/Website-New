@@ -142,7 +142,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
       }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 10.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: GOLD_DK,
         }}>
@@ -150,7 +150,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
         </div>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: TEXT_FAINT,
         }}>
@@ -162,7 +162,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
       <div style={{ marginBottom: 14 }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: TEXT_FAINT,
           marginBottom: 8,
@@ -186,7 +186,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
           }}>
             <span style={{
               fontFamily: FONT_SC,
-              fontSize: 10,
+              fontSize: 13,
               letterSpacing: '0.16em',
               color: TEXT_FAINT,
               textTransform: 'uppercase',
@@ -214,7 +214,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
                   border: 'none',
                   color: copyState === 'email' ? GOLD_DK : TEXT_FAINT,
                   fontFamily: FONT_SC,
-                  fontSize: 9.5,
+                  fontSize: 13,
                   letterSpacing: '0.16em',
                   cursor: 'pointer',
                   padding: 0,
@@ -237,7 +237,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
           }}>
             <span style={{
               fontFamily: FONT_SC,
-              fontSize: 10,
+              fontSize: 13,
               letterSpacing: '0.16em',
               color: TEXT_FAINT,
               textTransform: 'uppercase',
@@ -248,7 +248,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
             <span style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
               <span style={{
                 fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-                fontSize: 12,
+                fontSize: 13,
                 color: TEXT_META,
               }}>
                 {shortId(userId)}
@@ -262,7 +262,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
                   border: 'none',
                   color: copyState === 'id' ? GOLD_DK : TEXT_FAINT,
                   fontFamily: FONT_SC,
-                  fontSize: 9.5,
+                  fontSize: 13,
                   letterSpacing: '0.16em',
                   cursor: 'pointer',
                   padding: 0,
@@ -284,7 +284,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
           }}>
             <span style={{
               fontFamily: FONT_SC,
-              fontSize: 10,
+              fontSize: 13,
               letterSpacing: '0.16em',
               color: TEXT_FAINT,
               textTransform: 'uppercase',
@@ -325,7 +325,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
           <div>
             <div style={{
               fontFamily: FONT_SC,
-              fontSize: 11,
+              fontSize: 13,
               letterSpacing: '0.16em',
               color: GOLD_DK,
               fontWeight: 500,
@@ -335,7 +335,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
             </div>
             <div style={{
               fontFamily: FONT_BODY,
-              fontSize: 12.5,
+              fontSize: 13,
               color: TEXT_META,
               marginTop: 2,
             }}>
@@ -420,7 +420,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
         <div>
           <div style={{
             fontFamily: FONT_SC,
-            fontSize: 11,
+            fontSize: 13,
             letterSpacing: '0.16em',
             color: TEXT_INK,
             fontWeight: 500,
@@ -430,7 +430,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
           </div>
           <div style={{
             fontFamily: FONT_BODY,
-            fontSize: 12.5,
+            fontSize: 13,
             color: TEXT_META,
             marginTop: 2,
           }}>
@@ -457,7 +457,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
           borderRadius: 14,
           cursor: 'pointer',
           fontFamily: FONT_SC,
-          fontSize: 11,
+          fontSize: 13,
           letterSpacing: '0.18em',
           textTransform: 'uppercase',
           color: TEXT_META,
@@ -481,7 +481,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
             borderRadius: 14,
             cursor: 'pointer',
             fontFamily: FONT_SC,
-            fontSize: 11,
+            fontSize: 13,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             color: 'rgba(138,48,48,0.75)',
@@ -512,7 +512,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
           {deleteError && (
             <p style={{
               fontFamily: FONT_BODY,
-              fontSize: 12,
+              fontSize: 13,
               color: '#8A3030',
               margin: '0 0 12px',
             }}>
@@ -532,7 +532,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
                 borderRadius: 10,
                 cursor: deleting ? 'not-allowed' : 'pointer',
                 fontFamily: FONT_SC,
-                fontSize: 11,
+                fontSize: 13,
                 letterSpacing: '0.16em',
                 textTransform: 'uppercase',
               }}
@@ -551,7 +551,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
                 borderRadius: 10,
                 cursor: deleting ? 'not-allowed' : 'pointer',
                 fontFamily: FONT_SC,
-                fontSize: 11,
+                fontSize: 13,
                 letterSpacing: '0.16em',
                 textTransform: 'uppercase',
               }}
@@ -565,7 +565,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
       {/* Honest note about what's not yet here */}
       <div style={{
         fontFamily: FONT_BODY,
-        fontSize: 12,
+        fontSize: 13,
         color: TEXT_FAINT,
         lineHeight: 1.6,
         padding: '0 4px 4px',
@@ -585,7 +585,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
       }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: TEXT_FAINT,
         }}>
@@ -599,7 +599,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
             color: GOLD_DK,
             padding: '6px 0',
             fontFamily: FONT_SC,
-            fontSize: 10.5,
+            fontSize: 13,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             cursor: 'pointer',

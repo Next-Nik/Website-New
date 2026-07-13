@@ -63,7 +63,7 @@ export default function WheelsToggleSection({
             style={{
               ...sc,
               display: 'block',
-              fontSize: '12px',
+              fontSize: '13px',
               letterSpacing: '0.08em',
               color: isCiv ? '#6E7F5C' : '#26302A',
               fontWeight: 600,

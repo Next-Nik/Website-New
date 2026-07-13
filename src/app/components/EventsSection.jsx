@@ -102,7 +102,7 @@ export function EventsSection({ actor, isOwner = false }) {
           <Link
             to={`/org/${actor.id}/events/new`}
             style={{
-              ...sc, fontSize: '12px', letterSpacing: '0.14em',
+              ...sc, fontSize: '13px', letterSpacing: '0.14em',
               color: gold, textDecoration: 'none',
               padding: '6px 14px', borderRadius: '40px',
               border: '1.5px solid rgba(88,160,138,0.40)',
@@ -135,7 +135,7 @@ export function EventsSection({ actor, isOwner = false }) {
           <button
             onClick={() => setShowPast(s => !s)}
             style={{
-              ...sc, fontSize: '12px', letterSpacing: '0.14em',
+              ...sc, fontSize: '13px', letterSpacing: '0.14em',
               color: 'rgba(15,21,35,0.72)',
               background: 'transparent', border: 'none', cursor: 'pointer',
               padding: '8px 0', textTransform: 'uppercase',

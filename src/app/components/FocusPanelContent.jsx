@@ -167,7 +167,7 @@ function NextStepsIntake() {
 
   return (
     <div style={{ margin: '4px 0 8px' }}>
-      <div style={{ ...sc, fontSize: '10.5px', letterSpacing: '0.20em', color: GOLD, textTransform: 'uppercase', marginBottom: '8px' }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: GOLD, textTransform: 'uppercase', marginBottom: '8px' }}>
         Start here
       </div>
       <div style={{ ...display, fontSize: '20px', color: INK, lineHeight: 1.25, marginBottom: '6px' }}>
@@ -221,7 +221,7 @@ function AnchorZone({
       <div style={{ marginBottom: '8px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '12px' }}>
           <div style={{
-            ...sc, fontSize: '10.5px', letterSpacing: '0.20em',
+            ...sc, fontSize: '13px', letterSpacing: '0.20em',
             color: GOLD, textTransform: 'uppercase',
           }}>
             Editing focus
@@ -332,7 +332,7 @@ function CombinedAnchor({ focus, pp, onEditFocus, onEditPurposePiece }) {
       marginBottom: '24px',
     }}>
       <div style={{
-        ...sc, fontSize: '10.5px', letterSpacing: '0.20em',
+        ...sc, fontSize: '13px', letterSpacing: '0.20em',
         color: GOLD, textTransform: 'uppercase', marginBottom: '14px',
       }}>
         Your anchor
@@ -341,7 +341,7 @@ function CombinedAnchor({ focus, pp, onEditFocus, onEditPurposePiece }) {
       {/* Purpose Piece line */}
       {(archetype || ppDomainLabel) && (
         <div style={{ marginBottom: '14px' }}>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '4px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '4px' }}>
             Who you are
           </div>
           <div style={{ fontSize: '15px', lineHeight: 1.55 }}>
@@ -360,7 +360,7 @@ function CombinedAnchor({ focus, pp, onEditFocus, onEditPurposePiece }) {
 
       {/* Focus line */}
       <div>
-        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '4px' }}>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '4px' }}>
           What you&rsquo;re centring on
         </div>
         <div style={{ fontSize: '15px', lineHeight: 1.55 }}>
@@ -415,7 +415,7 @@ function PurposePieceSummary({ pp, onEdit }) {
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
         <div style={{
-          ...sc, fontSize: '10.5px', letterSpacing: '0.20em',
+          ...sc, fontSize: '13px', letterSpacing: '0.20em',
           color: GOLD, textTransform: 'uppercase',
         }}>
           Your placement
@@ -473,7 +473,7 @@ function FocusSummary({ focus, onEdit, onClear }) {
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
         <div style={{
-          ...sc, fontSize: '10.5px', letterSpacing: '0.20em',
+          ...sc, fontSize: '13px', letterSpacing: '0.20em',
           color: GOLD, textTransform: 'uppercase',
         }}>
           Your focus
@@ -517,7 +517,7 @@ function PurposePieceCTA({ onClick }) {
       marginBottom: '0',
     }}>
       <div style={{
-        ...sc, fontSize: '10.5px', letterSpacing: '0.20em',
+        ...sc, fontSize: '13px', letterSpacing: '0.20em',
         color: GOLD, textTransform: 'uppercase', marginBottom: '6px',
       }}>
         Start here
@@ -547,7 +547,7 @@ function SectionDivider() {
 function StreamsZone({ streamTab, setStreamTab }) {
   return (
     <div>
-      <div style={{ ...sc, fontSize: '10.5px', letterSpacing: '0.20em', color: GOLD, textTransform: 'uppercase', marginBottom: '12px' }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: GOLD, textTransform: 'uppercase', marginBottom: '12px' }}>
         What&rsquo;s relevant to you
       </div>
       <FilterRow value={streamTab} onChange={setStreamTab} />
@@ -578,7 +578,7 @@ function FilterRow({ value, onChange }) {
             onClick={() => onChange(t.id)}
             style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.16em',
               textTransform: 'uppercase',
               padding: '7px 14px',
@@ -724,20 +724,20 @@ function SectionMessage({ children }) {
 // ── shared styles ────────────────────────────────────────────────────────
 
 const editLinkStyle = {
-  ...sc, fontSize: '10.5px', letterSpacing: '0.16em',
+  ...sc, fontSize: '13px', letterSpacing: '0.16em',
   color: GOLD, background: 'none', border: 'none',
   cursor: 'pointer', textTransform: 'uppercase', padding: 0,
 }
 
 const editLinkInlineStyle = {
-  ...sc, fontSize: '10px', letterSpacing: '0.14em',
+  ...sc, fontSize: '13px', letterSpacing: '0.14em',
   color: GOLD, background: 'none', border: 'none',
   cursor: 'pointer', textTransform: 'uppercase', padding: 0,
   marginLeft: '6px',
 }
 
 const primaryPillStyle = {
-  ...sc, fontSize: '11px', letterSpacing: '0.18em',
+  ...sc, fontSize: '13px', letterSpacing: '0.18em',
   color: '#FFFFFF', background: GOLD_LIGHT,
   border: 'none', borderRadius: '30px',
   padding: '9px 22px', cursor: 'pointer',

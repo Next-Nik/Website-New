@@ -301,7 +301,7 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
             </div>
             <div style={{
               fontFamily: FONT_SC,
-              fontSize: 9.5,
+              fontSize: 13,
               letterSpacing: '0.18em',
               color: TEXT_FAINT,
               marginTop: 6,
@@ -322,7 +322,7 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
       }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: TEXT_FAINT,
           marginBottom: 8,
@@ -351,7 +351,7 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
         }}>
           <div style={{
             fontFamily: FONT_SC,
-            fontSize: 9.5,
+            fontSize: 13,
             letterSpacing: '0.18em',
             color: TEXT_FAINT,
             marginBottom: 6,
@@ -393,7 +393,7 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
                   <div key={id} style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
                     <span style={{
                       fontFamily: FONT_SC,
-                      fontSize: 9,
+                      fontSize: 13,
                       letterSpacing: '0.16em',
                       color: TEXT_FAINT,
                       textTransform: 'uppercase',
@@ -483,7 +483,7 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
             <div>
               <div style={{
                 fontFamily: FONT_SC,
-                fontSize: 11,
+                fontSize: 13,
                 letterSpacing: '0.18em',
                 color: 'rgba(15,21,35,0.7)',
                 marginBottom: 4,
@@ -532,7 +532,7 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
         }}>
           <div style={{
             fontFamily: FONT_SC,
-            fontSize: 9.5,
+            fontSize: 13,
             letterSpacing: '0.18em',
             color: TEXT_FAINT,
             marginBottom: 6,
@@ -549,7 +549,7 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
           </div>
           <div style={{
             fontFamily: FONT_SC,
-            fontSize: 11,
+            fontSize: 13,
             letterSpacing: '0.10em',
             color: GOLD_DK,
             marginTop: 6,
@@ -571,7 +571,7 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
       }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: TEXT_FAINT,
         }}>
@@ -591,7 +591,7 @@ const primaryBtnStyle = {
   color: GOLD_DK,
   padding: '12px 20px',
   fontFamily: FONT_SC,
-  fontSize: 12,
+  fontSize: 13,
   letterSpacing: '0.12em',
   textTransform: 'uppercase',
   cursor: 'pointer',
@@ -604,7 +604,7 @@ const ghostBtnStyle = {
   color: GOLD_DK,
   padding: '6px 0',
   fontFamily: FONT_SC,
-  fontSize: 10.5,
+  fontSize: 13,
   letterSpacing: '0.18em',
   textTransform: 'uppercase',
   cursor: 'pointer',

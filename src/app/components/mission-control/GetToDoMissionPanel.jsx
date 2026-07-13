@@ -375,7 +375,7 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
         <button onClick={() => setShowCompleted(false)} style={linkBtn}>
           ← BACK TO LIST
         </button>
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em',
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
           color: GOLD_DK, margin: '18px 0 14px' }}>
           COMPLETED PILE
         </div>
@@ -408,7 +408,7 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
           return (
             <button key={key} onClick={() => { setTab(key); setReorder(false) }}
               style={{
-                ...sc, fontSize: '12px', letterSpacing: '0.12em',
+                ...sc, fontSize: '13px', letterSpacing: '0.12em',
                 textTransform: 'uppercase', background: 'none', border: 'none',
                 cursor: 'pointer', padding: '8px 12px',
                 color: on ? GOLD_DK : TEXT_META,
@@ -482,7 +482,7 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
             </button>
             <button onClick={addDaily} disabled={!draft.trim() || adding}
               style={{
-                ...sc, fontSize: '11px', letterSpacing: '0.12em',
+                ...sc, fontSize: '13px', letterSpacing: '0.12em',
                 padding: '9px 16px', borderRadius: '40px', border: 'none',
                 background: draft.trim() && !adding ? GOLD : GOLD_RULE,
                 color: '#FFFFFF', cursor: draft.trim() ? 'pointer' : 'not-allowed',
@@ -570,7 +570,7 @@ function ListView({ rows, reorder, setReorder, domByKey, emptyMsg, onToggle, onM
 
       {priority.length > 0 && (
         <>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
             color: GOLD_DK, marginBottom: '6px' }}>
             IMPORTANT
           </div>
@@ -626,7 +626,7 @@ function Row({ item, done, reorder, first, last, tag, onToggle, onStar, onSetDat
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px',
             marginTop: '4px', flexWrap: 'wrap' }}>
             {tag && (
-              <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
                 color: TEXT_META, textTransform: 'uppercase' }}>
                 {tag}
               </span>
@@ -637,19 +637,19 @@ function Row({ item, done, reorder, first, last, tag, onToggle, onStar, onSetDat
                 <input type="date" defaultValue={item.due_date || ''} autoFocus
                   onChange={(e) => { onSetDate(e.target.value); setEditingDate(false) }}
                   onBlur={() => setEditingDate(false)}
-                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.06em',
+                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em',
                     border: `1px solid ${GOLD_RULE}`, borderRadius: '4px',
                     padding: '2px 6px', color: TEXT_INK, outline: 'none', background: '#FFFFFF' }} />
               ) : (
                 <button onClick={() => setEditingDate(true)}
-                  style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
                     background: 'none', border: 'none', padding: 0, cursor: 'pointer',
                     color: item.due_date ? GOLD_DK : TEXT_META }}>
                   {item.due_date ? formatDate(item.due_date) : '＋ DATE'}
                 </button>
               )
             ) : item.due_date ? (
-              <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: TEXT_META }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: TEXT_META }}>
                 {formatDate(item.due_date)}
               </span>
             ) : null}
@@ -689,7 +689,7 @@ function Row({ item, done, reorder, first, last, tag, onToggle, onStar, onSetDat
 
       {/* Remove (daily, completed pile) */}
       {!reorder && done && onRemove && (
-        <button onClick={onRemove} style={{ ...linkBtn, color: TEXT_META, fontSize: '10px' }}>
+        <button onClick={onRemove} style={{ ...linkBtn, color: TEXT_META, fontSize: '13px' }}>
           REMOVE
         </button>
       )}
@@ -710,7 +710,7 @@ function ConsistencyLine({ streak, onToggle }) {
       borderRadius: '8px', background: 'rgba(110,127,92,0.05)',
     }}>
       <span style={{ ...body, fontSize: '13px', color: TEXT_META }}>{label}</span>
-      <button onClick={onToggle} style={{ ...linkBtn, color: TEXT_META, fontSize: '10px' }}>
+      <button onClick={onToggle} style={{ ...linkBtn, color: TEXT_META, fontSize: '13px' }}>
         HIDE
       </button>
     </div>
@@ -727,7 +727,7 @@ function Empty({ message, linkLabel, onLink }) {
       </p>
       {linkLabel && (
         <button onClick={onLink} style={{
-          ...sc, fontSize: '11px', letterSpacing: '0.14em',
+          ...sc, fontSize: '13px', letterSpacing: '0.14em',
           background: 'none', border: `1px solid ${GOLD_RULE}`,
           borderRadius: '40px', padding: '8px 18px', color: GOLD_DK, cursor: 'pointer',
         }}>
@@ -791,7 +791,7 @@ function CalendarSection({ userId }) {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: GOLD_DK }}>YOUR DAY</div>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: GOLD_DK }}>YOUR DAY</div>
         {icalUrl && !showSetup && (
           <button onClick={() => setShowSetup(true)} style={{ ...linkBtn, color: TEXT_META }}>
             CHANGE CALENDAR
@@ -813,7 +813,7 @@ function CalendarSection({ userId }) {
               }} />
             <button onClick={handleSave} disabled={!urlDraft.trim() || saving}
               style={{
-                ...sc, fontSize: '11px', letterSpacing: '0.12em', padding: '9px 16px',
+                ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '9px 16px',
                 borderRadius: '40px', border: 'none',
                 background: urlDraft.trim() && !saving ? GOLD : GOLD_RULE,
                 color: '#FFFFFF', cursor: urlDraft.trim() ? 'pointer' : 'not-allowed',
@@ -841,7 +841,7 @@ function CalendarSection({ userId }) {
               borderLeft: `3px solid ${GOLD_RULE}`, background: 'rgba(110,127,92,0.04)',
             }}>
               {evt.time_label && (
-                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: GOLD_DK, marginBottom: '3px' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: GOLD_DK, marginBottom: '3px' }}>
                   {evt.time_label}
                 </div>
               )}
@@ -892,7 +892,7 @@ function FeedSubscribe({ userId, initialToken }) {
 
   return (
     <div style={{ marginTop: '26px', paddingTop: '20px', borderTop: `1px solid ${GOLD_RULE}` }}>
-      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: GOLD_DK, marginBottom: '8px' }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: GOLD_DK, marginBottom: '8px' }}>
         SYNC YOUR TO-DOS
       </div>
       <p style={{ ...body, fontSize: '14px', color: TEXT_META, lineHeight: 1.6, margin: '0 0 14px' }}>
@@ -903,7 +903,7 @@ function FeedSubscribe({ userId, initialToken }) {
       {!token ? (
         <button onClick={ensure} disabled={busy}
           style={{
-            ...sc, fontSize: '11px', letterSpacing: '0.14em',
+            ...sc, fontSize: '13px', letterSpacing: '0.14em',
             background: 'none', border: `1px solid ${GOLD_RULE}`, borderRadius: '40px',
             padding: '8px 18px', color: GOLD_DK, cursor: busy ? 'default' : 'pointer',
           }}>
@@ -914,12 +914,12 @@ function FeedSubscribe({ userId, initialToken }) {
           <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
             <input readOnly value={feedUrl} onFocus={e => e.target.select()}
               style={{
-                flex: 1, ...body, fontSize: '12px', padding: '8px 10px', borderRadius: '6px',
+                flex: 1, ...body, fontSize: '13px', padding: '8px 10px', borderRadius: '6px',
                 border: `1px solid ${GOLD_RULE}`, outline: 'none', background: '#FFFFFF',
                 color: TEXT_META,
               }} />
             <button onClick={copy} style={{
-              ...sc, fontSize: '11px', letterSpacing: '0.12em', padding: '8px 14px',
+              ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '8px 14px',
               borderRadius: '40px', border: 'none', background: GOLD, color: '#FFFFFF', cursor: 'pointer',
             }}>
               {copied ? 'COPIED' : 'COPY'}
@@ -973,7 +973,7 @@ async function computeStreak(userId) {
 // ─── Small shared styles ──────────────────────────────────────
 
 const linkBtn = {
-  ...sc, fontSize: '11px', letterSpacing: '0.14em',
+  ...sc, fontSize: '13px', letterSpacing: '0.14em',
   background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: GOLD_DK,
 }
 
@@ -983,13 +983,13 @@ const starBtn = {
 }
 
 const feedLink = {
-  ...sc, fontSize: '11px', letterSpacing: '0.14em', color: GOLD_DK,
+  ...sc, fontSize: '13px', letterSpacing: '0.14em', color: GOLD_DK,
   textDecoration: 'none', cursor: 'pointer',
 }
 
 function chevron(disabled) {
   return {
-    ...sc, fontSize: '11px', lineHeight: 1, padding: '3px 6px',
+    ...sc, fontSize: '13px', lineHeight: 1, padding: '3px 6px',
     background: 'none', border: `1px solid ${GOLD_RULE}`, borderRadius: '5px',
     color: disabled ? 'rgba(15,21,35,0.25)' : GOLD_DK,
     cursor: disabled ? 'default' : 'pointer',

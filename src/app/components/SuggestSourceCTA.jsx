@@ -103,7 +103,7 @@ export default function SuggestSourceCTA({
           background: 'transparent',
           border: 'none',
           color: at.brass,
-          fontSize: '12px',
+          fontSize: '13px',
           letterSpacing: '0.08em',
           fontWeight: 600,
           cursor: 'pointer',
@@ -241,7 +241,7 @@ export default function SuggestSourceCTA({
               border: 'none',
               borderRadius: '8px',
               padding: '9px 16px',
-              fontSize: '12px',
+              fontSize: '13px',
               letterSpacing: '0.08em',
               fontWeight: 600,
               cursor: submitting ? 'wait' : 'pointer',
@@ -259,7 +259,7 @@ export default function SuggestSourceCTA({
               color: at.ghost,
               border: 'none',
               padding: '9px 4px',
-              fontSize: '12px',
+              fontSize: '13px',
               letterSpacing: '0.08em',
               cursor: 'pointer',
             }}
@@ -278,7 +278,7 @@ function Field({ label, required, children }) {
       <div
         style={{
           ...sc,
-          fontSize: '11px',
+          fontSize: '13px',
           letterSpacing: '0.08em',
           color: at.meta,
           marginBottom: '4px',

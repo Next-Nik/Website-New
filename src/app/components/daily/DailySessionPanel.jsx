@@ -101,7 +101,7 @@ function BackBtn({ label = '← BACK', onClick }) {
   return (
     <button onClick={onClick} style={{
       display: 'block', marginBottom: '16px',
-      fontFamily: SC, fontSize: '11px', letterSpacing: '0.18em',
+      fontFamily: SC, fontSize: '13px', letterSpacing: '0.18em',
       background: 'none', border: 'none', color: FAINT, cursor: 'pointer', padding: 0,
     }}>{label}</button>
   )
@@ -145,12 +145,12 @@ function ToolCard({ name, sub, meta, locked, active, onClick }) {
         <span style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.14em', color: locked ? FAINT : INK }}>
           {name}
         </span>
-        <span style={{ fontFamily: SC, fontSize: '10.5px', letterSpacing: '0.16em', color: locked ? FAINT : GOLD_DK, flexShrink: 0 }}>
+        <span style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.16em', color: locked ? FAINT : GOLD_DK, flexShrink: 0 }}>
           {locked ? 'LOCKED' : active ? 'OPEN ▾' : meta || 'OPEN →'}
         </span>
       </div>
       {sub && (
-        <p style={{ fontFamily: BODY, fontSize: '12.5px', color: FAINT, lineHeight: 1.55, margin: '3px 0 0' }}>
+        <p style={{ fontFamily: BODY, fontSize: '13px', color: FAINT, lineHeight: 1.55, margin: '3px 0 0' }}>
           {sub}
         </p>
       )}
@@ -223,11 +223,11 @@ function AudioPlayer({ currentPhase, showBreath = false }) {
                 <span style={{ fontFamily: BODY, fontSize: '13.5px', color: locked ? FAINT : INK, display: 'block' }}>
                   Horizon State · {p.label}
                 </span>
-                <span style={{ fontFamily: SC, fontSize: '10px', letterSpacing: '0.14em', color: FAINT }}>
+                <span style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.14em', color: FAINT }}>
                   {p.duration.toUpperCase()} · {p.sub.toUpperCase()}
                 </span>
               </span>
-              <span style={{ fontFamily: SC, fontSize: '12px', color: locked ? FAINT : GOLD_DK, marginLeft: '10px' }}>
+              <span style={{ fontFamily: SC, fontSize: '13px', color: locked ? FAINT : GOLD_DK, marginLeft: '10px' }}>
                 {locked ? '🔒' : isSel ? '▾' : '▸'}
               </span>
             </button>
@@ -256,8 +256,8 @@ function AudioPlayer({ currentPhase, showBreath = false }) {
                       <div style={{ height: '100%', width: `${pct}%`, background: GOLD, borderRadius: '2px', transition: 'width 0.4s linear' }} />
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
-                      <span style={{ fontFamily: SC, fontSize: '11px', color: FAINT }}>{fmt(current)}</span>
-                      <span style={{ fontFamily: SC, fontSize: '11px', color: FAINT }}>{fmt(duration)}</span>
+                      <span style={{ fontFamily: SC, fontSize: '13px', color: FAINT }}>{fmt(current)}</span>
+                      <span style={{ fontFamily: SC, fontSize: '13px', color: FAINT }}>{fmt(duration)}</span>
                     </div>
                   </div>
                 </div>
@@ -271,7 +271,7 @@ function AudioPlayer({ currentPhase, showBreath = false }) {
           </div>
         )
       })}
-      <p style={{ fontFamily: SC, fontSize: '10px', letterSpacing: '0.16em', color: FAINT, textAlign: 'center', margin: '8px 0 0' }}>
+      <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.16em', color: FAINT, textAlign: 'center', margin: '8px 0 0' }}>
         MORE AUDIO COMING
       </p>
     </div>
@@ -378,7 +378,7 @@ function HorizonStateProtocol({ user, currentPhase, sessions, lifeIaStatement, r
 
   if (step === 'arrive') return (
     <div>
-      <p style={{ fontFamily: SC, fontSize: '11px', letterSpacing: '0.2em', color: GOLD_DK, margin: '0 0 4px' }}>HORIZON STATE · ARRIVING</p>
+      <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.2em', color: GOLD_DK, margin: '0 0 4px' }}>HORIZON STATE · ARRIVING</p>
       <p style={{ fontFamily: DISP, fontSize: '1.25rem', color: INK, margin: '0 0 16px' }}>Where are you landing?</p>
       <ErrorBanner message={error} onDismiss={() => setError('')} />
       <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
@@ -391,9 +391,9 @@ function HorizonStateProtocol({ user, currentPhase, sessions, lifeIaStatement, r
           <div style={{ opacity: 0.35, display: 'flex', justifyContent: 'center' }}>
             <FlameGlyph value={5} size={28} ghost />
           </div>
-          <p style={{ fontFamily: SC, fontSize: '11px', letterSpacing: '0.18em', color: META, margin: '8px 0 2px' }}>EMBARK</p>
+          <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.18em', color: META, margin: '8px 0 2px' }}>EMBARK</p>
           <p style={{ fontFamily: DISP, fontSize: '1rem', color: FAINT, margin: '0 0 6px' }}>—</p>
-          <p style={{ fontFamily: BODY, fontSize: '11.5px', color: FAINT, lineHeight: 1.5, margin: 0 }}>Check in when you're done.</p>
+          <p style={{ fontFamily: BODY, fontSize: '13px', color: FAINT, lineHeight: 1.5, margin: 0 }}>Check in when you're done.</p>
         </div>
       </div>
       <div style={{ marginTop: '14px' }}>
@@ -407,11 +407,11 @@ function HorizonStateProtocol({ user, currentPhase, sessions, lifeIaStatement, r
 
   if (step === 'listen') return (
     <div>
-      <p style={{ fontFamily: SC, fontSize: '11px', letterSpacing: '0.2em', color: GOLD_DK, margin: '0 0 4px' }}>HORIZON STATE · LISTENING</p>
+      <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.2em', color: GOLD_DK, margin: '0 0 4px' }}>HORIZON STATE · LISTENING</p>
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '5px 12px 5px 10px',
         background: CARD_BG, border: `0.5px solid ${RULE}`, borderRadius: '40px', marginBottom: '14px' }}>
         <FlameGlyph value={beforeValue} size={16} />
-        <span style={{ fontFamily: SC, fontSize: '11px', letterSpacing: '0.14em', color: META }}>ARRIVED {beforeValue}</span>
+        <span style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.14em', color: META }}>ARRIVED {beforeValue}</span>
       </div>
       <AudioPlayer currentPhase={currentPhase} showBreath />
       <div style={{ marginTop: '14px' }}>
@@ -422,15 +422,15 @@ function HorizonStateProtocol({ user, currentPhase, sessions, lifeIaStatement, r
 
   if (step === 'embark') return (
     <div>
-      <p style={{ fontFamily: SC, fontSize: '11px', letterSpacing: '0.2em', color: GOLD_DK, margin: '0 0 4px', textAlign: 'right' }}>HORIZON STATE · EMBARKING</p>
+      <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.2em', color: GOLD_DK, margin: '0 0 4px', textAlign: 'right' }}>HORIZON STATE · EMBARKING</p>
       <p style={{ fontFamily: DISP, fontSize: '1.25rem', color: INK, margin: '0 0 16px', textAlign: 'right' }}>And now?</p>
       <ErrorBanner message={error} onDismiss={() => setError('')} />
       <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
         <div style={{ flex: 1, marginTop: '24px', border: `0.5px solid ${RULE}`, borderRadius: '10px',
           padding: '14px 10px', textAlign: 'center', background: CARD_BG }}>
-          <p style={{ fontFamily: SC, fontSize: '11px', letterSpacing: '0.18em', color: META, margin: '0 0 4px' }}>SHIFT</p>
+          <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.18em', color: META, margin: '0 0 4px' }}>SHIFT</p>
           <p style={{ fontFamily: DISP, fontSize: '1.5rem', color: GOLD_DK, margin: 0, fontWeight: 500 }}>{fmtShift(shift)}</p>
-          <p style={{ fontFamily: BODY, fontSize: '11.5px', color: FAINT, lineHeight: 1.5, margin: '6px 0 0' }}>from {beforeValue} this morning</p>
+          <p style={{ fontFamily: BODY, fontSize: '13px', color: FAINT, lineHeight: 1.5, margin: '6px 0 0' }}>from {beforeValue} this morning</p>
         </div>
         <div style={{ flexShrink: 0 }}>
           <FlameSlider value={afterValue} onChange={setAfter} ghostValue={beforeValue} />
@@ -444,7 +444,7 @@ function HorizonStateProtocol({ user, currentPhase, sessions, lifeIaStatement, r
       </div>
       <button onClick={() => setStep('listen')} style={{
         display: 'block', margin: '10px auto 0',
-        fontFamily: SC, fontSize: '11px', letterSpacing: '0.16em',
+        fontFamily: SC, fontSize: '13px', letterSpacing: '0.16em',
         background: 'none', border: 'none', color: FAINT, cursor: 'pointer',
       }}>← BACK TO AUDIO</button>
     </div>
@@ -464,7 +464,7 @@ function HorizonStateProtocol({ user, currentPhase, sessions, lifeIaStatement, r
         <FlameGlyph value={Math.max(0, Math.min(10, afterValue))} size={52} />
       </div>
       <p style={{ fontFamily: DISP, fontSize: '1.75rem', color: GOLD_DK, margin: '0 0 2px', fontWeight: 500 }}>{fmtShift(shift)} today</p>
-      <p style={{ fontFamily: SC, fontSize: '12px', letterSpacing: '0.14em', color: META, margin: '0 0 16px' }}>{beforeValue} → {afterValue}</p>
+      <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.14em', color: META, margin: '0 0 16px' }}>{beforeValue} → {afterValue}</p>
       <div style={{ display: 'inline-flex', gap: '8px', marginBottom: '6px' }}>
         {weekDays.map(d => (
           <span key={d.ds} style={{ opacity: d.lit ? 1 : 0.22, transform: d.isToday ? 'scale(1.25)' : 'none' }}>
@@ -472,7 +472,7 @@ function HorizonStateProtocol({ user, currentPhase, sessions, lifeIaStatement, r
           </span>
         ))}
       </div>
-      <p style={{ fontFamily: SC, fontSize: '12px', letterSpacing: '0.16em', color: GOLD_DK, margin: '0 0 16px' }}>
+      <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.16em', color: GOLD_DK, margin: '0 0 16px' }}>
         {streak} DAY{streak !== 1 ? 'S' : ''} OF SHOWING UP
       </p>
       {lifeIaStatement && (
@@ -517,7 +517,7 @@ function EveningJournal({ user }) {
 
   return (
     <div>
-      <p style={{ fontFamily: SC, fontSize: '11px', letterSpacing: '0.2em', color: GOLD_DK, margin: '0 0 4px' }}>JOURNAL · EVENING</p>
+      <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.2em', color: GOLD_DK, margin: '0 0 4px' }}>JOURNAL · EVENING</p>
       <p style={{ fontFamily: DISP, fontSize: '1.25rem', color: INK, margin: '0 0 16px' }}>Mark the day.</p>
       <ErrorBanner message={error} onDismiss={() => setError('')} />
       <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
@@ -570,7 +570,7 @@ export default function DailySessionPanel({ user, sprintData, practiceData, mapC
   if (active === 'audio') return (
     <div>
       <BackBtn onClick={close} />
-      <p style={{ fontFamily: SC, fontSize: '11px', letterSpacing: '0.2em', color: GOLD_DK, margin: '0 0 14px' }}>AUDIO · CHOOSE A TRACK</p>
+      <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.2em', color: GOLD_DK, margin: '0 0 14px' }}>AUDIO · CHOOSE A TRACK</p>
       <AudioPlayer currentPhase={currentPhase} showBreath />
     </div>
   )

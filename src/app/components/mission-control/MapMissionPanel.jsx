@@ -60,13 +60,13 @@ function ScoreChip({ label, value, dim, subtitle }) {
         border: `1px solid ${GOLD_RULE}`,
         background: dim ? 'transparent' : 'rgba(110,127,92,0.06)',
         fontFamily: FONT_BODY,
-        fontSize: 12,
+        fontSize: 13,
         lineHeight: 1.2,
         color: TEXT_META,
       }}>
         <span style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: GOLD_DK,
         }}>{label}</span>
@@ -82,7 +82,7 @@ function ScoreChip({ label, value, dim, subtitle }) {
       {subtitle && !dim && (
         <span style={{
           fontFamily: FONT_SC,
-          fontSize: 8.5,
+          fontSize: 13,
           letterSpacing: '0.12em',
           color: TEXT_FAINT,
           textAlign: 'center',
@@ -103,12 +103,12 @@ function StageBadge({ stage }) {
       alignItems: 'center',
       gap: 6,
       fontFamily: FONT_SC,
-      fontSize: 9.5,
+      fontSize: 13,
       letterSpacing: '0.18em',
       color: isComplete ? GOLD_DK : TEXT_FAINT,
     }}>
       <span style={{
-        fontSize: 12,
+        fontSize: 13,
         color: isComplete ? GOLD : 'rgba(110,127,92,0.45)',
       }}>{STAGE_GLYPH[stage]}</span>
       {STAGE_LABELS[stage]}
@@ -264,7 +264,7 @@ export default function MapMissionPanel({ user, onNavigate }) {
       }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 10.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: GOLD_DK,
         }}>
@@ -272,7 +272,7 @@ export default function MapMissionPanel({ user, onNavigate }) {
         </div>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: 9.5,
+          fontSize: 13,
           letterSpacing: '0.18em',
           color: savingPulse ? GOLD : 'transparent',
           transition: 'color 0.25s ease',
@@ -446,7 +446,7 @@ export default function MapMissionPanel({ user, onNavigate }) {
                   }}>
                     <div style={{
                       fontFamily: FONT_SC,
-                      fontSize: 9.5,
+                      fontSize: 13,
                       letterSpacing: '0.18em',
                       color: TEXT_FAINT,
                     }}>
@@ -477,7 +477,7 @@ export default function MapMissionPanel({ user, onNavigate }) {
         }}>
           <p style={{
             fontFamily: FONT_SC,
-            fontSize: 10.5,
+            fontSize: 13,
             letterSpacing: '0.18em',
             color: GOLD_DK,
             margin: '0 0 6px',
@@ -511,7 +511,7 @@ const primaryBtnStyle = {
   color: GOLD_DK,
   padding: '12px 20px',
   fontFamily: FONT_SC,
-  fontSize: 12,
+  fontSize: 13,
   letterSpacing: '0.12em',
   textTransform: 'uppercase',
   cursor: 'pointer',
@@ -524,7 +524,7 @@ const ghostBtnStyle = {
   color: GOLD_DK,
   padding: '6px 0',
   fontFamily: FONT_SC,
-  fontSize: 10.5,
+  fontSize: 13,
   letterSpacing: '0.18em',
   textTransform: 'uppercase',
   cursor: 'pointer',

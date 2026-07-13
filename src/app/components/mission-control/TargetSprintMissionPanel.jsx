@@ -262,7 +262,7 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
         }}>
           <div style={{
             fontFamily: FONT_SC,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.18em',
             color: TEXT_FAINT,
             alignSelf: 'center',
@@ -280,7 +280,7 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
                 color: i === sprintIdx ? GOLD_DK : TEXT_META,
                 padding: '4px 10px',
                 fontFamily: FONT_SC,
-                fontSize: '10px',
+                fontSize: '13px',
                 letterSpacing: '0.16em',
                 cursor: 'pointer',
                 borderRadius: 0,
@@ -292,7 +292,7 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
           <div style={{ flex: 1 }} />
           <div style={{
             fontFamily: FONT_SC,
-            fontSize: '9.5px',
+            fontSize: '13px',
             letterSpacing: '0.18em',
             color: savingPulse ? GOLD : 'transparent',
             transition: 'color 0.25s ease',
@@ -313,7 +313,7 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
         }}>
           <div style={{
             fontFamily: FONT_SC,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             color: TEXT_META,
             textTransform: 'uppercase',
@@ -328,7 +328,7 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
             {sprintCount === 1 && (
               <div style={{
                 fontFamily: FONT_SC,
-                fontSize: '9.5px',
+                fontSize: '13px',
                 letterSpacing: '0.18em',
                 color: savingPulse ? GOLD : 'transparent',
                 transition: 'color 0.25s ease',
@@ -339,7 +339,7 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
             {targetDate && (
               <div style={{
                 fontFamily: FONT_SC,
-                fontSize: '11px',
+                fontSize: '13px',
                 letterSpacing: '0.12em',
                 color: TEXT_META,
               }}>
@@ -368,7 +368,7 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
         <div style={{ marginBottom: '24px' }}>
           <div style={{
             fontFamily: FONT_SC,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             color: TEXT_META,
             textTransform: 'uppercase',
@@ -396,7 +396,7 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
                 }}>
                   <div style={{
                     fontFamily: FONT_SC,
-                    fontSize: '10px',
+                    fontSize: '13px',
                     letterSpacing: '0.16em',
                     color: GOLD_DK,
                     textTransform: 'uppercase',
@@ -458,7 +458,7 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
         <div style={{ marginBottom: '24px' }}>
           <div style={{
             fontFamily: FONT_SC,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             color: TEXT_META,
             textTransform: 'uppercase',
@@ -475,7 +475,7 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
             <div style={{
               marginTop: 10,
               fontFamily: FONT_BODY,
-              fontSize: 12,
+              fontSize: 13,
               color: TEXT_META,
             }}>
               Couldn't save remotely just now — your tick is held locally and will retry.
@@ -531,7 +531,7 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
           }}>
             <div style={{
               fontFamily: FONT_SC,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.22em',
               color: GOLD_DK,
               textTransform: 'uppercase',
@@ -629,7 +629,7 @@ function BearingLog({ user, sprintId }) {
     <div>
       <div style={{
         fontFamily: FONT_SC,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.14em',
         color: TEXT_META,
         textTransform: 'uppercase',
@@ -671,7 +671,7 @@ function BearingLog({ user, sprintId }) {
       {savedAt && (
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: '10px',
+          fontSize: '13px',
           letterSpacing: '0.10em',
           color: TEXT_META,
           marginTop: '6px',
@@ -692,7 +692,7 @@ const primaryBtnStyle = {
   color: GOLD_DK,
   padding: '12px 20px',
   fontFamily: FONT_SC,
-  fontSize: 12,
+  fontSize: 13,
   letterSpacing: '0.12em',
   textTransform: 'uppercase',
   cursor: 'pointer',
@@ -705,7 +705,7 @@ const ghostBtnStyle = {
   color: GOLD_DK,
   padding: '6px 0',
   fontFamily: FONT_SC,
-  fontSize: 10.5,
+  fontSize: 13,
   letterSpacing: '0.18em',
   textTransform: 'uppercase',
   cursor: 'pointer',
@@ -717,7 +717,7 @@ const cancelLinkStyle = {
   color: TEXT_FAINT,
   padding: '6px 0',
   fontFamily: FONT_BODY,
-  fontSize: 12,
+  fontSize: 13,
   cursor: 'pointer',
   textDecoration: 'underline',
   textUnderlineOffset: '3px',

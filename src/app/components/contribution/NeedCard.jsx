@@ -157,7 +157,7 @@ export default function NeedCard({
           {/* Tier badge */}
           <span style={{
             ...sc,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             textTransform: 'uppercase',
             color: '#26302A',
@@ -174,7 +174,7 @@ export default function NeedCard({
             title={MEDIUM_LABELS[need.medium] || need.medium}
             style={{
               ...sc,
-              fontSize: '10px',
+              fontSize: '13px',
               letterSpacing: '0.1em',
               color: 'rgba(15,21,35,0.55)',
               border: '1px solid rgba(110,127,92,0.18)',
@@ -207,7 +207,7 @@ export default function NeedCard({
         <div>
           <span style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.1em',
             color: 'rgba(15,21,35,0.55)',
             background: 'rgba(110,127,92,0.04)',
@@ -227,7 +227,7 @@ export default function NeedCard({
         gap: '14px',
         alignItems: 'center',
         ...sc,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.08em',
         color: 'rgba(15,21,35,0.55)',
       }}>
@@ -264,11 +264,11 @@ export default function NeedCard({
         {alreadyInterested ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <CheckIcon />
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', color: '#2D6A4F' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#2D6A4F' }}>
               Interest expressed
             </span>
             {userInterest.status === 'accepted' && (
-              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', color: '#26302A' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A' }}>
                 · Org accepted
               </span>
             )}
@@ -303,7 +303,7 @@ export default function NeedCard({
                 disabled={submitting || pendingExpress}
                 style={{
                   ...sc,
-                  fontSize: '11px',
+                  fontSize: '13px',
                   letterSpacing: '0.14em',
                   color: '#FFFFFF',
                   background: submitting ? 'rgba(110,127,92,0.5)' : '#6E7F5C',
@@ -320,7 +320,7 @@ export default function NeedCard({
                 onClick={() => { setShowInterestForm(false); setMessage('') }}
                 style={{
                   ...sc,
-                  fontSize: '11px',
+                  fontSize: '13px',
                   letterSpacing: '0.14em',
                   color: 'rgba(15,21,35,0.55)',
                   background: 'transparent',
@@ -335,7 +335,7 @@ export default function NeedCard({
             </div>
             <p style={{
               ...body,
-              fontSize: '12px',
+              fontSize: '13px',
               color: 'rgba(15,21,35,0.55)',
               margin: '8px 0 0',
               lineHeight: 1.5,
@@ -349,7 +349,7 @@ export default function NeedCard({
             onClick={() => setShowInterestForm(true)}
             style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.14em',
               color: '#26302A',
               background: 'rgba(110,127,92,0.06)',

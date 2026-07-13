@@ -86,7 +86,7 @@ export default function BreathPacer({
   const playState = stilled ? 'paused' : 'running'
   const wordBase = {
     position: 'absolute', left: 0, right: 0,
-    fontFamily: SC, fontSize: '12px', letterSpacing: '0.22em',
+    fontFamily: SC, fontSize: '13px', letterSpacing: '0.22em',
     color: GOLD_DK, textAlign: 'center',
     animationDuration: `${total}s`,
     animationTimingFunction: 'linear',
@@ -126,7 +126,7 @@ export default function BreathPacer({
           {stilled && (
             <span style={{
               position: 'absolute', left: 0, right: 0, top: 0,
-              fontFamily: SC, fontSize: '11px', letterSpacing: '0.2em',
+              fontFamily: SC, fontSize: '13px', letterSpacing: '0.2em',
               color: 'rgba(15,21,35,0.55)', textAlign: 'center',
             }}>
               STILLED

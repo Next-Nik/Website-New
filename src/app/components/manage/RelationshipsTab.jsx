@@ -191,7 +191,7 @@ export function RelationshipsTab({ actor, onSave, toast }) {
               <div key={rel.id} style={{ ...cardStyle, opacity: 0.7 }}>
                 <span style={rowText}>
                   {describe(rel, actor.id, nameById)}
-                  <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: gold, marginLeft: '10px', textTransform: 'uppercase' }}>pending</span>
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: gold, marginLeft: '10px', textTransform: 'uppercase' }}>pending</span>
                 </span>
                 <Btn small variant="ghost" onClick={() => severRel(rel)} disabled={busy}>Withdraw</Btn>
               </div>
@@ -238,7 +238,7 @@ export function RelationshipsTab({ actor, onSave, toast }) {
               <div key={r.id} style={cardStyle}>
                 <span style={rowText}>
                   {r.name}
-                  {r.type && <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', marginLeft: '8px', textTransform: 'uppercase' }}>{r.type}</span>}
+                  {r.type && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', marginLeft: '8px', textTransform: 'uppercase' }}>{r.type}</span>}
                 </span>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <Btn small variant="ghost" onClick={() => setParentActor(r)} disabled={busy}>Set as parent</Btn>

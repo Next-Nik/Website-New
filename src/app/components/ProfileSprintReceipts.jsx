@@ -35,7 +35,7 @@ function ReceiptCard({ sprint }) {
         {completedAt && (
           <div style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             color: 'rgba(15,21,35,0.55)',
             marginBottom: '10px',
@@ -52,7 +52,7 @@ function ReceiptCard({ sprint }) {
           {domains.map(id => (
             <span key={id} style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.12em',
               color: 'rgba(45,106,79,0.85)',
               background: 'rgba(45,106,79,0.07)',
@@ -96,7 +96,7 @@ export function ProfileSprintReceipts({ completedSprints }) {
     <div style={{ marginBottom: '72px' }}>
       <div style={{
         ...sc,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.22em',
         color: 'rgba(15,21,35,0.55)',
         marginBottom: '24px',

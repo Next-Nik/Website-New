@@ -99,7 +99,7 @@ export default function TargetSprintSlider({ user, sprintData, onNavigate }) {
             color: GOLD_DK,
             padding: '12px 20px',
             fontFamily: FONT_SC,
-            fontSize: '12px',
+            fontSize: '13px',
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
             cursor: 'pointer',
@@ -145,7 +145,7 @@ export default function TargetSprintSlider({ user, sprintData, onNavigate }) {
         }}>
           <div style={{
             fontFamily: FONT_SC,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             color: TEXT_META,
             textTransform: 'uppercase',
@@ -155,7 +155,7 @@ export default function TargetSprintSlider({ user, sprintData, onNavigate }) {
           {targetDate && (
             <div style={{
               fontFamily: FONT_SC,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.12em',
               color: TEXT_META,
             }}>
@@ -183,7 +183,7 @@ export default function TargetSprintSlider({ user, sprintData, onNavigate }) {
       <div style={{ marginBottom: '24px' }}>
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: '11px',
+          fontSize: '13px',
           letterSpacing: '0.14em',
           color: TEXT_META,
           textTransform: 'uppercase',
@@ -212,7 +212,7 @@ export default function TargetSprintSlider({ user, sprintData, onNavigate }) {
               }}>
                 <div style={{
                   fontFamily: FONT_SC,
-                  fontSize: '10px',
+                  fontSize: '13px',
                   letterSpacing: '0.16em',
                   color: GOLD_DK,
                   textTransform: 'uppercase',
@@ -325,7 +325,7 @@ function BearingLog({ user, sprintId }) {
     <div>
       <div style={{
         fontFamily: FONT_SC,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.14em',
         color: TEXT_META,
         textTransform: 'uppercase',
@@ -367,7 +367,7 @@ function BearingLog({ user, sprintId }) {
       {savedAt && (
         <div style={{
           fontFamily: FONT_SC,
-          fontSize: '10px',
+          fontSize: '13px',
           letterSpacing: '0.10em',
           color: TEXT_META,
           marginTop: '6px',

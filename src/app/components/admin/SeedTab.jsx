@@ -343,19 +343,19 @@ function ReviewCard({ item, onToggle }) {
             {item.image_url
               ? <img src={item.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                   onError={e => { e.currentTarget.style.display = 'none' }} />
-              : <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>NONE</span>}
+              : <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>NONE</span>}
           </div>
 
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
               <span style={{ ...body, fontSize: '18px', color: '#0F1523' }}>{item.name || 'Untitled'}</span>
               {item.type && (
-                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)' }}>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)' }}>
                   {item.type}
                 </span>
               )}
               {item.alignment_score != null && item.alignment_score !== '' && (
-                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: goldText }}>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: goldText }}>
                   {item.alignment_score}/10
                 </span>
               )}
@@ -365,7 +365,7 @@ function ReviewCard({ item, onToggle }) {
                 {item.tagline}
               </div>
             )}
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: item._duplicate ? '#8A6020' : 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: item._duplicate ? '#8A6020' : 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
               from {host}{item._duplicate ? ' · already on the map' : (!floorOk ? ' · below floor' : '')}
             </div>
           </div>
@@ -378,7 +378,7 @@ function ReviewCard({ item, onToggle }) {
         )}
 
         {domains.length > 0 && (
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.06em', color: 'rgba(15,21,35,0.60)', marginTop: '9px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', color: 'rgba(15,21,35,0.60)', marginTop: '9px' }}>
             {domains.join(' · ')}{item.scale ? `  ·  ${item.scale}` : ''}
           </div>
         )}
@@ -386,7 +386,7 @@ function ReviewCard({ item, onToggle }) {
         {links.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '9px' }}>
             {links.map((l, i) => (
-              <span key={i} style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase',
+              <span key={i} style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', textTransform: 'uppercase',
                 color: goldText, background: 'rgba(110,127,92,0.06)',
                 border: '1px solid rgba(110,127,92,0.30)', borderRadius: '40px', padding: '3px 10px' }}>
                 {(l.link_type || 'link').replace(/_/g, ' ')}

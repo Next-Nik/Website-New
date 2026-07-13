@@ -88,14 +88,14 @@ export function EventCard({ event, venue, linkTo, showActor = false, compact = f
       {/* Date eyebrow */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
         <span style={{
-          ...sc, fontSize: '11px', letterSpacing: '0.16em',
+          ...sc, fontSize: '13px', letterSpacing: '0.16em',
           color: gold, textTransform: 'uppercase',
         }}>
           {dateLine}
         </span>
         {badge && (
           <span style={{
-            ...sc, fontSize: '10px', letterSpacing: '0.14em',
+            ...sc, fontSize: '13px', letterSpacing: '0.14em',
             color: badge.color, textTransform: 'uppercase',
             padding: '2px 8px',
             border: `1px solid ${badge.color}33`,
@@ -130,7 +130,7 @@ export function EventCard({ event, venue, linkTo, showActor = false, compact = f
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
           {event.event_types.slice(0, 4).map(t => (
             <span key={t} style={{
-              ...sc, fontSize: '10px', letterSpacing: '0.10em',
+              ...sc, fontSize: '13px', letterSpacing: '0.10em',
               padding: '2px 8px', borderRadius: '40px',
               background: 'rgba(43,74,66,0.08)',
               color: gold,
@@ -139,7 +139,7 @@ export function EventCard({ event, venue, linkTo, showActor = false, compact = f
             </span>
           ))}
           {event.event_types.length > 4 && (
-            <span style={{ ...sc, fontSize: '10px', color: 'rgba(15,21,35,0.55)' }}>
+            <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
               +{event.event_types.length - 4}
             </span>
           )}
