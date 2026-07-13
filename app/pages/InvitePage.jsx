@@ -77,7 +77,7 @@ export function InvitePage() {
     <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav />
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '96px 24px 120px' }}>
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold,
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold,
           textTransform: 'uppercase', marginBottom: '14px' }}>An invitation</div>
         <h1 style={{ ...serif, fontSize: 'clamp(28px,4.5vw,42px)', fontWeight: 400,
           color: dark, lineHeight: 1.12, marginBottom: '16px' }}>
@@ -97,7 +97,7 @@ export function InvitePage() {
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {actor.image_url
               ? <img src={actor.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-              : <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.4)' }}>No image</span>}
+              : <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>No image</span>}
           </div>
           <div>
             <div style={{ ...serif, fontSize: '22px', fontWeight: 400, color: dark, lineHeight: 1.2 }}>{actor.name}</div>

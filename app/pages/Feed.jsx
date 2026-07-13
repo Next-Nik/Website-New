@@ -150,7 +150,7 @@ function LoadMoreButton({ onClick, page }) {
       </button>
       <p style={{
         ...sc,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.14em',
         color: 'rgba(15,21,35,0.55)',
         margin: '12px 0 0',
@@ -173,7 +173,6 @@ function EndOfFeedNotice() {
         ...body,
         fontSize: '17px',
         fontWeight: 400,
-        fontStyle: 'italic',
         color: 'rgba(15,21,35,0.65)',
         lineHeight: 1.7,
         margin: 0,
@@ -241,7 +240,7 @@ export function FeedPage() {
         <div style={{ marginBottom: '40px' }}>
           <span style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.22em',
             color: gold,
             textTransform: 'uppercase',
@@ -298,7 +297,7 @@ export function FeedPage() {
             {!hasMore && !reachedEnd && totalLoaded === items.length && totalLoaded > 0 && (
               <p style={{
                 ...sc,
-                fontSize: '11px',
+                fontSize: '13px',
                 letterSpacing: '0.14em',
                 color: 'rgba(15,21,35,0.55)',
                 textAlign: 'center',

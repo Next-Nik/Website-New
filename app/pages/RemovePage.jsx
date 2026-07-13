@@ -42,7 +42,7 @@ export function RemovePage() {
     <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav />
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '140px 24px', textAlign: 'center' }}>
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold,
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold,
           textTransform: 'uppercase', marginBottom: '16px' }}>NextUs</div>
 
         {state === 'working' && (

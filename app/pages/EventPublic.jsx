@@ -200,7 +200,7 @@ export function EventPublicPage() {
           <div style={{ ...body, fontSize: '15px', color: dark, marginBottom: '24px' }}>
             This Event may have been removed, or the link is wrong.
           </div>
-          <Link to="/" style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: gold, textTransform: 'uppercase' }}>
+          <Link to="/" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, textTransform: 'uppercase' }}>
             ← Back to Mission Control
           </Link>
         </div>
@@ -267,7 +267,7 @@ export function EventPublicPage() {
         }}>
           {startsLong && (
             <div style={{ marginBottom: endsLong || venue ? '8px' : 0 }}>
-              <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '2px' }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '2px' }}>
                 When
               </div>
               <div style={{ ...body, fontSize: '15px', color: dark }}>
@@ -282,7 +282,7 @@ export function EventPublicPage() {
           )}
           {venue && (
             <div style={{ marginTop: startsLong ? '8px' : 0 }}>
-              <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '2px' }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '2px' }}>
                 Where
               </div>
               <div style={{ ...body, fontSize: '15px', color: dark }}>
@@ -298,7 +298,7 @@ export function EventPublicPage() {
           {event.online_url && (
             <div style={{ marginTop: '12px' }}>
               <a href={event.online_url} target="_blank" rel="noreferrer" style={{
-                ...sc, fontSize: '12px', letterSpacing: '0.14em',
+                ...sc, fontSize: '13px', letterSpacing: '0.14em',
                 color: gold, textDecoration: 'none', textTransform: 'uppercase',
               }}>
                 Join online ↗
@@ -312,7 +312,7 @@ export function EventPublicPage() {
           <div style={{ marginBottom: '32px' }}>
             {producers.length > 0 && (
               <div style={{ marginBottom: host ? '16px' : 0 }}>
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '8px' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '8px' }}>
                   Produced by
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -334,7 +334,7 @@ export function EventPublicPage() {
                       <span>
                         <div>{p.name}</div>
                         {p.tagline && (
-                          <div style={{ fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>{p.tagline}</div>
+                          <div style={{ fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{p.tagline}</div>
                         )}
                       </span>
                     </Link>
@@ -344,7 +344,7 @@ export function EventPublicPage() {
             )}
             {host && (
               <div>
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '8px' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '8px' }}>
                   Hosted at
                 </div>
                 <Link to={`/org/${host.id}`} style={{
@@ -374,13 +374,13 @@ export function EventPublicPage() {
         {/* Event Types */}
         {event.event_types?.length > 0 && (
           <div style={{ marginBottom: '32px' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '8px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '8px' }}>
               Event Types
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
               {event.event_types.map(t => (
                 <span key={t} style={{
-                  ...sc, fontSize: '11px', letterSpacing: '0.12em',
+                  ...sc, fontSize: '13px', letterSpacing: '0.12em',
                   padding: '4px 12px', borderRadius: '40px',
                   background: 'rgba(38,48,42,0.10)', color: gold,
                 }}>
@@ -394,13 +394,13 @@ export function EventPublicPage() {
         {/* Domain placements (multi) */}
         {placements.length > 1 && (
           <div style={{ marginBottom: '32px' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '8px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '8px' }}>
               Domains
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
               {placements.map(p => (
                 <span key={p.domain_slug} style={{
-                  ...sc, fontSize: '11px', letterSpacing: '0.12em',
+                  ...sc, fontSize: '13px', letterSpacing: '0.12em',
                   padding: '4px 12px', borderRadius: '40px',
                   border: p.is_primary ? '1.5px solid rgba(110,127,92,0.62)' : '1px solid rgba(110,127,92,0.25)',
                   background: p.is_primary ? 'rgba(38,48,42,0.10)' : 'transparent',
@@ -438,7 +438,7 @@ export function EventPublicPage() {
               )}
               {event.ticket_url && (
                 <a href={event.ticket_url} target="_blank" rel="noreferrer" style={{
-                  ...sc, fontSize: '12px', letterSpacing: '0.14em',
+                  ...sc, fontSize: '13px', letterSpacing: '0.14em',
                   color: gold, textDecoration: 'none',
                   padding: '10px 20px', borderRadius: '40px',
                   border: '1.5px solid rgba(110,127,92,0.40)',

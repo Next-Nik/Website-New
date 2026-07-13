@@ -86,7 +86,7 @@ export function DomainPage() {
         </div>
 
         {/* Header */}
-        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: goldDark, display: 'block', marginBottom: '10px' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: goldDark, display: 'block', marginBottom: '10px' }}>
           The Atlas
         </span>
         <h1 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: dark, marginBottom: '14px', lineHeight: 1.1 }}>
@@ -104,7 +104,7 @@ export function DomainPage() {
           padding: '18px 22px',
           marginBottom: '24px',
         }}>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
             Pick a Focus
           </div>
           <select

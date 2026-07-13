@@ -51,7 +51,7 @@ export default function CuratedFeed() {
 
         <header style={{ marginBottom: '32px' }}>
           <div style={{
-            ...sc, fontSize: '11px', letterSpacing: '0.20em',
+            ...sc, fontSize: '13px', letterSpacing: '0.20em',
             color: gold, textTransform: 'uppercase', marginBottom: '8px',
           }}>
             Sphere of influence
@@ -97,7 +97,7 @@ export default function CuratedFeed() {
           {hasFocus && (
             <p style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.16em',
               color: gold,
               textTransform: 'uppercase',
@@ -181,7 +181,7 @@ function LoadMoreButton({ onClick, page }) {
       }}>
         Load more
       </button>
-      <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', margin: '12px 0 0' }}>
+      <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', margin: '12px 0 0' }}>
         Page {page} of {MAX_PAGES}
       </p>
     </div>
@@ -192,7 +192,7 @@ function EndOfFeedNotice() {
   return (
     <div style={{ textAlign: 'center', padding: '56px 24px 24px', borderTop: '1px solid rgba(110,127,92,0.10)', marginTop: '32px' }}>
       <p style={{
-        ...body, fontSize: '17px', fontWeight: 400, fontStyle: 'italic',
+        ...body, fontSize: '17px', fontWeight: 400,
         color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, margin: 0,
         maxWidth: '420px', marginLeft: 'auto', marginRight: 'auto',
       }}>

@@ -22,7 +22,7 @@ const parch = '#FAFAF7'
 const hair  = '1.5px solid rgba(110,127,92,0.22)'
 
 function Eyebrow({ children }) {
-  return <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold,
+  return <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold,
     textTransform: 'uppercase', marginBottom: '12px' }}>{children}</div>
 }
 function Card({ children }) {
@@ -30,7 +30,7 @@ function Card({ children }) {
     padding: '18px 20px', marginBottom: '20px' }}>{children}</div>
 }
 function Label({ children }) {
-  return <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.20em',
+  return <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em',
     color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '8px' }}>{children}</div>
 }
 const fieldStyle = {
@@ -204,8 +204,8 @@ export function InviteAuthorPage() {
                             padding: '9px 12px', borderRadius: '8px', cursor: 'pointer',
                             border: '1px solid rgba(110,127,92,0.2)', background: '#FAFAF7' }}>
                           <span style={{ ...body, fontSize: '15px', color: dark }}>{r.name}</span>
-                          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em',
-                            color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase' }}>{r.type}</span>
+                          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em',
+                            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>{r.type}</span>
                         </button>
                       ))}
                     </div>
@@ -222,7 +222,7 @@ export function InviteAuthorPage() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
                   <span style={{ ...body, fontSize: '17px', color: dark }}>{chosen.name}</span>
                   <button type="button" onClick={() => setChosen(null)}
-                    style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: gold,
+                    style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: gold,
                       background: 'none', border: 'none', cursor: 'pointer' }}>Change</button>
                 </div>
               )}

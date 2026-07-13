@@ -39,7 +39,7 @@ function GapBlock({ label, text }) {
     }}>
       <p style={{
         ...sc,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.20em',
         color: 'rgba(15,21,35,0.55)',
         textTransform: 'uppercase',
@@ -99,7 +99,7 @@ function InvitationActorCard({ actor, side }) {
           {actor.location_name && (
             <p style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.14em',
               color: 'rgba(15,21,35,0.55)',
               marginTop: '4px',
@@ -113,7 +113,7 @@ function InvitationActorCard({ actor, side }) {
           to={`/org/${actor.id}`}
           style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.12em',
             color: accentColor,
             textDecoration: 'none',
@@ -157,7 +157,7 @@ function SectionNumber({ n }) {
   return (
     <div style={{
       ...sc,
-      fontSize: '11px',
+      fontSize: '13px',
       letterSpacing: '0.22em',
       color: 'rgba(110,127,92,0.55)',
       marginBottom: '10px',
@@ -311,7 +311,7 @@ export function InvitationPage() {
 
         {/* Domain breadcrumb */}
         <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap' }}>
-          <Link to="/invitation" style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
+          <Link to="/invitation" style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
             Invitations
           </Link>
           {primaryDomain && (
@@ -319,14 +319,14 @@ export function InvitationPage() {
               <span style={{ color: 'rgba(110,127,92,0.40)' }}>/</span>
               <Link
                 to={`/domain/${primaryDomain}`}
-                style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, textDecoration: 'none' }}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textDecoration: 'none' }}
               >
                 {CIV_DOMAIN_LABEL[primaryDomain] || primaryDomain}
               </Link>
             </>
           )}
           {domains.slice(1).map(d => (
-            <span key={d} style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
+            <span key={d} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
               · {CIV_DOMAIN_LABEL[d] || d}
             </span>
           ))}
@@ -366,7 +366,7 @@ export function InvitationPage() {
           <SectionNumber n={1} />
           <h2 style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.22em',
             color: 'rgba(15,21,35,0.55)',
             textTransform: 'uppercase',
@@ -401,7 +401,6 @@ export function InvitationPage() {
               ...body,
               fontSize: '14px',
               color: 'rgba(15,21,35,0.55)',
-              fontStyle: 'italic',
               lineHeight: 1.65,
             }}>
               Actor placement is a curatorial decision. Actors engaging with this practice will be named here as the platform develops.
@@ -416,7 +415,7 @@ export function InvitationPage() {
           <SectionNumber n={2} />
           <h2 style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.22em',
             color: 'rgba(15,21,35,0.55)',
             textTransform: 'uppercase',
@@ -432,7 +431,6 @@ export function InvitationPage() {
             color: 'rgba(15,21,35,0.55)',
             lineHeight: 1.6,
             margin: '0 0 24px',
-            fontStyle: 'italic',
           }}>
             Not best stated with false certainty, but the most promising alternative at this stage of evidence, with known limitations named.
           </p>
@@ -462,7 +460,6 @@ export function InvitationPage() {
               ...body,
               fontSize: '14px',
               color: 'rgba(15,21,35,0.55)',
-              fontStyle: 'italic',
               lineHeight: 1.65,
             }}>
               Actors working on this regenerative practice will be named here as curation develops.
@@ -477,7 +474,7 @@ export function InvitationPage() {
           <SectionNumber n={3} />
           <h2 style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.22em',
             color: 'rgba(15,21,35,0.55)',
             textTransform: 'uppercase',
@@ -492,7 +489,6 @@ export function InvitationPage() {
             color: 'rgba(15,21,35,0.55)',
             lineHeight: 1.6,
             margin: '0 0 28px',
-            fontStyle: 'italic',
           }}>
             The honest distance between the extractive incumbent and the regenerative alternative. Named without exaggerating the difficulty or pretending it does not exist.
           </p>
@@ -516,7 +512,7 @@ export function InvitationPage() {
           <SectionNumber n={4} />
           <h2 style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.22em',
             color: 'rgba(15,21,35,0.55)',
             textTransform: 'uppercase',
@@ -548,7 +544,7 @@ export function InvitationPage() {
             <div style={{ marginTop: '36px' }}>
               <p style={{
                 ...sc,
-                fontSize: '11px',
+                fontSize: '13px',
                 letterSpacing: '0.18em',
                 color: 'rgba(15,21,35,0.55)',
                 marginBottom: '16px',
@@ -601,7 +597,7 @@ export function InvitationPage() {
                   to={`/domain/${d}`}
                   style={{
                     ...sc,
-                    fontSize: '12px',
+                    fontSize: '13px',
                     letterSpacing: '0.16em',
                     color: gold,
                     textDecoration: 'none',
@@ -630,7 +626,7 @@ export function InvitationPage() {
               to="/invitation"
               style={{
                 ...sc,
-                fontSize: '12px',
+                fontSize: '13px',
                 letterSpacing: '0.16em',
                 color: 'rgba(15,21,35,0.55)',
                 textDecoration: 'none',
