@@ -404,9 +404,9 @@ function PlatformTab({ onNavigate }) {
         { data: domainCounts }, { data: zeroActorDomains },
       ] = await Promise.all([
         supabase.from('nextus_actors').select('*', { count: 'exact', head: true }),
-        supabase.from('nextus_actors').select('*', { count: 'exact', head: true }).eq('claimed', true),
+        supabase.from('nextus_actors').select('*', { count: 'exact', head: true }).not('profile_owner', 'is', null),
         supabase.from('nextus_needs').select('*', { count: 'exact', head: true }).eq('status', 'open'),
-        supabase.from('nextus_claims').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+        supabase.from('claim_requests').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
         supabase.from('nextus_contributions').select('*', { count: 'exact', head: true }),
         supabase.from('nextus_waitlist').select('*', { count: 'exact', head: true }),
         supabase.from('nextus_domains').select('id, name, total_actors, gap_score, gap_signal, data_status').order('gap_score'),
@@ -424,7 +424,7 @@ function PlatformTab({ onNavigate }) {
     { label: 'Total Actors',  value: stats.totalActors,   tab: 'Actors' },
     { label: 'Claimed',       value: stats.claimedActors, tab: 'Actors' },
     { label: 'Open Needs',    value: stats.openNeeds,     tab: 'Needs' },
-    { label: 'Pending Claims',value: stats.pendingClaims, tab: 'Actors' },
+    { label: 'Pending Claims',value: stats.pendingClaims, tab: 'Flags' },
     { label: 'Contributions', value: stats.totalContribs, tab: 'Contributions' },
     { label: 'Waitlist',      value: stats.waitlistCount, tab: 'Waitlist' },
   ]
@@ -520,50 +520,6 @@ const EMPTY_ACTOR_FORM = {
   alignment_score: '', winning: false, is_platform_founder: false, data_source: '',
 }
 
-
-// ── ResolverNote ──────────────────────────────────────────────────────────────
-// Nik's message back to the claimant. Two buttons: Approve + Decline.
-// The note is optional but encouraged -- it becomes the welcome message.
-
-function ResolverNote({ claimId, onResolve }) {
-  const [note, setNote] = useState('')
-  const [expanded, setExpanded] = useState(false)
-
-  if (!expanded) {
-    return (
-      <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-        <Btn small onClick={() => setExpanded(true)}>Approve</Btn>
-        <Btn small variant="danger" onClick={() => onResolve(false, '')}>Decline</Btn>
-      </div>
-    )
-  }
-
-  return (
-    <div style={{ marginTop: '16px' }}>
-      <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#26302A', textTransform: 'uppercase', marginBottom: '6px' }}>
-        Your message to them (optional but encouraged)
-      </div>
-      <textarea
-        value={note}
-        onChange={e => setNote(e.target.value)}
-        rows={4}
-        placeholder={"Welcome — great to have you in. Feel free to update anything on the profile and reach out if you need a hand at support@nextus.world."}
-        style={{
-          width: '100%', boxSizing: 'border-box',
-          fontFamily: "'Newsreader', Georgia, serif", fontSize: '14px',
-          padding: '10px 14px', border: '1px solid rgba(110,127,92,0.25)',
-          borderRadius: '3px', background: '#FAFAF7', color: '#0F1523',
-          marginBottom: '12px', outline: 'none', resize: 'vertical', lineHeight: 1.6,
-        }}
-      />
-      <div style={{ display: 'flex', gap: '8px' }}>
-        <Btn small onClick={() => onResolve(true, note)}>Approve + send message</Btn>
-        <Btn small variant="danger" onClick={() => onResolve(false, note)}>Decline + send message</Btn>
-        <Btn small onClick={() => setExpanded(false)}>Cancel</Btn>
-      </div>
-    </div>
-  )
-}
 
 // ── Manual actor linker ───────────────────────────────────────
 // Link any two existing actors by hand (e.g. NextUs and Nik Wood). Mirrors the
@@ -696,7 +652,6 @@ function ActorsTab({ toast }) {
   const [form, setForm]         = useState(EMPTY_ACTOR_FORM)
   const [editId, setEditId]     = useState(null)
   const [saving, setSaving]     = useState(false)
-  const [claims, setClaims]     = useState([])
   const [actorDomains, setActorDomains] = useState([])
 
   // HorizonFloor modal state
@@ -723,14 +678,8 @@ function ActorsTab({ toast }) {
     setLoading(false)
   }
 
-  async function fetchClaims() {
-    const { data } = await supabase.from('nextus_claims')
-      .select('*, nextus_actors(name, domain_id)').eq('status', 'pending').order('submitted_at', { ascending: false })
-    setClaims(data || [])
-  }
 
   useEffect(() => { fetchActors() }, [filterDomain, filterType, filterClaimed, filterWinning])
-  useEffect(() => { if (mode === 'claims') fetchClaims() }, [mode])
 
   function setFormField(field, value) {
     setForm(f => { const next = { ...f, [field]: value }; if (field === 'domain_id') next.subdomain_id = ''; return next })
@@ -864,33 +813,6 @@ function ActorsTab({ toast }) {
     fetchActors()
   }
 
-  async function resolveClaim(claimId, actorId, approved, resolverNote = '') {
-    if (approved) {
-      // Guard: don't override an existing owner.
-      const { data: actorRow } = await supabase.from('nextus_actors').select('profile_owner').eq('id', actorId).maybeSingle()
-      if (actorRow?.profile_owner) { toast('Already claimed by someone else.'); fetchClaims(); return }
-      // Grant ownership to the claimant — without this, approval marks the actor
-      // claimed but the person still can't edit (the editor gates on profile_owner).
-      const { data: claimRow } = await supabase.from('nextus_claims').select('user_id').eq('id', claimId).maybeSingle()
-      await supabase.from('nextus_actors')
-        .update({ claimed: true, verified: true, status: 'live', profile_owner: claimRow?.user_id || null })
-        .eq('id', actorId)
-      await supabase.from('nextus_claims').update({
-        status: 'verified',
-        resolved_at: new Date().toISOString(),
-        resolver_note: resolverNote.trim() || null,
-      }).eq('id', claimId)
-      toast('Claim approved — they are in.')
-    } else {
-      await supabase.from('nextus_claims').update({
-        status: 'rejected',
-        resolved_at: new Date().toISOString(),
-        resolver_note: resolverNote.trim() || null,
-      }).eq('id', claimId)
-      toast('Claim declined.')
-    }
-    fetchClaims()
-  }
 
   const domainLabel = id => DOMAIN_LIST.find(d => d.value === id)?.label || id
 
@@ -909,13 +831,12 @@ function ActorsTab({ toast }) {
       )}
 
       <div style={{ display: 'flex', gap: '8px', marginBottom: '28px' }}>
-        {['browse', 'add', 'links', 'claims'].map(m => (
+        {['browse', 'add', 'links'].map(m => (
           <Btn key={m} onClick={() => { setMode(m); if (m === 'add') setForm(EMPTY_ACTOR_FORM) }}
             variant={mode === m || (mode === 'edit' && m === 'add') ? 'primary' : 'ghost'} small>
             {m === 'browse' ? `Browse (${total})`
               : m === 'add' ? '+ Add Actor'
-              : m === 'links' ? 'Links'
-              : `Claims (${claims.length})`}
+              : 'Links'}
           </Btn>
         ))}
       </div>
@@ -1128,54 +1049,6 @@ function ActorsTab({ toast }) {
         </div>
       )}
 
-      {mode === 'claims' && (
-        <div>
-          <h3 style={{ ...body, fontSize: '20px', fontWeight: 400, color: '#0F1523', marginBottom: '20px' }}>
-            Pending claims ({claims.length})
-          </h3>
-          {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
-          {!loading && claims.length === 0 && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No pending claims.</p>}
-          {claims.map(c => (
-            <Card key={c.id}>
-              {/* Org name + claimant */}
-              <div style={{ ...body, fontSize: '17px', color: '#0F1523', marginBottom: '4px', fontWeight: 500 }}>
-                {c.nextus_actors?.name}
-              </div>
-              <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginBottom: '16px' }}>
-                {c.claimant_email || c.user_id}
-                {c.submitted_at && <span style={{ marginLeft: '12px' }}>{new Date(c.submitted_at).toLocaleDateString()}</span>}
-              </div>
-
-              {/* Role */}
-              {c.role && (
-                <div style={{ marginBottom: '12px' }}>
-                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Their role</div>
-                  <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>{c.role}</div>
-                </div>
-              )}
-
-              {/* Note */}
-              {c.note && (
-                <div style={{ marginBottom: '12px' }}>
-                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Their message</div>
-                  <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, fontStyle: 'italic' }}>{c.note}</div>
-                </div>
-              )}
-
-              {/* Evidence link */}
-              {c.evidence && (
-                <div style={{ marginBottom: '16px' }}>
-                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Evidence</div>
-                  <a href={c.evidence} target="_blank" rel="noreferrer" style={{ ...body, fontSize: '14px', color: gold }}>{c.evidence}</a>
-                </div>
-              )}
-
-              {/* Resolver note -- Nik's message back */}
-              <ResolverNote claimId={c.id} onResolve={(approved) => resolveClaim(c.id, c.actor_id, approved)} />
-            </Card>
-          ))}
-        </div>
-      )}
     </div>
   )
 }

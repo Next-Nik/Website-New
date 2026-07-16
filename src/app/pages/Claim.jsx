@@ -273,10 +273,10 @@ function HorizonAlignStep({ actor, userId, onDone }) {
 
 function ActorCard({ actor }) {
   return (
-    <div style={{ background: '#FFF', border: hair, borderRadius: '12px', padding: '20px 22px', marginBottom: '28px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+    <div style={{ background: at.object, border: hair, borderRadius: '12px', padding: '20px 22px', marginBottom: '28px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
       {actor.image_url && (
         <img src={actor.image_url} alt={actor.name}
-          style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0 }} />
+          style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0, background: '#FFF' }} />
       )}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ ...body, fontSize: '17px', color: dark, marginBottom: '4px' }}>{actor.name}</div>
