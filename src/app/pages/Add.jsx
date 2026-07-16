@@ -162,13 +162,24 @@ function DuplicateCard({ actor }) {
           <div style={{ ...body, fontSize: '13px', color: at.ghost }}>{actor.location_name}</div>
         )}
       </div>
-      <Link to={`/org/${actor.slug || actor.id}`} target="_blank"
-        style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
-          textDecoration: 'none', whiteSpace: 'nowrap', padding: '5px 12px',
-          borderRadius: '40px', border: '1px solid rgba(217,178,74,0.35)',
-          background: 'rgba(217,178,74,0.05)' }}>
-        View
-      </Link>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
+        {!actor.profile_owner && (
+          <Link to={`/org/${actor.slug || actor.id}/claim`} target="_blank"
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.object,
+              textDecoration: 'none', whiteSpace: 'nowrap', padding: '5px 12px',
+              borderRadius: '40px', border: '1px solid rgba(217,178,74,0.55)',
+              background: gold }}>
+            Claim it
+          </Link>
+        )}
+        <Link to={`/org/${actor.slug || actor.id}`} target="_blank"
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
+            textDecoration: 'none', whiteSpace: 'nowrap', padding: '5px 12px',
+            borderRadius: '40px', border: '1px solid rgba(217,178,74,0.35)',
+            background: 'rgba(217,178,74,0.05)' }}>
+          View
+        </Link>
+      </div>
     </div>
   )
 }
@@ -377,8 +388,8 @@ export function AddPage() {
     if (!name && !website) return
     const t = setTimeout(async () => {
       const queries = []
-      if (name)    queries.push(supabase.from('nextus_actors').select('id,name,slug,website,location_name').ilike('name', `%${name}%`).eq('status','live').limit(3))
-      if (website) queries.push(supabase.from('nextus_actors').select('id,name,slug,website,location_name').eq('website', website).eq('status','live').limit(3))
+      if (name)    queries.push(supabase.from('nextus_actors').select('id,name,slug,website,location_name,profile_owner').ilike('name', `%${name}%`).eq('status','live').limit(3))
+      if (website) queries.push(supabase.from('nextus_actors').select('id,name,slug,website,location_name,profile_owner').eq('website', website).eq('status','live').limit(3))
       const results = await Promise.all(queries)
       const all = results.flatMap(r => r.data || [])
       const seen = new Set()
@@ -877,23 +888,26 @@ export function AddPage() {
         {duplicates.length > 0 && !dupDismissed && (
           <div style={{ background: 'rgba(217,178,74,0.04)', border: '1px solid rgba(217,178,74,0.28)',
             borderRadius: '12px', padding: '16px 18px', marginBottom: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold,
               marginBottom: '10px' }}>
-              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold }}>
-                Already on the map
-              </div>
-              <button onClick={() => setDupDismissed(true)}
-                style={{ ...body, fontSize: '13px', color: at.ghost,
-                  background: 'none', border: 'none', cursor: 'pointer' }}>
-                These are different, continue
-              </button>
+              Already on the map?
             </div>
             <p style={{ ...body, fontSize: '13px', color: at.meta,
               lineHeight: 1.55, marginBottom: '10px' }}>
               {duplicates.length === 1 ? 'A similar entry is' : 'Similar entries are'} already on the map.
-              Is one of these what you're adding?
+              If one of these is what you're adding, view it · claim it if it's yours.
+              This is only a heads-up · it doesn't stop you.
             </p>
             {duplicates.map(a => <DuplicateCard key={a.id} actor={a} />)}
+            <div style={{ marginTop: '12px' }}>
+              <button type="button" onClick={() => setDupDismissed(true)}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '9px 20px',
+                  borderRadius: '40px', cursor: 'pointer',
+                  border: '1.5px solid rgba(217,178,74,0.55)',
+                  background: 'rgba(217,178,74,0.06)', color: gold }}>
+                I'm adding something different · continue
+              </button>
+            </div>
           </div>
         )}
 
