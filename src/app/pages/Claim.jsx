@@ -23,6 +23,25 @@ import { supabase }    from '../../hooks/useSupabase'
 import { useAuth }     from '../../hooks/useAuth'
 import { serif, body, sc, at } from '../../lib/designTokens'
 
+// claim-verify derives identity from the verified session token (api/_auth.js).
+// Every call must carry the Bearer header — without it the API returns 401
+// and the claim silently dies. This helper is the only way to call it.
+async function claimApi(payload) {
+  let token = null
+  try { token = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
+  if (!token) return { error: 'Your session has expired. Please sign in again and retry.' }
+  try {
+    const res = await fetch('/api/claim-verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(payload),
+    })
+    return await res.json()
+  } catch {
+    return { error: 'Network error. Please try again.' }
+  }
+}
+
 const gold  = at.brass
 const GOLD_C = at.verdigris
 const dark  = at.text
@@ -292,8 +311,7 @@ function CodePath({ actor, userId, actorDomain, onApproved }) {
   async function sendCode() {
     if (!orgEmail.trim()) return
     setLoading(true); setErr(null)
-    const res  = await fetch('/api/claim-verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'send_code', actorId: actor.id, userId, email: orgEmail.trim() }) })
-    const data = await res.json()
+    const data = await claimApi({ action: 'send_code', actorId: actor.id, email: orgEmail.trim() })
     setLoading(false)
     if (data.error) { setErr(data.error); return }
     setCodeSent(true); setResendCd(60)
@@ -302,8 +320,7 @@ function CodePath({ actor, userId, actorDomain, onApproved }) {
   async function verifyCode() {
     if (!codeInput.trim()) return
     setLoading(true); setErr(null)
-    const res  = await fetch('/api/claim-verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'verify_code', actorId: actor.id, userId, code: codeInput.trim() }) })
-    const data = await res.json()
+    const data = await claimApi({ action: 'verify_code', actorId: actor.id, code: codeInput.trim() })
     setLoading(false)
     if (data.error) { setErr(data.error); return }
     if (data.approved) onApproved()
@@ -376,8 +393,7 @@ function RequestPath({ actor, userId, userEmail, onSubmitted }) {
 
   async function submit() {
     setLoading(true); setErr(null)
-    const res  = await fetch('/api/claim-verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'submit_request', actorId: actor.id, userId, note, evidenceUrl, userEmail }) })
-    const data = await res.json()
+    const data = await claimApi({ action: 'submit_request', actorId: actor.id, note, evidenceUrl })
     setLoading(false)
     if (data.error) { setErr(data.error); return }
     onSubmitted()
@@ -461,13 +477,15 @@ export function ClaimPage() {
   async function proceed() {
     if (!confirmed || !actor || !user) return
     setChecking(true)
-    const res  = await fetch('/api/claim-verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'check_domain', actorId: actor.id, userId: user.id, userEmail: user.email }) })
-    const data = await res.json()
+    const data = await claimApi({ action: 'check_domain', actorId: actor.id })
     setChecking(false)
     if (data.alreadyClaimed) { setPageErr('This profile was just claimed.'); return }
+    if (data.error) { setPageErr(data.error); return }
     if (data.approved) { setStage('align'); return }
+    if (data.path !== 'code' && data.path !== 'request') { setPageErr('Something went wrong checking your claim. Please try again.'); return }
     setActorDomain(data.actorDomain)
-    setStage(data.path === 'auto' ? 'done' : data.path)  // 'code' | 'request'
+    setPageErr(null)
+    setStage(data.path)  // 'code' | 'request'
   }
 
   if (authLoading || loading) return (

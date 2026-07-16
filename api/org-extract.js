@@ -998,6 +998,23 @@ module.exports = async function handler(req, res) {
       messages: [{ role: 'user', content }],
     })
 
+    // Anti-fabrication guard. In web_search mode the model was handed only the
+    // URL string — if the search tool returned nothing (outage, blocked, empty),
+    // the model can only invent a profile from the URL text. Refuse honestly
+    // instead of returning fabrication.
+    if (useWebSearch) {
+      const searchResults = response.content.filter(b => b.type === 'web_search_tool_result')
+      const gotResults = searchResults.some(b =>
+        Array.isArray(b.content) ? b.content.length > 0 : !b.content?.error_code
+      )
+      if (!gotResults) {
+        return res.status(200).json({
+          error:   'source_unread',
+          message: 'We could not read that source right now, so nothing was generated. Try again in a few minutes, or fill the form in manually.',
+        })
+      }
+    }
+
     const rawText = response.content
       .filter(b => b.type === 'text')
       .map(b => b.text)
@@ -1047,6 +1064,24 @@ module.exports = async function handler(req, res) {
 
   } catch (err) {
     console.error('org-extract error:', err)
-    return res.status(500).json({ error: 'extraction_failed', message: err.message })
+    // Outage classification. When the AI service itself is down or overloaded
+    // (429 rate-limit, 5xx, 529 overloaded, connection failures), say so plainly
+    // — never leak a raw SDK message, and never let the client mistake this for
+    // a problem with their input.
+    const status = err?.status || err?.statusCode || null
+    const isDown = (status && (status === 429 || status >= 500))
+      || err?.name === 'APIConnectionError'
+      || err?.name === 'APIConnectionTimeoutError'
+      || /overloaded|ECONNRE|ETIMEDOUT|fetch failed/i.test(err?.message || '')
+    if (isDown) {
+      return res.status(503).json({
+        error:   'service_down',
+        message: 'Our reading system is down right now. Send us a message at hello@nextus.world and try again later, or fill the form in manually.',
+      })
+    }
+    return res.status(500).json({
+      error:   'extraction_failed',
+      message: 'Something went wrong reading that source. Try again, or fill the form in manually.',
+    })
   }
 }

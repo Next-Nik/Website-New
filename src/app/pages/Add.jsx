@@ -393,8 +393,9 @@ export function AddPage() {
   async function readSite() {
     const input = aiUrl.trim()
     if (!input) return
-    setReading(true); setReadErr(null); setAiUsed(false)
+    setReading(true); setReadErr(null)
     setExtras([]); setExtraChecked([])
+    setDupDismissed(false)
 
     try {
       const res  = await fetch('/api/org-extract', {
@@ -407,19 +408,22 @@ export function AddPage() {
       const results = data.results || []
       if (!results.length) { setReadErr('No actor found at that URL.'); return }
 
-      // First result populates the main form
+      // First result populates the main form. Build from a clean slate rather
+      // than merging into current state — a re-read must fully replace a prior
+      // (possibly garbage) read, never mix with it.
       const primary = results[0]
-      setForm(f => ({
-        ...f,
-        name:           primary.name           || f.name,
-        type:           primary.type           || f.type,
-        tagline:        primary.tagline        || f.tagline,
-        image_url:      primary.image_url      || f.image_url,
+      const base = mineMode ? { ...EMPTY_FORM, type: 'practitioner' } : EMPTY_FORM
+      setForm({
+        ...base,
+        name:           primary.name           || base.name,
+        type:           primary.type           || base.type,
+        tagline:        primary.tagline        || base.tagline,
+        image_url:      primary.image_url      || base.image_url,
         website:        primary.website        || aiUrl,
-        primary_domain: primary.domains?.[0]   || primary.domain_id || f.primary_domain,
-        scale:          primary.scale          || f.scale,
-        location_name:  primary.location_name  || f.location_name,
-        description:    primary.description    || f.description,
+        primary_domain: primary.domains?.[0]   || primary.domain_id || base.primary_domain,
+        scale:          primary.scale          || base.scale,
+        location_name:  primary.location_name  || base.location_name,
+        description:    primary.description    || base.description,
         // Placement — subdomain/field/chain slugs the extractor assigned
         subdomains:     primary.subdomains     || [],
         fields:         primary.fields         || [],
@@ -433,7 +437,7 @@ export function AddPage() {
         practices:      primary.practices       || [],
         // Stash relationships so primary can have parent/child resolved
         relationships:  primary.relationships  || [],
-      }))
+      })
       setAiUsed(true)
       setImgBroken(false)
 
@@ -454,7 +458,8 @@ export function AddPage() {
 
   // Reset everything and return to the source stage
   function startOver() {
-    setForm(EMPTY_FORM)
+    setForm(mineMode ? { ...EMPTY_FORM, type: 'practitioner' } : EMPTY_FORM)
+    setRepresents(mineMode ? true : false)
     setExtras([]); setExtraChecked([])
     setAiUrl(''); setAiUsed(false); setReadErr(null)
     setImgBroken(false)
@@ -482,6 +487,75 @@ export function AddPage() {
   }
 
   const selectedGoal = DOMAIN_HORIZON_GOALS[form.primary_domain]
+
+  // ── Ownership toggle ─────────────────────────────────────────
+  // Rendered on BOTH stages. The pick must stay changeable on the review
+  // form: locking it after the read forced a full restart when someone
+  // picked wrong (July 2026). Hidden in owned-only mode: the only valid
+  // outcome there is a profile the person controls.
+  const representsToggle = !mineMode && (
+        <div style={{ background: at.object, border: '1.5px solid rgba(217,178,74,0.22)',
+          borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em',
+            color: at.ghost, textTransform: 'uppercase', marginBottom: '12px' }}>
+            Your relationship to this entry
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {(() => {
+              // Adapt the toggle copy to the selected actor type
+              const t = form.type
+              const isPractitioner = t === 'practitioner'
+              const isPerson       = isPractitioner
+              const targetWord     = isPractitioner ? 'practitioner' :
+                                     t === 'organisation' ? 'organisation' :
+                                     t === 'place'        ? 'place' :
+                                     t === 'programme'    ? 'programme' :
+                                     t === 'project'      ? 'project' :
+                                     t === 'group'        ? 'group' :
+                                     t === 'resource'     ? 'resource' :
+                                     'entry'
+              const selfLabel = isPractitioner
+                ? 'I am this person'
+                : t === 'organisation' ? 'I represent this organisation'
+                : t === 'place'        ? 'I run / steward this place'
+                : t === 'programme'    ? 'I run this programme'
+                : t === 'project'      ? 'I run this project'
+                : t === 'group'        ? 'I run this group'
+                : t === 'resource'     ? 'I created this resource'
+                : 'This is mine'
+              const selfHint = isPractitioner
+                ? "I'm adding my own practitioner profile. I'll own and manage it."
+                : `I'm adding my own ${targetWord}. I'll be the owner and can manage it directly.`
+              const otherLabel = "I'm adding this to the ecosystem"
+              const otherHint  = isPractitioner
+                ? `I don't represent this person. NextUs holds the entry in trust until they claim it.`
+                : `I don't run this ${targetWord}. NextUs holds the entry in trust until claimed.`
+              return [
+                { val: false, label: otherLabel, hint: otherHint },
+                { val: true,  label: selfLabel,  hint: selfHint  },
+              ]
+            })().map(opt => (
+              <button key={String(opt.val)} type="button" onClick={() => setRepresents(opt.val)}
+                style={{ display: 'flex', alignItems: 'flex-start', gap: '12px',
+                  padding: '13px 15px', borderRadius: '9px', cursor: 'pointer', textAlign: 'left',
+                  border: represents === opt.val
+                    ? '1.5px solid rgba(217,178,74,0.55)' : '1.5px solid rgba(217,178,74,0.18)',
+                  background: represents === opt.val ? 'rgba(217,178,74,0.04)' : at.object }}>
+                <div style={{ width: '17px', height: '17px', borderRadius: '50%', flexShrink: 0,
+                  marginTop: '2px',
+                  border: represents === opt.val ? `5px solid ${at.brass}` : '2px solid rgba(217,178,74,0.38)',
+                  background: at.object, transition: 'all 0.15s ease' }} />
+                <div>
+                  <div style={{ ...body, fontSize: '15px', color: dark, lineHeight: 1.3 }}>{opt.label}</div>
+                  <div style={{ ...body, fontSize: '13px', color: at.ghost,
+                    lineHeight: 1.5, marginTop: '3px' }}>{opt.hint}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+  )
+
 
   // ── Submit ───────────────────────────────────────────────────
   // The save runs entirely server-side via /api/add-actor (service-role). The
@@ -594,7 +668,7 @@ export function AddPage() {
   }
 
   function reset() {
-    setForm(EMPTY_FORM); setRepresents(false); setSaved([]); setError(null)
+    setForm(mineMode ? { ...EMPTY_FORM, type: 'practitioner' } : EMPTY_FORM); setRepresents(mineMode ? true : false); setSaved([]); setError(null)
     setAiUrl(''); setAiUsed(false); setReadErr(null)
     setImgBroken(false); setStage('source')
     setExtras([]); setExtraChecked([]); setDuplicates([]); setDupDismissed(false)
@@ -688,72 +762,7 @@ export function AddPage() {
             after a source is read or manual entry is chosen. */}
         {stage === 'source' && (
           <>
-        {/* ── Representation toggle ───────────────────────────
-            Hidden in owned-only mode: the only valid outcome there is a
-            profile the person controls, so there is no "adding to the
-            ecosystem" option to offer. */}
-        {!mineMode && (
-        <div style={{ background: at.object, border: '1.5px solid rgba(217,178,74,0.22)',
-          borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
-          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em',
-            color: at.ghost, textTransform: 'uppercase', marginBottom: '12px' }}>
-            Your relationship to this entry
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {(() => {
-              // Adapt the toggle copy to the selected actor type
-              const t = form.type
-              const isPractitioner = t === 'practitioner'
-              const isPerson       = isPractitioner
-              const targetWord     = isPractitioner ? 'practitioner' :
-                                     t === 'organisation' ? 'organisation' :
-                                     t === 'place'        ? 'place' :
-                                     t === 'programme'    ? 'programme' :
-                                     t === 'project'      ? 'project' :
-                                     t === 'group'        ? 'group' :
-                                     t === 'resource'     ? 'resource' :
-                                     'entry'
-              const selfLabel = isPractitioner
-                ? 'I am this person'
-                : t === 'organisation' ? 'I represent this organisation'
-                : t === 'place'        ? 'I run / steward this place'
-                : t === 'programme'    ? 'I run this programme'
-                : t === 'project'      ? 'I run this project'
-                : t === 'group'        ? 'I run this group'
-                : t === 'resource'     ? 'I created this resource'
-                : 'This is mine'
-              const selfHint = isPractitioner
-                ? "I'm adding my own practitioner profile. I'll own and manage it."
-                : `I'm adding my own ${targetWord}. I'll be the owner and can manage it directly.`
-              const otherLabel = "I'm adding this to the ecosystem"
-              const otherHint  = isPractitioner
-                ? `I don't represent this person. NextUs holds the entry in trust until they claim it.`
-                : `I don't run this ${targetWord}. NextUs holds the entry in trust until claimed.`
-              return [
-                { val: false, label: otherLabel, hint: otherHint },
-                { val: true,  label: selfLabel,  hint: selfHint  },
-              ]
-            })().map(opt => (
-              <button key={String(opt.val)} type="button" onClick={() => setRepresents(opt.val)}
-                style={{ display: 'flex', alignItems: 'flex-start', gap: '12px',
-                  padding: '13px 15px', borderRadius: '9px', cursor: 'pointer', textAlign: 'left',
-                  border: represents === opt.val
-                    ? '1.5px solid rgba(217,178,74,0.55)' : '1.5px solid rgba(217,178,74,0.18)',
-                  background: represents === opt.val ? 'rgba(217,178,74,0.04)' : at.object }}>
-                <div style={{ width: '17px', height: '17px', borderRadius: '50%', flexShrink: 0,
-                  marginTop: '2px',
-                  border: represents === opt.val ? '5px solid at.brass' : '2px solid rgba(217,178,74,0.38)',
-                  background: at.object, transition: 'all 0.15s ease' }} />
-                <div>
-                  <div style={{ ...body, fontSize: '15px', color: dark, lineHeight: 1.3 }}>{opt.label}</div>
-                  <div style={{ ...body, fontSize: '13px', color: at.ghost,
-                    lineHeight: 1.5, marginTop: '3px' }}>{opt.hint}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-        )}
+        {representsToggle}
 
         {/* ── Optional URL autofill ─────────────────────────── */}
         <div style={{ background: at.object, border: '1.5px solid rgba(217,178,74,0.22)',
@@ -830,20 +839,39 @@ export function AddPage() {
         {stage === 'form' && (
           <>
             {/* Collapsed source summary */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '14px', flexWrap: 'wrap',
               background: at.object, border: '1px solid rgba(217,178,74,0.22)',
               borderRadius: '10px', padding: '12px 18px', marginBottom: '28px' }}>
               <span style={{ ...body, fontSize: '14px', color: at.meta }}>
                 {aiUsed
-                  ? `Read from ${(() => { try { return new URL(normaliseUrl(aiUrl.trim())).hostname.replace(/^www\./, '') } catch { return 'source' } })()} — review and edit below.`
+                  ? `Read from ${(() => { try { return new URL(normaliseUrl(aiUrl.trim())).hostname.replace(/^www\./, '') } catch { return 'source' } })()} · review and edit below.`
                   : 'Filling in manually.'}
               </span>
-              <button type="button" onClick={startOver}
-                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
-                  background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                Start over
-              </button>
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                {aiUsed && aiUrl.trim() && (
+                  <button type="button" onClick={readSite} disabled={reading}
+                    style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
+                      background: 'none', border: 'none', cursor: reading ? 'default' : 'pointer', whiteSpace: 'nowrap',
+                      opacity: reading ? 0.55 : 1 }}>
+                    {reading ? 'Reading…' : 'Read again'}
+                  </button>
+                )}
+                <button type="button" onClick={startOver}
+                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
+                    background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                  Start over
+                </button>
+              </div>
             </div>
+
+            {readErr && (
+              <div style={{ background: 'rgba(138,48,48,0.05)', border: '1px solid rgba(138,48,48,0.25)',
+                borderRadius: '8px', padding: '12px 16px', marginBottom: '24px' }}>
+                <p style={{ ...body, fontSize: '14px', color: '#8A3030', margin: 0 }}>{readErr}</p>
+              </div>
+            )}
+
+            {representsToggle}
 
         {/* ── Duplicate warning ─────────────────────────────── */}
         {duplicates.length > 0 && !dupDismissed && (
