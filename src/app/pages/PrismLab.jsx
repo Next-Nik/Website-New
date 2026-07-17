@@ -738,6 +738,25 @@ function matchGuide(fit, guides, taken) {
 
 const pathD = (pts) => 'M ' + pts.map(p => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L ')
 
+// Ramer-Douglas-Peucker simplification: reduces a stroke to its corner
+// vertices so a triangle (or square, or star) drawn in one continuous
+// motion can be recognised side by side.
+function simplify(pts, tol = 14) {
+  if (pts.length < 3) return pts
+  let maxD = 0, idx = 0
+  const a = pts[0], b = pts[pts.length - 1]
+  const abx = b.x - a.x, aby = b.y - a.y
+  const abLen = Math.hypot(abx, aby) || 1e-9
+  for (let i = 1; i < pts.length - 1; i++) {
+    const d = Math.abs(abx * (a.y - pts[i].y) - (a.x - pts[i].x) * aby) / abLen
+    if (d > maxD) { maxD = d; idx = i }
+  }
+  if (maxD <= tol) return [a, b]
+  const left = simplify(pts.slice(0, idx + 1), tol)
+  const right = simplify(pts.slice(idx), tol)
+  return [...left.slice(0, -1), ...right]
+}
+
 function GeometryPractice() {
   const [shapeKey, setShapeKey] = useState('vesica')
   const [step, setStep] = useState(0)
@@ -747,12 +766,33 @@ function GeometryPractice() {
   const canvasRef = useRef(null)
   const drawing = useRef(false)
   const stroke = useRef([])
+  const strokes = useRef([]) // kept strokes that matched nothing (free marks)
 
   const shape = GEO_SHAPES.find(s => s.key === shapeKey)
   const lastStep = step === shape.steps.length - 1
 
+  const drawSeg = (ctx, p0, p1) => {
+    ctx.strokeStyle = fn.ink
+    ctx.lineWidth = 2.2
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    ctx.moveTo(p0.x, p0.y)
+    ctx.lineTo(p1.x, p1.y)
+    ctx.stroke()
+  }
+
+  const redraw = () => {
+    const c = canvasRef.current
+    const ctx = c.getContext('2d')
+    ctx.clearRect(0, 0, c.width, c.height)
+    for (const st of strokes.current) {
+      for (let i = 1; i < st.length; i++) drawSeg(ctx, st[i - 1], st[i])
+    }
+  }
+
   const resetAll = (key = shapeKey) => {
     setShapeKey(key); setStep(0); setRecognised([]); setTaken(new Set()); setResolved(false)
+    strokes.current = []
     const c = canvasRef.current
     if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height)
   }
@@ -777,21 +817,12 @@ function GeometryPractice() {
     const p = pos(e)
     const prev = stroke.current[stroke.current.length - 1]
     stroke.current.push(p)
-    const ctx = canvasRef.current.getContext('2d')
-    ctx.strokeStyle = fn.ink
-    ctx.lineWidth = 2.2
-    ctx.lineCap = 'round'
-    ctx.beginPath()
-    ctx.moveTo(prev.x, prev.y)
-    ctx.lineTo(p.x, p.y)
-    ctx.stroke()
+    drawSeg(canvasRef.current.getContext('2d'), prev, p)
   }
-  const up = () => {
-    if (!drawing.current) return
-    drawing.current = false
-    const fit = fitStroke(stroke.current)
-    stroke.current = []
-    if (!fit) return
+
+  // Match against every step revealed so far; quiet on non-match.
+  const tryMatch = (fit) => {
+    if (!fit) return false
     for (let s = 0; s <= step; s++) {
       const offset = shape.steps.slice(0, s).reduce((a, st) => a + st.guides.length, 0)
       const localTaken = new Set([...taken].filter(t => t >= offset && t < offset + shape.steps[s].guides.length).map(t => t - offset))
@@ -799,12 +830,42 @@ function GeometryPractice() {
       if (m) {
         setRecognised(r => [...r, m.element])
         if (!m.multi) setTaken(t => new Set([...t, offset + m.index]))
-        return
+        return true
       }
     }
+    return false
+  }
+
+  const up = () => {
+    if (!drawing.current) return
+    drawing.current = false
+    const pts = stroke.current
+    stroke.current = []
+    let matched = false
+
+    // 1 · whole stroke: circle, arc, petal, single line
+    if (tryMatch(fitStroke(pts))) matched = true
+
+    // 2 · corner-split: recognise each side of a multi-segment stroke
+    if (!matched && pts.length >= 3) {
+      const closed = Math.hypot(pts[0].x - pts[pts.length - 1].x, pts[0].y - pts[pts.length - 1].y) < 36
+      const verts = simplify(pts)
+      const ring = closed && verts.length > 2 ? [...verts, verts[0]] : verts
+      for (let i = 1; i < ring.length; i++) {
+        const a = ring[i - 1], b = ring[i]
+        if (Math.hypot(a.x - b.x, a.y - b.y) < 40) continue
+        if (tryMatch({ kind: 'line', x1: a.x, y1: a.y, x2: b.x, y2: b.y })) matched = true
+      }
+    }
+
+    // Snap: a stroke that found its form clicks into place · the hand
+    // line is replaced by the perfect one. Unmatched strokes remain.
+    if (matched) redraw()
+    else { strokes.current.push(pts); }
   }
 
   const clearCanvas = () => {
+    strokes.current = []
     canvasRef.current.getContext('2d').clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
     setRecognised([]); setTaken(new Set()); setResolved(false)
   }
@@ -842,7 +903,7 @@ function GeometryPractice() {
 
   const renderPerfect = (el, i, cls) => {
     if (el.kind === 'circle') return <circle key={`r${i}`} className={cls} cx={el.x} cy={el.y} r={el.r} fill="none" stroke={fn.moss} strokeWidth="2" />
-    if (el.kind === 'line') return <line key={`r${i}`} className={cls} x1={el.x1} y1={el.y1} x2={el.x2} y2={el.y2} stroke={fn.moss} strokeWidth="1.2" />
+    if (el.kind === 'line') return <line key={`r${i}`} className={cls} x1={el.x1} y1={el.y1} x2={el.x2} y2={el.y2} stroke={fn.moss} strokeWidth="1.6" />
     if (el.kind === 'path') return <path key={`r${i}`} className={cls} d={pathD(el.pts)} fill="none" stroke={fn.moss} strokeWidth="2" />
     return null
   }
@@ -860,9 +921,10 @@ function GeometryPractice() {
     <div>
       <p style={{ ...fnText.body, maxWidth: 640, marginBottom: space.xl }}>
         Draw slowly, by hand · finger or Pencil. You are not learning these forms;
-        you are recognising them. When your line finds a form, the form answers ·
-        it appears beneath your stroke, and your stroke remains. Paper, a coin, and
-        a pencil remain the deepest version. This is the travelling one.
+        you are recognising them. When your line finds a form, it clicks into place ·
+        your stroke becomes the perfect one. Draw a whole triangle in one motion or
+        side by side; both are heard. Paper, a coin, and a pencil remain the deepest
+        version. This is the travelling one.
       </p>
 
       <div style={{ display: 'flex', gap: space.sm, flexWrap: 'wrap', marginBottom: space.xl }}>
@@ -900,7 +962,7 @@ function GeometryPractice() {
           .prism-geo-guide { position: absolute; inset: 0; width: 100%; height: 100%; }
           .prism-hand { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; transition: opacity 2.4s ease; }
           .prism-hand-ghost { opacity: 0.12; }
-          .prism-reco { opacity: 0.55; animation: prismRecoIn 1.6s ease; }
+          .prism-reco { opacity: 0.55; animation: prismRecoIn 0.9s ease; }
           @keyframes prismRecoIn { from { opacity: 0; } to { opacity: 0.55; } }
         `}</style>
 
@@ -924,7 +986,7 @@ function GeometryPractice() {
               <div style={{ ...fnText.eyebrow, marginBottom: space.sm }}>{shape.name}</div>
               <h3 style={{ ...fnText.heading, marginBottom: space.sm }}>Revealed</h3>
               <p style={{ ...fnText.body, marginBottom: space.xl }}>
-                The form was always there. Your hand found it · its trace remains beneath.
+                The form was always there. Your hand found it.
               </p>
               <div style={{ display: 'flex', gap: space.sm, flexWrap: 'wrap' }}>
                 <button style={btnStyle()} onClick={() => resetAll()}>Begin again</button>
