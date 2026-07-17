@@ -1184,9 +1184,14 @@ function CivWheel({
           const score = current[k]
           const ratio = score != null ? Math.min(Math.max(score / 10, 0), 1) : 0  // absolute 0–10 (matches the Map)
           // Minimum visible radius — keep the vertex outside the centre
-          // orb so low-scoring domains don't disappear behind it.
+          // orb so low-scoring domains don't disappear behind it. Unscored
+          // domains sit at this same floor rather than collapsing to the
+          // exact centre point — collapsing to (CX,CY) made the polygon
+          // edges either side of an unscored domain cut a stray line
+          // straight through the hub instead of reading as "not yet
+          // graded" on that one spoke.
           const minR = centreRadius + 8
-          const r = score == null ? 0 : Math.max(minR, ratio * RADIUS)
+          const r = score == null ? minR : Math.max(minR, ratio * RADIUS)
           const baseAngle = angleFor(i, count)
           const rotRad = (displayRot * Math.PI) / 180
           const a = baseAngle + rotRad
@@ -1218,8 +1223,12 @@ function CivWheel({
               style={{ pointerEvents: 'none' }}
             />
             {/* Clickable domain-coloured vertex dots — open the explainer,
-                never drill (drilling stays on tips and labels). */}
-            {civVerts.map(v => v.score != null && (
+                never drill (drilling stays on tips and labels). Unscored
+                domains still get a marker — a hollow dashed ring, never
+                the solid filled dot a real score gets — so "not yet
+                graded" reads honestly instead of looking like a missing
+                spoke or a real score of ~0. */}
+            {civVerts.map(v => (
               <g
                 key={`civ-vert-${v.i}`}
                 onClick={() => !busy && !busyLock && handleVertexClick(v.i)}
@@ -1227,21 +1236,38 @@ function CivWheel({
               >
                 {/* Generous invisible hit zone */}
                 <circle cx={v.x} cy={v.y} r={12} fill="transparent" />
-                {/* Soft glow */}
-                <circle
-                  cx={v.x} cy={v.y} r={7}
-                  fill={v.color} opacity="0.45"
-                  filter={`url(#mw-glow-${dark ? 'dark' : 'light'}-civ)`}
-                  style={{ pointerEvents: 'none' }}
-                />
-                {/* Visible coloured dot */}
-                <circle
-                  cx={v.x} cy={v.y} r={3.5}
-                  fill={v.color}
-                  stroke={dark ? '#0F1523' : '#FAFAF7'}
-                  strokeWidth="1"
-                  style={{ pointerEvents: 'none' }}
-                />
+                {v.score != null ? (
+                  <>
+                    {/* Soft glow */}
+                    <circle
+                      cx={v.x} cy={v.y} r={7}
+                      fill={v.color} opacity="0.45"
+                      filter={`url(#mw-glow-${dark ? 'dark' : 'light'}-civ)`}
+                      style={{ pointerEvents: 'none' }}
+                    />
+                    {/* Visible coloured dot */}
+                    <circle
+                      cx={v.x} cy={v.y} r={3.5}
+                      fill={v.color}
+                      stroke={dark ? '#0F1523' : '#FAFAF7'}
+                      strokeWidth="1"
+                      style={{ pointerEvents: 'none' }}
+                    />
+                  </>
+                ) : (
+                  /* Not yet graded — hollow dashed ring, domain colour at
+                     low opacity. Deliberately never solid: solid would
+                     read as a real (near-zero) score. */
+                  <circle
+                    cx={v.x} cy={v.y} r={4.5}
+                    fill="none"
+                    stroke={v.color}
+                    strokeWidth="1.25"
+                    strokeOpacity="0.55"
+                    strokeDasharray="2 2"
+                    style={{ pointerEvents: 'none' }}
+                  />
+                )}
               </g>
             ))}
             {/* Active domain ring — pulsing, on the featured spoke's score vertex */}
