@@ -103,15 +103,11 @@ export default function CivDomainPanel({
   const showDomainPanel = !isOverview && !showParentPanel && selectedItem
   const itemForDisplay  = showParentPanel ? parentItem : selectedItem
 
-  // ── Panel tab: 'now' | 'horizon' ─────────────────────────────
-  const [panelTab, setPanelTab] = useState('now')
-
   // ── Next steps state ─────────────────────────────────────────
   const [nextStepsState, setNextStepsState] = useState({ status: 'idle', steps: [] })
 
   // Reset on domain change
   useEffect(() => {
-    setPanelTab('now')
     setNextStepsState({ status: 'idle', steps: [] })
   }, [itemForDisplay?.id]) // eslint-disable-line
 
@@ -332,34 +328,18 @@ export default function CivDomainPanel({
         {(showParentPanel || showDomainPanel) && itemForDisplay && (
           <div className="mc-civ-domain">
 
-            {/* ── Header: name + live score ── */}
-            <div className="mc-civ-domain-header">
-              <h2 className="mc-civ-title">{itemForDisplay.name}</h2>
-              {liveScore != null && (
-                <div className="mc-civ-score-badge">
-                  <span className="mc-civ-score-num">{liveScore.toFixed(1)}</span>
-                  <span className="mc-civ-score-denom">&thinsp;/&thinsp;10</span>
-                  <span className="mc-civ-score-band">{scoreBand(liveScore)}</span>
-                </div>
-              )}
-            </div>
+            {/* ── Live score — name + Horizon Goal now live above the
+                wheel (CivDomainHeader.jsx); this stays as the only
+                "current state" indicator down here. ── */}
+            {liveScore != null && (
+              <div className="mc-civ-score-badge mc-civ-score-badge--standalone">
+                <span className="mc-civ-score-num">{liveScore.toFixed(1)}</span>
+                <span className="mc-civ-score-denom">&thinsp;/&thinsp;10</span>
+                <span className="mc-civ-score-band">{scoreBand(liveScore)}</span>
+              </div>
+            )}
 
-            {/* ── NOW / HORIZON tabs ── */}
-            <div className="mc-civ-tabs">
-              <button
-                type="button"
-                className={`mc-civ-tab${panelTab === 'now' ? ' mc-civ-tab--active' : ''}`}
-                onClick={() => setPanelTab('now')}
-              >NOW</button>
-              <button
-                type="button"
-                className={`mc-civ-tab${panelTab === 'horizon' ? ' mc-civ-tab--active' : ''}`}
-                onClick={() => setPanelTab('horizon')}
-              >HORIZON</button>
-            </div>
-
-            {/* ── NOW tab ── */}
-            {panelTab === 'now' && (
+            {(
               <>
                 {/* Horizon unpacking */}
                 {decomp?.unpacking && (
@@ -500,20 +480,6 @@ export default function CivDomainPanel({
                       Refresh
                     </button>
                   </div>
-                )}
-              </>
-            )}
-
-            {/* ── HORIZON tab ── */}
-            {panelTab === 'horizon' && (
-              <>
-                {itemForDisplay.horizonGoal ? (
-                  <div className="mc-civ-horizon-block">
-                    <span className="mc-civ-horizon-label">CIVILISATIONAL HORIZON</span>
-                    <p className="mc-civ-horizon">{itemForDisplay.horizonGoal}</p>
-                  </div>
-                ) : (
-                  <p className="mc-civ-readout-empty">No horizon goal defined for this domain yet.</p>
                 )}
               </>
             )}
@@ -687,20 +653,11 @@ const PANEL_CSS = `
   padding: 22px 0 0;
 }
 
-/* Domain header — name + live score side by side */
-.mc-civ-domain-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 4px;
+/* Live score badge — standalone now (name + Horizon Goal moved to
+   CivDomainHeader.jsx, above the wheel) */
+.mc-civ-score-badge--standalone {
+  margin-bottom: 12px;
 }
-.mc-civ-domain-header .mc-civ-title {
-  margin-bottom: 0;
-  flex: 1;
-}
-
-/* Live score badge */
 .mc-civ-score-badge {
   display: flex;
   align-items: baseline;
@@ -959,32 +916,6 @@ const PANEL_CSS = `
   line-height: 1.5;
 }
 
-/* NOW / HORIZON tabs */
-.mc-civ-tabs {
-  display: flex;
-  gap: 0;
-  margin: 10px 0 16px;
-  border-bottom: 1px solid rgba(88,160,138,0.25);
-}
-.mc-civ-tab {
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  padding: 6px 16px 8px;
-  font-family: ${FONT_SC};
-  font-size: 10.5px;
-  letter-spacing: 0.22em;
-  color: ${TEXT_WHITE_FAINT};
-  cursor: pointer;
-  margin-bottom: -1px;
-  transition: color 0.18s ease, border-color 0.18s ease;
-}
-.mc-civ-tab:hover { color: ${GOLD_LT}; }
-.mc-civ-tab--active {
-  color: ${GOLD_LT};
-  border-bottom-color: ${GOLD};
-}
-
 .mc-civ-readout-empty {
   font-family: ${FONT_BODY};
   font-size: 14px;
@@ -1208,7 +1139,6 @@ const PANEL_CSS = `
   .mc-civ-score-num { font-size: 22px; }
   .mc-civ-score-denom { font-size: 9px; }
   .mc-civ-score-band { font-size: 8px; margin-left: 4px; }
-  .mc-civ-domain-header { gap: 10px; }
   /* Indicator rows — tighter on mobile */
   .mc-civ-indicator-row { padding: 4px 8px; }
   .mc-civ-indicator-name { font-size: 9px; letter-spacing: 0.12em; }

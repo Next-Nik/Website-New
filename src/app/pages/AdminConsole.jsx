@@ -267,9 +267,42 @@ function HorizonFloorModal({ domainSlug, contextLabel, onResolve, onCancel }) {
   )
 }
 
+// ── PRISM TAB ─────────────────────────────────────────────────
+// Founder lab — three practices under evaluation (July 2026),
+// adapted from the Prismology reference material. Lives at
+// /admin/prism as its own page; this tab is the doorway.
+
+function PrismTab() {
+  const items = [
+    ['Mirror Work', 'Front camera as mirror, your I Am statements overlaid, optional resonance tone. Candidate Voice-beat upgrade · and graduated camera work.'],
+    ['Write & Burn', 'Evening evacuation. Nothing persists: no database, no device storage. Candidate complement to the Journal.'],
+    ['Geometry', 'Guided Metatron\u2019s Cube tracing, Pencil-friendly. Candidate onboarding / deepening material.'],
+  ]
+  return (
+    <div style={{ maxWidth: 640 }}>
+      <p style={{ ...body, fontSize: '15px', lineHeight: 1.65, color: 'rgba(15,21,35,0.60)', marginBottom: '24px' }}>
+        Hidden practices under evaluation. Not linked anywhere public; founder-gated.
+      </p>
+      {items.map(([t, d]) => (
+        <div key={t} style={{ padding: '14px 0', borderBottom: '1px solid rgba(15,21,35,0.08)' }}>
+          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: gold }}>{t}</div>
+          <div style={{ ...body, fontSize: '14px', lineHeight: 1.6, color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>{d}</div>
+        </div>
+      ))}
+      <Link to="/admin/prism" style={{
+        ...sc, display: 'inline-block', marginTop: '24px', fontSize: '15px',
+        letterSpacing: '0.12em', color: gold, textDecoration: 'none',
+        borderBottom: `1px solid ${gold}`, paddingBottom: '2px',
+      }}>
+        Open the Prism Lab →
+      </Link>
+    </div>
+  )
+}
+
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Seed', 'Place', 'Flags', 'Chains', 'Practices', 'Floor', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Seed', 'Place', 'Flags', 'Chains', 'Practices', 'Prism', 'Floor', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
@@ -666,8 +699,8 @@ function ActorsTab({ toast }) {
     let q = supabase.from('nextus_actors').select('*', { count: 'exact' })
     if (filterDomain)  q = q.eq('domain_id', filterDomain)
     if (filterType)    q = q.eq('type', filterType)
-    if (filterClaimed === 'claimed')    q = q.not('profile_owner', 'is', null)
-    if (filterClaimed === 'unclaimed')  q = q.is('profile_owner', null)
+    if (filterClaimed === 'claimed')    q = q.eq('claimed', true)
+    if (filterClaimed === 'unclaimed')  q = q.eq('claimed', false)
     if (filterWinning === 'winning')    q = q.eq('winning', true)
     if (filterWinning === 'underloved') q = q.eq('winning', false)
     if (search) q = q.ilike('name', `%${search}%`)
@@ -4640,6 +4673,7 @@ export function AdminConsolePage() {
         {tab === 'Flags'         && <FlagsTab        toast={showToast} />}
         {tab === 'Chains'        && <ChainsTab       toast={showToast} />}
         {tab === 'Practices'     && <PracticesTab    toast={showToast} />}
+        {tab === 'Prism'         && <PrismTab />}
         {tab === 'Floor'         && <FloorTab         toast={showToast} />}
         {tab === 'Domain Data'   && <DomainDataTab   toast={showToast} />}
         {tab === 'Indicators'    && <IndicatorsTab   toast={showToast} />}

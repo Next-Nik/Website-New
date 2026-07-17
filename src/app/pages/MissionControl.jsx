@@ -49,6 +49,7 @@ import SideRail           from '../components/mission-control/SideRail'
 import Tile               from '../components/mission-control/Tile'
 import Panel              from '../components/mission-control/Panel'
 import CivDomainPanel             from '../components/mission-control/CivDomainPanel'
+import CivDomainHeader            from '../components/mission-control/CivDomainHeader'
 import SelfDomainPanel            from '../components/mission-control/SelfDomainPanel'
 import MyPracticeMissionPanel     from '../components/mission-control/MyPracticeMissionPanel'
 import OrgRoomOverlay             from '../components/OrgRoomOverlay'
@@ -1138,6 +1139,15 @@ export default function MissionControl() {
                   )
                 })}
               </nav>
+            )}
+            {isCiv && (
+              <CivDomainHeader
+                levelPath={levelPath}
+                showOverview={showOverview}
+                parentPanelOpen={parentPanelOpen}
+                parentItem={parentItem}
+                selectedItem={selectedItem}
+              />
             )}
             <WheelStage
               currentWheel={currentWheel}

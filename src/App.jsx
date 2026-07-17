@@ -74,6 +74,7 @@ import { OrgManagePage }      from './app/pages/OrgManage'
 import { MapPage as PlanetMapPage } from './app/pages/Map'
 import { NextMarketPage }         from './app/pages/NextMarket'
 import { AdminConsolePage }   from './app/pages/AdminConsole'
+import { PrismLabPage }       from './app/pages/PrismLab'
 import { MovieMagicPage }     from './pages/MovieMagic'
 import { NominatePage }       from './app/pages/Nominate'
 import { AddPage }            from './app/pages/Add'
@@ -413,6 +414,7 @@ function AppInner() {
 
         {/* ── Admin ── */}
         <Route path="/admin"           element={<AdminConsolePage />} />
+        <Route path="/admin/prism"     element={<PrismLabPage />} />
         <Route path="/movie-magic"     element={<MovieMagicPage />} />
         <Route path="/join/:slug"      element={<GroupJoinPage />} />
         <Route path="/auth/callback"   element={<AuthCallbackPage />} />

@@ -25,7 +25,7 @@ export const ROUTES = {
   privacy:        '/privacy',
   terms:          '/terms',
   admin:          '/admin',
-
+  prismLab:       '/admin/prism',   // founder lab — hidden practices under evaluation
   // ── Platform ──────────────────────────────────────────────
   missionControl:   '/',
   welcome:          '/welcome',
