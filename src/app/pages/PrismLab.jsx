@@ -760,13 +760,14 @@ function simplify(pts, tol = 14) {
 function GeometryPractice() {
   const [shapeKey, setShapeKey] = useState('vesica')
   const [step, setStep] = useState(0)
-  const [recognised, setRecognised] = useState([])
+  const [recognised, setRecognised] = useState([]) // { el, key } · key = taken index or null
   const [taken, setTaken] = useState(() => new Set())
   const [resolved, setResolved] = useState(false)
+  const [mode, setMode] = useState('draw') // draw | erase
   const canvasRef = useRef(null)
   const drawing = useRef(false)
   const stroke = useRef([])
-  const strokes = useRef([]) // kept strokes that matched nothing (free marks)
+  const strokes = useRef([]) // strokes that matched nothing (free marks)
 
   const shape = GEO_SHAPES.find(s => s.key === shapeKey)
   const lastStep = step === shape.steps.length - 1
@@ -797,6 +798,25 @@ function GeometryPractice() {
     if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height)
   }
 
+  // Apple Pencil support: fingers scroll the page, the Pencil draws.
+  // Safari marks Pencil touches as touchType 'stylus'; blocking only those
+  // keeps finger panning alive (touchAction pan-y) while the Pencil never
+  // pans. Mouse still draws for desktop.
+  useEffect(() => {
+    const c = canvasRef.current
+    if (!c) return
+    const block = (e) => {
+      const ts = e.changedTouches ? Array.from(e.changedTouches) : []
+      if (ts.some(t => t.touchType === 'stylus')) e.preventDefault()
+    }
+    c.addEventListener('touchstart', block, { passive: false })
+    c.addEventListener('touchmove', block, { passive: false })
+    return () => {
+      c.removeEventListener('touchstart', block)
+      c.removeEventListener('touchmove', block)
+    }
+  }, [])
+
   const pos = (e) => {
     const c = canvasRef.current
     const rect = c.getBoundingClientRect()
@@ -806,15 +826,55 @@ function GeometryPractice() {
     }
   }
 
+  const distToSeg = (p, x1, y1, x2, y2) => {
+    const dx = x2 - x1, dy = y2 - y1
+    const L2 = dx * dx + dy * dy || 1e-9
+    let t = ((p.x - x1) * dx + (p.y - y1) * dy) / L2
+    t = Math.max(0, Math.min(1, t))
+    return Math.hypot(p.x - (x1 + t * dx), p.y - (y1 + t * dy))
+  }
+
+  const eraseAt = (p) => {
+    const R = 20
+    // free strokes
+    const before = strokes.current.length
+    strokes.current = strokes.current.filter(st => !st.some(q => Math.hypot(q.x - p.x, q.y - p.y) < R))
+    if (strokes.current.length !== before) redraw()
+    // recognised elements · erasing one releases its guide for redrawing
+    setRecognised(rs => {
+      const keep = []
+      const freed = []
+      for (const entry of rs) {
+        const el = entry.el
+        let hit = false
+        if (el.kind === 'circle') hit = Math.abs(Math.hypot(p.x - el.x, p.y - el.y) - el.r) < 14
+        if (el.kind === 'line') hit = distToSeg(p, el.x1, el.y1, el.x2, el.y2) < 14
+        if (el.kind === 'path') hit = el.pts.some(q => Math.hypot(q.x - p.x, q.y - p.y) < 14)
+        if (hit && entry.key !== null && entry.key !== undefined) freed.push(entry.key)
+        if (!hit) keep.push(entry)
+      }
+      if (freed.length) setTaken(t => {
+        const nt = new Set(t)
+        freed.forEach(k => nt.delete(k))
+        return nt
+      })
+      return keep
+    })
+  }
+
   const down = (e) => {
     if (resolved) return
+    if (e.pointerType === 'touch') return // fingers scroll; Pencil and mouse act
     drawing.current = true
+    if (mode === 'erase') { eraseAt(pos(e)); return }
     stroke.current = [pos(e)]
     e.target.setPointerCapture?.(e.pointerId)
   }
   const move = (e) => {
     if (!drawing.current) return
+    if (e.pointerType === 'touch') return
     const p = pos(e)
+    if (mode === 'erase') { eraseAt(p); return }
     const prev = stroke.current[stroke.current.length - 1]
     stroke.current.push(p)
     drawSeg(canvasRef.current.getContext('2d'), prev, p)
@@ -828,7 +888,7 @@ function GeometryPractice() {
       const localTaken = new Set([...taken].filter(t => t >= offset && t < offset + shape.steps[s].guides.length).map(t => t - offset))
       const m = matchGuide(fit, shape.steps[s].guides, localTaken)
       if (m) {
-        setRecognised(r => [...r, m.element])
+        setRecognised(r => [...r, { el: m.element, key: m.multi ? null : offset + m.index }])
         if (!m.multi) setTaken(t => new Set([...t, offset + m.index]))
         return true
       }
@@ -839,6 +899,7 @@ function GeometryPractice() {
   const up = () => {
     if (!drawing.current) return
     drawing.current = false
+    if (mode === 'erase') return
     const pts = stroke.current
     stroke.current = []
     let matched = false
@@ -920,11 +981,11 @@ function GeometryPractice() {
   return (
     <div>
       <p style={{ ...fnText.body, maxWidth: 640, marginBottom: space.xl }}>
-        Draw slowly, by hand · finger or Pencil. You are not learning these forms;
-        you are recognising them. When your line finds a form, it clicks into place ·
-        your stroke becomes the perfect one. Draw a whole triangle in one motion or
-        side by side; both are heard. Paper, a coin, and a pencil remain the deepest
-        version. This is the travelling one.
+        Draw slowly, with the Pencil · fingers are free to scroll. You are not
+        learning these forms; you are recognising them. When your line finds a
+        form, it clicks into place · your stroke becomes the perfect one. Draw a
+        whole triangle in one motion or side by side; both are heard. Paper, a
+        coin, and a pencil remain the deepest version. This is the travelling one.
       </p>
 
       <div style={{ display: 'flex', gap: space.sm, flexWrap: 'wrap', marginBottom: space.xl }}>
@@ -940,7 +1001,7 @@ function GeometryPractice() {
         <div style={{
           position: 'relative', width: 'min(600px, 100%)', aspectRatio: '1',
           background: fn.object, borderRadius: 8, boxShadow: shadow.fn.rest,
-          touchAction: 'none', overflow: 'hidden',
+          touchAction: 'pan-y', overflow: 'hidden',
         }}>
           <svg viewBox="0 0 600 600" className="prism-geo-guide">
             {shape.steps.map((st, s) => st.guides.map((g, i) => renderGuide(g, `${s}-${i}`, guideOpacity(s))))}
@@ -948,7 +1009,7 @@ function GeometryPractice() {
               <circle key={`p${s}-${i}`} cx={g.x} cy={g.y} r="2.5" fill={fn.moss}
                 opacity={resolved ? 0 : s <= step ? 0.55 : 0} />
             )))}
-            {!resolved && recognised.map((el, i) => renderPerfect(el, i, 'prism-reco'))}
+            {!resolved && recognised.map((entry, i) => renderPerfect(entry.el, i, 'prism-reco'))}
             {resolved && fullFigure.map((el, i) => renderPerfect(el, i, 'prism-reco'))}
           </svg>
           <canvas
@@ -974,6 +1035,10 @@ function GeometryPractice() {
               </div>
               <h3 style={{ ...fnText.heading, marginBottom: space.sm }}>{shape.steps[step].title}</h3>
               <p style={{ ...fnText.body, marginBottom: space.xl }}>{shape.steps[step].body}</p>
+              <div style={{ display: 'flex', gap: space.sm, flexWrap: 'wrap', marginBottom: space.lg }}>
+                <button style={btnStyle(mode === 'draw' ? 'solid' : 'ghost')} onClick={() => setMode('draw')}>Draw</button>
+                <button style={btnStyle(mode === 'erase' ? 'solid' : 'ghost')} onClick={() => setMode('erase')}>Erase</button>
+              </div>
               <div style={{ display: 'flex', gap: space.sm, flexWrap: 'wrap' }}>
                 <button style={btnStyle('ghost')} disabled={step === 0} onClick={() => setStep(s => Math.max(0, s - 1))}>← Back</button>
                 {!lastStep && <button style={btnStyle()} onClick={() => setStep(s => s + 1)}>Next step →</button>}
