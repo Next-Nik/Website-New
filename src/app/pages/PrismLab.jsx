@@ -785,6 +785,67 @@ const GEO_SHAPES = [
         guides: YANTRA_DN.flatMap(t => polySegs(t)) },
     ],
   },
+  {
+    key: 'master', name: 'Icosahedron in the Flower',
+    steps: (() => {
+      // Hex lattice of flower circles: r 55, rings 0-3, pointy orientation
+      const v1 = { x: 0, y: -55 }
+      const v2 = { x: 55 * Math.cos(-Math.PI / 6), y: 55 * Math.sin(-Math.PI / 6) }
+      const rings = [[], [], [], []]
+      for (let i = -3; i <= 3; i++) for (let j = -3; j <= 3; j++) {
+        const d = (Math.abs(i) + Math.abs(j) + Math.abs(i + j)) / 2
+        if (d > 3) continue
+        rings[d].push({ kind: 'circle', x: 300 + i * v1.x + j * v2.x, y: 300 + i * v1.y + j * v2.y, r: 55 })
+      }
+      // The solid: hexagon R 210 pointy, inner triangles R 121
+      const H = ptsAt(210, -Math.PI / 2)
+      const U = ptsAt(121, -Math.PI / 2, 3, 2 * Math.PI / 3)
+      const D = ptsAt(121, Math.PI / 2, 3, 2 * Math.PI / 3)
+      const hexAt = (ang) => {
+        let best = H[0], bd = 1e9
+        for (const h of H) {
+          const a = Math.atan2(h.y - 300, h.x - 300)
+          let dd = Math.abs(a - ang); if (dd > Math.PI) dd = 2 * Math.PI - dd
+          if (dd < bd) { bd = dd; best = h }
+        }
+        return best
+      }
+      const joins = (tri, phase) => tri.flatMap((v, i) => {
+        const ang = phase + (2 * Math.PI / 3) * i
+        return [ang, ang - Math.PI / 3, ang + Math.PI / 3].map(a => {
+          const h = hexAt(a)
+          return geoSeg(v.x, v.y, h.x, h.y)
+        })
+      })
+      const dash = (g) => ({ ...g, dashed: true })
+      return [
+        { title: 'The Field',
+          body: 'The great circle and the twelve radii. Every construction begins by dividing the whole \u00b7 one full stroke across the centre lays two radii at once.',
+          guides: [
+            { kind: 'circle', x: 300, y: 300, r: 288 },
+            ...Array.from({ length: 12 }, (_, k) => {
+              const a = (Math.PI / 6) * k - Math.PI / 2
+              return geoSeg(300, 300, 300 + 288 * Math.cos(a), 300 + 288 * Math.sin(a))
+            }),
+          ] },
+        { title: 'The Lattice \u00b7 Heart',
+          body: 'Seven circles at the centre, each passing through its neighbours\u2019 hearts. The seed, small and exact.',
+          guides: [...rings[0], ...rings[1]] },
+        { title: 'The Lattice \u00b7 Bloom',
+          body: 'Twelve more on the lattice crossings. Let the rhythm carry the hand.',
+          guides: rings[2] },
+        { title: 'The Lattice \u00b7 Field',
+          body: 'Eighteen more complete the lattice. This is the long sit \u00b7 the drawing teaches patience before it teaches form.',
+          guides: rings[3] },
+        { title: 'The Solid',
+          body: 'Now the icosahedron, bold over the lattice: the hexagon, the rising triangle, and the edges that join them. Twenty faces, drawn from flowers.',
+          guides: [...polySegs(H), ...polySegs(U), ...joins(U, -Math.PI / 2)] },
+        { title: 'The Hidden Faces',
+          body: 'The far side, dashed \u00b7 the descending triangle and its edges, seen through the body of the solid. The draughtsman\u2019s convention: what is hidden is still held.',
+          guides: [...polySegs(D).map(dash), ...joins(D, Math.PI / 2).map(dash)] },
+      ]
+    })(),
+  },
 ]
 
 // ── Stroke fitting ────────────────────────────────────────────
@@ -879,7 +940,7 @@ function matchOne(fit, g) {
     const ends = (nearPt(fit.x1, fit.y1, g.x1, g.y1, t) && nearPt(fit.x2, fit.y2, g.x2, g.y2, t))
       || (nearPt(fit.x1, fit.y1, g.x2, g.y2, t) && nearPt(fit.x2, fit.y2, g.x1, g.y1, t))
     if (ends || strokeCovers(fit, g.x1, g.y1, g.x2, g.y2)) {
-      return { kind: 'line', x1: g.x1, y1: g.y1, x2: g.x2, y2: g.y2 }
+      return { kind: 'line', x1: g.x1, y1: g.y1, x2: g.x2, y2: g.y2, dashed: g.dashed }
     }
   }
   if (g.kind === 'qarc') {
@@ -1211,7 +1272,7 @@ function GeometryPractice() {
 
   const renderPerfect = (el, i, cls) => {
     if (el.kind === 'circle') return <circle key={`r${i}`} className={cls} cx={el.x} cy={el.y} r={el.r} fill="none" stroke={fn.moss} strokeWidth="2" />
-    if (el.kind === 'line') return <line key={`r${i}`} className={cls} x1={el.x1} y1={el.y1} x2={el.x2} y2={el.y2} stroke={fn.moss} strokeWidth="1.6" />
+    if (el.kind === 'line') return <line key={`r${i}`} className={cls} x1={el.x1} y1={el.y1} x2={el.x2} y2={el.y2} stroke={fn.moss} strokeWidth="1.6" strokeDasharray={el.dashed ? '6 6' : undefined} />
     if (el.kind === 'path') return <path key={`r${i}`} className={cls} d={pathD(el.pts)} fill="none" stroke={fn.moss} strokeWidth="2" />
     return null
   }
@@ -1219,7 +1280,7 @@ function GeometryPractice() {
   const fullFigure = []
   shape.steps.forEach(st => st.guides.forEach(g => {
     if (g.kind === 'circle' || g.kind === 'arc') fullFigure.push({ kind: 'circle', x: g.x, y: g.y, r: g.r })
-    if (g.kind === 'segment') fullFigure.push({ kind: 'line', x1: g.x1, y1: g.y1, x2: g.x2, y2: g.y2 })
+    if (g.kind === 'segment') fullFigure.push({ kind: 'line', x1: g.x1, y1: g.y1, x2: g.x2, y2: g.y2, dashed: g.dashed })
     if (g.kind === 'petal' || g.kind === 'qarc') fullFigure.push({ kind: 'path', pts: g.path })
     if (g.kind === 'lineweb') g.centres.forEach((a, x) => g.centres.slice(x + 1).forEach(b =>
       fullFigure.push({ kind: 'line', x1: a.x, y1: a.y, x2: b.x, y2: b.y })))
