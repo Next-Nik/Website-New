@@ -1018,6 +1018,14 @@ function collectMatches(fit, shape, step, takenView) {
 
 const pathD = (pts) => 'M ' + pts.map(p => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L ')
 
+// 24-colour fill palette for the paint layer
+const PAINT_COLOURS = [
+  '#C0392B', '#E74C3C', '#E67E22', '#F39C12', '#F1C40F', '#F7DC6F',
+  '#7DCEA0', '#27AE60', '#148F77', '#76D7C4', '#5DADE2', '#2E86C1',
+  '#1B4F72', '#8E44AD', '#BB8FCE', '#D98880', '#F5B7B1', '#935116',
+  '#B9770E', '#7E5109', '#616A6B', '#2C3E50', '#FDFEFE', '#17202A',
+]
+
 // Ramer-Douglas-Peucker: reduces a stroke to its corner vertices so a
 // triangle (or square, or star) drawn in one motion is heard side by side.
 function simplify(pts, tol = 14) {
@@ -1042,7 +1050,16 @@ function GeometryPractice() {
   const [recognised, setRecognised] = useState([]) // { el, key } · key = taken index or null
   const [taken, setTaken] = useState(() => new Set())
   const [resolved, setResolved] = useState(false)
-  const [mode, setMode] = useState('draw') // draw | erase
+  const [mode, setMode] = useState('draw') // draw | erase | paint
+  const [colour, setColour] = useState(0) // index into PAINT_COLOURS, -1 = clear
+  const paintRef = useRef(null)
+  const boundaryCache = useRef({ key: null, data: null })
+  // iPad: Pencil draws, fingers scroll. Phones and Android tablets: fingers draw.
+  const [penOnly] = useState(() => {
+    if (typeof navigator === 'undefined') return false
+    const ua = navigator.userAgent || ''
+    return /iPad/.test(ua) || (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1)
+  })
   const [hint, setHint] = useState(false)
   const hintTimer = useRef(null)
   const history = useRef([])
@@ -1074,11 +1091,12 @@ function GeometryPractice() {
     }
   }
 
-  const pushHistory = () => {
+  const pushHistory = (withPaint = false) => {
     history.current.push({
       strokes: [...strokes.current],
       recognised: recognised,
       taken: new Set(taken),
+      paint: withPaint && paintRef.current ? paintRef.current.toDataURL() : undefined,
     })
     if (history.current.length > 40) history.current.shift()
     setHistLen(history.current.length)
@@ -1093,6 +1111,14 @@ function GeometryPractice() {
     setTaken(snap.taken)
     setResolved(false)
     redraw()
+    if (snap.paint !== undefined && paintRef.current) {
+      const pc = paintRef.current
+      const ctx = pc.getContext('2d')
+      ctx.clearRect(0, 0, pc.width, pc.height)
+      const img = new Image()
+      img.onload = () => ctx.drawImage(img, 0, 0)
+      img.src = snap.paint
+    }
   }
 
   const resetAll = (key = shapeKey) => {
@@ -1100,6 +1126,7 @@ function GeometryPractice() {
     strokes.current = []
     history.current = []
     setHistLen(0)
+    if (paintRef.current) paintRef.current.getContext('2d').clearRect(0, 0, 600, 600)
     const c = canvasRef.current
     if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height)
   }
@@ -1168,18 +1195,88 @@ function GeometryPractice() {
     })
   }
 
+  // Boundary bitmap: the complete figure rasterised as walls for filling
+  const ensureBoundary = () => {
+    if (boundaryCache.current.key === shapeKey) return boundaryCache.current.data
+    const oc = document.createElement('canvas')
+    oc.width = 600; oc.height = 600
+    const ctx = oc.getContext('2d')
+    ctx.strokeStyle = '#000'
+    ctx.lineWidth = 3
+    fullFigure.forEach(el => {
+      ctx.beginPath()
+      if (el.kind === 'circle') ctx.arc(el.x, el.y, el.r, 0, 2 * Math.PI)
+      if (el.kind === 'line') { ctx.moveTo(el.x1, el.y1); ctx.lineTo(el.x2, el.y2) }
+      if (el.kind === 'path') { ctx.moveTo(el.pts[0].x, el.pts[0].y); el.pts.forEach(q => ctx.lineTo(q.x, q.y)) }
+      ctx.stroke()
+    })
+    const data = ctx.getImageData(0, 0, 600, 600).data
+    boundaryCache.current = { key: shapeKey, data }
+    return data
+  }
+
+  const floodFill = (sx, sy) => {
+    const walls = ensureBoundary()
+    const pc = paintRef.current
+    const ctx = pc.getContext('2d')
+    const img = ctx.getImageData(0, 0, 600, 600)
+    const px = img.data
+    const x0 = Math.round(sx), y0 = Math.round(sy)
+    if (x0 < 0 || y0 < 0 || x0 >= 600 || y0 >= 600) return
+    const idx = (x, y) => (y * 600 + x) * 4
+    if (walls[idx(x0, y0) + 3] > 100) return // tapped a line, not a region
+    let fr = 0, fg = 0, fb = 0, fa = 0
+    if (colour >= 0) {
+      const hex = PAINT_COLOURS[colour]
+      fr = parseInt(hex.slice(1, 3), 16); fg = parseInt(hex.slice(3, 5), 16); fb = parseInt(hex.slice(5, 7), 16); fa = 255
+    }
+    const s0 = idx(x0, y0)
+    const tr = px[s0], tg = px[s0 + 1], tb = px[s0 + 2], ta = px[s0 + 3]
+    if (tr === fr && tg === fg && tb === fb && ta === fa) return
+    const same = (i) => px[i] === tr && px[i + 1] === tg && px[i + 2] === tb && px[i + 3] === ta
+    const stack = [[x0, y0]]
+    while (stack.length) {
+      const [x, y] = stack.pop()
+      let xl = x
+      while (xl >= 0 && walls[idx(xl, y) + 3] <= 100 && same(idx(xl, y))) xl--
+      xl++
+      let xr = x
+      while (xr < 600 && walls[idx(xr, y) + 3] <= 100 && same(idx(xr, y))) xr++
+      xr--
+      let upSeed = false, dnSeed = false
+      for (let xi = xl; xi <= xr; xi++) {
+        const i = idx(xi, y)
+        px[i] = fr; px[i + 1] = fg; px[i + 2] = fb; px[i + 3] = fa
+        if (y > 0) {
+          const iu = idx(xi, y - 1)
+          const ok = walls[iu + 3] <= 100 && same(iu)
+          if (ok && !upSeed) { stack.push([xi, y - 1]); upSeed = true }
+          if (!ok) upSeed = false
+        }
+        if (y < 599) {
+          const id = idx(xi, y + 1)
+          const ok = walls[id + 3] <= 100 && same(id)
+          if (ok && !dnSeed) { stack.push([xi, y + 1]); dnSeed = true }
+          if (!ok) dnSeed = false
+        }
+      }
+    }
+    ctx.putImageData(img, 0, 0)
+  }
+
   const down = (e) => {
-    if (resolved) return
-    if (e.pointerType === 'touch') return // fingers scroll; Pencil and mouse act
+    if (resolved && mode !== 'paint') return
+    if (penOnly && e.pointerType === 'touch') return // iPad: fingers scroll; Pencil and mouse act
     drawing.current = true
-    pushHistory()
+    pushHistory(mode === 'paint')
+    if (mode === 'paint') { const p = pos(e); floodFill(p.x, p.y); drawing.current = false; return }
     if (mode === 'erase') { eraseAt(pos(e)); return }
     stroke.current = [pos(e)]
     e.target.setPointerCapture?.(e.pointerId)
   }
   const move = (e) => {
     if (!drawing.current) return
-    if (e.pointerType === 'touch') return
+    if (penOnly && e.pointerType === 'touch') return
     const p = pos(e)
     if (mode === 'erase') { eraseAt(p); return }
     const prev = stroke.current[stroke.current.length - 1]
@@ -1246,8 +1343,9 @@ function GeometryPractice() {
   }
 
   const clearCanvas = () => {
-    pushHistory()
+    pushHistory(true)
     strokes.current = []
+    if (paintRef.current) paintRef.current.getContext('2d').clearRect(0, 0, 600, 600)
     canvasRef.current.getContext('2d').clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
     setRecognised([]); setTaken(new Set()); setResolved(false)
   }
@@ -1336,17 +1434,54 @@ function GeometryPractice() {
               {lastStep && <button style={btnStyle()} onClick={() => setResolved(true)}>Reveal the form</button>}
               <button style={btnStyle(mode === 'draw' ? 'solid' : 'ghost')} onClick={() => setMode('draw')}>Draw</button>
               <button style={btnStyle(mode === 'erase' ? 'solid' : 'ghost')} onClick={() => setMode('erase')}>Erase</button>
+              <button style={btnStyle(mode === 'paint' ? 'solid' : 'ghost')} onClick={() => setMode('paint')}>Paint</button>
               <button style={btnStyle('ghost')} onClick={showRemaining}>Show remaining</button>
               <button style={btnStyle('ghost')} disabled={histLen === 0} onClick={undo}>Undo</button>
               <button style={btnStyle('ghost')} onClick={clearCanvas}>Clear</button>
             </div>
+            {mode === 'paint' && (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', marginTop: space.sm, maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
+                {PAINT_COLOURS.map((c, i) => (
+                  <button key={c} onClick={() => setColour(i)} aria-label={`Colour ${i + 1}`} style={{
+                    width: 24, height: 24, borderRadius: '50%', cursor: 'pointer',
+                    background: c,
+                    border: colour === i ? `2px solid ${fn.ink}` : '2px solid rgba(15,21,35,0.15)',
+                  }} />
+                ))}
+                <button onClick={() => setColour(-1)} aria-label="Clear fill" style={{
+                  width: 24, height: 24, borderRadius: '50%', cursor: 'pointer',
+                  background: 'transparent',
+                  border: colour === -1 ? `2px solid ${fn.ink}` : '2px dashed rgba(15,21,35,0.4)',
+                  ...mono, fontSize: 13, color: fn.meta, lineHeight: 1,
+                }}>×</button>
+              </div>
+            )}
           </>
         ) : (
           <>
             <div style={{ ...fnText.eyebrow, marginBottom: space.sm }}>{shape.name} · Revealed</div>
             <div style={{ display: 'flex', gap: space.sm, flexWrap: 'wrap', justifyContent: 'center' }}>
               <button style={btnStyle()} onClick={() => resetAll()}>Begin again</button>
+              <button style={btnStyle(mode === 'paint' ? 'solid' : 'ghost')} onClick={() => setMode(mode === 'paint' ? 'draw' : 'paint')}>Paint</button>
+              <button style={btnStyle('ghost')} disabled={histLen === 0} onClick={undo}>Undo</button>
             </div>
+            {mode === 'paint' && (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', marginTop: space.sm, maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
+                {PAINT_COLOURS.map((c, i) => (
+                  <button key={c} onClick={() => setColour(i)} aria-label={`Colour ${i + 1}`} style={{
+                    width: 24, height: 24, borderRadius: '50%', cursor: 'pointer',
+                    background: c,
+                    border: colour === i ? `2px solid ${fn.ink}` : '2px solid rgba(15,21,35,0.15)',
+                  }} />
+                ))}
+                <button onClick={() => setColour(-1)} aria-label="Clear fill" style={{
+                  width: 24, height: 24, borderRadius: '50%', cursor: 'pointer',
+                  background: 'transparent',
+                  border: colour === -1 ? `2px solid ${fn.ink}` : '2px dashed rgba(15,21,35,0.4)',
+                  ...mono, fontSize: 13, color: fn.meta, lineHeight: 1,
+                }}>×</button>
+              </div>
+            )}
           </>
         )}
       </div>
@@ -1359,8 +1494,9 @@ function GeometryPractice() {
         <div style={{
           position: 'relative', width: 'min(600px, 100%)', aspectRatio: '1',
           background: fn.object, borderRadius: 8, boxShadow: shadow.fn.rest,
-          touchAction: 'pan-y', overflow: 'hidden',
+          touchAction: penOnly ? 'pan-y' : 'none', overflow: 'hidden',
         }}>
+          <canvas ref={paintRef} width={600} height={600} className="prism-paint" />
           <svg viewBox="0 0 600 600" className="prism-geo-guide">
             {shape.steps.map((st, s) => st.guides.map((g, i) => renderGuide(g, `${s}-${i}`, guideOpacity(s))))}
             {shape.steps.map((st, s) => st.guides.filter(g => g.kind === 'circle' || g.kind === 'arc').map((g, i) => (
@@ -1397,6 +1533,7 @@ function GeometryPractice() {
       </div>
 
       <style>{`
+        .prism-paint { position: absolute; inset: 0; width: 100%; height: 100%; }
         .prism-geo-guide { position: absolute; inset: 0; width: 100%; height: 100%; }
         .prism-hand { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; transition: opacity 2.4s ease; }
         .prism-hand-ghost { opacity: 0.12; }
