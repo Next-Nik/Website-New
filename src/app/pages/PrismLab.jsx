@@ -506,19 +506,27 @@ const SIERP = (() => {
   return { L0, L1, L2, L3 }
 })()
 
-// Sri Yantra · simplified nine-triangle schema (not the classical construction)
+// Sri Yantra \u00b7 classically proportioned nine-triangle schema.
+// Four of the great triangles rest their corners on the circle; bases
+// step down the axis; the bindu sits in the innermost cell. Still an
+// approximation \u00b7 full concurrency is the famous unsolved drawing.
+const YR = 215
+const yantraHW = (dy, inset = 4) => Math.sqrt(Math.max(0, YR * YR - dy * dy)) - inset
+const yTri = (baseY, hw, apexY) => [
+  { x: 300 - hw, y: baseY }, { x: 300 + hw, y: baseY }, { x: 300, y: apexY },
+]
 const YANTRA_UP = [
-  [{ x: 115, y: 470 }, { x: 485, y: 470 }, { x: 300, y: 135 }],
-  [{ x: 152, y: 430 }, { x: 448, y: 430 }, { x: 300, y: 180 }],
-  [{ x: 190, y: 385 }, { x: 410, y: 385 }, { x: 300, y: 232 }],
-  [{ x: 230, y: 340 }, { x: 370, y: 340 }, { x: 300, y: 272 }],
+  yTri(472, yantraHW(172), 107),
+  yTri(420, yantraHW(120), 154),
+  yTri(377, 150, 218),
+  yTri(343, 110, 257),
 ]
 const YANTRA_DN = [
-  [{ x: 110, y: 130 }, { x: 490, y: 130 }, { x: 300, y: 470 }],
-  [{ x: 150, y: 170 }, { x: 450, y: 170 }, { x: 300, y: 420 }],
-  [{ x: 182, y: 215 }, { x: 418, y: 215 }, { x: 300, y: 368 }],
-  [{ x: 215, y: 258 }, { x: 385, y: 258 }, { x: 300, y: 322 }],
-  [{ x: 250, y: 292 }, { x: 350, y: 292 }, { x: 300, y: 358 }],
+  yTri(128, yantraHW(172), 442),
+  yTri(180, yantraHW(120), 395),
+  yTri(231, 150, 352),
+  yTri(266, 110, 319),
+  yTri(289, 62, 310),
 ]
 
 const GEO_SHAPES = [
@@ -651,14 +659,14 @@ const GEO_SHAPES = [
     key: 'torus', name: 'Torus',
     steps: [
       { title: 'The First Ring',
-        body: 'Trace the first circle, off-centre. The torus is many circles disagreeing gently about where the middle is.',
-        guides: [geoRing(300, 300, 90, 150, 12, -Math.PI / 2, Math.PI / 6)[0]] },
+        body: 'Trace the first circle. Its rim passes through the very centre of the page \u00b7 every circle that follows will do the same.',
+        guides: [geoRing(300, 300, 120, 120, 12, -Math.PI / 2, Math.PI / 6)[0]] },
       { title: 'Turning',
         body: 'Five more, each turned a little further around the ring. The weave begins.',
-        guides: geoRing(300, 300, 90, 150, 12, -Math.PI / 2, Math.PI / 6).slice(1, 6) },
+        guides: geoRing(300, 300, 120, 120, 12, -Math.PI / 2, Math.PI / 6).slice(1, 6) },
       { title: 'The Full Turn',
         body: 'The remaining six close the circuit. Twelve circles, one breathing field · energy folding through its own centre.',
-        guides: geoRing(300, 300, 90, 150, 12, -Math.PI / 2, Math.PI / 6).slice(6) },
+        guides: geoRing(300, 300, 120, 120, 12, -Math.PI / 2, Math.PI / 6).slice(6) },
     ],
   },
   {
@@ -774,14 +782,19 @@ const GEO_SHAPES = [
   {
     key: 'yantra', name: 'Sri Yantra',
     steps: [
-      { title: 'The Field and the Point',
-        body: 'The great circle, and the bindu at its heart · the seed point from which the whole diagram unfolds. This is a simplified yantra; the classical construction is a lifetime study.',
-        guides: [{ kind: 'circle', x: 300, y: 300, r: 215 }, { kind: 'circle', x: 300, y: 300, r: 8 }] },
+      { title: 'The Gates and the Point',
+        body: 'Three concentric circles \u00b7 the gates \u00b7 and the bindu at the heart: the seed point from which the whole diagram unfolds. A tap places it. This is a close approximation; the fully concurrent yantra is a famous unsolved drawing.',
+        guides: [
+          { kind: 'circle', x: 300, y: 300, r: 215 },
+          { kind: 'circle', x: 300, y: 300, r: 226 },
+          { kind: 'circle', x: 300, y: 300, r: 236 },
+          { kind: 'circle', x: 300, y: 300, r: 8 },
+        ] },
       { title: 'The Four Ascending',
-        body: 'Four triangles rising · the unfolding of energy upward.',
+        body: 'Four triangles rising, the great ones resting their corners on the circle \u00b7 the unfolding of energy upward.',
         guides: YANTRA_UP.flatMap(t => polySegs(t)) },
       { title: 'The Five Descending',
-        body: 'Five triangles descending through them. Nine triangles interlock · the meeting of the two directions is the diagram.',
+        body: 'Five triangles descending through them, bases stepping down the axis. Nine interlock \u00b7 the small triangles are not drawn, they are found where the great ones cross.',
         guides: YANTRA_DN.flatMap(t => polySegs(t)) },
     ],
   },
