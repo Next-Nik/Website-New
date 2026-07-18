@@ -1018,6 +1018,10 @@ function collectMatches(fit, shape, step, takenView) {
 
 const pathD = (pts) => 'M ' + pts.map(p => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L ')
 
+// Paint layer renders at 2x the logical canvas for crisp fill edges
+const PAINT_RES = 1200
+const PAINT_SCALE = PAINT_RES / 600
+
 // 24-colour fill palette for the paint layer
 const PAINT_COLOURS = [
   '#C0392B', '#E74C3C', '#E67E22', '#F39C12', '#F1C40F', '#F7DC6F',
@@ -1126,7 +1130,7 @@ function GeometryPractice() {
     strokes.current = []
     history.current = []
     setHistLen(0)
-    if (paintRef.current) paintRef.current.getContext('2d').clearRect(0, 0, 600, 600)
+    if (paintRef.current) paintRef.current.getContext('2d').clearRect(0, 0, PAINT_RES, PAINT_RES)
     const c = canvasRef.current
     if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height)
   }
@@ -1199,10 +1203,11 @@ function GeometryPractice() {
   const ensureBoundary = () => {
     if (boundaryCache.current.key === shapeKey) return boundaryCache.current.data
     const oc = document.createElement('canvas')
-    oc.width = 600; oc.height = 600
+    oc.width = PAINT_RES; oc.height = PAINT_RES
     const ctx = oc.getContext('2d')
+    ctx.scale(PAINT_SCALE, PAINT_SCALE)
     ctx.strokeStyle = '#000'
-    ctx.lineWidth = 3
+    ctx.lineWidth = 1.7
     fullFigure.forEach(el => {
       ctx.beginPath()
       if (el.kind === 'circle') ctx.arc(el.x, el.y, el.r, 0, 2 * Math.PI)
@@ -1210,7 +1215,7 @@ function GeometryPractice() {
       if (el.kind === 'path') { ctx.moveTo(el.pts[0].x, el.pts[0].y); el.pts.forEach(q => ctx.lineTo(q.x, q.y)) }
       ctx.stroke()
     })
-    const data = ctx.getImageData(0, 0, 600, 600).data
+    const data = ctx.getImageData(0, 0, PAINT_RES, PAINT_RES).data
     boundaryCache.current = { key: shapeKey, data }
     return data
   }
@@ -1219,11 +1224,12 @@ function GeometryPractice() {
     const walls = ensureBoundary()
     const pc = paintRef.current
     const ctx = pc.getContext('2d')
-    const img = ctx.getImageData(0, 0, 600, 600)
+    const W = PAINT_RES
+    const img = ctx.getImageData(0, 0, W, W)
     const px = img.data
-    const x0 = Math.round(sx), y0 = Math.round(sy)
-    if (x0 < 0 || y0 < 0 || x0 >= 600 || y0 >= 600) return
-    const idx = (x, y) => (y * 600 + x) * 4
+    const x0 = Math.round(sx * PAINT_SCALE), y0 = Math.round(sy * PAINT_SCALE)
+    if (x0 < 0 || y0 < 0 || x0 >= W || y0 >= W) return
+    const idx = (x, y) => (y * W + x) * 4
     if (walls[idx(x0, y0) + 3] > 100) return // tapped a line, not a region
     let fr = 0, fg = 0, fb = 0, fa = 0
     if (colour >= 0) {
@@ -1234,6 +1240,7 @@ function GeometryPractice() {
     const tr = px[s0], tg = px[s0 + 1], tb = px[s0 + 2], ta = px[s0 + 3]
     if (tr === fr && tg === fg && tb === fb && ta === fa) return
     const same = (i) => px[i] === tr && px[i + 1] === tg && px[i + 2] === tb && px[i + 3] === ta
+    let bx0 = x0, bx1 = x0, by0 = y0, by1 = y0
     const stack = [[x0, y0]]
     while (stack.length) {
       const [x, y] = stack.pop()
@@ -1241,8 +1248,12 @@ function GeometryPractice() {
       while (xl >= 0 && walls[idx(xl, y) + 3] <= 100 && same(idx(xl, y))) xl--
       xl++
       let xr = x
-      while (xr < 600 && walls[idx(xr, y) + 3] <= 100 && same(idx(xr, y))) xr++
+      while (xr < W && walls[idx(xr, y) + 3] <= 100 && same(idx(xr, y))) xr++
       xr--
+      if (xl < bx0) bx0 = xl
+      if (xr > bx1) bx1 = xr
+      if (y < by0) by0 = y
+      if (y > by1) by1 = y
       let upSeed = false, dnSeed = false
       for (let xi = xl; xi <= xr; xi++) {
         const i = idx(xi, y)
@@ -1253,13 +1264,30 @@ function GeometryPractice() {
           if (ok && !upSeed) { stack.push([xi, y - 1]); upSeed = true }
           if (!ok) upSeed = false
         }
-        if (y < 599) {
+        if (y < W - 1) {
           const id = idx(xi, y + 1)
           const ok = walls[id + 3] <= 100 && same(id)
           if (ok && !dnSeed) { stack.push([xi, y + 1]); dnSeed = true }
           if (!ok) dnSeed = false
         }
       }
+    }
+    // Dilate the fill two pixels into the wall zone so the colour tucks
+    // beneath the drawn line \u00b7 clean flatting, no pale fringe.
+    const isFill = (i) => px[i] === fr && px[i + 1] === fg && px[i + 2] === fb && px[i + 3] === fa
+    for (let pass = 0; pass < 2; pass++) {
+      const grow = []
+      for (let y = Math.max(1, by0 - 3); y <= Math.min(W - 2, by1 + 3); y++) {
+        for (let x = Math.max(1, bx0 - 3); x <= Math.min(W - 2, bx1 + 3); x++) {
+          const i = idx(x, y)
+          if (walls[i + 3] <= 100 || isFill(i)) continue
+          if (isFill(idx(x - 1, y)) || isFill(idx(x + 1, y)) || isFill(idx(x, y - 1)) || isFill(idx(x, y + 1))) {
+            grow.push(i)
+          }
+        }
+      }
+      for (const i of grow) { px[i] = fr; px[i + 1] = fg; px[i + 2] = fb; px[i + 3] = fa }
+      if (grow.length === 0) break
     }
     ctx.putImageData(img, 0, 0)
   }
@@ -1345,7 +1373,7 @@ function GeometryPractice() {
   const clearCanvas = () => {
     pushHistory(true)
     strokes.current = []
-    if (paintRef.current) paintRef.current.getContext('2d').clearRect(0, 0, 600, 600)
+    if (paintRef.current) paintRef.current.getContext('2d').clearRect(0, 0, PAINT_RES, PAINT_RES)
     canvasRef.current.getContext('2d').clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
     setRecognised([]); setTaken(new Set()); setResolved(false)
   }
@@ -1496,7 +1524,7 @@ function GeometryPractice() {
           background: fn.object, borderRadius: 8, boxShadow: shadow.fn.rest,
           touchAction: penOnly ? 'pan-y' : 'none', overflow: 'hidden',
         }}>
-          <canvas ref={paintRef} width={600} height={600} className="prism-paint" />
+          <canvas ref={paintRef} width={PAINT_RES} height={PAINT_RES} className="prism-paint" />
           <svg viewBox="0 0 600 600" className="prism-geo-guide">
             {shape.steps.map((st, s) => st.guides.map((g, i) => renderGuide(g, `${s}-${i}`, guideOpacity(s))))}
             {shape.steps.map((st, s) => st.guides.filter(g => g.kind === 'circle' || g.kind === 'arc').map((g, i) => (
