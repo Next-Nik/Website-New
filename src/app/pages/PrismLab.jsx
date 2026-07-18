@@ -381,19 +381,20 @@ function WriteAndBurn() {
 // ─────────────────────────────────────────────────────────────
 // Tool 3 — Geometry (sacred form tracing)
 // ─────────────────────────────────────────────────────────────
-// Data-driven tracing engine. Each shape is a sequence of steps; each
-// step carries guide elements. On pen-lift the stroke is fitted and
-// quietly matched; a match makes the perfect element fade in beneath
-// the hand-drawn line. Recognition, not correction: no failure states,
-// no scoring, silence on a non-match. "Reveal the form" resolves the
-// figure; the hand's lines remain as a faint ghost.
+// Data-driven tracing engine, ordered simplest to most complex.
+// On pen-lift the stroke is fitted and quietly matched; matches click
+// into place · the hand line is replaced by the perfect one. A single
+// stroke converts every guide it legitimately covers: a long line
+// across several collinear sections snaps them all at once, and a line
+// through several centres chains into consecutive connections.
+// No failure states, no scoring, silence on a non-match.
 //
 // Guide kinds:
 //   circle  — closed circle trace
-//   arc     — partial trace of a parent circle (matches unclosed fits)
-//   petal   — lens between two parent circles (vesica seam, rosettes)
+//   arc     — partial trace of a parent circle
+//   petal   — lens between two parent circles
 //   segment — straight line with fixed endpoints
-//   lineweb — any centre-to-centre line among a set (Metatron step 4)
+//   lineweb — any centre-to-centre line among a set
 //   qarc    — quarter arc of a parent circle (golden spiral)
 
 const geoRing = (cx, cy, dist, r, count = 6, phase = -Math.PI / 2, stepAngle = Math.PI / 3) =>
@@ -419,13 +420,25 @@ const geoPetal = (pA, pB, t1, t2) => ({
 })
 
 const geoSeg = (x1, y1, x2, y2) => ({ kind: 'segment', x1, y1, x2, y2 })
+const polySegs = (v, close = true) => {
+  const out = []
+  for (let i = 1; i < v.length; i++) out.push(geoSeg(v[i - 1].x, v[i - 1].y, v[i].x, v[i].y))
+  if (close) out.push(geoSeg(v[v.length - 1].x, v[v.length - 1].y, v[0].x, v[0].y))
+  return out
+}
 
 const geoQarc = (cx, cy, r, a, b) => ({
   kind: 'qarc', cx, cy, r, a, b,
   path: geoArcPts({ x: cx, y: cy, r }, a, b, 20),
 })
 
-// Tree of Life node positions (Kircher arrangement)
+const ptsAt = (R, phase, count = 6, stepAngle = Math.PI / 3) =>
+  Array.from({ length: count }, (_, i) => {
+    const a = stepAngle * i + phase
+    return { x: 300 + R * Math.cos(a), y: 300 + R * Math.sin(a) }
+  })
+
+// Tree of Life (Kircher arrangement)
 const TREE = {
   keter: { x: 300, y: 70 }, chokmah: { x: 430, y: 150 }, binah: { x: 170, y: 150 },
   chesed: { x: 430, y: 290 }, gevurah: { x: 170, y: 290 }, tiferet: { x: 300, y: 360 },
@@ -441,22 +454,13 @@ const TREE_PATHS = [
   ['netzach', 'yesod'], ['hod', 'yesod'], ['netzach', 'malkuth'], ['hod', 'malkuth'],
 ]
 
-// Merkaba and Vector Equilibrium vertices
-const geoStarPts = (R, phase) => Array.from({ length: 3 }, (_, i) => {
-  const a = (2 * Math.PI / 3) * i + phase
-  return { x: 300 + R * Math.cos(a), y: 300 + R * Math.sin(a) }
-})
-const MK_UP = geoStarPts(200, -Math.PI / 2)
-const MK_DN = geoStarPts(200, Math.PI / 2)
-const VE_HEX = Array.from({ length: 6 }, (_, i) => {
-  const a = (Math.PI / 3) * i
-  return { x: 300 + 200 * Math.cos(a), y: 300 + 200 * Math.sin(a) }
-})
+const MK_UP = ptsAt(200, -Math.PI / 2, 3, 2 * Math.PI / 3)
+const MK_DN = ptsAt(200, Math.PI / 2, 3, 2 * Math.PI / 3)
+const HEX = ptsAt(210, -Math.PI / 2)
+const HEX_ROT = ptsAt(210, -Math.PI / 3)
+const VE_HEX = ptsAt(200, 0)
 
-const triSegs = (v) => [geoSeg(v[0].x, v[0].y, v[1].x, v[1].y), geoSeg(v[1].x, v[1].y, v[2].x, v[2].y), geoSeg(v[2].x, v[2].y, v[0].x, v[0].y)]
-
-// Germ of Life petals: six circles r=110 on the rim of an r=110 centre,
-// petals along the bisectors, tips at r·√3 ≈ the 190 boundary.
+// Germ of Life petals
 const GERM_PETALS = Array.from({ length: 6 }, (_, k) => {
   const aK = (Math.PI / 3) * k - Math.PI / 2
   const aK1 = (Math.PI / 3) * (k + 1) - Math.PI / 2
@@ -467,10 +471,59 @@ const GERM_PETALS = Array.from({ length: 6 }, (_, k) => {
   return geoPetal(pA, pB, { x: 300, y: 300 }, tip)
 })
 
+// Pentagon whirl: pursuit polygons
+const WHIRL = (() => {
+  const pents = []
+  let P = Array.from({ length: 5 }, (_, i) => {
+    const a = (2 * Math.PI / 5) * i - Math.PI / 2
+    return { x: 300 + 215 * Math.cos(a), y: 300 + 215 * Math.sin(a) }
+  })
+  for (let k = 0; k < 7; k++) {
+    pents.push(P)
+    P = P.map((p, i) => {
+      const q = P[(i + 1) % 5]
+      return { x: p.x + 0.18 * (q.x - p.x), y: p.y + 0.18 * (q.y - p.y) }
+    })
+  }
+  return pents
+})()
+
+// Sierpinski triangle levels
+const SIERP = (() => {
+  const A = { x: 300, y: 91 }, B = { x: 110, y: 420 }, C = { x: 490, y: 420 }
+  const mid = (p, q) => ({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 })
+  const inner = (t) => [mid(t[0], t[1]), mid(t[1], t[2]), mid(t[2], t[0])]
+  const corners = (t) => {
+    const [mAB, mBC, mCA] = inner(t)
+    return [[t[0], mAB, mCA], [mAB, t[1], mBC], [mCA, mBC, t[2]]]
+  }
+  const L0 = [[A, B, C]]
+  const L1 = L0.map(inner)
+  const sub1 = L0.flatMap(corners)
+  const L2 = sub1.map(inner)
+  const sub2 = sub1.flatMap(corners)
+  const L3 = sub2.map(inner)
+  return { L0, L1, L2, L3 }
+})()
+
+// Sri Yantra · simplified nine-triangle schema (not the classical construction)
+const YANTRA_UP = [
+  [{ x: 115, y: 470 }, { x: 485, y: 470 }, { x: 300, y: 135 }],
+  [{ x: 152, y: 430 }, { x: 448, y: 430 }, { x: 300, y: 180 }],
+  [{ x: 190, y: 385 }, { x: 410, y: 385 }, { x: 300, y: 232 }],
+  [{ x: 230, y: 340 }, { x: 370, y: 340 }, { x: 300, y: 272 }],
+]
+const YANTRA_DN = [
+  [{ x: 110, y: 130 }, { x: 490, y: 130 }, { x: 300, y: 470 }],
+  [{ x: 150, y: 170 }, { x: 450, y: 170 }, { x: 300, y: 420 }],
+  [{ x: 182, y: 215 }, { x: 418, y: 215 }, { x: 300, y: 368 }],
+  [{ x: 215, y: 258 }, { x: 385, y: 258 }, { x: 300, y: 322 }],
+  [{ x: 250, y: 292 }, { x: 350, y: 292 }, { x: 300, y: 358 }],
+]
+
 const GEO_SHAPES = [
   {
-    key: 'vesica',
-    name: 'Vesica Piscis',
+    key: 'vesica', name: 'Vesica Piscis',
     steps: [
       { title: 'The First Circle',
         body: 'Trace the first circle slowly. One whole, complete in itself.',
@@ -487,8 +540,7 @@ const GEO_SHAPES = [
     ],
   },
   {
-    key: 'egg',
-    name: 'Egg of Life',
+    key: 'egg', name: 'Egg of Life',
     steps: [
       { title: 'The Centre',
         body: 'Trace the centre circle. In the beginning, one cell.',
@@ -499,8 +551,7 @@ const GEO_SHAPES = [
     ],
   },
   {
-    key: 'seed',
-    name: 'Seed of Life',
+    key: 'seed', name: 'Seed of Life',
     steps: [
       { title: 'The Centre',
         body: 'Trace the centre circle. Everything that follows passes through its heart.',
@@ -514,8 +565,7 @@ const GEO_SHAPES = [
     ],
   },
   {
-    key: 'germ',
-    name: 'Germ of Life',
+    key: 'germ', name: 'Germ of Life',
     steps: [
       { title: 'The Boundary',
         body: 'Trace the great circle. A field prepared, waiting.',
@@ -526,100 +576,21 @@ const GEO_SHAPES = [
     ],
   },
   {
-    key: 'metatron',
-    name: 'Metatron\u2019s Cube',
-    steps: [
-      { title: 'The Centre Circle',
-        body: 'Trace the centre circle slowly. One circle, one point. Everything that follows emerges from this single radius.',
-        guides: [{ kind: 'circle', x: 300, y: 300, r: 44 }] },
-      { title: 'Six Circles · First Ring',
-        body: 'Trace each of the six circles around the centre. Each touches the centre circle and its neighbours. Six always fit exactly: honeycomb, snowflake, carbon.',
-        guides: geoRing(300, 300, 88, 44) },
-      { title: 'Six Circles · Outer Ring',
-        body: 'Trace the six outer circles. Thirteen now, the Fruit of Life. Twelve around one: a central principle surrounded by its expression.',
-        guides: geoRing(300, 300, 176, 44) },
-      { title: 'Connect the Centres',
-        body: 'Draw straight lines connecting centres to centres. The hexagon emerges; Metatron\u2019s Cube is revealed. You did not create it. You revealed it.',
-        guides: [{ kind: 'lineweb', centres: [{ x: 300, y: 300 },
-          ...geoRing(300, 300, 88, 44).map(c => ({ x: c.x, y: c.y })),
-          ...geoRing(300, 300, 176, 44).map(c => ({ x: c.x, y: c.y }))] }] },
-    ],
-  },
-  {
-    key: 'flower',
-    name: 'Flower of Life',
-    steps: [
-      { title: 'The Centre',
-        body: 'Trace the centre circle. The whole pattern is already implied in this one form.',
-        guides: [{ kind: 'circle', x: 300, y: 300, r: 70 }] },
-      { title: 'The First Ring',
-        body: 'Six circles around the centre, each centred on a crossing point. The seed appears within the flower.',
-        guides: geoRing(300, 300, 70, 70) },
-      { title: 'The Second Ring',
-        body: 'Twelve more, following the crossing points outward. Take your time · the pattern carries you if you let it.',
-        guides: [
-          ...geoRing(300, 300, 140, 70),
-          ...geoRing(300, 300, 70 * Math.sqrt(3), 70, 6, -Math.PI / 3),
-        ] },
-      { title: 'The Boundary',
-        body: 'One great circle to hold the whole. Nineteen circles, one field. The flower rests inside it.',
-        guides: [{ kind: 'circle', x: 300, y: 300, r: 210 }] },
-    ],
-  },
-  {
-    key: 'merkaba',
-    name: 'Merkaba',
+    key: 'merkaba', name: 'Merkaba',
     steps: [
       { title: 'The Rising Triangle',
         body: 'Trace the upward triangle · fire rising.',
-        guides: triSegs(MK_UP) },
+        guides: polySegs(MK_UP) },
       { title: 'The Descending Triangle',
         body: 'Trace the downward triangle over it · water descending. The six-pointed star appears where they interlace.',
-        guides: triSegs(MK_DN) },
+        guides: polySegs(MK_DN) },
       { title: 'The Axis',
         body: 'Draw each point home to the centre. Two tetrahedra, one still axis · the vehicle is whole.',
         guides: [...MK_UP, ...MK_DN].map(v => geoSeg(v.x, v.y, 300, 300)) },
     ],
   },
   {
-    key: 've',
-    name: 'Vector Equilibrium',
-    steps: [
-      { title: 'The Hexagon',
-        body: 'Trace the six outer edges. The cuboctahedron seen face-on · twelve points around one.',
-        guides: VE_HEX.map((v, i) => {
-          const w = VE_HEX[(i + 1) % 6]
-          return geoSeg(v.x, v.y, w.x, w.y)
-        }) },
-      { title: 'The Spokes',
-        body: 'Draw each vertex to the centre. Every radius equals every edge · equilibrium of forces in every direction.',
-        guides: VE_HEX.map(v => geoSeg(v.x, v.y, 300, 300)) },
-      { title: 'The Inner Star',
-        body: 'Connect every second vertex, twice around. Fuller called this the vector equilibrium: the stillness at the heart of structure.',
-        guides: [0, 1].flatMap(o => [0, 1, 2].map(i => {
-          const a = VE_HEX[(o + 2 * i) % 6], b = VE_HEX[(o + 2 * i + 2) % 6]
-          return geoSeg(a.x, a.y, b.x, b.y)
-        })) },
-    ],
-  },
-  {
-    key: 'tree',
-    name: 'Tree of Life',
-    steps: [
-      { title: 'The Supernal Three',
-        body: 'Trace the three uppermost circles: crown, wisdom, understanding. The triad above the veil.',
-        guides: ['keter', 'chokmah', 'binah'].map(k => ({ kind: 'circle', x: TREE[k].x, y: TREE[k].y, r: 34 })) },
-      { title: 'The Seven Below',
-        body: 'Trace the remaining seven, pillar by pillar, down to the ground.',
-        guides: ['chesed', 'gevurah', 'tiferet', 'netzach', 'hod', 'yesod', 'malkuth'].map(k => ({ kind: 'circle', x: TREE[k].x, y: TREE[k].y, r: 34 })) },
-      { title: 'The Twenty-Two Paths',
-        body: 'Connect the spheres. Twenty-two paths join ten vessels · draw the ones that call you, in any order.',
-        guides: TREE_PATHS.map(([a, b]) => geoSeg(TREE[a].x, TREE[a].y, TREE[b].x, TREE[b].y)) },
-    ],
-  },
-  {
-    key: 'spiral',
-    name: 'Golden Spiral',
+    key: 'spiral', name: 'Golden Spiral',
     steps: [
       { title: 'The Great Square',
         body: 'Trace the golden rectangle, then the line that sets the largest square apart. Remove a square from a golden rectangle and a golden rectangle remains.',
@@ -643,6 +614,175 @@ const GEO_SHAPES = [
           geoQarc(444, 388, 80, { x: 444, y: 468 }, { x: 364, y: 388 }),
           geoQarc(412, 388, 48, { x: 364, y: 388 }, { x: 412, y: 340 }),
         ] },
+    ],
+  },
+  {
+    key: 've', name: 'Vector Equilibrium',
+    steps: [
+      { title: 'The Hexagon',
+        body: 'Trace the six outer edges. The cuboctahedron seen face-on · twelve points around one.',
+        guides: polySegs(VE_HEX) },
+      { title: 'The Spokes',
+        body: 'Draw each vertex to the centre. Every radius equals every edge · equilibrium of forces in every direction.',
+        guides: VE_HEX.map(v => geoSeg(v.x, v.y, 300, 300)) },
+      { title: 'The Inner Star',
+        body: 'Connect every second vertex, twice around. Fuller called this the vector equilibrium: the stillness at the heart of structure.',
+        guides: [0, 1].flatMap(o => [0, 1, 2].map(i => {
+          const a = VE_HEX[(o + 2 * i) % 6], b = VE_HEX[(o + 2 * i + 2) % 6]
+          return geoSeg(a.x, a.y, b.x, b.y)
+        })) },
+    ],
+  },
+  {
+    key: 'icosa', name: 'Icosahedron',
+    steps: [
+      { title: 'The Hexagon',
+        body: 'Trace the six outer edges · the solid seen along its axis.',
+        guides: polySegs(HEX) },
+      { title: 'The Hexagram',
+        body: 'Two triangles across alternate corners. Twenty faces begin to fold out of a flat page.',
+        guides: [...polySegs([HEX[0], HEX[2], HEX[4]]), ...polySegs([HEX[1], HEX[3], HEX[5]])] },
+      { title: 'The Inner Hexagon',
+        body: 'Join the six crossing points. Depth arrives · the nearest faces stand forward.',
+        guides: polySegs(ptsAt(210 / Math.sqrt(3), -Math.PI / 3)) },
+    ],
+  },
+  {
+    key: 'torus', name: 'Torus',
+    steps: [
+      { title: 'The First Ring',
+        body: 'Trace the first circle, off-centre. The torus is many circles disagreeing gently about where the middle is.',
+        guides: [geoRing(300, 300, 90, 150, 12, -Math.PI / 2, Math.PI / 6)[0]] },
+      { title: 'Turning',
+        body: 'Five more, each turned a little further around the ring. The weave begins.',
+        guides: geoRing(300, 300, 90, 150, 12, -Math.PI / 2, Math.PI / 6).slice(1, 6) },
+      { title: 'The Full Turn',
+        body: 'The remaining six close the circuit. Twelve circles, one breathing field · energy folding through its own centre.',
+        guides: geoRing(300, 300, 90, 150, 12, -Math.PI / 2, Math.PI / 6).slice(6) },
+    ],
+  },
+  {
+    key: 'metatron', name: 'Metatron\u2019s Cube',
+    steps: [
+      { title: 'The Centre Circle',
+        body: 'Trace the centre circle slowly. One circle, one point. Everything that follows emerges from this single radius.',
+        guides: [{ kind: 'circle', x: 300, y: 300, r: 44 }] },
+      { title: 'Six Circles · First Ring',
+        body: 'Trace each of the six circles around the centre. Each touches the centre circle and its neighbours. Six always fit exactly: honeycomb, snowflake, carbon.',
+        guides: geoRing(300, 300, 88, 44) },
+      { title: 'Six Circles · Outer Ring',
+        body: 'Trace the six outer circles. Thirteen now, the Fruit of Life. Twelve around one: a central principle surrounded by its expression.',
+        guides: geoRing(300, 300, 176, 44) },
+      { title: 'Connect the Centres',
+        body: 'Draw straight lines connecting centres to centres · one long line through several centres joins them all at once. You did not create it. You revealed it.',
+        guides: [{ kind: 'lineweb', centres: [{ x: 300, y: 300 },
+          ...geoRing(300, 300, 88, 44).map(c => ({ x: c.x, y: c.y })),
+          ...geoRing(300, 300, 176, 44).map(c => ({ x: c.x, y: c.y }))] }] },
+    ],
+  },
+  {
+    key: 'flower', name: 'Flower of Life',
+    steps: [
+      { title: 'The Centre',
+        body: 'Trace the centre circle. The whole pattern is already implied in this one form.',
+        guides: [{ kind: 'circle', x: 300, y: 300, r: 70 }] },
+      { title: 'The First Ring',
+        body: 'Six circles around the centre, each centred on a crossing point. The seed appears within the flower.',
+        guides: geoRing(300, 300, 70, 70) },
+      { title: 'The Second Ring',
+        body: 'Twelve more, following the crossing points outward. Take your time · the pattern carries you if you let it.',
+        guides: [
+          ...geoRing(300, 300, 140, 70),
+          ...geoRing(300, 300, 70 * Math.sqrt(3), 70, 6, -Math.PI / 3),
+        ] },
+      { title: 'The Boundary',
+        body: 'One great circle to hold the whole. Nineteen circles, one field. The flower rests inside it.',
+        guides: [{ kind: 'circle', x: 300, y: 300, r: 210 }] },
+    ],
+  },
+  {
+    key: 'whirl', name: 'Pentagon Whirl',
+    steps: [
+      { title: 'The Outer Pentagon',
+        body: 'Five sides, the number of the golden ratio. Everything inside will turn.',
+        guides: polySegs(WHIRL[0]) },
+      { title: 'The Turn Begins',
+        body: 'Three more pentagons, each resting its corners a little way along the last one\u2019s sides. The whirl takes hold.',
+        guides: [1, 2, 3].flatMap(k => polySegs(WHIRL[k])) },
+      { title: 'Into the Eye',
+        body: 'Three more, smaller and turning. The pursuit never ends; the page simply runs out of room.',
+        guides: [4, 5, 6].flatMap(k => polySegs(WHIRL[k])) },
+    ],
+  },
+  {
+    key: 'tree', name: 'Tree of Life',
+    steps: [
+      { title: 'The Supernal Three',
+        body: 'Trace the three uppermost circles: crown, wisdom, understanding. The triad above the veil.',
+        guides: ['keter', 'chokmah', 'binah'].map(k => ({ kind: 'circle', x: TREE[k].x, y: TREE[k].y, r: 34 })) },
+      { title: 'The Seven Below',
+        body: 'Trace the remaining seven, pillar by pillar, down to the ground.',
+        guides: ['chesed', 'gevurah', 'tiferet', 'netzach', 'hod', 'yesod', 'malkuth'].map(k => ({ kind: 'circle', x: TREE[k].x, y: TREE[k].y, r: 34 })) },
+      { title: 'The Twenty-Two Paths',
+        body: 'Connect the spheres. Twenty-two paths join ten vessels · one straight stroke down a pillar joins every path it covers.',
+        guides: TREE_PATHS.map(([a, b]) => geoSeg(TREE[a].x, TREE[a].y, TREE[b].x, TREE[b].y)) },
+    ],
+  },
+  {
+    key: 'star12', name: 'Star of Twelve',
+    steps: [
+      { title: 'The Hexagon',
+        body: 'Six edges to hold the field.',
+        guides: polySegs(HEX) },
+      { title: 'The First Hexagram',
+        body: 'Two triangles across alternate corners · the six-pointed star.',
+        guides: [...polySegs([HEX[0], HEX[2], HEX[4]]), ...polySegs([HEX[1], HEX[3], HEX[5]])] },
+      { title: 'The Second Hexagram',
+        body: 'The same star, turned half a step. Twelve points now stand around the rim.',
+        guides: [...polySegs([HEX_ROT[0], HEX_ROT[2], HEX_ROT[4]]), ...polySegs([HEX_ROT[1], HEX_ROT[3], HEX_ROT[5]])] },
+      { title: 'The Twelve-Fold Weave',
+        body: 'From each of the twelve points, a line to the fifth point along. The inner rose appears where the long chords cross.',
+        guides: (() => {
+          const all = [...HEX, ...HEX_ROT]
+            .map(p => ({ p, a: Math.atan2(p.y - 300, p.x - 300) }))
+            .sort((u, v) => u.a - v.a)
+            .map(u => u.p)
+          return all.map((p, i) => {
+            const q = all[(i + 5) % 12]
+            return geoSeg(p.x, p.y, q.x, q.y)
+          })
+        })() },
+    ],
+  },
+  {
+    key: 'sierpinski', name: 'Sierpinski Triangle',
+    steps: [
+      { title: 'The Whole',
+        body: 'One triangle to hold every triangle that follows.',
+        guides: SIERP.L0.flatMap(t => polySegs(t)) },
+      { title: 'The First Division',
+        body: 'Join the midpoints. One becomes four · the centre one turns inside out.',
+        guides: SIERP.L1.flatMap(t => polySegs(t)) },
+      { title: 'The Second Division',
+        body: 'The same move in each corner. The pattern remembers itself.',
+        guides: SIERP.L2.flatMap(t => polySegs(t)) },
+      { title: 'The Third Division',
+        body: 'Nine small triangles · one straight stroke across a row converts every side it covers. This continues forever; we stop here.',
+        guides: SIERP.L3.flatMap(t => polySegs(t)) },
+    ],
+  },
+  {
+    key: 'yantra', name: 'Sri Yantra',
+    steps: [
+      { title: 'The Field and the Point',
+        body: 'The great circle, and the bindu at its heart · the seed point from which the whole diagram unfolds. This is a simplified yantra; the classical construction is a lifetime study.',
+        guides: [{ kind: 'circle', x: 300, y: 300, r: 215 }, { kind: 'circle', x: 300, y: 300, r: 8 }] },
+      { title: 'The Four Ascending',
+        body: 'Four triangles rising · the unfolding of energy upward.',
+        guides: YANTRA_UP.flatMap(t => polySegs(t)) },
+      { title: 'The Five Descending',
+        body: 'Five triangles descending through them. Nine triangles interlock · the meeting of the two directions is the diagram.',
+        guides: YANTRA_DN.flatMap(t => polySegs(t)) },
     ],
   },
 ]
@@ -688,59 +828,118 @@ function fitStroke(pts) {
 
 const nearPt = (ax, ay, bx, by, tol) => Math.hypot(ax - bx, ay - by) < tol
 
-function matchGuide(fit, guides, taken) {
-  for (let i = 0; i < guides.length; i++) {
-    if (taken.has(i)) continue
-    const g = guides[i]
-    if (g.kind === 'circle' && fit.kind === 'circle' && fit.closed
-      && nearPt(fit.x, fit.y, g.x, g.y, g.r * 0.5) && Math.abs(fit.r - g.r) < g.r * 0.35) {
-      return { index: i, element: { kind: 'circle', x: g.x, y: g.y, r: g.r } }
+const distToSegRaw = (px, py, x1, y1, x2, y2) => {
+  const dx = x2 - x1, dy = y2 - y1
+  const L2 = dx * dx + dy * dy || 1e-9
+  let t = ((px - x1) * dx + (py - y1) * dy) / L2
+  t = Math.max(0, Math.min(1, t))
+  return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy))
+}
+
+// Does a straight stroke cover a guide segment? True if both guide
+// endpoints lie close to the stroke (extended slightly at each end).
+function strokeCovers(fit, gx1, gy1, gx2, gy2) {
+  const dx = fit.x2 - fit.x1, dy = fit.y2 - fit.y1
+  const L = Math.hypot(dx, dy) || 1e-9
+  const ex = dx / L * 28, ey = dy / L * 28
+  const ax = fit.x1 - ex, ay = fit.y1 - ey
+  const bx = fit.x2 + ex, by = fit.y2 + ey
+  return distToSegRaw(gx1, gy1, ax, ay, bx, by) < 22
+    && distToSegRaw(gx2, gy2, ax, ay, bx, by) < 22
+}
+
+// Match one fit against one guide. Returns element, array of elements
+// (lineweb chains), or null.
+function matchOne(fit, g) {
+  if (g.kind === 'circle' && fit.kind === 'circle' && fit.closed
+    && nearPt(fit.x, fit.y, g.x, g.y, g.r * 0.5) && Math.abs(fit.r - g.r) < g.r * 0.35) {
+    return { kind: 'circle', x: g.x, y: g.y, r: g.r }
+  }
+  if (g.kind === 'arc' && fit.kind === 'circle'
+    && nearPt(fit.x, fit.y, g.x, g.y, g.r * 0.5) && Math.abs(fit.r - g.r) < g.r * 0.35) {
+    return { kind: 'circle', x: g.x, y: g.y, r: g.r }
+  }
+  if (g.kind === 'petal') {
+    const midx = (g.tips[0].x + g.tips[1].x) / 2, midy = (g.tips[0].y + g.tips[1].y) / 2
+    const span = Math.hypot(g.tips[0].x - g.tips[1].x, g.tips[0].y - g.tips[1].y)
+    const blobHit = fit.kind === 'blob' && nearPt(fit.cx, fit.cy, midx, midy, span * 0.35)
+      && fit.span > span * 0.45 && fit.span < span * 1.7
+    const circHit = fit.kind === 'circle'
+      && g.parents.some(p => nearPt(fit.x, fit.y, p.x, p.y, p.r * 0.5) && Math.abs(fit.r - p.r) < p.r * 0.4)
+    if (blobHit || circHit) return { kind: 'path', pts: g.path }
+  }
+  if (g.kind === 'segment' && fit.kind === 'line') {
+    const t = 34
+    const ends = (nearPt(fit.x1, fit.y1, g.x1, g.y1, t) && nearPt(fit.x2, fit.y2, g.x2, g.y2, t))
+      || (nearPt(fit.x1, fit.y1, g.x2, g.y2, t) && nearPt(fit.x2, fit.y2, g.x1, g.y1, t))
+    if (ends || strokeCovers(fit, g.x1, g.y1, g.x2, g.y2)) {
+      return { kind: 'line', x1: g.x1, y1: g.y1, x2: g.x2, y2: g.y2 }
     }
-    if (g.kind === 'arc' && fit.kind === 'circle'
-      && nearPt(fit.x, fit.y, g.x, g.y, g.r * 0.5) && Math.abs(fit.r - g.r) < g.r * 0.35) {
-      return { index: i, element: { kind: 'circle', x: g.x, y: g.y, r: g.r } }
-    }
-    if (g.kind === 'petal') {
-      const midx = (g.tips[0].x + g.tips[1].x) / 2, midy = (g.tips[0].y + g.tips[1].y) / 2
-      const span = Math.hypot(g.tips[0].x - g.tips[1].x, g.tips[0].y - g.tips[1].y)
-      const blobHit = fit.kind === 'blob' && nearPt(fit.cx, fit.cy, midx, midy, span * 0.35)
-        && fit.span > span * 0.45 && fit.span < span * 1.7
-      const circHit = fit.kind === 'circle'
-        && g.parents.some(p => nearPt(fit.x, fit.y, p.x, p.y, p.r * 0.5) && Math.abs(fit.r - p.r) < p.r * 0.4)
-      if (blobHit || circHit) return { index: i, element: { kind: 'path', pts: g.path } }
-    }
-    if (g.kind === 'segment' && fit.kind === 'line') {
-      const t = 34
-      if ((nearPt(fit.x1, fit.y1, g.x1, g.y1, t) && nearPt(fit.x2, fit.y2, g.x2, g.y2, t))
-        || (nearPt(fit.x1, fit.y1, g.x2, g.y2, t) && nearPt(fit.x2, fit.y2, g.x1, g.y1, t))) {
-        return { index: i, element: { kind: 'line', x1: g.x1, y1: g.y1, x2: g.x2, y2: g.y2 } }
+  }
+  if (g.kind === 'qarc') {
+    const circHit = fit.kind === 'circle'
+      && nearPt(fit.x, fit.y, g.cx, g.cy, g.r * 0.55) && Math.abs(fit.r - g.r) < g.r * 0.45
+    const t = Math.max(40, g.r * 0.2)
+    const lineHit = fit.kind === 'line'
+      && ((nearPt(fit.x1, fit.y1, g.a.x, g.a.y, t) && nearPt(fit.x2, fit.y2, g.b.x, g.b.y, t))
+        || (nearPt(fit.x1, fit.y1, g.b.x, g.b.y, t) && nearPt(fit.x2, fit.y2, g.a.x, g.a.y, t)))
+    if (circHit || lineHit) return { kind: 'path', pts: g.path }
+  }
+  if (g.kind === 'lineweb' && fit.kind === 'line') {
+    // Every centre the stroke passes near, chained in order along the
+    // stroke · one long line through several centres joins them all.
+    const dx = fit.x2 - fit.x1, dy = fit.y2 - fit.y1
+    const L = Math.hypot(dx, dy) || 1e-9
+    const hits = []
+    for (const c of g.centres) {
+      const ex = dx / L * 28, ey = dy / L * 28
+      if (distToSegRaw(c.x, c.y, fit.x1 - ex, fit.y1 - ey, fit.x2 + ex, fit.y2 + ey) < 24) {
+        hits.push({ c, t: ((c.x - fit.x1) * dx + (c.y - fit.y1) * dy) / (L * L) })
       }
     }
-    if (g.kind === 'qarc') {
-      const circHit = fit.kind === 'circle'
-        && nearPt(fit.x, fit.y, g.cx, g.cy, g.r * 0.55) && Math.abs(fit.r - g.r) < g.r * 0.45
-      const t = Math.max(40, g.r * 0.2)
-      const lineHit = fit.kind === 'line'
-        && ((nearPt(fit.x1, fit.y1, g.a.x, g.a.y, t) && nearPt(fit.x2, fit.y2, g.b.x, g.b.y, t))
-          || (nearPt(fit.x1, fit.y1, g.b.x, g.b.y, t) && nearPt(fit.x2, fit.y2, g.a.x, g.a.y, t)))
-      if (circHit || lineHit) return { index: i, element: { kind: 'path', pts: g.path } }
-    }
-    if (g.kind === 'lineweb' && fit.kind === 'line') {
-      const near = (px, py) => g.centres.find(c => nearPt(c.x, c.y, px, py, 42))
-      const a = near(fit.x1, fit.y1), b = near(fit.x2, fit.y2)
-      if (a && b && a !== b) {
-        return { index: i, multi: true, element: { kind: 'line', x1: a.x, y1: a.y, x2: b.x, y2: b.y } }
+    if (hits.length >= 2) {
+      hits.sort((u, v) => u.t - v.t)
+      const els = []
+      for (let i = 1; i < hits.length; i++) {
+        els.push({ kind: 'line', x1: hits[i - 1].c.x, y1: hits[i - 1].c.y, x2: hits[i].c.x, y2: hits[i].c.y })
       }
+      return els
     }
   }
   return null
 }
 
+// Collect every guide a fit legitimately covers. Lines sweep all steps
+// revealed so far; circles, arcs, petals and quarter arcs claim one.
+function collectMatches(fit, shape, step, takenView) {
+  const found = []
+  const isLine = fit.kind === 'line'
+  let offset = 0
+  for (let s = 0; s <= step; s++) {
+    const guides = shape.steps[s].guides
+    for (let i = 0; i < guides.length; i++) {
+      const key = offset + i
+      const g = guides[i]
+      if (g.kind !== 'lineweb' && takenView.has(key)) continue
+      const m = matchOne(fit, g)
+      if (!m) continue
+      if (Array.isArray(m)) {
+        m.forEach(el => found.push({ key: null, element: el }))
+      } else {
+        found.push({ key, element: m })
+        takenView.add(key)
+        if (!isLine) return found
+      }
+    }
+    offset += guides.length
+  }
+  return found
+}
+
 const pathD = (pts) => 'M ' + pts.map(p => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L ')
 
-// Ramer-Douglas-Peucker simplification: reduces a stroke to its corner
-// vertices so a triangle (or square, or star) drawn in one continuous
-// motion can be recognised side by side.
+// Ramer-Douglas-Peucker: reduces a stroke to its corner vertices so a
+// triangle (or square, or star) drawn in one motion is heard side by side.
 function simplify(pts, tol = 14) {
   if (pts.length < 3) return pts
   let maxD = 0, idx = 0
@@ -764,6 +963,8 @@ function GeometryPractice() {
   const [taken, setTaken] = useState(() => new Set())
   const [resolved, setResolved] = useState(false)
   const [mode, setMode] = useState('draw') // draw | erase
+  const [hint, setHint] = useState(false)
+  const hintTimer = useRef(null)
   const canvasRef = useRef(null)
   const drawing = useRef(false)
   const stroke = useRef([])
@@ -880,21 +1081,12 @@ function GeometryPractice() {
     drawSeg(canvasRef.current.getContext('2d'), prev, p)
   }
 
-  // Match against every step revealed so far; quiet on non-match.
-  const tryMatch = (fit) => {
-    if (!fit) return false
-    for (let s = 0; s <= step; s++) {
-      const offset = shape.steps.slice(0, s).reduce((a, st) => a + st.guides.length, 0)
-      const localTaken = new Set([...taken].filter(t => t >= offset && t < offset + shape.steps[s].guides.length).map(t => t - offset))
-      const m = matchGuide(fit, shape.steps[s].guides, localTaken)
-      if (m) {
-        setRecognised(r => [...r, { el: m.element, key: m.multi ? null : offset + m.index }])
-        if (!m.multi) setTaken(t => new Set([...t, offset + m.index]))
-        return true
-      }
-    }
-    return false
+  const showRemaining = () => {
+    setHint(true)
+    if (hintTimer.current) clearTimeout(hintTimer.current)
+    hintTimer.current = setTimeout(() => setHint(false), 2200)
   }
+  useEffect(() => () => { if (hintTimer.current) clearTimeout(hintTimer.current) }, [])
 
   const up = () => {
     if (!drawing.current) return
@@ -902,27 +1094,37 @@ function GeometryPractice() {
     if (mode === 'erase') return
     const pts = stroke.current
     stroke.current = []
-    let matched = false
 
-    // 1 · whole stroke: circle, arc, petal, single line
-    if (tryMatch(fitStroke(pts))) matched = true
+    const takenView = new Set(taken)
+    let found = []
 
-    // 2 · corner-split: recognise each side of a multi-segment stroke
-    if (!matched && pts.length >= 3) {
+    // 1 \u00b7 whole stroke: circle, arc, petal, quarter arc, or a long line
+    //     that sweeps every collinear guide and chains through centres
+    const whole = fitStroke(pts)
+    if (whole) found = collectMatches(whole, shape, step, takenView)
+
+    // 2 \u00b7 corner-split: each side of a multi-segment stroke sweeps too
+    if (found.length === 0 && pts.length >= 3) {
       const closed = Math.hypot(pts[0].x - pts[pts.length - 1].x, pts[0].y - pts[pts.length - 1].y) < 36
       const verts = simplify(pts)
       const ring = closed && verts.length > 2 ? [...verts, verts[0]] : verts
       for (let i = 1; i < ring.length; i++) {
         const a = ring[i - 1], b = ring[i]
         if (Math.hypot(a.x - b.x, a.y - b.y) < 40) continue
-        if (tryMatch({ kind: 'line', x1: a.x, y1: a.y, x2: b.x, y2: b.y })) matched = true
+        found = found.concat(collectMatches({ kind: 'line', x1: a.x, y1: a.y, x2: b.x, y2: b.y }, shape, step, takenView))
       }
     }
 
-    // Snap: a stroke that found its form clicks into place · the hand
-    // line is replaced by the perfect one. Unmatched strokes remain.
-    if (matched) redraw()
-    else { strokes.current.push(pts); }
+    // Snap: strokes that found their forms click into place \u00b7 the hand
+    // line is replaced by the perfect ones. Unmatched strokes remain.
+    if (found.length > 0) {
+      setRecognised(r => [...r, ...found.map(f => ({ el: f.element, key: f.key }))])
+      const newKeys = found.filter(f => f.key !== null).map(f => f.key)
+      if (newKeys.length) setTaken(t => new Set([...t, ...newKeys]))
+      redraw()
+    } else {
+      strokes.current.push(pts)
+    }
   }
 
   const clearCanvas = () => {
@@ -997,7 +1199,43 @@ function GeometryPractice() {
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: space.xl, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+      {/* Sticky control bar · top centre, always in reach */}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 5,
+        background: fn.ground, borderBottom: `1px solid ${fn.rule}`,
+        padding: `${space.md} 0`, marginBottom: space.lg,
+        textAlign: 'center',
+      }}>
+        {!resolved ? (
+          <>
+            <div style={{ ...fnText.eyebrow, marginBottom: space.sm }}>
+              {shape.name} · Step {step + 1} of {shape.steps.length} · {shape.steps[step].title}
+            </div>
+            <div style={{ display: 'flex', gap: space.sm, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <button style={btnStyle('ghost')} disabled={step === 0} onClick={() => setStep(s => Math.max(0, s - 1))}>← Back</button>
+              {!lastStep && <button style={btnStyle()} onClick={() => setStep(s => s + 1)}>Next step →</button>}
+              {lastStep && <button style={btnStyle()} onClick={() => setResolved(true)}>Reveal the form</button>}
+              <button style={btnStyle(mode === 'draw' ? 'solid' : 'ghost')} onClick={() => setMode('draw')}>Draw</button>
+              <button style={btnStyle(mode === 'erase' ? 'solid' : 'ghost')} onClick={() => setMode('erase')}>Erase</button>
+              <button style={btnStyle('ghost')} onClick={showRemaining}>Show remaining</button>
+              <button style={btnStyle('ghost')} onClick={clearCanvas}>Clear</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div style={{ ...fnText.eyebrow, marginBottom: space.sm }}>{shape.name} · Revealed</div>
+            <div style={{ display: 'flex', gap: space.sm, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <button style={btnStyle()} onClick={() => resetAll()}>Begin again</button>
+            </div>
+          </>
+        )}
+      </div>
+
+      <p style={{ ...fnText.body, maxWidth: 640, margin: `0 auto ${space.lg}`, textAlign: 'center' }}>
+        {resolved ? 'The form was always there. Your hand found it.' : shape.steps[step].body}
+      </p>
+
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         <div style={{
           position: 'relative', width: 'min(600px, 100%)', aspectRatio: '1',
           background: fn.object, borderRadius: 8, boxShadow: shadow.fn.rest,
@@ -1009,6 +1247,24 @@ function GeometryPractice() {
               <circle key={`p${s}-${i}`} cx={g.x} cy={g.y} r="2.5" fill={fn.moss}
                 opacity={resolved ? 0 : s <= step ? 0.55 : 0} />
             )))}
+            {!resolved && hint && (() => {
+              const els = []
+              let offset = 0
+              shape.steps.forEach((st, s2) => {
+                st.guides.forEach((g, i) => {
+                  const key = offset + i
+                  if (s2 <= step && !taken.has(key)) {
+                    if (g.kind === 'circle' || g.kind === 'arc') els.push(<circle key={`h${key}`} className="prism-hint" cx={g.x} cy={g.y} r={g.r} fill="none" />)
+                    if (g.kind === 'segment') els.push(<line key={`h${key}`} className="prism-hint" x1={g.x1} y1={g.y1} x2={g.x2} y2={g.y2} />)
+                    if (g.kind === 'petal' || g.kind === 'qarc') els.push(<path key={`h${key}`} className="prism-hint" d={pathD(g.path)} fill="none" />)
+                    if (g.kind === 'lineweb') g.centres.forEach((a, x) => g.centres.slice(x + 1).forEach((b, y) =>
+                      els.push(<line key={`h${key}-${x}-${y}`} className="prism-hint prism-hint-web" x1={a.x} y1={a.y} x2={b.x} y2={b.y} />)))
+                  }
+                })
+                offset += st.guides.length
+              })
+              return els
+            })()}
             {!resolved && recognised.map((entry, i) => renderPerfect(entry.el, i, 'prism-reco'))}
             {resolved && fullFigure.map((el, i) => renderPerfect(el, i, 'prism-reco'))}
           </svg>
@@ -1018,48 +1274,18 @@ function GeometryPractice() {
             onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
           />
         </div>
-
-        <style>{`
-          .prism-geo-guide { position: absolute; inset: 0; width: 100%; height: 100%; }
-          .prism-hand { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; transition: opacity 2.4s ease; }
-          .prism-hand-ghost { opacity: 0.12; }
-          .prism-reco { opacity: 0.55; animation: prismRecoIn 0.9s ease; }
-          @keyframes prismRecoIn { from { opacity: 0; } to { opacity: 0.55; } }
-        `}</style>
-
-        <div style={{ flex: '1 1 240px', minWidth: 240 }}>
-          {!resolved ? (
-            <>
-              <div style={{ ...fnText.eyebrow, marginBottom: space.sm }}>
-                {shape.name} · Step {step + 1} of {shape.steps.length}
-              </div>
-              <h3 style={{ ...fnText.heading, marginBottom: space.sm }}>{shape.steps[step].title}</h3>
-              <p style={{ ...fnText.body, marginBottom: space.xl }}>{shape.steps[step].body}</p>
-              <div style={{ display: 'flex', gap: space.sm, flexWrap: 'wrap', marginBottom: space.lg }}>
-                <button style={btnStyle(mode === 'draw' ? 'solid' : 'ghost')} onClick={() => setMode('draw')}>Draw</button>
-                <button style={btnStyle(mode === 'erase' ? 'solid' : 'ghost')} onClick={() => setMode('erase')}>Erase</button>
-              </div>
-              <div style={{ display: 'flex', gap: space.sm, flexWrap: 'wrap' }}>
-                <button style={btnStyle('ghost')} disabled={step === 0} onClick={() => setStep(s => Math.max(0, s - 1))}>← Back</button>
-                {!lastStep && <button style={btnStyle()} onClick={() => setStep(s => s + 1)}>Next step →</button>}
-                {lastStep && <button style={btnStyle()} onClick={() => setResolved(true)}>Reveal the form</button>}
-                <button style={btnStyle('ghost')} onClick={clearCanvas}>Clear drawing</button>
-              </div>
-            </>
-          ) : (
-            <>
-              <div style={{ ...fnText.eyebrow, marginBottom: space.sm }}>{shape.name}</div>
-              <h3 style={{ ...fnText.heading, marginBottom: space.sm }}>Revealed</h3>
-              <p style={{ ...fnText.body, marginBottom: space.xl }}>
-                The form was always there. Your hand found it.
-              </p>
-              <div style={{ display: 'flex', gap: space.sm, flexWrap: 'wrap' }}>
-                <button style={btnStyle()} onClick={() => resetAll()}>Begin again</button>
-              </div>
-            </>
-          )}
-        </div>
       </div>
+
+      <style>{`
+        .prism-geo-guide { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .prism-hand { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; transition: opacity 2.4s ease; }
+        .prism-hand-ghost { opacity: 0.12; }
+        .prism-reco { opacity: 0.55; animation: prismRecoIn 0.9s ease; }
+        .prism-hint { stroke: #2F6BFF; stroke-width: 2.5; opacity: 0.9; animation: prismHintPulse 2.2s ease; }
+        .prism-hint-web { stroke-width: 0.7; opacity: 0.4; }
+        @keyframes prismHintPulse { 0% { opacity: 0; } 15% { opacity: 1; } 75% { opacity: 0.9; } 100% { opacity: 0; } }
+        @keyframes prismRecoIn { from { opacity: 0; } to { opacity: 0.55; } }
+      `}</style>
     </div>
   )
 }
