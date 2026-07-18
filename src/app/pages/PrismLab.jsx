@@ -852,7 +852,13 @@ function strokeCovers(fit, gx1, gy1, gx2, gy2) {
 // (lineweb chains), or null.
 function matchOne(fit, g) {
   if (g.kind === 'circle' && fit.kind === 'circle' && fit.closed
-    && nearPt(fit.x, fit.y, g.x, g.y, g.r * 0.5) && Math.abs(fit.r - g.r) < g.r * 0.35) {
+    && nearPt(fit.x, fit.y, g.x, g.y, Math.max(g.r * 0.5, 16)) && Math.abs(fit.r - g.r) < Math.max(g.r * 0.35, 12)) {
+    return { kind: 'circle', x: g.x, y: g.y, r: g.r }
+  }
+  // Tiny circles (the bindu) register from a dot, a tap, or any small mark
+  if (g.kind === 'circle' && g.r <= 14
+    && (fit.kind === 'dot' || fit.kind === 'blob')
+    && nearPt(fit.cx, fit.cy, g.x, g.y, 24) && (fit.span === undefined || fit.span < 70)) {
     return { kind: 'circle', x: g.x, y: g.y, r: g.r }
   }
   if (g.kind === 'arc' && fit.kind === 'circle'
@@ -965,6 +971,8 @@ function GeometryPractice() {
   const [mode, setMode] = useState('draw') // draw | erase
   const [hint, setHint] = useState(false)
   const hintTimer = useRef(null)
+  const history = useRef([])
+  const [histLen, setHistLen] = useState(0)
   const canvasRef = useRef(null)
   const drawing = useRef(false)
   const stroke = useRef([])
@@ -992,9 +1000,32 @@ function GeometryPractice() {
     }
   }
 
+  const pushHistory = () => {
+    history.current.push({
+      strokes: [...strokes.current],
+      recognised: recognised,
+      taken: new Set(taken),
+    })
+    if (history.current.length > 40) history.current.shift()
+    setHistLen(history.current.length)
+  }
+
+  const undo = () => {
+    const snap = history.current.pop()
+    if (!snap) return
+    setHistLen(history.current.length)
+    strokes.current = snap.strokes
+    setRecognised(snap.recognised)
+    setTaken(snap.taken)
+    setResolved(false)
+    redraw()
+  }
+
   const resetAll = (key = shapeKey) => {
     setShapeKey(key); setStep(0); setRecognised([]); setTaken(new Set()); setResolved(false)
     strokes.current = []
+    history.current = []
+    setHistLen(0)
     const c = canvasRef.current
     if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height)
   }
@@ -1067,6 +1098,7 @@ function GeometryPractice() {
     if (resolved) return
     if (e.pointerType === 'touch') return // fingers scroll; Pencil and mouse act
     drawing.current = true
+    pushHistory()
     if (mode === 'erase') { eraseAt(pos(e)); return }
     stroke.current = [pos(e)]
     e.target.setPointerCapture?.(e.pointerId)
@@ -1098,9 +1130,21 @@ function GeometryPractice() {
     const takenView = new Set(taken)
     let found = []
 
+    // 0 \u00b7 tiny marks: a dot or tap can register a small circle (the bindu)
+    if (pts.length >= 1) {
+      let tlen = 0
+      for (let i = 1; i < pts.length; i++) tlen += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y)
+      if (tlen < 40) {
+        const cx = pts.reduce((a, q) => a + q.x, 0) / pts.length
+        const cy = pts.reduce((a, q) => a + q.y, 0) / pts.length
+        found = collectMatches({ kind: 'dot', cx, cy }, shape, step, takenView)
+        if (found.length === 0) return // taps that match nothing leave no mark
+      }
+    }
+
     // 1 \u00b7 whole stroke: circle, arc, petal, quarter arc, or a long line
     //     that sweeps every collinear guide and chains through centres
-    const whole = fitStroke(pts)
+    const whole = found.length ? null : fitStroke(pts)
     if (whole) found = collectMatches(whole, shape, step, takenView)
 
     // 2 \u00b7 corner-split: each side of a multi-segment stroke sweeps too
@@ -1128,6 +1172,7 @@ function GeometryPractice() {
   }
 
   const clearCanvas = () => {
+    pushHistory()
     strokes.current = []
     canvasRef.current.getContext('2d').clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
     setRecognised([]); setTaken(new Set()); setResolved(false)
@@ -1218,6 +1263,7 @@ function GeometryPractice() {
               <button style={btnStyle(mode === 'draw' ? 'solid' : 'ghost')} onClick={() => setMode('draw')}>Draw</button>
               <button style={btnStyle(mode === 'erase' ? 'solid' : 'ghost')} onClick={() => setMode('erase')}>Erase</button>
               <button style={btnStyle('ghost')} onClick={showRemaining}>Show remaining</button>
+              <button style={btnStyle('ghost')} disabled={histLen === 0} onClick={undo}>Undo</button>
               <button style={btnStyle('ghost')} onClick={clearCanvas}>Clear</button>
             </div>
           </>
