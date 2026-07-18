@@ -803,6 +803,31 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
         </button>
       )}
 
+      {/* Founder: Prism Lab (hidden practices under evaluation) */}
+      {isFounder && (
+        <button
+          onClick={() => onNavigate('/admin/prism')}
+          style={{
+            display: 'block',
+            width: '100%',
+            padding: '11px 16px',
+            background: 'rgba(110,127,92, 0.06)',
+            border: `1px solid ${GOLD}`,
+            borderRadius: 14,
+            cursor: 'pointer',
+            fontFamily: FONT_SC,
+            fontSize: 13,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: GOLD_DK,
+            textAlign: 'center',
+            marginBottom: 14,
+          }}
+        >
+          PRISM LAB →
+        </button>
+      )}
+
       {/* Sign out */}
       <button
         onClick={handleSignOut}
