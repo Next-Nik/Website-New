@@ -529,6 +529,108 @@ const YANTRA_DN = [
   yTri(289, 62, 310),
 ]
 
+// Arbitrary parametric curves: matched by nearness of the whole stroke
+const polyLen = (pts) => {
+  let L = 0
+  for (let i = 1; i < pts.length; i++) L += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y)
+  return L
+}
+const geoCurve = (pts) => {
+  let cx = 0, cy = 0
+  pts.forEach(q => { cx += q.x; cy += q.y })
+  return { kind: 'curve', path: pts, cx: cx / pts.length, cy: cy / pts.length, len: polyLen(pts) }
+}
+const resamplePts = (pts, n) => {
+  const total = polyLen(pts)
+  if (total === 0) return [pts[0]]
+  const out = [pts[0]]
+  let need = total / (n - 1)
+  let acc = 0
+  for (let i = 1; i < pts.length && out.length < n; i++) {
+    let a = pts[i - 1], b = pts[i]
+    let seg = Math.hypot(b.x - a.x, b.y - a.y)
+    while (acc + seg >= need && out.length < n) {
+      const t = (need - acc) / seg
+      const q = { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }
+      out.push(q)
+      seg = seg - (need - acc)
+      a = q
+      acc = 0
+    }
+    acc += seg
+  }
+  while (out.length < n) out.push(pts[pts.length - 1])
+  return out
+}
+
+// Flame Mandala \u00b7 the zentangle spirit made formulaic: wavy rings and
+// two counter-rotating ranks of parametric flames
+const wavyRing = (R, amp, lobes, phase) => {
+  const pts = []
+  for (let i = 0; i <= 72; i++) {
+    const a = (2 * Math.PI * i) / 72
+    const r = R + amp * Math.sin(lobes * a + phase)
+    pts.push({ x: 300 + r * Math.cos(a), y: 300 + r * Math.sin(a) })
+  }
+  return geoCurve(pts)
+}
+const flameCurve = (a0, r0, r1, sway, wmax) => {
+  const N = 22
+  const up = [], dn = []
+  for (let i = 0; i <= N; i++) {
+    const t = i / N
+    const r = r0 + (r1 - r0) * t
+    const thc = a0 + sway * Math.sin(1.9 * t)
+    const phi = wmax * Math.pow(Math.sin(Math.PI * t), 0.8) * (1 - 0.15 * t)
+    up.push({ x: 300 + r * Math.cos(thc + phi), y: 300 + r * Math.sin(thc + phi) })
+    dn.push({ x: 300 + r * Math.cos(thc - phi), y: 300 + r * Math.sin(thc - phi) })
+  }
+  return geoCurve([...up, ...dn.reverse(), up[0]])
+}
+const FLAME_RINGS = [wavyRing(95, 9, 11, 0), wavyRing(152, 11, 11, Math.PI / 3), wavyRing(209, 13, 11, 2 * Math.PI / 3)]
+const FLAME_INNER = Array.from({ length: 12 }, (_, k) => flameCurve((2 * Math.PI * k) / 12 - Math.PI / 2, 55, 160, 0.42, 0.16))
+const FLAME_OUTER = Array.from({ length: 12 }, (_, k) => flameCurve((2 * Math.PI * k) / 12 + Math.PI / 12 - Math.PI / 2, 140, 262, -0.5, 0.15))
+
+// Sunflower \u00b7 Vogel phyllotaxis: seed n at radius \u221an, golden angle 137.5\u00b0
+const sunSpiral = (j, n, dir, omega) => {
+  const pts = []
+  for (let i = 0; i <= 26; i++) {
+    const t = 0.12 + 0.88 * (i / 26)
+    const r = 16 + 104 * t
+    const a = (2 * Math.PI * j) / n + dir * omega * t - Math.PI / 2
+    pts.push({ x: 300 + r * Math.cos(a), y: 300 + r * Math.sin(a) })
+  }
+  return geoCurve(pts)
+}
+const sunPetal = (a0, r0, r1, wmax) => {
+  const N = 18
+  const up = [], dn = []
+  for (let i = 0; i <= N; i++) {
+    const t = i / N
+    const r = r0 + (r1 - r0) * t
+    const phi = wmax * Math.sin(Math.PI * t)
+    up.push({ x: 300 + r * Math.cos(a0 + phi), y: 300 + r * Math.sin(a0 + phi) })
+    dn.push({ x: 300 + r * Math.cos(a0 - phi), y: 300 + r * Math.sin(a0 - phi) })
+  }
+  return geoCurve([...up, ...dn.reverse(), up[0]])
+}
+const SUN_SPIRALS_13 = Array.from({ length: 13 }, (_, j) => sunSpiral(j, 13, 1, 2.35))
+const SUN_SPIRALS_8 = Array.from({ length: 8 }, (_, j) => sunSpiral(j, 8, -1, 2.9))
+const SUN_PETALS = [
+  ...Array.from({ length: 13 }, (_, j) => sunPetal((2 * Math.PI * j) / 13 + 0.12 - Math.PI / 2, 118, 252, 0.115)),
+  ...Array.from({ length: 21 }, (_, j) => sunPetal((2 * Math.PI * j) / 21 - Math.PI / 2, 118, 288, 0.072)),
+]
+const SUN_SEEDS = (() => {
+  const GA = Math.PI * (3 - Math.sqrt(5)) // golden angle \u00b7 137.507\u00b0
+  const seeds = []
+  for (let n = 1; n <= 233; n++) {
+    const r = 7.8 * Math.sqrt(n)
+    const a = n * GA
+    seeds.push({ kind: 'circle', x: 300 + r * Math.cos(a), y: 300 + r * Math.sin(a), r: 1.9 + r * 0.014 })
+  }
+  return seeds
+})()
+
 // Pursuit polygons: each ring rests its corners a fraction along the last
 const pursuit = (n, R, t, iters, phase = -Math.PI / 2) => {
   const rings = []
@@ -957,12 +1059,44 @@ const GEO_SHAPES = [
     ],
     revealExtras: TUMBLE_STRIPES,
   },
+  {
+    key: 'flame', name: 'Flame Mandala',
+    steps: [
+      { title: 'The Rings',
+        body: 'Three wavering rings, each breathing eleven small waves. Trace them as circles that refuse to be perfect \u00b7 the wobble is the design.',
+        guides: FLAME_RINGS },
+      { title: 'The Inner Flames',
+        body: 'Twelve flames rise and curl from the heart, each one stroke around its whole edge. Freehand feeling, formulaic bones.',
+        guides: FLAME_INNER },
+      { title: 'The Outer Flames',
+        body: 'Twelve more, offset half a step and curling the other way. The mandala turns against itself \u00b7 paint the ranks in alternating fire.',
+        guides: FLAME_OUTER },
+    ],
+  },
+  {
+    key: 'sunflower', name: 'Sunflower',
+    steps: [
+      { title: 'The Head',
+        body: 'One circle to hold the computation. The sunflower is a formula wearing petals: each seed sits at the golden angle, 137.5 degrees past the one before, at a radius of the square root of its number.',
+        guides: [{ kind: 'circle', x: 300, y: 300, r: 120 }] },
+      { title: 'The Thirteen',
+        body: 'Thirteen spiral arms curving one way across the head. Thirteen is no accident \u00b7 the parastichy counts are always neighbours in the Fibonacci sequence.',
+        guides: SUN_SPIRALS_13 },
+      { title: 'The Eight',
+        body: 'Eight arms curving against them. Where the families cross, the seed lattice appears.',
+        guides: SUN_SPIRALS_8 },
+      { title: 'The Petals',
+        body: 'Thirteen inner petals, twenty-one outer \u00b7 Fibonacci again, wearing yellow. One stroke around each. At the reveal, two hundred and thirty-three seeds arrive, placed by the formula itself.',
+        guides: SUN_PETALS },
+    ],
+    revealExtras: SUN_SEEDS,
+  },
 ]
 
 // Complexity order, simplest to most complex
 const GEO_ORDER = ['vesica', 'egg', 'seed', 'germ', 'merkaba', 'spiral', 've', 'icosa', 'torus',
-  'metatron', 'flower', 'cvortex', 'whirl', 'tvortex', 'tree', 'star12', 'hvortex',
-  'sierpinski', 'yantra', 'tumbling', 'master']
+  'metatron', 'flower', 'cvortex', 'whirl', 'tvortex', 'tree', 'star12', 'hvortex', 'flame',
+  'sierpinski', 'sunflower', 'yantra', 'tumbling', 'master']
 GEO_SHAPES.sort((a, b) => GEO_ORDER.indexOf(a.key) - GEO_ORDER.indexOf(b.key))
 
 // ── Stroke fitting ────────────────────────────────────────────
@@ -974,7 +1108,7 @@ function fitStroke(pts) {
   if (len < 40) return null
   const chord = Math.hypot(pts[n - 1].x - pts[0].x, pts[n - 1].y - pts[0].y)
   if (chord / len > 0.92) {
-    return { kind: 'line', x1: pts[0].x, y1: pts[0].y, x2: pts[n - 1].x, y2: pts[n - 1].y }
+    return { kind: 'line', x1: pts[0].x, y1: pts[0].y, x2: pts[n - 1].x, y2: pts[n - 1].y, pts }
   }
   let sx = 0, sy = 0, minx = 1e9, miny = 1e9, maxx = -1e9, maxy = -1e9
   for (const p of pts) {
@@ -983,7 +1117,7 @@ function fitStroke(pts) {
     if (p.y < miny) miny = p.y; if (p.y > maxy) maxy = p.y
   }
   const mx = sx / n, my = sy / n
-  const blob = { kind: 'blob', cx: mx, cy: my, span: Math.max(maxx - minx, maxy - miny), len }
+  const blob = { kind: 'blob', cx: mx, cy: my, span: Math.max(maxx - minx, maxy - miny), len, pts }
   let Suu = 0, Suv = 0, Svv = 0, Suuu = 0, Svvv = 0, Suvv = 0, Svuu = 0
   for (const p of pts) {
     const u = p.x - mx, v = p.y - my
@@ -1001,7 +1135,7 @@ function fitStroke(pts) {
   dev /= n
   if (r < 15 || dev / r > 0.28) return blob
   const closed = len >= 2 * Math.PI * r * 0.6
-  return { kind: 'circle', x: cx, y: cy, r, closed }
+  return { kind: 'circle', x: cx, y: cy, r, closed, pts }
 }
 
 const nearPt = (ax, ay, bx, by, tol) => Math.hypot(ax - bx, ay - by) < tol
@@ -1068,6 +1202,22 @@ function matchOne(fit, g) {
       && ((nearPt(fit.x1, fit.y1, g.a.x, g.a.y, t) && nearPt(fit.x2, fit.y2, g.b.x, g.b.y, t))
         || (nearPt(fit.x1, fit.y1, g.b.x, g.b.y, t) && nearPt(fit.x2, fit.y2, g.a.x, g.a.y, t)))
     if (circHit || lineHit) return { kind: 'path', pts: g.path }
+  }
+  if (g.kind === 'curve' && fit.pts && fit.pts.length >= 6) {
+    const slen = polyLen(fit.pts)
+    if (slen > g.len * 0.45 && slen < g.len * 2.2) {
+      const sp = resamplePts(fit.pts, 24)
+      let tot = 0
+      for (const q of sp) {
+        let m = 1e9
+        for (const c of g.path) {
+          const d = Math.hypot(q.x - c.x, q.y - c.y)
+          if (d < m) m = d
+        }
+        tot += m
+      }
+      if (tot / sp.length < 20) return { kind: 'path', pts: g.path }
+    }
   }
   if (g.kind === 'lineweb' && fit.kind === 'line') {
     // Every centre the stroke passes near, chained in order along the
@@ -1466,7 +1616,7 @@ function GeometryPractice() {
       if (tlen < 40) {
         const cx = pts.reduce((a, q) => a + q.x, 0) / pts.length
         const cy = pts.reduce((a, q) => a + q.y, 0) / pts.length
-        found = collectMatches({ kind: 'dot', cx, cy }, shape, step, takenView)
+        found = collectMatches({ kind: 'dot', cx, cy, pts }, shape, step, takenView)
         if (found.length === 0) return // taps that match nothing leave no mark
       }
     }
@@ -1524,7 +1674,7 @@ function GeometryPractice() {
       return <line key={key} x1={g.x1} y1={g.y1} x2={g.x2} y2={g.y2}
         stroke={fn.moss} strokeWidth="1.2" strokeDasharray="3 5" opacity={opacity} />
     }
-    if (g.kind === 'petal' || g.kind === 'qarc') {
+    if (g.kind === 'petal' || g.kind === 'qarc' || g.kind === 'curve') {
       return <path key={key} d={pathD(g.path)} fill="none"
         stroke={fn.moss} strokeWidth="1.2" strokeDasharray="3 5" opacity={opacity} />
     }
@@ -1550,7 +1700,7 @@ function GeometryPractice() {
   shape.steps.forEach(st => st.guides.forEach(g => {
     if (g.kind === 'circle' || g.kind === 'arc') fullFigure.push({ kind: 'circle', x: g.x, y: g.y, r: g.r })
     if (g.kind === 'segment') fullFigure.push({ kind: 'line', x1: g.x1, y1: g.y1, x2: g.x2, y2: g.y2, dashed: g.dashed })
-    if (g.kind === 'petal' || g.kind === 'qarc') fullFigure.push({ kind: 'path', pts: g.path })
+    if (g.kind === 'petal' || g.kind === 'qarc' || g.kind === 'curve') fullFigure.push({ kind: 'path', pts: g.path })
     if (g.kind === 'lineweb') g.centres.forEach((a, x) => g.centres.slice(x + 1).forEach(b =>
       fullFigure.push({ kind: 'line', x1: a.x, y1: a.y, x2: b.x, y2: b.y })))
   }))
@@ -1671,7 +1821,7 @@ function GeometryPractice() {
                   if (s2 <= step && !taken.has(key)) {
                     if (g.kind === 'circle' || g.kind === 'arc') els.push(<circle key={`h${key}`} className="prism-hint" cx={g.x} cy={g.y} r={g.r} fill="none" />)
                     if (g.kind === 'segment') els.push(<line key={`h${key}`} className="prism-hint" x1={g.x1} y1={g.y1} x2={g.x2} y2={g.y2} />)
-                    if (g.kind === 'petal' || g.kind === 'qarc') els.push(<path key={`h${key}`} className="prism-hint" d={pathD(g.path)} fill="none" />)
+                    if (g.kind === 'petal' || g.kind === 'qarc' || g.kind === 'curve') els.push(<path key={`h${key}`} className="prism-hint" d={pathD(g.path)} fill="none" />)
                     if (g.kind === 'lineweb') g.centres.forEach((a, x) => g.centres.slice(x + 1).forEach((b, y) =>
                       els.push(<line key={`h${key}-${x}-${y}`} className="prism-hint prism-hint-web" x1={a.x} y1={a.y} x2={b.x} y2={b.y} />)))
                   }
