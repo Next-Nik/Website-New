@@ -443,7 +443,7 @@ const TREE = {
   keter: { x: 300, y: 70 }, chokmah: { x: 430, y: 150 }, binah: { x: 170, y: 150 },
   chesed: { x: 430, y: 290 }, gevurah: { x: 170, y: 290 }, tiferet: { x: 300, y: 360 },
   netzach: { x: 430, y: 430 }, hod: { x: 170, y: 430 }, yesod: { x: 300, y: 500 },
-  malkuth: { x: 300, y: 570 },
+  malkuth: { x: 300, y: 564 },
 }
 const TREE_PATHS = [
   ['chokmah', 'binah'], ['chesed', 'gevurah'], ['netzach', 'hod'],
@@ -792,14 +792,24 @@ const GEO_SHAPES = [
     key: 'icosa', name: 'Icosahedron',
     steps: [
       { title: 'The Hexagon',
-        body: 'Trace the six outer edges · the solid seen along its axis.',
-        guides: polySegs(HEX) },
-      { title: 'The Hexagram',
-        body: 'Two triangles across alternate corners. Twenty faces begin to fold out of a flat page.',
-        guides: [...polySegs([HEX[0], HEX[2], HEX[4]]), ...polySegs([HEX[1], HEX[3], HEX[5]])] },
-      { title: 'The Inner Hexagon',
-        body: 'Join the six crossing points. Depth arrives · the nearest faces stand forward.',
-        guides: polySegs(ptsAt(210 / Math.sqrt(3), -Math.PI / 3)) },
+        body: 'Six outer edges \u00b7 the silhouette of the solid, seen straight down its axis.',
+        guides: polySegs(ptsAt(210, -Math.PI / 2)) },
+      { title: 'The Folds',
+        body: 'Each outer corner folds to its two inner neighbours \u00b7 twelve slanting edges, and the flat page gains depth.',
+        guides: (() => {
+          const OUT = ptsAt(210, -Math.PI / 2)
+          const INN = ptsAt(122, -Math.PI / 3)
+          return OUT.flatMap((v, i) => [
+            geoSeg(v.x, v.y, INN[i].x, INN[i].y),
+            geoSeg(v.x, v.y, INN[(i + 5) % 6].x, INN[(i + 5) % 6].y),
+          ])
+        })() },
+      { title: 'The Near Faces',
+        body: 'Two triangles across the inner ring. Twenty faces resolve \u00b7 the nearest stand forward.',
+        guides: (() => {
+          const INN = ptsAt(122, -Math.PI / 3)
+          return [...polySegs([INN[0], INN[2], INN[4]]), ...polySegs([INN[1], INN[3], INN[5]])]
+        })() },
     ],
   },
   {
@@ -1006,7 +1016,7 @@ const GEO_SHAPES = [
         revealExtras: [...polySegs(D), ...joins(D, Math.PI / 2)].map(dashEl),
       }
     })(),
-  },,
+  },
   {
     key: 'cvortex', name: 'Circle Vortex',
     steps: [
@@ -1118,7 +1128,7 @@ function fitStroke(pts) {
   if (n < 8) return null
   let len = 0
   for (let i = 1; i < n; i++) len += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y)
-  if (len < 40) return null
+  if (len < 22) return null
   const chord = Math.hypot(pts[n - 1].x - pts[0].x, pts[n - 1].y - pts[0].y)
   if (chord / len > 0.92) {
     return { kind: 'line', x1: pts[0].x, y1: pts[0].y, x2: pts[n - 1].x, y2: pts[n - 1].y, pts }
@@ -1219,7 +1229,7 @@ function matchOne(fit, g) {
     if (blobHit || circHit) return { kind: 'path', pts: g.path }
   }
   if (g.kind === 'segment' && fit.kind === 'line') {
-    const t = 34
+    const t = Math.min(34, Math.max(14, Math.hypot(g.x2 - g.x1, g.y2 - g.y1) * 0.55))
     const ends = (nearPt(fit.x1, fit.y1, g.x1, g.y1, t) && nearPt(fit.x2, fit.y2, g.x2, g.y2, t))
       || (nearPt(fit.x1, fit.y1, g.x2, g.y2, t) && nearPt(fit.x2, fit.y2, g.x1, g.y1, t))
     if (ends || strokeCovers(fit, g.x1, g.y1, g.x2, g.y2)) {
@@ -1737,7 +1747,7 @@ function GeometryPractice() {
     if (pts.length >= 1) {
       let tlen = 0
       for (let i = 1; i < pts.length; i++) tlen += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y)
-      if (tlen < 40) {
+      if (tlen < 22) {
         const cx = pts.reduce((a, q) => a + q.x, 0) / pts.length
         const cy = pts.reduce((a, q) => a + q.y, 0) / pts.length
         found = collectMatches({ kind: 'dot', cx, cy, pts }, shape, step, takenView)
@@ -1757,7 +1767,7 @@ function GeometryPractice() {
       const ring = closed && verts.length > 2 ? [...verts, verts[0]] : verts
       for (let i = 1; i < ring.length; i++) {
         const a = ring[i - 1], b = ring[i]
-        if (Math.hypot(a.x - b.x, a.y - b.y) < 40) continue
+        if (Math.hypot(a.x - b.x, a.y - b.y) < 22) continue
         found = found.concat(collectMatches({ kind: 'line', x1: a.x, y1: a.y, x2: b.x, y2: b.y }, shape, step, takenView))
       }
     }
