@@ -943,7 +943,7 @@ const GEO_SHAPES = [
   },
   {
     key: 'master', name: 'Icosahedron in the Flower',
-    steps: (() => {
+    ...(() => {
       // Hex lattice of flower circles: r 55, rings 0-3, pointy orientation
       const v1 = { x: 0, y: -55 }
       const v2 = { x: 55 * Math.cos(-Math.PI / 6), y: 55 * Math.sin(-Math.PI / 6) }
@@ -973,8 +973,7 @@ const GEO_SHAPES = [
           return geoSeg(v.x, v.y, h.x, h.y)
         })
       })
-      const dash = (g) => ({ ...g, dashed: true })
-      return [
+      const steps = [
         { title: 'The Field',
           body: 'The great circle and the twelve radii. Every construction begins by dividing the whole \u00b7 one full stroke across the centre lays two radii at once.',
           guides: [
@@ -996,10 +995,12 @@ const GEO_SHAPES = [
         { title: 'The Solid',
           body: 'Now the icosahedron, bold over the lattice: the hexagon, the rising triangle, and the edges that join them. Twenty faces, drawn from flowers.',
           guides: [...polySegs(H), ...polySegs(U), ...joins(U, -Math.PI / 2)] },
-        { title: 'The Hidden Faces',
-          body: 'The far side, dashed \u00b7 the descending triangle and its edges, seen through the body of the solid. The draughtsman\u2019s convention: what is hidden is still held.',
-          guides: [...polySegs(D).map(dash), ...joins(D, Math.PI / 2).map(dash)] },
       ]
+      const dashEl = (g) => ({ kind: 'line', x1: g.x1, y1: g.y1, x2: g.x2, y2: g.y2, dashed: true })
+      return {
+        steps,
+        revealExtras: [...polySegs(D), ...joins(D, Math.PI / 2)].map(dashEl),
+      }
     })(),
   },,
   {
@@ -1267,13 +1268,13 @@ function collectMatches(fit, shape, step, takenView) {
         const fx = fit.kind === 'circle' ? fit.x : fit.cx
         const fy = fit.kind === 'circle' ? fit.y : fit.cy
         const score = Math.hypot(fx - g.x, fy - g.y) + (fit.kind === 'circle' ? Math.abs(fit.r - g.r) * 0.5 : 0)
-        if (!best || score < best.score) best = { key, element: m, score }
+        if (!best || score < best.score) best = { key, element: m, score, s }
       }
       off += guides.length
     }
     if (best) {
       takenView.add(best.key)
-      return [{ key: best.key, element: best.element }]
+      return [{ key: best.key, element: best.element, s: best.s }]
     }
   }
   let offset = 0
@@ -1286,9 +1287,9 @@ function collectMatches(fit, shape, step, takenView) {
       const m = matchOne(fit, g)
       if (!m) continue
       if (Array.isArray(m)) {
-        m.forEach(el => found.push({ key: null, element: el }))
+        m.forEach(el => found.push({ key: null, element: el, s }))
       } else {
-        found.push({ key, element: m })
+        found.push({ key, element: m, s })
         takenView.add(key)
         if (!isLine) return found
       }
@@ -1643,7 +1644,7 @@ function GeometryPractice() {
     // Snap: strokes that found their forms click into place \u00b7 the hand
     // line is replaced by the perfect ones. Unmatched strokes remain.
     if (found.length > 0) {
-      setRecognised(r => [...r, ...found.map(f => ({ el: f.element, key: f.key }))])
+      setRecognised(r => [...r, ...found.map(f => ({ el: f.element, key: f.key, s: f.s }))])
       const newKeys = found.filter(f => f.key !== null).map(f => f.key)
       if (newKeys.length) setTaken(t => new Set([...t, ...newKeys]))
       redraw()
@@ -1832,7 +1833,7 @@ function GeometryPractice() {
               })
               return els
             })()}
-            {!resolved && recognised.map((entry, i) => renderPerfect(entry.el, i, 'prism-reco'))}
+            {!resolved && recognised.map((entry, i) => renderPerfect(entry.el, i, entry.s !== undefined && entry.s < step ? 'prism-reco prism-reco-past' : 'prism-reco'))}
             {resolved && fullFigure.map((el, i) => renderPerfect(el, i, 'prism-reco'))}
           </svg>
           <canvas
@@ -1849,6 +1850,7 @@ function GeometryPractice() {
         .prism-hand { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; transition: opacity 2.4s ease; }
         .prism-hand-ghost { opacity: 0.12; }
         .prism-reco { opacity: 0.55; animation: prismRecoIn 0.9s ease; }
+        .prism-reco-past { opacity: 0.16; animation: none; }
         .prism-hint { stroke: #2F6BFF; stroke-width: 2.5; opacity: 0.9; animation: prismHintPulse 2.2s ease; }
         .prism-hint-web { stroke-width: 0.7; opacity: 0.4; }
         @keyframes prismHintPulse { 0% { opacity: 0; } 15% { opacity: 1; } 75% { opacity: 0.9; } 100% { opacity: 0; } }
