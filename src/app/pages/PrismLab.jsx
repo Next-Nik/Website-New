@@ -506,29 +506,6 @@ const SIERP = (() => {
   return { L0, L1, L2, L3 }
 })()
 
-// Sri Yantra \u00b7 classically proportioned nine-triangle schema.
-// Four of the great triangles rest their corners on the circle; bases
-// step down the axis; the bindu sits in the innermost cell. Still an
-// approximation \u00b7 full concurrency is the famous unsolved drawing.
-const YR = 215
-const yantraHW = (dy, inset = 4) => Math.sqrt(Math.max(0, YR * YR - dy * dy)) - inset
-const yTri = (baseY, hw, apexY) => [
-  { x: 300 - hw, y: baseY }, { x: 300 + hw, y: baseY }, { x: 300, y: apexY },
-]
-const YANTRA_UP = [
-  yTri(472, yantraHW(172), 107),
-  yTri(420, yantraHW(120), 154),
-  yTri(377, 150, 218),
-  yTri(343, 110, 257),
-]
-const YANTRA_DN = [
-  yTri(128, yantraHW(172), 442),
-  yTri(180, yantraHW(120), 395),
-  yTri(231, 150, 352),
-  yTri(266, 110, 319),
-  yTri(289, 62, 310),
-]
-
 // Arbitrary parametric curves: matched by nearness of the whole stroke
 const polyLen = (pts) => {
   let L = 0
@@ -635,6 +612,68 @@ const SUN_SEEDS = (() => {
   }
   return seeds
 })()
+
+// Sri Yantra \u00b7 classically proportioned nine-triangle schema, scaled
+// down to leave room for the lotus petal rings and the bhupura gates
+// that frame the traditional diagram. Four of the great triangles rest
+// their corners on the (pre-scale) circle; bases step down the axis;
+// the bindu sits in the innermost cell. Still an approximation \u00b7 full
+// concurrency is the famous unsolved drawing.
+const YR = 215
+const yantraHW = (dy, inset = 4) => Math.sqrt(Math.max(0, YR * YR - dy * dy)) - inset
+const yTri = (baseY, hw, apexY) => [
+  { x: 300 - hw, y: baseY }, { x: 300 + hw, y: baseY }, { x: 300, y: apexY },
+]
+const YANTRA_SCALE = 0.66
+const yScale = (p) => ({ x: 300 + (p.x - 300) * YANTRA_SCALE, y: 300 + (p.y - 300) * YANTRA_SCALE })
+const YANTRA_UP = [
+  yTri(472, yantraHW(172), 107),
+  yTri(420, yantraHW(120), 154),
+  yTri(377, 150, 218),
+  yTri(343, 110, 257),
+].map(t => t.map(yScale))
+const YANTRA_DN = [
+  yTri(128, yantraHW(172), 442),
+  yTri(180, yantraHW(120), 395),
+  yTri(231, 150, 352),
+  yTri(266, 110, 319),
+  yTri(289, 62, 310),
+].map(t => t.map(yScale))
+const YANTRA_GATES = [215, 226, 236].map(r => r * YANTRA_SCALE)
+
+// The two lotus petal rings, drawn as pointed petals \u00b7 eight outer
+// bhupura-facing, sixteen within them, both reusing the same pointed
+// petal curve as the sunflower.
+const YANTRA_LOTUS_8 = Array.from({ length: 8 }, (_, j) =>
+  sunPetal((2 * Math.PI * j) / 8 - Math.PI / 2, 165, 192, 0.24))
+const YANTRA_LOTUS_16 = Array.from({ length: 16 }, (_, j) =>
+  sunPetal((2 * Math.PI * j) / 16 - Math.PI / 2, 200, 225, 0.13))
+const YANTRA_OUTER_RING = 233
+
+// Bhupura \u00b7 the outer square with a stepped T-gate at the centre of
+// each side, the gateway motif from the traditional diagram.
+const bhupuraGates = (half, tabHalf, tabDepth) => {
+  const corners = [{ x: 300 - half, y: 300 - half }, { x: 300 + half, y: 300 - half },
+    { x: 300 + half, y: 300 + half }, { x: 300 - half, y: 300 + half }]
+  const segs = polySegs(corners)
+  const mids = [[-1, 0], [0, -1], [1, 0], [0, 1]] // right, top, left, bottom outward normals per side midpoint order
+  const sides = [
+    { mx: 300, my: 300 - half, nx: 0, ny: -1, tx: 1, ty: 0 },
+    { mx: 300 + half, my: 300, nx: 1, ny: 0, tx: 0, ty: 1 },
+    { mx: 300, my: 300 + half, nx: 0, ny: 1, tx: 1, ty: 0 },
+    { mx: 300 - half, my: 300, nx: -1, ny: 0, tx: 0, ty: 1 },
+  ]
+  for (const s of sides) {
+    const a = { x: s.mx - s.tx * tabHalf, y: s.my - s.ty * tabHalf }
+    const b = { x: s.mx + s.tx * tabHalf, y: s.my + s.ty * tabHalf }
+    const ao = { x: a.x + s.nx * tabDepth, y: a.y + s.ny * tabDepth }
+    const bo = { x: b.x + s.nx * tabDepth, y: b.y + s.ny * tabDepth }
+    segs.push(geoSeg(a.x, a.y, ao.x, ao.y), geoSeg(ao.x, ao.y, bo.x, bo.y), geoSeg(bo.x, bo.y, b.x, b.y))
+  }
+  return segs
+}
+const YANTRA_BHUPURA = bhupuraGates(260, 34, 26)
+
 
 // Pursuit polygons: each ring rests its corners a fraction along the last
 const pursuit = (n, R, t, iters, phase = -Math.PI / 2) => {
@@ -954,20 +993,27 @@ const GEO_SHAPES = [
   {
     key: 'yantra', name: 'Sri Yantra',
     steps: [
-      { title: 'The Gates and the Point',
-        body: 'Three concentric circles \u00b7 the gates \u00b7 and the bindu at the heart: the seed point from which the whole diagram unfolds. A tap places it. This is a close approximation; the fully concurrent yantra is a famous unsolved drawing.',
-        guides: [
-          { kind: 'circle', x: 300, y: 300, r: 215 },
-          { kind: 'circle', x: 300, y: 300, r: 226 },
-          { kind: 'circle', x: 300, y: 300, r: 236 },
-          { kind: 'circle', x: 300, y: 300, r: 8 },
-        ] },
+      { title: 'The Bindu',
+        body: 'One point at the very heart \u00b7 a tap places it. The seed from which the whole diagram unfolds. This is a close approximation; the fully concurrent yantra is a famous unsolved drawing.',
+        guides: [{ kind: 'circle', x: 300, y: 300, r: 8 }] },
       { title: 'The Four Ascending',
-        body: 'Four triangles rising, the great ones resting their corners on the circle \u00b7 the unfolding of energy upward.',
+        body: 'Four triangles rising \u00b7 the unfolding of energy upward.',
         guides: YANTRA_UP.flatMap(t => polySegs(t)) },
       { title: 'The Five Descending',
         body: 'Five triangles descending through them, bases stepping down the axis. Nine interlock \u00b7 the small triangles are not drawn, they are found where the great ones cross.',
         guides: YANTRA_DN.flatMap(t => polySegs(t)) },
+      { title: 'The Gates',
+        body: 'Three close circles ring the triangles \u00b7 the girdle that holds the mandala.',
+        guides: YANTRA_GATES.map(r => ({ kind: 'circle', x: 300, y: 300, r })) },
+      { title: 'The Lotus, Eightfold',
+        body: 'Eight petals just beyond the gates \u00b7 one stroke each, pointed tip outward.',
+        guides: YANTRA_LOTUS_8 },
+      { title: 'The Lotus, Sixteenfold',
+        body: 'Sixteen more, smaller and closer together \u00b7 the second ring of petals, then a last circle to hold them.',
+        guides: [...YANTRA_LOTUS_16, { kind: 'circle', x: 300, y: 300, r: YANTRA_OUTER_RING }] },
+      { title: 'The Bhupura',
+        body: 'The outer square, with a stepped gateway at the centre of each side \u00b7 the four doors of the world, facing the four directions. The city wall that holds the whole diagram.',
+        guides: YANTRA_BHUPURA },
     ],
   },
   {
@@ -1477,12 +1523,15 @@ function GeometryPractice() {
 
   const resetAll = (key = shapeKey) => {
     setShapeKey(key); setStep(0); setRecognised([]); setTaken(new Set()); setResolved(false)
+    setMode('draw')
     strokes.current = []
     history.current = []
     setHistLen(0)
     if (paintRef.current) paintRef.current.getContext('2d').clearRect(0, 0, PAINT_RES, PAINT_RES)
     const c = canvasRef.current
     if (c) c.getContext('2d').clearRect(0, 0, c.width, c.height)
+    view.current = { x: 0, y: 0, k: 1, r: 0 }
+    applyView()
   }
 
   // Apple Pencil support: fingers scroll the page, the Pencil draws.
