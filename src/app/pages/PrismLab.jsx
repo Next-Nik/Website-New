@@ -707,6 +707,87 @@ const pursuitSafe = (n, R, t, iters, phase = -Math.PI / 2) => {
 }
 const PURSUIT_TRI = pursuitSafe(3, 268, 0.06, 30)
 const PURSUIT_HEX = pursuitSafe(6, 250, 0.16, 22)
+const PURSUIT_SQ = pursuitSafe(4, 240, 0.07, 40)
+
+// Pinwheel Weave \u00b7 genuine string art: each petal is two rays from a
+// shared centre, chorded point-to-point \u2014 the classic curve-stitch
+// technique, which produces a parabolic envelope from nothing but
+// straight lines. Five petals, each rotated a fifth of the way around.
+// The parameter range is trimmed at both ends: chords near a ray's
+// origin converge toward the shared centre point and their spacing
+// collapses, exactly like the vortex families\u2019 inner rings \u2014 verified
+// by direct chord-to-chord distance, not just the endpoint spacing.
+// Two rays from a shared centre, chorded point-to-point \u2014 string art\u2019s
+// oldest trick, a parabolic curve made from nothing but straight lines.
+// Chords near a ray\u2019s origin converge toward the shared point and their
+// spacing collapses, exactly like the vortex families\u2019 inner rings; the
+// t-range is trimmed the same way, verified by true chord-to-chord
+// distance rather than endpoint spacing alone.
+const chordFan = (theta0, delta, R, M = 14, tMin = 0.22, tMax = 0.78) => {
+  const rayA = (t) => ({ x: 300 + t * R * Math.cos(theta0), y: 300 + t * R * Math.sin(theta0) })
+  const rayB = (t) => ({ x: 300 + t * R * Math.cos(theta0 + delta), y: 300 + t * R * Math.sin(theta0 + delta) })
+  const chords = []
+  for (let i = 0; i < M; i++) {
+    const t = tMin + (tMax - tMin) * (i / (M - 1))
+    const a = rayA(t), b = rayB(1 - t)
+    chords.push(geoSeg(a.x, a.y, b.x, b.y))
+  }
+  return chords
+}
+const chordRay = (theta0, R) => geoSeg(300, 300, 300 + R * Math.cos(theta0), 300 + R * Math.sin(theta0))
+
+const PINWHEEL_N = 5
+const PINWHEEL_R = 260
+const PINWHEEL_DELTA = (2 * Math.PI / PINWHEEL_N) * 1.35
+const PINWHEEL_RAYS = Array.from({ length: PINWHEEL_N }, (_, k) => {
+  const theta0 = (2 * Math.PI * k) / PINWHEEL_N - Math.PI / 2
+  return [chordRay(theta0, PINWHEEL_R), chordRay(theta0 + PINWHEEL_DELTA, PINWHEEL_R)]
+})
+const PINWHEEL_PETALS = Array.from({ length: PINWHEEL_N }, (_, k) =>
+  chordFan((2 * Math.PI * k) / PINWHEEL_N - Math.PI / 2, PINWHEEL_DELTA, PINWHEEL_R, 16, 0.14, 0.86))
+
+// Square Vortex\u2019s weave \u00b7 the same chord-fan technique, four rays at
+// the square\u2019s own corner angles, no overlap \u2014 a four-armed woven star
+// rather than a pinwheel, matching a square\u2019s natural symmetry.
+const SQUARE_WEAVE_R = 240
+const SQUARE_WEAVE_RAYS = Array.from({ length: 4 }, (_, k) => chordRay(-Math.PI / 2 + k * (Math.PI / 2), SQUARE_WEAVE_R))
+const SQUARE_WEAVE_FANS = Array.from({ length: 4 }, (_, k) =>
+  chordFan(-Math.PI / 2 + k * (Math.PI / 2), Math.PI / 2, SQUARE_WEAVE_R, 14, 0.16, 0.84))
+
+// Trefoil Vortex \u00b7 a smooth three-lobed curve (no straight edges, no
+// sharp corners) traced through rotating, shrinking copies. Radius steps
+// down LINEARLY rather than geometrically \u2014 same principle as the fix
+// applied to the polygon vortices \u2014 keeping every ring-to-ring gap
+// constant instead of collapsing near the centre. The reference image's
+// full braided twist was tested and rejected: at that much rotation
+// adjacent strands cross rather than nest, breaking into hundreds of
+// unpaintable slivers. This keeps the same visual family with a gentler,
+// non-crossing twist verified safe by true curve-to-curve distance.
+const roundedLobePts = (R, rot, n, k = 0.22, N = 72) => {
+  const pts = []
+  for (let i = 0; i <= N; i++) {
+    const th = (2 * Math.PI * i) / N
+    const r = R * (1 + k * Math.cos(n * (th - rot)))
+    pts.push({ x: 300 + r * Math.cos(th), y: 300 + r * Math.sin(th) })
+  }
+  return pts
+}
+const lobeVortex = (n, k, R0, RSTEP, ROTSTEP, RMIN = 30) => {
+  const rings = []
+  let R = R0, rot = 0
+  while (R >= RMIN) { rings.push(geoCurve(roundedLobePts(R, rot, n, k))); R -= RSTEP; rot += ROTSTEP }
+  return rings
+}
+const TREFOIL_RINGS = lobeVortex(3, 0.22, 230, 10, 0.020)
+// Quatrefoil \u00b7 same family, four lobes \u00b7 the rounded-square/diamond
+// cousin. Re-tuned from scratch: a different lobe count changes the
+// corner curvature, so the same rotation step is not automatically safe.
+const QUATREFOIL_RINGS = lobeVortex(4, 0.20, 230, 10, 0.015)
+// Bifoil \u00b7 two lobes \u00b7 the pointed lens/eye shape. Needed its own
+// tuning pass again: n=2 concentrates curvature at just two tips, so it
+// hits the safety floor at a smaller radius and gentler rotation than
+// its three- and four-lobed siblings.
+const BIFOIL_RINGS = lobeVortex(2, 0.32, 215, 10, 0.015, 25)
 
 // Tumbling triangles: hexagram frame, twelve cells, striped at reveal
 const TUMBLE_TRI_A = ptsAt(150 * Math.sqrt(3), -Math.PI / 2, 3, 2 * Math.PI / 3)
@@ -1107,6 +1188,37 @@ const GEO_SHAPES = [
     ],
   },
   {
+    key: 'svortex', name: 'Square Vortex',
+    steps: [
+      { title: 'The Outer Square',
+        body: 'Four sides to begin. Every ring that follows turns a fraction and shrinks a step.',
+        guides: polySegs(PURSUIT_SQ[0]) },
+      { title: 'The Descent',
+        body: 'Seven rings inward \u00b7 one lap of the pen per ring, and the whole square clicks at once.',
+        guides: PURSUIT_SQ.slice(1, 8).flatMap(t => polySegs(t)) },
+      { title: 'Into the Eye',
+        body: 'The rest, smaller and turning, into the still point.',
+        guides: PURSUIT_SQ.slice(8).flatMap(t => polySegs(t)) },
+      { title: 'The Weave',
+        body: 'Four rays from the centre, then a fan of straight chords between each pair \u00b7 the string-art technique this whole family echoes. A woven star rises from lines that never curve.',
+        guides: [...SQUARE_WEAVE_RAYS, ...SQUARE_WEAVE_FANS.flat()] },
+    ],
+  },
+  {
+    key: 'pinwheel', name: 'Pinwheel Weave',
+    steps: [
+      { title: 'The Rays',
+        body: 'Ten rays from the centre, in five overlapping pairs \u00b7 the rails the weave will run between. String art\u2019s oldest trick: two straight lines, chorded, make a curve with no curve in it.',
+        guides: PINWHEEL_RAYS.flat() },
+      { title: 'The First Weave',
+        body: 'Three petals, each a fan of straight chords between its two rays \u00b7 point to point, outer to inner. The parabola appears where no line was drawn.',
+        guides: PINWHEEL_PETALS.slice(0, 3).flat() },
+      { title: 'The Second Weave',
+        body: 'The remaining two petals complete the turn. Five overlapping fans, one pinwheel.',
+        guides: PINWHEEL_PETALS.slice(3).flat() },
+    ],
+  },
+  {
     key: 'hvortex', name: 'Hexagon Vortex',
     steps: [
       { title: 'The Outer Hexagon',
@@ -1118,6 +1230,48 @@ const GEO_SHAPES = [
       { title: 'Into the Eye',
         body: 'The rest, into the centre. Nothing here is curved \u00b7 the swirl is made entirely of edges.',
         guides: PURSUIT_HEX.slice(9).flatMap(t => polySegs(t)) },
+    ],
+  },
+  {
+    key: 'trefoil', name: 'Trefoil Vortex',
+    steps: [
+      { title: 'The Outer Curve',
+        body: 'One smooth three-lobed line, no straight edges, no sharp corners \u00b7 one stroke around the whole rim.',
+        guides: [TREFOIL_RINGS[0]] },
+      { title: 'The Turn',
+        body: 'Nine more, each stepping inward and turning a sliver against the last. The rim begins to breathe.',
+        guides: TREFOIL_RINGS.slice(1, 10) },
+      { title: 'Into the Eye',
+        body: 'The rest, smaller and still turning, to the small triangle of stillness at the centre.',
+        guides: TREFOIL_RINGS.slice(10) },
+    ],
+  },
+  {
+    key: 'quatrefoil', name: 'Quatrefoil Vortex',
+    steps: [
+      { title: 'The Outer Curve',
+        body: 'A rounded square, no straight sides \u00b7 one stroke around the whole rim.',
+        guides: [QUATREFOIL_RINGS[0]] },
+      { title: 'The Turn',
+        body: 'Nine more, each stepping inward and turning a sliver against the last. Four gentle corners begin to spiral.',
+        guides: QUATREFOIL_RINGS.slice(1, 10) },
+      { title: 'Into the Eye',
+        body: 'The rest, smaller and still turning, to the small square of stillness at the centre.',
+        guides: QUATREFOIL_RINGS.slice(10) },
+    ],
+  },
+  {
+    key: 'bifoil', name: 'Bifoil Vortex',
+    steps: [
+      { title: 'The Outer Curve',
+        body: 'A pointed lens, two tips and two long curves between them \u00b7 one stroke around the whole rim.',
+        guides: [BIFOIL_RINGS[0]] },
+      { title: 'The Turn',
+        body: 'Eight more, each stepping inward and turning a sliver against the last. The eye begins to spiral.',
+        guides: BIFOIL_RINGS.slice(1, 9) },
+      { title: 'Into the Eye',
+        body: 'The rest, smaller and still turning, to the small lens of stillness at the centre.',
+        guides: BIFOIL_RINGS.slice(9) },
     ],
   },
   {
@@ -1179,7 +1333,7 @@ const GEO_SHAPES = [
 
 // Complexity order, simplest to most complex
 const GEO_ORDER = ['vesica', 'egg', 'seed', 'germ', 'merkaba', 'spiral', 've', 'icosa', 'torus',
-  'metatron', 'flower', 'cvortex', 'whirl', 'tvortex', 'tree', 'star12', 'hvortex', 'flame',
+  'metatron', 'flower', 'cvortex', 'whirl', 'tvortex', 'svortex', 'pinwheel', 'tree', 'star12', 'hvortex', 'trefoil', 'quatrefoil', 'bifoil', 'flame',
   'sierpinski', 'sunflower', 'yantra', 'tumbling', 'master']
 GEO_SHAPES.sort((a, b) => GEO_ORDER.indexOf(a.key) - GEO_ORDER.indexOf(b.key))
 
@@ -1244,23 +1398,44 @@ function strokeCovers(fit, gx1, gy1, gx2, gy2) {
     && distToSegRaw(gx2, gy2, ax, ay, bx, by) < 22
 }
 
-// Mean nearest-distance from a resampled stroke to a curve guide,
-// Infinity when the stroke's length is out of proportion.
+// Position AND direction, not position alone. A stroke can sit close to
+// a guide without ever following it \u2014 "touched" rather than "drawn".
+// For each resampled stroke point, find the nearest guide point, then
+// compare local tangent directions there; a stroke that runs alongside
+// a guide but heads a different way scores worse than raw distance
+// alone would suggest. This is what lets chords that pass close to one
+// another near a shared convergence point \u2014 each still pointing its
+// own distinct direction \u2014 stay individually recognisable. It does NOT
+// help distinguish concentric near-parallel rings, whose tangents are
+// nearly identical everywhere by construction; there, position is the
+// only real signal and this term contributes little.
 function curveScore(fit, g) {
   if (!fit.pts || fit.pts.length < 6) return Infinity
   const slen = polyLen(fit.pts)
   if (slen < g.len * 0.45 || slen > g.len * 2.2) return Infinity
   const sp = resamplePts(fit.pts, 24)
-  let tot = 0
-  for (const q of sp) {
-    let m = 1e9
-    for (const c of g.path) {
-      const d = Math.hypot(q.x - c.x, q.y - c.y)
-      if (d < m) m = d
+  let posTotal = 0, dirTotal = 0, dirCount = 0
+  for (let i = 0; i < sp.length; i++) {
+    const q = sp[i]
+    let m = 1e9, mIdx = 0
+    for (let j = 0; j < g.path.length; j++) {
+      const d = Math.hypot(q.x - g.path[j].x, q.y - g.path[j].y)
+      if (d < m) { m = d; mIdx = j }
     }
-    tot += m
+    posTotal += m
+    if (i > 0 && i < sp.length - 1 && mIdx > 0 && mIdx < g.path.length - 1) {
+      const sx = sp[i + 1].x - sp[i - 1].x, sy = sp[i + 1].y - sp[i - 1].y
+      const gx = g.path[mIdx + 1].x - g.path[mIdx - 1].x, gy = g.path[mIdx + 1].y - g.path[mIdx - 1].y
+      const sl = Math.hypot(sx, sy) || 1e-9, gl = Math.hypot(gx, gy) || 1e-9
+      // abs(): a stroke can be drawn in either direction along a path
+      const cosA = Math.min(1, Math.max(-1, Math.abs((sx * gx + sy * gy) / (sl * gl))))
+      dirTotal += Math.acos(cosA)
+      dirCount++
+    }
   }
-  return tot / sp.length
+  const posScore = posTotal / sp.length
+  const dirScore = dirCount ? dirTotal / dirCount : 0
+  return posScore + dirScore * 18 // radians \u2192 pixel-equivalent weight
 }
 
 // Match one fit against one guide. Returns element, array of elements

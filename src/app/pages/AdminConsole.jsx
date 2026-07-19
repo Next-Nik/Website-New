@@ -276,7 +276,7 @@ function PrismTab() {
   const items = [
     ['Mirror Work', 'Front camera as mirror, your I Am statements overlaid, optional resonance tone. Candidate Voice-beat upgrade · and graduated camera work.'],
     ['Write & Burn', 'Evening evacuation. Nothing persists: no database, no device storage. Candidate complement to the Journal.'],
-    ['Geometry', 'Guided sacred-form tracing with quiet recognition · twenty-three forms, Vesica Piscis to the Icosahedron in the Flower. Pencil-friendly. Candidate onboarding / deepening material.'],
+    ['Geometry', 'Guided sacred-form tracing with quiet recognition · twenty-eight forms, Vesica Piscis to the Icosahedron in the Flower. Pencil-friendly. Candidate onboarding / deepening material.'],
   ]
   return (
     <div style={{ maxWidth: 640 }}>
