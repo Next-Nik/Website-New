@@ -595,7 +595,7 @@ const FLAME_OUTER = Array.from({ length: 12 }, (_, k) => flameCurve((2 * Math.PI
 const sunSpiral = (j, n, dir, omega) => {
   const pts = []
   for (let i = 0; i <= 26; i++) {
-    const t = 0.12 + 0.88 * (i / 26)
+    const t = 0.05 + 0.95 * (i / 26)
     const r = 16 + 104 * t
     const a = (2 * Math.PI * j) / n + dir * omega * t - Math.PI / 2
     pts.push({ x: 300 + r * Math.cos(a), y: 300 + r * Math.sin(a) })
@@ -617,9 +617,13 @@ const sunPetal = (a0, r0, r1, wmax) => {
 const SUN_SPIRALS_13 = Array.from({ length: 13 }, (_, j) => sunSpiral(j, 13, 1, 2.35))
 const SUN_SPIRALS_8 = Array.from({ length: 8 }, (_, j) => sunSpiral(j, 8, -1, 2.9))
 const SUN_PETALS = [
-  ...Array.from({ length: 13 }, (_, j) => sunPetal((2 * Math.PI * j) / 13 + 0.12 - Math.PI / 2, 118, 252, 0.115)),
-  ...Array.from({ length: 21 }, (_, j) => sunPetal((2 * Math.PI * j) / 21 - Math.PI / 2, 118, 288, 0.072)),
+  ...Array.from({ length: 13 }, (_, j) => sunPetal((2 * Math.PI * j) / 13 + 0.12 - Math.PI / 2, 118, 244, 0.115)),
+  ...Array.from({ length: 21 }, (_, j) => sunPetal((2 * Math.PI * j) / 21 - Math.PI / 2, 118, 270, 0.082)),
 ]
+const SUN_FLORETS = Array.from({ length: 8 }, (_, j) =>
+  sunPetal((2 * Math.PI * j) / 8 + Math.PI / 8 - Math.PI / 2, 16, 52, 0.28))
+const SUN_CORONA = Array.from({ length: 34 }, (_, j) =>
+  sunPetal((2 * Math.PI * j) / 34 + 0.09 - Math.PI / 2, 108, 298, 0.088))
 const SUN_SEEDS = (() => {
   const GA = Math.PI * (3 - Math.sqrt(5)) // golden angle \u00b7 137.507\u00b0
   const seeds = []
@@ -1082,6 +1086,9 @@ const GEO_SHAPES = [
       { title: 'The Head',
         body: 'One circle to hold the computation. The sunflower is a formula wearing petals: each seed sits at the golden angle, 137.5 degrees past the one before, at a radius of the square root of its number.',
         guides: [{ kind: 'circle', x: 300, y: 300, r: 120 }] },
+      { title: 'The Florets',
+        body: 'A small circle at the very heart, then eight young florets opening around it. The disc wakes from the middle outward.',
+        guides: [{ kind: 'circle', x: 300, y: 300, r: 16 }, ...SUN_FLORETS] },
       { title: 'The Thirteen',
         body: 'Thirteen spiral arms curving one way across the head. Thirteen is no accident \u00b7 the parastichy counts are always neighbours in the Fibonacci sequence.',
         guides: SUN_SPIRALS_13 },
@@ -1089,8 +1096,11 @@ const GEO_SHAPES = [
         body: 'Eight arms curving against them. Where the families cross, the seed lattice appears.',
         guides: SUN_SPIRALS_8 },
       { title: 'The Petals',
-        body: 'Thirteen inner petals, twenty-one outer \u00b7 Fibonacci again, wearing yellow. One stroke around each. At the reveal, two hundred and thirty-three seeds arrive, placed by the formula itself.',
+        body: 'Thirteen inner petals, twenty-one outer \u00b7 Fibonacci again, wearing yellow. One stroke around each.',
         guides: SUN_PETALS },
+      { title: 'The Corona',
+        body: 'Thirty-four broad rays behind everything \u00b7 the next Fibonacci number, tips nearly touching, closing the circle of light. At the reveal, two hundred and thirty-three seeds arrive, placed by the formula itself.',
+        guides: SUN_CORONA },
     ],
     revealExtras: SUN_SEEDS,
   },
@@ -1163,6 +1173,25 @@ function strokeCovers(fit, gx1, gy1, gx2, gy2) {
     && distToSegRaw(gx2, gy2, ax, ay, bx, by) < 22
 }
 
+// Mean nearest-distance from a resampled stroke to a curve guide,
+// Infinity when the stroke's length is out of proportion.
+function curveScore(fit, g) {
+  if (!fit.pts || fit.pts.length < 6) return Infinity
+  const slen = polyLen(fit.pts)
+  if (slen < g.len * 0.45 || slen > g.len * 2.2) return Infinity
+  const sp = resamplePts(fit.pts, 24)
+  let tot = 0
+  for (const q of sp) {
+    let m = 1e9
+    for (const c of g.path) {
+      const d = Math.hypot(q.x - c.x, q.y - c.y)
+      if (d < m) m = d
+    }
+    tot += m
+  }
+  return tot / sp.length
+}
+
 // Match one fit against one guide. Returns element, array of elements
 // (lineweb chains), or null.
 function matchOne(fit, g) {
@@ -1171,7 +1200,7 @@ function matchOne(fit, g) {
     return { kind: 'circle', x: g.x, y: g.y, r: g.r }
   }
   // Tiny circles (the bindu) register from a dot, a tap, or any small mark
-  if (g.kind === 'circle' && g.r <= 14
+  if (g.kind === 'circle' && g.r <= 18
     && (fit.kind === 'dot' || fit.kind === 'blob')
     && nearPt(fit.cx, fit.cy, g.x, g.y, 24) && (fit.span === undefined || fit.span < 70)) {
     return { kind: 'circle', x: g.x, y: g.y, r: g.r }
@@ -1206,21 +1235,8 @@ function matchOne(fit, g) {
         || (nearPt(fit.x1, fit.y1, g.b.x, g.b.y, t) && nearPt(fit.x2, fit.y2, g.a.x, g.a.y, t)))
     if (circHit || lineHit) return { kind: 'path', pts: g.path }
   }
-  if (g.kind === 'curve' && fit.pts && fit.pts.length >= 6) {
-    const slen = polyLen(fit.pts)
-    if (slen > g.len * 0.45 && slen < g.len * 2.2) {
-      const sp = resamplePts(fit.pts, 24)
-      let tot = 0
-      for (const q of sp) {
-        let m = 1e9
-        for (const c of g.path) {
-          const d = Math.hypot(q.x - c.x, q.y - c.y)
-          if (d < m) m = d
-        }
-        tot += m
-      }
-      if (tot / sp.length < 20) return { kind: 'path', pts: g.path }
-    }
+  if (g.kind === 'curve' && curveScore(fit, g) < 20) {
+    return { kind: 'path', pts: g.path }
   }
   if (g.kind === 'lineweb' && fit.kind === 'line') {
     // Every centre the stroke passes near, chained in order along the
@@ -1269,6 +1285,27 @@ function collectMatches(fit, shape, step, takenView) {
         const fy = fit.kind === 'circle' ? fit.y : fit.cy
         const score = Math.hypot(fx - g.x, fy - g.y) + (fit.kind === 'circle' ? Math.abs(fit.r - g.r) * 0.5 : 0)
         if (!best || score < best.score) best = { key, element: m, score, s }
+      }
+      off += guides.length
+    }
+    if (best) {
+      takenView.add(best.key)
+      return [{ key: best.key, element: best.element, s: best.s }]
+    }
+  }
+  // Curve fits also pick the best candidate \u00b7 overlapping petal ranks
+  // (sunflower corona behind the outer petals) would otherwise mis-snap.
+  if (fit.kind !== 'line' && fit.pts) {
+    let best = null
+    let off = 0
+    for (let s = 0; s <= step; s++) {
+      const guides = shape.steps[s].guides
+      for (let i = 0; i < guides.length; i++) {
+        const key = off + i
+        const g = guides[i]
+        if (g.kind !== 'curve' || takenView.has(key)) continue
+        const score = curveScore(fit, g)
+        if (score < 20 && (!best || score < best.score)) best = { key, element: { kind: 'path', pts: g.path }, score, s }
       }
       off += guides.length
     }
