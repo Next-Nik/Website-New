@@ -655,21 +655,21 @@ const TUMBLE_TRI_A = ptsAt(150 * Math.sqrt(3), -Math.PI / 2, 3, 2 * Math.PI / 3)
 const TUMBLE_TRI_B = ptsAt(150 * Math.sqrt(3), Math.PI / 2, 3, 2 * Math.PI / 3)
 const TUMBLE_HEX = ptsAt(150, -Math.PI / 3)
 const TUMBLE_TIPS = ptsAt(150 * Math.sqrt(3), -Math.PI / 2, 6, Math.PI / 3)
-const TUMBLE_STRIPES = (() => {
-  const lerp = (a, b, f) => ({ x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f })
-  const stripes = []
-  const cell = (a, b, apex) => {
+const TUMBLE_LERP = (a, b, f) => ({ x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f })
+// Inner-cell stripes join up into five nested hexagons \u00b7 traced as laps
+const TUMBLE_RINGS = [1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6].map(f =>
+  TUMBLE_HEX.map(v => TUMBLE_LERP(v, { x: 300, y: 300 }, f)))
+// Point-cell hatching: five strokes per point, parallel to its edge
+const TUMBLE_HATCH = (() => {
+  const out = []
+  for (let k = 0; k < 6; k++) {
+    const tip = TUMBLE_TIPS[k], b = TUMBLE_HEX[k], apex = TUMBLE_HEX[(k + 5) % 6]
     for (const f of [1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6]) {
-      const p = lerp(a, apex, f), q = lerp(b, apex, f)
-      stripes.push({ kind: 'line', x1: p.x, y1: p.y, x2: q.x, y2: q.y })
+      const pA = TUMBLE_LERP(tip, apex, f), pB = TUMBLE_LERP(b, apex, f)
+      out.push(geoSeg(pA.x, pA.y, pB.x, pB.y))
     }
   }
-  const C = { x: 300, y: 300 }
-  for (let k = 0; k < 6; k++) {
-    cell(TUMBLE_HEX[k], TUMBLE_HEX[(k + 1) % 6], C) // inner cells: stripes parallel to rim
-    cell(TUMBLE_TIPS[k], TUMBLE_HEX[k], TUMBLE_HEX[(k + 5) % 6]) // point cells: turned base
-  }
-  return stripes
+  return out
 })()
 
 const GEO_SHAPES = [
@@ -1048,16 +1048,18 @@ const GEO_SHAPES = [
     key: 'tumbling', name: 'Tumbling Triangles',
     steps: [
       { title: 'The Hexagram',
-        body: 'Two great triangles across each other \u00b7 the six-pointed frame.',
+        body: 'Two great triangles across each other \u00b7 the six-pointed frame, one closed stroke each. Their edges already carry the inner hexagon where they cross.',
         guides: [...polySegs(TUMBLE_TRI_A), ...polySegs(TUMBLE_TRI_B)] },
-      { title: 'The Inner Hexagon',
-        body: 'Join the six crossing points. Twelve triangle cells now stand in the frame.',
-        guides: polySegs(TUMBLE_HEX) },
       { title: 'The Spokes',
-        body: 'Centre to each corner \u00b7 the last walls. The stripes are not traced: they arrive with the reveal, and the paint pots do the rest. Alternate the bands and the triangles begin to tumble.',
+        body: 'Centre to each of the six crossing points \u00b7 one full stroke across the middle lays two at once. Twelve cells now stand in the frame.',
         guides: TUMBLE_HEX.map(v => geoSeg(v.x, v.y, 300, 300)) },
+      { title: 'The Nested Hexagons',
+        body: 'Five hexagons, each a step smaller, one lap each. The six inner cells fill with bands as the rings descend.',
+        guides: TUMBLE_RINGS.flatMap(ring => polySegs(ring)) },
+      { title: 'The Hatching',
+        body: 'Five short strokes across each point, parallel to its edge. Alternate the painted bands and the triangles begin to tumble.',
+        guides: TUMBLE_HATCH },
     ],
-    revealExtras: TUMBLE_STRIPES,
   },
   {
     key: 'flame', name: 'Flame Mandala',
