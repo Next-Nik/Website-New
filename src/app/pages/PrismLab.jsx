@@ -616,14 +616,15 @@ const sunPetal = (a0, r0, r1, wmax) => {
 }
 const SUN_SPIRALS_13 = Array.from({ length: 13 }, (_, j) => sunSpiral(j, 13, 1, 2.35))
 const SUN_SPIRALS_8 = Array.from({ length: 8 }, (_, j) => sunSpiral(j, 8, -1, 2.9))
-const SUN_PETALS = [
-  ...Array.from({ length: 13 }, (_, j) => sunPetal((2 * Math.PI * j) / 13 + 0.12 - Math.PI / 2, 118, 244, 0.115)),
-  ...Array.from({ length: 21 }, (_, j) => sunPetal((2 * Math.PI * j) / 21 - Math.PI / 2, 118, 270, 0.082)),
-]
+// Three ranks in strict non-overlapping concentric bands \u2014 small to
+// large, each starting exactly where the last ends. Nothing crosses.
+const SUN_INNER = Array.from({ length: 13 }, (_, j) => sunPetal((2 * Math.PI * j) / 13 - Math.PI / 2, 120, 176, 0.155))
+const SUN_OUTER = Array.from({ length: 21 }, (_, j) => sunPetal((2 * Math.PI * j) / 21 - Math.PI / 2, 180, 233, 0.115))
+const SUN_PETALS = [...SUN_INNER, ...SUN_OUTER]
 const SUN_FLORETS = Array.from({ length: 8 }, (_, j) =>
   sunPetal((2 * Math.PI * j) / 8 + Math.PI / 8 - Math.PI / 2, 16, 52, 0.28))
 const SUN_CORONA = Array.from({ length: 34 }, (_, j) =>
-  sunPetal((2 * Math.PI * j) / 34 + 0.09 - Math.PI / 2, 108, 298, 0.088))
+  sunPetal((2 * Math.PI * j) / 34 - Math.PI / 2, 237, 292, 0.088))
 const SUN_SEEDS = (() => {
   const GA = Math.PI * (3 - Math.sqrt(5)) // golden angle \u00b7 137.507\u00b0
   const seeds = []
@@ -651,8 +652,22 @@ const pursuit = (n, R, t, iters, phase = -Math.PI / 2) => {
   }
   return rings
 }
-const PURSUIT_TRI = pursuit(3, 268, 0.06, 30)
-const PURSUIT_HEX = pursuit(6, 250, 0.16, 22)
+// Pursuit rings shrink geometrically \u00b7 the gap between consecutive rings
+// decays with them, and eventually falls below the width a wall plus its
+// paint-fill tuck-under can survive, silently fusing or sealing off cells.
+// This trims the sequence the moment a gap gets unsafely thin, so every
+// ring that reaches the page is guaranteed traceable and fillable.
+const PURSUIT_MIN_GAP = 6
+const pursuitSafe = (n, R, t, iters, phase = -Math.PI / 2) => {
+  const rings = pursuit(n, R, t, iters, phase)
+  const rad = (P) => Math.hypot(P[0].x - 300, P[0].y - 300)
+  for (let i = 0; i < rings.length - 1; i++) {
+    if (rad(rings[i]) - rad(rings[i + 1]) < PURSUIT_MIN_GAP) return rings.slice(0, i + 1)
+  }
+  return rings
+}
+const PURSUIT_TRI = pursuitSafe(3, 268, 0.06, 30)
+const PURSUIT_HEX = pursuitSafe(6, 250, 0.16, 22)
 
 // Tumbling triangles: hexagram frame, twelve cells, striped at reveal
 const TUMBLE_TRI_A = ptsAt(150 * Math.sqrt(3), -Math.PI / 2, 3, 2 * Math.PI / 3)
@@ -1038,11 +1053,11 @@ const GEO_SHAPES = [
         body: 'Three sides to begin. Every ring that follows turns a fraction and shrinks a step.',
         guides: polySegs(PURSUIT_TRI[0]) },
       { title: 'The Descent',
-        body: 'Fourteen rings inward \u00b7 one lap of the pen per ring, and the whole triangle clicks at once.',
-        guides: PURSUIT_TRI.slice(1, 15).flatMap(t => polySegs(t)) },
+        body: 'Eight rings inward \u00b7 one lap of the pen per ring, and the whole triangle clicks at once.',
+        guides: PURSUIT_TRI.slice(1, 9).flatMap(t => polySegs(t)) },
       { title: 'Into the Eye',
-        body: 'Fifteen more, smaller and turning, into the still point. The spiral was never drawn \u00b7 it appears between the rings.',
-        guides: PURSUIT_TRI.slice(15).flatMap(t => polySegs(t)) },
+        body: 'The rest, smaller and turning, into the still point. The spiral was never drawn \u00b7 it appears between the rings.',
+        guides: PURSUIT_TRI.slice(9).flatMap(t => polySegs(t)) },
     ],
   },
   {
@@ -1052,11 +1067,11 @@ const GEO_SHAPES = [
         body: 'Six sides to hold the turn.',
         guides: polySegs(PURSUIT_HEX[0]) },
       { title: 'The Descent',
-        body: 'Ten rings inward, each turned a sliver against the last. Six spiral arms begin to rise out of straight lines.',
-        guides: PURSUIT_HEX.slice(1, 11).flatMap(t => polySegs(t)) },
+        body: 'Eight rings inward, each turned a sliver against the last. Six spiral arms begin to rise out of straight lines.',
+        guides: PURSUIT_HEX.slice(1, 9).flatMap(t => polySegs(t)) },
       { title: 'Into the Eye',
-        body: 'Eleven more to the centre. Nothing here is curved \u00b7 the swirl is made entirely of edges.',
-        guides: PURSUIT_HEX.slice(11).flatMap(t => polySegs(t)) },
+        body: 'The rest, into the centre. Nothing here is curved \u00b7 the swirl is made entirely of edges.',
+        guides: PURSUIT_HEX.slice(9).flatMap(t => polySegs(t)) },
     ],
   },
   {
