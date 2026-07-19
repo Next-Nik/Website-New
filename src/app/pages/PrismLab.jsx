@@ -529,6 +529,47 @@ const YANTRA_DN = [
   yTri(289, 62, 310),
 ]
 
+// Pursuit polygons: each ring rests its corners a fraction along the last
+const pursuit = (n, R, t, iters, phase = -Math.PI / 2) => {
+  const rings = []
+  let P = Array.from({ length: n }, (_, i) => {
+    const a = (2 * Math.PI / n) * i + phase
+    return { x: 300 + R * Math.cos(a), y: 300 + R * Math.sin(a) }
+  })
+  for (let k = 0; k < iters; k++) {
+    rings.push(P)
+    P = P.map((p, i) => {
+      const q = P[(i + 1) % n]
+      return { x: p.x + t * (q.x - p.x), y: p.y + t * (q.y - p.y) }
+    })
+  }
+  return rings
+}
+const PURSUIT_TRI = pursuit(3, 268, 0.06, 30)
+const PURSUIT_HEX = pursuit(6, 250, 0.16, 22)
+
+// Tumbling triangles: hexagram frame, twelve cells, striped at reveal
+const TUMBLE_TRI_A = ptsAt(150 * Math.sqrt(3), -Math.PI / 2, 3, 2 * Math.PI / 3)
+const TUMBLE_TRI_B = ptsAt(150 * Math.sqrt(3), Math.PI / 2, 3, 2 * Math.PI / 3)
+const TUMBLE_HEX = ptsAt(150, -Math.PI / 3)
+const TUMBLE_TIPS = ptsAt(150 * Math.sqrt(3), -Math.PI / 2, 6, Math.PI / 3)
+const TUMBLE_STRIPES = (() => {
+  const lerp = (a, b, f) => ({ x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f })
+  const stripes = []
+  const cell = (a, b, apex) => {
+    for (const f of [1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6]) {
+      const p = lerp(a, apex, f), q = lerp(b, apex, f)
+      stripes.push({ kind: 'line', x1: p.x, y1: p.y, x2: q.x, y2: q.y })
+    }
+  }
+  const C = { x: 300, y: 300 }
+  for (let k = 0; k < 6; k++) {
+    cell(TUMBLE_HEX[k], TUMBLE_HEX[(k + 1) % 6], C) // inner cells: stripes parallel to rim
+    cell(TUMBLE_TIPS[k], TUMBLE_HEX[k], TUMBLE_HEX[(k + 5) % 6]) // point cells: turned base
+  }
+  return stripes
+})()
+
 const GEO_SHAPES = [
   {
     key: 'vesica', name: 'Vesica Piscis',
@@ -858,8 +899,71 @@ const GEO_SHAPES = [
           guides: [...polySegs(D).map(dash), ...joins(D, Math.PI / 2).map(dash)] },
       ]
     })(),
+  },,
+  {
+    key: 'cvortex', name: 'Circle Vortex',
+    steps: [
+      { title: 'The First Circle',
+        body: 'One circle, its centre a little off the page\u2019s heart. Twenty-seven siblings will follow it around.',
+        guides: [geoRing(300, 300, 60, 150, 28, -Math.PI / 2, 2 * Math.PI / 28)[0]] },
+      { title: 'Half the Turn',
+        body: 'Thirteen more, each centre a small step around the inner ring. The envelope begins to breathe \u00b7 near-identical circles, and the form lives in their disagreement.',
+        guides: geoRing(300, 300, 60, 150, 28, -Math.PI / 2, 2 * Math.PI / 28).slice(1, 14) },
+      { title: 'The Full Turn',
+        body: 'Fourteen close the circuit. Twenty-eight circles, one turning field \u00b7 the vortex is nobody\u2019s outline and everybody\u2019s edge.',
+        guides: geoRing(300, 300, 60, 150, 28, -Math.PI / 2, 2 * Math.PI / 28).slice(14) },
+    ],
+  },
+  {
+    key: 'tvortex', name: 'Triangle Vortex',
+    steps: [
+      { title: 'The Outer Triangle',
+        body: 'Three sides to begin. Every ring that follows turns a fraction and shrinks a step.',
+        guides: polySegs(PURSUIT_TRI[0]) },
+      { title: 'The Descent',
+        body: 'Fourteen rings inward \u00b7 one lap of the pen per ring, and the whole triangle clicks at once.',
+        guides: PURSUIT_TRI.slice(1, 15).flatMap(t => polySegs(t)) },
+      { title: 'Into the Eye',
+        body: 'Fifteen more, smaller and turning, into the still point. The spiral was never drawn \u00b7 it appears between the rings.',
+        guides: PURSUIT_TRI.slice(15).flatMap(t => polySegs(t)) },
+    ],
+  },
+  {
+    key: 'hvortex', name: 'Hexagon Vortex',
+    steps: [
+      { title: 'The Outer Hexagon',
+        body: 'Six sides to hold the turn.',
+        guides: polySegs(PURSUIT_HEX[0]) },
+      { title: 'The Descent',
+        body: 'Ten rings inward, each turned a sliver against the last. Six spiral arms begin to rise out of straight lines.',
+        guides: PURSUIT_HEX.slice(1, 11).flatMap(t => polySegs(t)) },
+      { title: 'Into the Eye',
+        body: 'Eleven more to the centre. Nothing here is curved \u00b7 the swirl is made entirely of edges.',
+        guides: PURSUIT_HEX.slice(11).flatMap(t => polySegs(t)) },
+    ],
+  },
+  {
+    key: 'tumbling', name: 'Tumbling Triangles',
+    steps: [
+      { title: 'The Hexagram',
+        body: 'Two great triangles across each other \u00b7 the six-pointed frame.',
+        guides: [...polySegs(TUMBLE_TRI_A), ...polySegs(TUMBLE_TRI_B)] },
+      { title: 'The Inner Hexagon',
+        body: 'Join the six crossing points. Twelve triangle cells now stand in the frame.',
+        guides: polySegs(TUMBLE_HEX) },
+      { title: 'The Spokes',
+        body: 'Centre to each corner \u00b7 the last walls. The stripes are not traced: they arrive with the reveal, and the paint pots do the rest. Alternate the bands and the triangles begin to tumble.',
+        guides: TUMBLE_HEX.map(v => geoSeg(v.x, v.y, 300, 300)) },
+    ],
+    revealExtras: TUMBLE_STRIPES,
   },
 ]
+
+// Complexity order, simplest to most complex
+const GEO_ORDER = ['vesica', 'egg', 'seed', 'germ', 'merkaba', 'spiral', 've', 'icosa', 'torus',
+  'metatron', 'flower', 'cvortex', 'whirl', 'tvortex', 'tree', 'star12', 'hvortex',
+  'sierpinski', 'yantra', 'tumbling', 'master']
+GEO_SHAPES.sort((a, b) => GEO_ORDER.indexOf(a.key) - GEO_ORDER.indexOf(b.key))
 
 // ── Stroke fitting ────────────────────────────────────────────
 function fitStroke(pts) {
@@ -994,6 +1098,32 @@ function matchOne(fit, g) {
 function collectMatches(fit, shape, step, takenView) {
   const found = []
   const isLine = fit.kind === 'line'
+  // Circle-like fits pick the NEAREST candidate, not the first \u00b7 dense
+  // families (vortices, flower rings) would otherwise snap arbitrarily.
+  if (fit.kind === 'circle' || fit.kind === 'dot' || fit.kind === 'blob') {
+    let best = null
+    let off = 0
+    for (let s = 0; s <= step; s++) {
+      const guides = shape.steps[s].guides
+      for (let i = 0; i < guides.length; i++) {
+        const key = off + i
+        const g = guides[i]
+        if (takenView.has(key)) continue
+        if (g.kind !== 'circle' && g.kind !== 'arc') continue
+        const m = matchOne(fit, g)
+        if (!m) continue
+        const fx = fit.kind === 'circle' ? fit.x : fit.cx
+        const fy = fit.kind === 'circle' ? fit.y : fit.cy
+        const score = Math.hypot(fx - g.x, fy - g.y) + (fit.kind === 'circle' ? Math.abs(fit.r - g.r) * 0.5 : 0)
+        if (!best || score < best.score) best = { key, element: m, score }
+      }
+      off += guides.length
+    }
+    if (best) {
+      takenView.add(best.key)
+      return [{ key: best.key, element: best.element }]
+    }
+  }
   let offset = 0
   for (let s = 0; s <= step; s++) {
     const guides = shape.steps[s].guides
@@ -1424,6 +1554,7 @@ function GeometryPractice() {
     if (g.kind === 'lineweb') g.centres.forEach((a, x) => g.centres.slice(x + 1).forEach(b =>
       fullFigure.push({ kind: 'line', x1: a.x, y1: a.y, x2: b.x, y2: b.y })))
   }))
+  ;(shape.revealExtras || []).forEach(el => fullFigure.push(el))
 
   return (
     <div>
