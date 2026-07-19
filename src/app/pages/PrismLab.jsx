@@ -1341,6 +1341,11 @@ function GeometryPractice() {
   const [colour, setColour] = useState(0) // index into PAINT_COLOURS, -1 = clear
   const paintRef = useRef(null)
   const boundaryCache = useRef({ key: null, data: null })
+  const frameRef = useRef(null)
+  const stageRef = useRef(null)
+  const view = useRef({ x: 0, y: 0, k: 1, r: 0 })
+  const touchPts = useRef(new Map())
+  const gesture = useRef(null)
   // iPad: Pencil draws, fingers scroll. Phones and Android tablets: fingers draw.
   const [penOnly] = useState(() => {
     if (typeof navigator === 'undefined') return false
@@ -1426,24 +1431,61 @@ function GeometryPractice() {
     const c = canvasRef.current
     if (!c) return
     const block = (e) => {
+      if (e.touches && e.touches.length >= 2) { e.preventDefault(); return }
       const ts = e.changedTouches ? Array.from(e.changedTouches) : []
       if (ts.some(t => t.touchType === 'stylus')) e.preventDefault()
     }
+    const wheel = (e) => {
+      e.preventDefault()
+      const rect = frameRef.current.getBoundingClientRect()
+      const q = { x: e.clientX - rect.left, y: e.clientY - rect.top }
+      const v = view.current
+      const cc = rect.width / 2
+      const P = invView(q, v, cc)
+      const k = Math.min(8, Math.max(0.4, v.k * Math.exp(-e.deltaY * 0.0015)))
+      const cos = Math.cos(v.r), sin = Math.sin(v.r)
+      const px = (P.x - cc) * k, py = (P.y - cc) * k
+      view.current = { x: q.x - cc - (px * cos - py * sin), y: q.y - cc - (px * sin + py * cos), k, r: v.r }
+      applyView()
+    }
     c.addEventListener('touchstart', block, { passive: false })
     c.addEventListener('touchmove', block, { passive: false })
+    c.addEventListener('wheel', wheel, { passive: false })
     return () => {
       c.removeEventListener('touchstart', block)
       c.removeEventListener('touchmove', block)
+      c.removeEventListener('wheel', wheel)
     }
   }, [])
 
+  // View transform: q_screen = centre + pan + R(r)\u00b7k\u00b7(p - centre)
+  const invView = (q, v, cc) => {
+    const dx = q.x - cc - v.x, dy = q.y - cc - v.y
+    const cos = Math.cos(-v.r), sin = Math.sin(-v.r)
+    return { x: cc + (dx * cos - dy * sin) / v.k, y: cc + (dx * sin + dy * cos) / v.k }
+  }
+  const applyView = () => {
+    const v = view.current
+    if (stageRef.current) stageRef.current.style.transform = `translate(${v.x}px, ${v.y}px) rotate(${v.r}rad) scale(${v.k})`
+  }
+  const resetView = () => {
+    view.current = { x: 0, y: 0, k: 1, r: 0 }
+    const st = stageRef.current
+    if (!st) return
+    st.classList.add('prism-stage-anim')
+    applyView()
+    setTimeout(() => st.classList.remove('prism-stage-anim'), 400)
+  }
+  const clientToFrame = (e) => {
+    const rect = frameRef.current.getBoundingClientRect()
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top, w: rect.width }
+  }
+
   const pos = (e) => {
-    const c = canvasRef.current
-    const rect = c.getBoundingClientRect()
-    return {
-      x: (e.clientX - rect.left) * (c.width / rect.width),
-      y: (e.clientY - rect.top) * (c.height / rect.height),
-    }
+    const q = clientToFrame(e)
+    const p = invView(q, view.current, q.w / 2)
+    const sc = 600 / q.w
+    return { x: p.x * sc, y: p.y * sc }
   }
 
   const distToSeg = (p, x1, y1, x2, y2) => {
@@ -1575,9 +1617,40 @@ function GeometryPractice() {
     ctx.putImageData(img, 0, 0)
   }
 
+  const startGesture = () => {
+    const [a, b] = [...touchPts.current.values()]
+    const rect = frameRef.current.getBoundingClientRect()
+    const cc = rect.width / 2
+    const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
+    gesture.current = { a, b, cc, v0: { ...view.current }, P: invView(mid, view.current, cc) }
+  }
+  const updateGesture = () => {
+    const g = gesture.current
+    if (!g || touchPts.current.size < 2) return
+    const [a1, b1] = [...touchPts.current.values()]
+    const d0 = Math.hypot(g.b.x - g.a.x, g.b.y - g.a.y) || 1e-9
+    const d1 = Math.hypot(b1.x - a1.x, b1.y - a1.y)
+    const k = Math.min(8, Math.max(0.4, g.v0.k * (d1 / d0)))
+    const r = g.v0.r + (Math.atan2(b1.y - a1.y, b1.x - a1.x) - Math.atan2(g.b.y - g.a.y, g.b.x - g.a.x))
+    const M = { x: (a1.x + b1.x) / 2, y: (a1.y + b1.y) / 2 }
+    const cos = Math.cos(r), sin = Math.sin(r)
+    const px = (g.P.x - g.cc) * k, py = (g.P.y - g.cc) * k
+    view.current = { x: M.x - g.cc - (px * cos - py * sin), y: M.y - g.cc - (px * sin + py * cos), k, r }
+    applyView()
+  }
+
   const down = (e) => {
+    if (e.pointerType === 'touch') {
+      touchPts.current.set(e.pointerId, clientToFrame(e))
+      e.target.setPointerCapture?.(e.pointerId)
+      if (touchPts.current.size === 2) {
+        if (drawing.current) { drawing.current = false; stroke.current = []; redraw() }
+        startGesture()
+        return
+      }
+      if (penOnly) return // iPad: a single finger scrolls the page
+    }
     if (resolved && mode !== 'paint') return
-    if (penOnly && e.pointerType === 'touch') return // iPad: fingers scroll; Pencil and mouse act
     drawing.current = true
     pushHistory(mode === 'paint')
     if (mode === 'paint') { const p = pos(e); floodFill(p.x, p.y); drawing.current = false; return }
@@ -1586,8 +1659,12 @@ function GeometryPractice() {
     e.target.setPointerCapture?.(e.pointerId)
   }
   const move = (e) => {
+    if (e.pointerType === 'touch' && touchPts.current.has(e.pointerId)) {
+      touchPts.current.set(e.pointerId, clientToFrame(e))
+      if (gesture.current) { updateGesture(); return }
+      if (penOnly) return
+    }
     if (!drawing.current) return
-    if (penOnly && e.pointerType === 'touch') return
     const p = pos(e)
     if (mode === 'erase') { eraseAt(p); return }
     const prev = stroke.current[stroke.current.length - 1]
@@ -1602,7 +1679,14 @@ function GeometryPractice() {
   }
   useEffect(() => () => { if (hintTimer.current) clearTimeout(hintTimer.current) }, [])
 
-  const up = () => {
+  const up = (e) => {
+    if (e && e.pointerType === 'touch') {
+      touchPts.current.delete(e.pointerId)
+      if (gesture.current) {
+        if (touchPts.current.size < 2) gesture.current = null
+        return
+      }
+    }
     if (!drawing.current) return
     drawing.current = false
     if (mode === 'erase') return
@@ -1749,6 +1833,7 @@ function GeometryPractice() {
               <button style={btnStyle(mode === 'paint' ? 'solid' : 'ghost')} onClick={() => setMode('paint')}>Paint</button>
               <button style={btnStyle('ghost')} onClick={showRemaining}>Show remaining</button>
               <button style={btnStyle('ghost')} disabled={histLen === 0} onClick={undo}>Undo</button>
+              <button style={btnStyle('ghost')} onClick={resetView}>Reset view</button>
               <button style={btnStyle('ghost')} onClick={clearCanvas}>Clear</button>
             </div>
             {mode === 'paint' && (
@@ -1776,6 +1861,7 @@ function GeometryPractice() {
               <button style={btnStyle()} onClick={() => resetAll()}>Begin again</button>
               <button style={btnStyle(mode === 'paint' ? 'solid' : 'ghost')} onClick={() => setMode(mode === 'paint' ? 'draw' : 'paint')}>Paint</button>
               <button style={btnStyle('ghost')} disabled={histLen === 0} onClick={undo}>Undo</button>
+              <button style={btnStyle('ghost')} onClick={resetView}>Reset view</button>
             </div>
             {mode === 'paint' && (
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', marginTop: space.sm, maxWidth: 560, marginLeft: 'auto', marginRight: 'auto' }}>
@@ -1803,11 +1889,12 @@ function GeometryPractice() {
       </p>
 
       <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <div style={{
+        <div ref={frameRef} style={{
           position: 'relative', width: 'min(600px, 100%)', aspectRatio: '1',
           background: fn.object, borderRadius: 8, boxShadow: shadow.fn.rest,
           touchAction: penOnly ? 'pan-y' : 'none', overflow: 'hidden',
         }}>
+          <div ref={stageRef} className="prism-stage">
           <canvas ref={paintRef} width={PAINT_RES} height={PAINT_RES} className="prism-paint" />
           <svg viewBox="0 0 600 600" className="prism-geo-guide">
             {shape.steps.map((st, s) => st.guides.map((g, i) => renderGuide(g, `${s}-${i}`, guideOpacity(s))))}
@@ -1839,12 +1926,15 @@ function GeometryPractice() {
           <canvas
             ref={canvasRef} width={600} height={600}
             className={resolved ? 'prism-hand prism-hand-ghost' : 'prism-hand'}
-            onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up}
+            onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerLeave={up} onPointerCancel={up}
           />
+          </div>
         </div>
       </div>
 
       <style>{`
+        .prism-stage { position: absolute; inset: 0; will-change: transform; }
+        .prism-stage-anim { transition: transform 0.35s ease; }
         .prism-paint { position: absolute; inset: 0; width: 100%; height: 100%; }
         .prism-geo-guide { position: absolute; inset: 0; width: 100%; height: 100%; }
         .prism-hand { position: absolute; inset: 0; width: 100%; height: 100%; cursor: crosshair; transition: opacity 2.4s ease; }
