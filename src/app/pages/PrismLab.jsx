@@ -1589,11 +1589,13 @@ const PAINT_RES = 1200
 const PAINT_SCALE = PAINT_RES / 600
 
 // 24-colour fill palette for the paint layer
+// Full-spectrum wheel \u00b7 24 hues, evenly stepped 15\u00b0 apart, matching
+// a classic colour wheel rather than a curated palette.
 const PAINT_COLOURS = [
-  '#C0392B', '#E74C3C', '#E67E22', '#F39C12', '#F1C40F', '#F7DC6F',
-  '#7DCEA0', '#27AE60', '#148F77', '#76D7C4', '#5DADE2', '#2E86C1',
-  '#1B4F72', '#8E44AD', '#BB8FCE', '#D98880', '#F5B7B1', '#935116',
-  '#B9770E', '#7E5109', '#616A6B', '#2C3E50', '#FDFEFE', '#17202A',
+  '#F12727', '#F15A27', '#F18C27', '#F1BF27', '#F1F127', '#BFF127',
+  '#8CF127', '#5AF127', '#27F127', '#27F15A', '#27F18C', '#27F1BF',
+  '#27F1F1', '#27BFF1', '#278CF1', '#275AF1', '#2727F1', '#5A27F1',
+  '#8C27F1', '#BF27F1', '#F127F1', '#F127BF', '#F1278C', '#F1275A',
 ]
 
 // Ramer-Douglas-Peucker: reduces a stroke to its corner vertices so a
