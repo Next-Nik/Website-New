@@ -1188,6 +1188,13 @@ export default function MissionControl() {
           {/* RIGHT RAIL — Our Planet */}
           <SideRail side="right">
             <Tile
+              glyph="◈"
+              label="MY ORG"
+              state={null}
+              onClick={() => setOrgOpen(true)}
+              title="My Org — the org tree you steward"
+            />
+            <Tile
               glyph="◎"
               label={<>MY<br/>FOCUS</>}
               state={null}
@@ -1222,13 +1229,6 @@ export default function MissionControl() {
               state={null}
               onClick={() => navigate('/guide')} // label + slug provisional · naming session pending
               title="Your guide — the organisations you've met"
-            />
-            <Tile
-              glyph="◈"
-              label="MY ORG"
-              state={null}
-              onClick={() => setOrgOpen(true)}
-              title="My Org — the org tree you steward"
             />
             <Tile
               glyph="＋"
