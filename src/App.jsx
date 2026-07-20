@@ -172,6 +172,18 @@ function ComingSoon({ name }) {
 // URL, so it only exists for users who arrived via the wrapper.
 // Existing users on a new device won't have it set and will go
 // straight to Mission Control — they don't need a re-introduction.
+// ── /challenges ──
+// Signed-in → your challenges. Signed-out → the public browse page,
+// not a sign-in wall: a visitor landing on /challenges should see
+// challenges, not a locked door.
+function ChallengesRoute() {
+  const { user, loading } = useAuth()
+
+  if (loading) return null
+  if (!user) return <Navigate to="/challenges/browse" replace />
+  return <MyChallenges />
+}
+
 function RootRoute() {
   const { user, loading } = useAuth()
 
@@ -335,7 +347,7 @@ function AppInner() {
         <Route path="/contribution"                 element={<ContributionPage />} />
         <Route path="/contribution/legacy"          element={<Contribution />} />
         <Route path="/stretch/c/:slug"              element={<ChallengePage />} />
-        <Route path="/challenges"                   element={<MyChallenges />} />
+        <Route path="/challenges"                   element={<ChallengesRoute />} />
         <Route path="/challenges/new"               element={<ChallengeAuthor />} />
         <Route path="/challenges/browse"            element={<ChallengeBrowse />} />
         <Route path="/earth"                        element={<EarthLive />} />

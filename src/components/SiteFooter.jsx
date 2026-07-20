@@ -28,7 +28,7 @@ export function SiteFooter() {
             <a href="https://substack.com/@nextus" target="_blank" rel="noopener" aria-label="Substack" style={{ color: 'rgba(38,48,42,0.55)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" opacity="0.55"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg>
             </a>
-            <a href="https://open.spotify.com/show/65LzAbOCuOZW7mvHTKsIbY" target="_blank" rel="noopener" aria-label="Podcast" style={{ color: 'rgba(38,48,42,0.55)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+            <a href="https://open.spotify.com/show/65LzAbOCuOZW7mvHTKsIbY" target="_blank" rel="noopener" aria-label="Spotify" style={{ color: 'rgba(38,48,42,0.55)', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 11.8c2.2-.7 5.8-.6 8 1.2"/><path d="M6.5 14.5c3-1.3 7.5-.8 10 1.5"/><path d="M9.5 9c1.5-.4 4.5-.3 6.5.8"/></svg>
             </a>
           </div>
@@ -47,7 +47,7 @@ export function SiteFooter() {
           </div>
         </div>
         <p style={{ ...bodyFont, fontSize: '13px', color: 'rgba(38,48,42,0.55)', margin: 0, lineHeight: 1.5 }}>
-          By using NextUs you agree to our <a href="/terms" style={{ color: 'rgba(38,48,42,0.55)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>Terms</a> and <a href="/privacy" style={{ color: 'rgba(38,48,42,0.55)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>Privacy</a>.
+          By using NextUs you agree to our <a href="/terms" style={{ color: 'rgba(38,48,42,0.55)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>Terms of Service</a> and <a href="/privacy" style={{ color: 'rgba(38,48,42,0.55)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>Privacy Policy</a>.
         </p>
       </div>
     </footer>

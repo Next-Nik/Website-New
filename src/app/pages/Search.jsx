@@ -49,6 +49,12 @@ const SCALES = [
   ...CANONICAL_SCALES.map(s => ({ value: s.slug, label: s.label })),
 ]
 
+// Machine value → display label maps. Raw slugs never reach the screen.
+const TYPE_LABELS = Object.fromEntries(
+  ACTOR_TYPES.filter(t => t.value).map(t => [t.value, t.label])
+)
+const KIND_LABELS = { offer: 'Offer', need: 'Need' }
+
 // ── Result card components ───────────────────────────────────
 
 function ActorCard({ actor }) {
@@ -78,7 +84,7 @@ function ActorCard({ actor }) {
             {actor.type && (
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
                 color: at.ghost, textTransform: 'uppercase' }}>
-                {actor.type}
+                {TYPE_LABELS[actor.type] || actor.type}
               </span>
             )}
             {actor.location_name && (
@@ -161,7 +167,7 @@ function OfferOrNeedCard({ item, kind }) {
             border: `1px solid ${accentBorder}`,
             padding: '2px 8px', borderRadius: '40px',
             textTransform: 'uppercase' }}>
-            {kind}
+            {KIND_LABELS[kind] || kind}
           </span>
           {locationLabel && (
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
@@ -294,9 +300,9 @@ export function SearchPage() {
           <input type="search" value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder={
-              mode === 'actors' ? 'Search for a person, organisation, place...' :
-              mode === 'offers' ? 'Search for what you need...' :
-                                  'Search for what you offer...'
+              mode === 'actors' ? 'Search for a person, organisation, place…' :
+              mode === 'offers' ? 'Search offers · meals, mentoring, tools…' :
+                                  'Search needs · what people are asking for'
             }
             style={{ ...body, fontSize: '16px', color: dark,
               padding: '14px 18px', borderRadius: '10px',
@@ -308,7 +314,7 @@ export function SearchPage() {
         {/* Mode toggle */}
         <div style={{ display: 'flex', gap: 0,
           borderBottom: '1px solid rgba(217,178,74,0.20)',
-          marginBottom: '24px' }}>
+          marginBottom: '8px' }}>
           {MODES.map(m => (
             <button key={m.value} onClick={() => setMode(m.value)}
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
@@ -322,6 +328,12 @@ export function SearchPage() {
             </button>
           ))}
         </div>
+
+        {/* Visible gloss for the selected mode — tooltips never reach touch users */}
+        <p style={{ ...body, fontSize: '13px', color: at.ghost,
+          margin: '0 0 24px', lineHeight: 1.5 }}>
+          {MODES.find(m => m.value === mode)?.hint}
+        </p>
 
         {/* Filter chips */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap',
@@ -382,7 +394,7 @@ export function SearchPage() {
         {loading && (
           <p style={{ ...body, fontSize: '13px', color: at.ghost,
             margin: '24px 0' }}>
-            Searching...
+            Searching…
           </p>
         )}
 

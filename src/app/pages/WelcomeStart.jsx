@@ -57,14 +57,14 @@ export default function WelcomeStart() {
       key:    'self',
       eyebrow:'For yourself',
       title:  "I'm here for me.",
-      blurb:  "A clearer life, a clearer purpose, daily anchors that hold. Your seven domains, your direction.",
+      blurb:  "A clearer life, a clearer purpose, daily practices that hold. Your seven domains, your direction.",
       href:   '/welcome/self',
     },
     {
       key:    'org',
       eyebrow:'For your organisation',
       title:  'I represent an organisation.',
-      blurb:  "Get placed in the civilisational picture. Surface the people, partners and contributors who match what you do.",
+      blurb:  "Take your place on the world map of who's doing what. Find the people, partners and contributors who match what you do.",
       href:   '/welcome/org',
     },
     {
@@ -87,6 +87,9 @@ export default function WelcomeStart() {
         <h1 className="start-title">
           What brings you here?
         </h1>
+        <p className="start-whatis">
+          NextUs is a place to work on your life · and to find and join the people working on the world.
+        </p>
 
         <div className="start-choices">
           {choices.map((c) => (
@@ -176,7 +179,16 @@ const START_CSS = `
   color: var(--text-ink);
   line-height: 1.05;
   letter-spacing: -0.01em;
-  margin: 0 0 56px 0;
+  margin: 0 0 20px 0;
+}
+
+.start-whatis {
+  font-family: var(--font-body);
+  font-size: 17px;
+  color: var(--text-meta);
+  line-height: 1.6;
+  max-width: 560px;
+  margin: 0 0 48px 0;
 }
 
 .start-choices {
@@ -275,7 +287,10 @@ const START_CSS = `
     padding: 64px 20px 60px;
   }
   .start-title {
-    margin-bottom: 36px;
+    margin-bottom: 16px;
+  }
+  .start-whatis {
+    margin-bottom: 32px;
   }
   .start-choice {
     padding: 22px 22px 24px;

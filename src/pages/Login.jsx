@@ -48,6 +48,19 @@ function getInitialNotice() {
   return ''
 }
 
+// Map raw Supabase error strings to friendly messages. Known cases get a
+// specific line; anything unrecognised gets the generic fallback.
+function friendlyAuthError(message) {
+  const m = (message || '').toLowerCase()
+  if (m.includes('password should be at least') || m.includes('password is too short')) return 'Password must be at least 8 characters.'
+  if (m.includes('rate limit') || m.includes('too many requests')) return 'Too many attempts · wait a moment, then try again.'
+  if (m.includes('invalid email') || m.includes('unable to validate email')) return "That email address doesn't look right · check it and try again."
+  if (m.includes('email not confirmed')) return 'Please confirm your email address before signing in. Check your inbox.'
+  if (m.includes('invalid login credentials')) return 'Email or password incorrect. Try again or reset your password.'
+  if (m.includes('same password') || m.includes('different from the old password')) return 'Your new password must be different from your old one.'
+  return 'Something went wrong · try again in a moment.'
+}
+
 function storeConsent(mailingOptIn) {
   try {
     sessionStorage.setItem('consent_terms', 'true')
@@ -208,17 +221,17 @@ function SignUpScreen({ onSwitch, onDone }) {
       onDone(); return
     }
 
-    if (signUpError) { setLoading(false); setError(signUpError.message); return }
+    if (signUpError) { setLoading(false); setError(friendlyAuthError(signUpError.message)); return }
 
     // Try immediate sign-in. If Supabase "confirm email" is ON this will fail —
     // show a clear message rather than leaving them stranded.
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
     if (signInError?.message?.toLowerCase().includes('email not confirmed')) {
       setLoading(false)
-      setError('Almost there — check your email and click the confirmation link, then come back to sign in.')
+      setError('Almost there · check your email and click the confirmation link, then come back to sign in.')
       return
     }
-    if (signInError) { setLoading(false); setError(signInError.message); return }
+    if (signInError) { setLoading(false); setError(friendlyAuthError(signInError.message)); return }
     onDone()
   }
 
@@ -242,7 +255,7 @@ function SignUpScreen({ onSwitch, onDone }) {
           <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#56634A', textDecoration: 'underline' }}>Privacy Policy</a>
         </Checkbox>
         {termsErr && <p style={{ ...body, fontSize: '13px', color: '#6E7F5C', margin: '-8px 0 10px 28px' }}>Please accept the terms to continue.</p>}
-        <Checkbox checked={mailing} onChange={() => setMailing(v => !v)}>Keep me in the loop — occasional updates from NextUs</Checkbox>
+        <Checkbox checked={mailing} onChange={() => setMailing(v => !v)}>Keep me in the loop · occasional updates from NextUs</Checkbox>
       </div>
       <PrimaryButton onClick={handleSubmit} loading={loading} label="Create account →" />
       {error && <ErrorMsg>{error}</ErrorMsg>}
@@ -278,7 +291,7 @@ function ResetScreen({ onSwitch }) {
 
   if (sent) return (
     <div style={{ textAlign: 'center' }}>
-      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(110,127,92,0.08)', border: '1.5px solid rgba(110,127,92,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '22px' }}>✶</div>
+      <div role="img" aria-label="Star" style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(110,127,92,0.08)', border: '1.5px solid rgba(110,127,92,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '22px' }}>✶</div>
       <h2 style={{ ...body, fontSize: '24px', fontWeight: 400, color: '#26302A', marginBottom: '10px' }}>Check your email.</h2>
       <p style={{ ...body, fontSize: '17px', color: 'rgba(38,48,42,0.68)', lineHeight: 1.6 }}>
         If <span style={{ color: '#56634A' }}>{email}</span> has an account, a reset link is on its way.
@@ -336,7 +349,7 @@ function NewPasswordScreen({ onDone }) {
     if (password !== confirm) { setError("Passwords don't match."); return }
     setLoading(true); setError('')
     const { error } = await supabase.auth.updateUser({ password })
-    if (error) { setLoading(false); setError(error.message); return }
+    if (error) { setLoading(false); setError(friendlyAuthError(error.message)); return }
     onDone()
   }
 

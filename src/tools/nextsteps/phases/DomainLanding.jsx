@@ -13,7 +13,7 @@ const DOMAIN_LABELS = {
   society:     'Society',
   nature:      'Nature',
   tech:        'Technology',
-  finance:     'Finance & Economy',
+  finance:     'Economy',
   legacy:      'Legacy',
   vision:      'Vision',
   // self side

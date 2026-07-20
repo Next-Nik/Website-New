@@ -35,6 +35,13 @@ function daysInclusive(startKey, endKey) {
   return Math.max(1, Math.round((b - a) / 86400000) + 1)
 }
 
+// "2026-07-20" → "20 July" for the habit-dot tooltips (en-GB, no ISO leaking to UI).
+function fmtDayTitle(key) {
+  const [y, m, d] = String(key).split('-').map(Number)
+  if (!y || !m || !d) return key
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' })
+}
+
 // Day number within the window, 1-based, clamped to the window.
 function dayNumber(startKey, window) {
   if (!startKey) return 1
@@ -68,7 +75,7 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
   const [leaving, setLeaving] = useState(false)   // false | 'confirm' | 'busy'
   const inConstellation = !!(founding && founding.ids && founding.ids.has(p.call_id))
   const closeStr = founding && founding.closes_on
-    ? new Date(founding.closes_on + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+    ? new Date(founding.closes_on + 'T12:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
     : null
   const [doneToday, setDoneToday] = useState(new Set(p.done_today || []))
   const [busy, setBusy]           = useState(null)
@@ -155,7 +162,7 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
         <div>
           <span style={{ ...serif, fontWeight: 300, fontSize: '34px', color: at.text, lineHeight: 1 }}>{complete ? window : dayNo}</span>
           {inConstellation && closeStr
-            ? <span style={{ ...body, fontSize: '15px', color: at.ghost }}> days &middot; runs to {closeStr} &middot; the shared close</span>
+            ? <span style={{ ...body, fontSize: '15px', color: at.ghost }}> days &middot; closes {closeStr} &middot; the shared close</span>
             : <span style={{ ...body, fontSize: '15px', color: at.ghost }}> of {window} days</span>}
         </div>
         {streak > 1 && (
@@ -169,7 +176,7 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
       {dots.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '20px' }}>
           {dots.map(d => (
-            <span key={d.key} title={d.key}
+            <span key={d.key} title={fmtDayTitle(d.key)}
               style={{
                 width: '9px', height: '9px', borderRadius: '50%', flexShrink: 0,
                 background: d.filled ? GOLD_C : 'transparent',
@@ -363,7 +370,7 @@ export default function MyChallenges() {
               Browse challenges
             </Link>
             <Link to="/challenges/new" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.brass, textTransform: 'uppercase', textDecoration: 'none' }}>
-              + Author a challenge
+              + Post a challenge
             </Link>
           </div>
         )}
@@ -380,7 +387,8 @@ export default function MyChallenges() {
 
         {!user ? (
           <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7 }}>
-            Sign in to see the challenges you've taken on.
+            Sign in to see the challenges you've taken on.{' '}
+            <Link to="/challenges/browse" style={{ color: at.verdigris }}>Browse open challenges →</Link>
           </p>
         ) : loading ? (
           <p style={{ ...body, fontSize: '1.0625rem', color: at.ghost }}>Loading…</p>
@@ -390,7 +398,7 @@ export default function MyChallenges() {
               You haven't taken on a challenge yet.
             </p>
             <p style={{ ...body, fontSize: '15px', color: at.ghost, lineHeight: 1.65, margin: 0 }}>
-              <Link to="/challenges/browse" style={{ color: at.brass }}>Browse challenges</Link> and take one on. It starts a clock the day you join, and it appears here.
+              <Link to="/challenges/browse" style={{ color: at.brass }}>Browse challenges</Link> and take one on. Your 90 days start the day you join, and it appears here.
             </p>
           </div>
         ) : (

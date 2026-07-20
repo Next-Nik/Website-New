@@ -1237,7 +1237,7 @@ const CIVILISATIONAL_DOMAINS = [
   { key: 'society',         label: 'Society',           score: 5 },
   { key: 'nature',          label: 'Nature',            score: 3, alert: true },
   { key: 'technology',      label: 'Technology',        score: 7 },
-  { key: 'finance-economy', label: 'Finance & Economy', score: 4, alert: true },
+  { key: 'finance-economy', label: 'Economy', score: 4, alert: true },
   { key: 'legacy',          label: 'Legacy',            score: 5 },
   { key: 'vision',          label: 'Vision',            score: 7 },
 ]

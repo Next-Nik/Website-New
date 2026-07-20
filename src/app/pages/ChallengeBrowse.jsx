@@ -46,8 +46,8 @@ function Card({ c }) {
       {c.tagline && <p style={{ ...body, fontSize: '15px', color: 'rgba(234,241,237,0.72)', lineHeight: 1.55, margin: '0 0 14px' }}>{c.tagline}</p>}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', ...sc, fontSize: '13px', letterSpacing: '0.08em', color: at.ghost, marginTop: '4px' }}>
         <span>{c.duration_days || 90} days</span>
-        <span>{c.strand_count || 1} {(c.strand_count || 1) === 1 ? 'part' : 'parts'}</span>
-        {n > 0 && <span style={{ color: at.brass }}>{n.toLocaleString()} {n === 1 ? 'person' : 'people'} in</span>}
+        <span>{c.strand_count || 1} {(c.strand_count || 1) === 1 ? 'part to keep' : 'parts to keep'}</span>
+        {n > 0 && <span style={{ color: at.brass }}>{n.toLocaleString()} {n === 1 ? 'person' : 'people'} in it</span>}
         {INTENSITY_BY_LEVEL[c.intensity_level] && (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             <ChiliRung level={c.intensity_level} size={13} />
@@ -106,7 +106,7 @@ export default function ChallengeBrowse() {
             </h1>
           </div>
           <Link to="/challenges/new" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.brass, textTransform: 'uppercase', textDecoration: 'none' }}>
-            + Author a challenge
+            + Post a challenge
           </Link>
         </div>
 
@@ -145,12 +145,20 @@ export default function ChallengeBrowse() {
           <p style={{ ...body, fontSize: '1.0625rem', color: at.ghost }}>Loading…</p>
         ) : shown.length === 0 ? (
           <div style={{ background: at.object, border: hair, borderRadius: '14px', padding: '32px 28px' }}>
-            <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: '0 0 6px' }}>
-              No challenges here yet.
-            </p>
-            <p style={{ ...body, fontSize: '15px', color: at.ghost, lineHeight: 1.65, margin: 0 }}>
-              Be the first to <Link to="/challenges/new" style={{ color: at.brass }}>author one</Link>.
-            </p>
+            {(domain || intensity) ? (
+              <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: 0 }}>
+                Nothing matches these filters · clear one to see more.
+              </p>
+            ) : (
+              <>
+                <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: '0 0 6px' }}>
+                  No challenges here yet.
+                </p>
+                <p style={{ ...body, fontSize: '15px', color: at.ghost, lineHeight: 1.65, margin: 0 }}>
+                  Be the first to <Link to="/challenges/new" style={{ color: at.brass }}>post one</Link>.
+                </p>
+              </>
+            )}
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>

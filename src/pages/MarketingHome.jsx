@@ -139,7 +139,7 @@ function ProofOfLife() {
   const countItems = []
   if (counts?.actors)    countItems.push({ n: counts.actors,    label: counts.actors === 1 ? 'builder on the map' : 'builders on the map' })
   if (counts?.practices) countItems.push({ n: counts.practices, label: counts.practices === 1 ? 'practice in the library' : 'practices in the library' })
-  if (counts?.focuses)   countItems.push({ n: counts.focuses,   label: counts.focuses === 1 ? 'place in focus' : 'places in focus' })
+  if (counts?.focuses)   countItems.push({ n: counts.focuses,   label: counts.focuses === 1 ? 'place on the map' : 'places on the map' })
 
   return (
     <section style={{
@@ -417,6 +417,20 @@ export function MarketingHomePage() {
         >
           <Copy id="home.hero.subtitle" />
         </p>
+        <p
+          className="mh-hero-whatis"
+          style={{
+            ...body,
+            fontSize: 'clamp(15px,1.4vw,17px)',
+            fontWeight: 400,
+            lineHeight: 1.7,
+            color: inkFaint,
+            maxWidth: '660px',
+            margin: 'clamp(12px,1.4vw,16px) auto 0',
+          }}
+        >
+          <Copy id="home.hero.whatis" />
+        </p>
         <FractalWheels />
       </section>
 
@@ -442,7 +456,7 @@ export function MarketingHomePage() {
               Organisations working for the living world are posting real challenges. People are taking them on. Every action adds a spark to one shared beacon.
             </p>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#D7A24A', marginBottom: '18px' }}>
-              Runs to September 28 &middot; Climate Week NYC
+              Runs to 28 September &middot; Climate Week NYC
             </div>
             <Link to="/earth" style={{
               display: 'inline-block', ...sc, fontSize: '14px', letterSpacing: '0.14em', textTransform: 'uppercase',

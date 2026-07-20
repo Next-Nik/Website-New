@@ -46,7 +46,12 @@ export function InvitePage() {
     return () => { cancelled = true }
   }, [token])
 
-  if (loading) return <div style={{ background: parch, minHeight: '100dvh' }}><Nav /></div>
+  if (loading) return (
+    <div style={{ background: parch, minHeight: '100dvh' }}>
+      <Nav />
+      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', textAlign: 'center', padding: '140px 24px' }}>One moment…</p>
+    </div>
+  )
 
   if (!invite || !actor) {
     return (
@@ -57,7 +62,7 @@ export function InvitePage() {
             This invitation could not be found
           </h1>
           <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.6)', lineHeight: 1.7 }}>
-            The link may have changed. You can still explore the platform.
+            That invitation link has expired. The Atlas is our map of organisations building a better world · you can find them there.
           </p>
           <Link to="/atlas" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold,
             textDecoration: 'none', display: 'inline-block', marginTop: '20px' }}>The Atlas &rarr;</Link>
@@ -86,7 +91,7 @@ export function InvitePage() {
         <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.68)', lineHeight: 1.75, marginBottom: '14px' }}>
           NextUs maps the people, organisations, and projects building a future worth living in, so others
           can find that work and join it. Taking part means your work appears on the map, and people
-          building toward the same future can find and back it.
+          building toward the same future can find it and support it.
         </p>
 
         {/* The profile held in trust */}
@@ -110,8 +115,8 @@ export function InvitePage() {
         </div>
 
         <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.68)', lineHeight: 1.7, marginBottom: '28px' }}>
-          This is the page being held for you. Nothing has been published in your name. It is yours to claim,
-          correct, or take down.
+          We made a page for {actor.name} and kept it for you · claim it and it&rsquo;s yours to edit, correct,
+          or take down. Nothing has been published in your name.
         </p>
 
         {claimed ? (

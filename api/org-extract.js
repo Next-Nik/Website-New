@@ -653,6 +653,8 @@ Return an array of 1-6 actor objects. Use this exact shape:
 ]
 
 If a field is empty, omit it or return [] for arrays. Do not invent data.
+
+Write in plain language a smart 10-year-old could follow. Short sentences. Concrete words. No jargon, no abstraction-stacking.
 `
 
 function stripHtml(html) {

@@ -40,6 +40,8 @@ export const COPY_GROUPS = [
       { id: 'home.hero.title',    label: 'Hero · title',    default: 'Your life and the world run on the same seven domains.' },
       { id: 'home.hero.subtitle', label: 'Hero · subtitle', multiline: true,
         default: "NextUs is built on that. An honest picture of where you stand, a clear direction for where you're going, and the people already building the future you want to live in. One set of tools, two scales: your life, and your world." },
+      { id: 'home.hero.whatis', label: 'Hero · what NextUs is', multiline: true,
+        default: 'NextUs is a website with two sides: tools to get your own life where you want it, and a map of the people and organisations building a better world · so you can join them.' },
 
       // Two doors
       { id: 'home.doors.eyebrow',     label: 'Two doors · eyebrow', default: 'THE PERSON AND THE PLANET · BUILT FOR BOTH, BUILDING BOTH' },
@@ -80,13 +82,13 @@ export const COPY_GROUPS = [
       { id: 'home.hiw.world.heading', label: 'HIW · world · heading', default: 'A future worth building' },
       { id: 'home.hiw.world.s1.title', label: 'HIW · world · step 1 title', default: 'Name the future worth building' },
       { id: 'home.hiw.world.s1.body',  label: 'HIW · world · step 1 body', multiline: true,
-        default: 'The same seven domains that map a life map a civilisation: Human Being, Society, Nature, Technology, Finance & Economy, Legacy, and Vision. Humanity has never sat down and agreed what it is building toward. NextUs makes that picture something you can see, and starts with a simpler question: what future do you actually want to live in?' },
+        default: 'The same seven domains that map a life map a civilisation: Human Being, Society, Nature, Technology, Economy, Legacy, and Vision. Humanity has never sat down and agreed what it is building toward. NextUs makes that picture something you can see, and starts with a simpler question: what future do you actually want to live in?' },
       { id: 'home.hiw.world.s2.title', label: 'HIW · world · step 2 title', default: 'Find where you come in' },
       { id: 'home.hiw.world.s2.body',  label: 'HIW · world · step 2 body', multiline: true,
-        default: 'Of those seven domains, which is yours to work in, and at what scale: close and local, or wide and structural? Name the domain and the scale where you most want to make an impact, and look there.' },
+        default: 'Of those seven domains, which is yours to work in, and at what scale: close to home, or system-wide? Name the domain and the scale where you most want to make an impact, and look there.' },
       { id: 'home.hiw.world.s3.title', label: 'HIW · world · step 3 title', default: 'See who is already building it' },
       { id: 'home.hiw.world.s3.body',  label: 'HIW · world · step 3 body', multiline: true,
-        default: 'The Atlas is a living directory of the people, organisations, and projects doing the real work across those seven domains. In the corner you named, you can see who is already on it: who is worth backing, joining, or learning from. Then add your weight: support the people already building, point others toward work that deserves to be seen, or make your own work visible to those most likely to be served by it. The fractal runs both ways: the work you do on yourself shapes the world, and the world you help build gives that work somewhere to land.' },
+        default: 'The Atlas is a living directory of the people, organisations, and projects doing the real work across those seven domains. In the corner you named, you can see who is already on it: who is worth backing, joining, or learning from. Then add your weight: support the people already building, point others toward work that deserves to be seen, or make your own work visible to those most likely to be served by it. Work on your life and it shows up in the world; work on the world and your life has somewhere to point.' },
       { id: 'home.hiw.world.closing', label: 'HIW · world · closing', multiline: true,
         default: 'Start by naming one part of the future you want. What you get back is a map of who is already building it, and a place to add your own.' },
       { id: 'home.hiw.world.cta',     label: 'HIW · world · button', default: 'EXPLORE THE ATLAS →' },
@@ -97,7 +99,7 @@ export const COPY_GROUPS = [
       { id: 'home.align.eyebrow', label: 'Align band · eyebrow', default: 'ALIGN WITH WHAT MATTERS' },
       { id: 'home.align.line1',   label: 'Align band · line 1', default: 'Personal growth and global impact are not separate.' },
       { id: 'home.align.line2',   label: 'Align band · line 2', default: 'They are the same work, at different scales.' },
-      { id: 'home.align.cta',     label: 'Align band · button', default: 'SEE THE WHOLE PICTURE →' },
+      { id: 'home.align.cta',     label: 'Align band · button', default: 'See how the two sides connect →' },
 
       // Founder band
       { id: 'home.founder.eyebrow', label: 'Founder band · eyebrow', default: 'FROM THE FOUNDER' },

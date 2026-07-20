@@ -1,6 +1,6 @@
 // src/app/pages/Add.jsx
 //
-// Public "Add to the ecosystem" page. Requires login.
+// Public "Add to the Atlas" page. Requires login.
 //
 // Structure:
 //   1. Optional URL autofill at top — paste URL, AI reads site and
@@ -12,7 +12,7 @@
 //      All go live immediately.
 //
 // Provenance:
-//   "I'm adding to the ecosystem" → seeded_by: 'community', profile_owner: null
+//   "I'm adding this to the Atlas" → seeded_by: 'community', profile_owner: null
 //   "I represent this org"        → seeded_by: 'self',      profile_owner: user.id
 
 import { logActivity } from '../components/pulse/logActivity'
@@ -63,12 +63,6 @@ const ACTOR_TYPES = [
   { value: 'group',        label: 'Group' },
   { value: 'resource',     label: 'Resource' },
 ]
-
-const LABEL_COLORS = {
-  Planet:       { color: '#2A4A8A', bg: 'rgba(42,74,138,0.08)',  border: 'rgba(42,74,138,0.25)' },
-  Self:         { color: '#2A6B3A', bg: 'rgba(42,107,58,0.08)',  border: 'rgba(42,107,58,0.25)' },
-  Practitioner: { color: at.brass, bg: 'rgba(217,178,74,0.08)', border: 'rgba(217,178,74,0.25)' },
-}
 
 const EMPTY_FORM = {
   name: '', type: 'organisation', tagline: '', image_url: '',
@@ -133,19 +127,6 @@ function SelectInput({ value, onChange, options }) {
 
 function Field({ children, style }) {
   return <div style={{ marginBottom: '22px', ...style }}>{children}</div>
-}
-
-// ── Label badge for extra proposals ───────────────────────────
-
-function LabelBadge({ label }) {
-  const cfg = LABEL_COLORS[label] || LABEL_COLORS.Planet
-  return (
-    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
-      padding: '2px 10px', borderRadius: '40px',
-      color: cfg.color, background: cfg.bg, border: `1px solid ${cfg.border}` }}>
-      {label}
-    </span>
-  )
 }
 
 // ── Duplicate card ─────────────────────────────────────────────
@@ -234,7 +215,7 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <div>
               <FieldLabel>Website</FieldLabel>
-              <TextInput value={proposal.website} onChange={v => onChange('website', v)} placeholder="https://..." />
+              <TextInput value={proposal.website} onChange={v => onChange('website', v)} placeholder="https://…" />
             </div>
             <div>
               <FieldLabel>Location</FieldLabel>
@@ -417,7 +398,7 @@ export function AddPage() {
       if (data.error) { setReadErr(data.message || 'Could not read the site.'); return }
 
       const results = data.results || []
-      if (!results.length) { setReadErr('No actor found at that URL.'); return }
+      if (!results.length) { setReadErr('We could not find a person, organisation, or project at that URL.'); return }
 
       // First result populates the main form. Build from a clean slate rather
       // than merging into current state — a re-read must fully replace a prior
@@ -537,7 +518,7 @@ export function AddPage() {
               const selfHint = isPractitioner
                 ? "I'm adding my own practitioner profile. I'll own and manage it."
                 : `I'm adding my own ${targetWord}. I'll be the owner and can manage it directly.`
-              const otherLabel = "I'm adding this to the ecosystem"
+              const otherLabel = "I'm adding this to the Atlas"
               const otherHint  = isPractitioner
                 ? `I don't represent this person. NextUs holds the entry in trust until they claim it.`
                 : `I don't run this ${targetWord}. NextUs holds the entry in trust until claimed.`
@@ -695,12 +676,11 @@ export function AddPage() {
             textTransform: 'uppercase', marginBottom: '18px' }}>Added to the Atlas</div>
           <h1 style={{ ...serif, fontSize: 'clamp(26px,4vw,38px)', fontWeight: 400,
             color: dark, lineHeight: 1.1, marginBottom: '24px' }}>
-            {saved.length === 1 ? `${saved[0].name} is on the map.` : `${saved.length} entries are on the map.`}
+            {saved.length === 1 ? `${saved[0].name} is on the Atlas.` : `${saved.length} entries are on the Atlas.`}
           </h1>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '32px' }}>
             {saved.map(s => (
               <div key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                {s.label !== 'Primary' && <LabelBadge label={s.label} />}
                 <span style={{ ...body, fontSize: '15px', color: dark }}>{s.name}</span>
                 <Link to={`/org/${s.slug || s.id}`} target="_blank"
                   style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}>
@@ -758,13 +738,13 @@ export function AddPage() {
           color: dark, lineHeight: 1.08, marginBottom: '10px' }}>
           {mineMode
             ? (form.type === 'practitioner' ? 'Set up your profile' : 'Set up your organisation')
-            : 'Add to the ecosystem'}
+            : 'Add to the Atlas'}
         </h1>
         <p style={{ ...body, fontSize: '16px', color: at.meta,
           lineHeight: 1.7, marginBottom: '24px', maxWidth: '520px' }}>
           {mineMode
             ? 'This is yours to own and manage. A challenge is published by someone others can find and follow, so a name, a picture, and a statement of what you do are all required.'
-            : 'Know an organisation, practitioner, place, or project doing serious work toward a Horizon Goal? Add them. They go live immediately.'}
+            : 'The Atlas is the shared map of every person, organisation, and project on NextUs. Know someone doing serious work toward a Horizon Goal · the future their domain is aiming for? Add them. They go live immediately.'}
         </p>
 
         {/* ── STAGE 1 — SOURCE ────────────────────────────────
@@ -786,13 +766,13 @@ export function AddPage() {
             lineHeight: 1.55, marginBottom: '12px' }}>
             {mineMode
               ? 'Optional. Paste a link and we will fill in what we can, then you review it. Or skip and fill it in yourself below.'
-              : 'Their website, or any page where their work shows up — or a few words if there\'s no URL. Podcasts, newsletters, and channels become links on their profile.'}
+              : 'Their website, or any page where their work shows up · or a few words if there\'s no URL. Podcasts, newsletters, and channels become links on their profile.'}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <textarea value={aiUrl}
               onChange={e => setAiUrl(e.target.value)}
               rows={2}
-              placeholder={'Paste a URL or describe them...'}
+              placeholder={'Paste a URL or describe them…'}
               style={{ ...body, fontSize: '16px', color: dark, padding: '12px 16px',
                 borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.55)',
                 background: at.object, outline: 'none', width: '100%',
@@ -816,7 +796,7 @@ export function AddPage() {
                       animation: 'add-spin 0.7s linear infinite',
                       marginRight: '6px', verticalAlign: 'middle',
                     }} />
-                    Reading...
+                    Reading…
                   </>
                 ) : 'Read site'}
               </button>
@@ -829,7 +809,7 @@ export function AddPage() {
           )}
           {aiUsed && !readErr && (
             <p style={{ ...body, fontSize: '13px', color: gold, marginTop: '8px', marginBottom: 0 }}>
-              Form filled from site — review everything before submitting.
+              Form filled from site · review everything before submitting.
             </p>
           )}
         </div>
@@ -1009,7 +989,7 @@ export function AddPage() {
           {form.primary_domain && (
             <Field>
               <FieldLabel>Secondary domains</FieldLabel>
-              <Hint>Where else does this work honestly live? Do not pad.</Hint>
+              <Hint>Where else does this work belong? Only add what's true.</Hint>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
                 {CIV_DOMAINS.filter(d => d.slug !== form.primary_domain).map(d => {
                   const isOn = form.secondary_domains.includes(d.slug)
@@ -1064,7 +1044,7 @@ export function AddPage() {
             <div style={{ marginBottom: '24px' }}>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
                 color: gold, marginBottom: '10px' }}>
-                Also identified — add these too?
+                Also identified · add these too?
               </div>
               {extras.map((ex, i) => (
                 <ExtraProposalCard
@@ -1093,7 +1073,7 @@ export function AddPage() {
               background: saving ? 'rgba(217,178,74,0.35)' : at.verdigris,
               color: at.object, cursor: saving ? 'not-allowed' : 'pointer',
               display: 'block', width: '100%', marginTop: '8px' }}>
-            {saving ? 'Adding...' : extras.some((_, i) => extraChecked[i])
+            {saving ? 'Adding…' : extras.some((_, i) => extraChecked[i])
               ? `Add ${1 + extraChecked.filter(Boolean).length} entries to the Atlas`
               : 'Add to the Atlas'}
           </button>

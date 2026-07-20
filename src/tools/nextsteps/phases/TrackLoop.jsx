@@ -24,7 +24,7 @@ const STATUS_COLOURS = {
 
 const DOMAIN_LABELS = {
   human: 'Human Being', society: 'Society', nature: 'Nature',
-  tech: 'Technology', finance: 'Finance & Economy', legacy: 'Legacy',
+  tech: 'Technology', finance: 'Economy', legacy: 'Legacy',
   vision: 'Vision',
   path: 'Path', spark: 'Spark', body: 'Body',
   finances: 'Finances', connection: 'Connection',

@@ -29,7 +29,7 @@ const DOMAIN_LABELS = {
   'society':         'Society',
   'nature':          'Nature',
   'technology':      'Technology',
-  'finance-economy': 'Finance & Economy',
+  'finance-economy': 'Economy',
   'legacy':          'Legacy',
   'vision':          'Vision',
 }
@@ -73,7 +73,9 @@ CRITICAL: Respond with JSON only, no markdown:
 {
   "toward_statement": "the one sentence",
   "reasoning": "one short sentence explaining what destination you drew out of their work — shown to the owner to help them understand the reframe"
-}`
+}
+
+Write in plain language a smart 10-year-old could follow. Short sentences. Concrete words. No jargon, no abstraction-stacking.`
 
   try {
     const response = await anthropic.messages.create({

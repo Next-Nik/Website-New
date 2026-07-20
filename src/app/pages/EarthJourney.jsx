@@ -31,7 +31,7 @@ function fmtDate(iso) {
   if (!iso) return null
   const [y, m, d] = String(iso).split('-').map(Number)
   if (!y) return null
-  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  return new Date(y, m - 1, d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 function daysUntil(iso) {
   if (!iso) return null
@@ -131,14 +131,14 @@ export default function EarthJourney() {
     if (!derived.rr.length) return { k: 'Your next step', v: 'Take on a challenge', act: () => navigate('/challenges/browse?domain=nature'), b: 'See the challenges' }
     const open = derived.rr.find(p => p.status === 'active' && (p.done_today || []).length === 0)
     if (open) return { k: 'Your next step', v: `Check in · ${open.title}`, act: () => navigate('/'), b: 'Open today' }
-    return { k: 'All kept today', v: 'See what we are building', act: () => navigate('/earth'), b: 'The fire →' }
+    return { k: 'All kept today', v: 'See what we are building', act: () => navigate('/earth'), b: 'See the shared fire →' }
   }, [user, derived, navigate])
 
   const CH_META = [
     { n: 'Chapter one', h: 'Take it on', b: 'One real challenge from an organisation working for the living world. Yours the day you accept it.' },
     { n: 'Chapter two', h: 'First spark', b: 'Show up once. One action, one check-in, one spark in the beacon.' },
     { n: 'Chapter three', h: 'Keep the flame', b: 'Showing up, repeated. Not perfection, presence. The days accumulate here.' },
-    { n: 'Chapter four', h: 'Light your own', b: 'The turn from taking on to inviting. Post a challenge under the Earth Challenge and others take it on.' },
+    { n: 'Chapter four', h: 'Light your own', b: "You've taken it on. Now invite someone. Post a challenge under the Earth Challenge and others take it on." },
     { n: 'Chapter five', h: 'The close', b: '' },
   ]
 
@@ -156,8 +156,13 @@ export default function EarthJourney() {
         </div>
         <h1 style={{ ...serif, fontWeight: 300, fontSize: '32px', margin: '6px 0 4px', lineHeight: 1.1 }}>Your journey</h1>
         <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(251,248,240,0.6)' }}>
-          {tally ? <>{Number(tally.sparks || 0).toLocaleString()} sparks · {Number(tally.people || 0).toLocaleString()} people{closes ? ` · to ${fmtDate(closes)}` : ''}</> : 'The beacon is lit.'}
+          {tally ? <>{Number(tally.sparks || 0).toLocaleString()} sparks · {Number(tally.people || 0).toLocaleString()} people{closes ? ` · to ${fmtDate(closes)}` : ''}</> : 'The beacon is lit · the challenge is open.'}
         </div>
+        {tally && (
+          <div style={{ ...body, fontSize: '13px', color: 'rgba(251,248,240,0.55)', marginTop: '6px' }}>
+            1 spark = one real action, checked in
+          </div>
+        )}
       </div>
 
       <div style={{ maxWidth: '640px', margin: '0 auto', padding: '0 18px 80px' }}>
@@ -179,7 +184,7 @@ export default function EarthJourney() {
         </div>
 
         {loading ? (
-          <p style={{ ...body, fontSize: '15px', color: GHOST }}>Lighting the thread…</p>
+          <p style={{ ...body, fontSize: '15px', color: GHOST }}>Loading your journey…</p>
         ) : (
         <div style={{ position: 'relative', paddingLeft: '34px' }}>
           <div aria-hidden="true" style={{ position: 'absolute', left: '11px', top: '8px', bottom: '8px', width: '2px',
@@ -202,13 +207,16 @@ export default function EarthJourney() {
                 {i === 4 ? (
                   <div style={{ background: NIGHT, color: CREAM, borderRadius: '14px', padding: '18px 20px', marginTop: '8px' }}>
                     <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: GOLD_T }}>
-                      Everyone plays to the one shared close
+                      Every challenge ends on the same day
                     </div>
                     <div style={{ ...serif, fontWeight: 300, fontSize: '26px', marginTop: '3px' }}>
-                      {closes ? `${fmtDate(closes)}${days != null ? ` · ${days} days` : ''}` : 'The shared close'}
+                      {closes ? `Closes ${fmtDate(closes)}${days != null ? ` · ${days} days` : ''}` : 'Closes 28 September'}
                     </div>
                     <div style={{ ...body, fontSize: '14.5px', color: 'rgba(251,248,240,0.72)', lineHeight: 1.55, marginTop: '6px' }}>
                       Just past Climate Week, the constellation closes and we get to see what we were able to get done together. This chapter is the same for all of us.
+                    </div>
+                    <div style={{ ...body, fontSize: '13px', color: 'rgba(251,248,240,0.55)', marginTop: '6px' }}>
+                      a constellation · people and organisations acting on one shared goal
                     </div>
                     <Link to="/earth" style={{ display: 'inline-block', marginTop: '10px', ...sc, fontSize: '13px',
                       letterSpacing: '0.12em', textTransform: 'uppercase', color: GOLD_T, textDecoration: 'none',
@@ -238,7 +246,7 @@ export default function EarthJourney() {
                 )}
                 {i === 3 && (derived.authoredField.length > 0 ? (
                   <Vault t="You lit" big={derived.authoredField[0].title}
-                    sm={`${derived.authoredField[0].people} ${derived.authoredField[0].people === 1 ? 'person' : 'people'} took it on · ${derived.authoredField[0].checkins} sparks in its branch`} />
+                    sm={`${derived.authoredField[0].people} ${derived.authoredField[0].people === 1 ? 'person' : 'people'} took it on · ${derived.authoredField[0].checkins} sparks from the people you invited`} />
                 ) : (
                   <div style={{ marginTop: '12px', background: 'rgba(242,196,90,0.07)', border: `1px dashed ${FAINT}`,
                     borderRadius: '14px', padding: '16px 18px' }}>
@@ -248,7 +256,7 @@ export default function EarthJourney() {
                     <div style={{ ...body, fontSize: '14.5px', color: GHOST, lineHeight: 1.55, marginBottom: '12px' }}>
                       {derived.daysShown >= 3
                         ? 'You know what showing up feels like now. Post a challenge of your own under the Earth Challenge and invite others to it.'
-                        : 'When you are ready, post a challenge of your own under the Earth Challenge. Your framing, your invitation.'}
+                        : 'When you are ready, post a challenge of your own under the Earth Challenge. Say it in your own words.'}
                     </div>
                     <Link to="/challenges/new?carry=founding-nature"
                       style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase',

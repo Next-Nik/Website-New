@@ -396,7 +396,7 @@ function fmtCloseDate(iso) {
   if (!iso) return null
   const [y, m, d] = String(iso).split('-').map(Number)
   if (!y || !m || !d) return null
-  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  return new Date(y, m - 1, d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
@@ -458,7 +458,7 @@ function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
           <div>
             <div style={{ padding: '14px 16px', background: 'rgba(217,178,74,0.05)', border: hair, borderRadius: '10px', marginBottom: '16px' }}>
               <div style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.65, marginBottom: '8px' }}>
-                <strong style={{ ...sc, fontWeight: 400 }}>The move:</strong> {call.the_move}
+                <strong style={{ ...sc, fontWeight: 400 }}>What you'll do:</strong> {call.the_move}
               </div>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost }}>
                 {cadenceLabel}
@@ -474,8 +474,11 @@ function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
               </p>
             ) : (
               <>
-                <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '14px' }}>
-                  It starts the day you take it on and runs on its own clock. Choose your clock.
+                <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '8px' }}>
+                  It starts the day you take it on and runs on its own clock. Choose your rhythm.
+                </p>
+                <p style={{ ...body, fontSize: '14px', color: at.ghost, lineHeight: 1.6, marginBottom: '14px' }}>
+                  Calendar quarter: ends with the quarter, everyone together · Rolling 90 days: starts the day you join
                 </p>
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                   {[{ v: 'rolling', l: `Rolling ${call.duration_days || 90} days` }, { v: 'calendar', l: 'Calendar quarter' }].map(o => (
@@ -574,7 +577,7 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
         {done ? (
           <div>
             <p style={{ ...body, fontSize: '1.125rem', ...muted, lineHeight: 1.7, marginBottom: '20px' }}>
-              You&rsquo;re in. When it&rsquo;s done, come back and mark it built.
+              You&rsquo;re in. When you&rsquo;ve finished, come back and mark it done.
             </p>
             {call.ask_details && (
               <div style={{ padding: '14px 16px', background: 'rgba(217,178,74,0.05)', border: hair, borderRadius: '10px', marginBottom: '18px' }}>
@@ -595,7 +598,7 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
               )}
               {call.ask_deadline && (
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, marginTop: '4px' }}>
-                  Needed by {new Date(call.ask_deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  Needed by {new Date(call.ask_deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
               )}
             </div>
@@ -619,7 +622,7 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
 
 function AskBody({ call }) {
   const deadline = call.ask_deadline
-    ? new Date(call.ask_deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    ? new Date(call.ask_deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
     : null
   const spotsTotal = call.ask_quantity || null
   const spotsLeft  = spotsTotal ? Math.max(0, spotsTotal - ((call.active_count || 0) + (call.completed_count || 0))) : null
@@ -746,7 +749,7 @@ function AuthorFeedbackSection({ callId, userId }) {
                           <span>{r.display_name}</span>
                         )}
                         {r.completed_at && (
-                          <span>{new Date(r.completed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                          <span>{new Date(r.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                         )}
                       </div>
                     </div>
@@ -991,7 +994,7 @@ export function ChallengePage() {
             </Eyebrow>
             {call.visibility === 'link_only' && (
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, border: '1px solid rgba(234,241,237,0.18)', borderRadius: '12px', padding: '2px 10px' }}>
-                Link only
+                Unlisted · only people with the link
               </span>
             )}
             {call.lifecycle_state === 'closed' && (
@@ -1000,6 +1003,12 @@ export function ChallengePage() {
               </span>
             )}
           </div>
+          {/* Gloss on first use of "Ask" as a noun */}
+          {isAsk && (
+            <div style={{ ...body, fontSize: '14px', color: at.ghost, lineHeight: 1.5, marginBottom: '8px' }}>
+              an ask · something this organisation needs help with
+            </div>
+          )}
           <h1 style={{ ...serif, fontSize: 'clamp(2.1rem,5.5vw,3.6rem)', fontWeight: 300, color: at.text, lineHeight: 1.06, margin: '0 0 12px' }}>
             {call.title}
           </h1>
@@ -1024,19 +1033,20 @@ export function ChallengePage() {
         {(call.taken_on_count > 0 || call.active_count > 0) && (
           <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: at.brass, marginBottom: '8px' }}>
             {isAsk
-              ? `${(call.active_count || 0) + (call.completed_count || 0)} ${((call.active_count || 0) + (call.completed_count || 0)) === 1 ? 'person has' : 'people have'} offered to help${(call.completed_count || 0) > 0 ? ` · ${call.completed_count} built` : ''}`
+              ? `${(call.active_count || 0) + (call.completed_count || 0)} ${((call.active_count || 0) + (call.completed_count || 0)) === 1 ? 'person has' : 'people have'} offered to help${(call.completed_count || 0) > 0 ? ` · ${call.completed_count} done` : ''}`
               : `${call.taken_on_count.toLocaleString()} ${call.taken_on_count === 1 ? 'person has' : 'people have'} taken this on${call.active_count > 0 ? ` · ${call.active_count} active` : ''}`
             }
           </div>
         )}
 
-        {/* Cosigner count */}
+        {/* Cosigner count — hidden until co-signing exists on this page; an orphaned count is a trust leak.
         {cosignerCount > 0 && (
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, marginBottom: '20px' }}>
             Co-signed by {cosignerCount} constellation {cosignerCount === 1 ? 'member' : 'members'}
           </div>
         )}
-        {cosignerCount === 0 && (call.taken_on_count > 0 || call.active_count > 0) && (
+        */}
+        {(call.taken_on_count > 0 || call.active_count > 0) && (
           <div style={{ marginBottom: '20px' }} />
         )}
 
@@ -1066,7 +1076,7 @@ export function ChallengePage() {
             {isAsk ? (
               myStatus === 'complete' ? (
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#2A8C4F' }}>
-                  ✓ You built it. Thank you.
+                  ✓ Done. Thank you.
                 </span>
               ) : (
                 <>
@@ -1074,7 +1084,7 @@ export function ChallengePage() {
                     ✓ Accepted
                   </span>
                   <Btn onClick={completeAsk} disabled={busyComplete} style={{ marginBottom: 0 }}>
-                    {busyComplete ? 'Marking…' : 'Mark it built →'}
+                    {busyComplete ? 'Marking…' : 'Mark it done →'}
                   </Btn>
                 </>
               )
@@ -1141,7 +1151,7 @@ export function ChallengePage() {
               </div>
             ) : (
               <div style={{ padding: '26px 28px', background: 'rgba(217,178,74,0.05)', border: `1.5px solid ${GOLD_C}`, borderRadius: '16px', marginBottom: '20px', boxShadow: '0 10px 40px -28px rgba(217,178,74,0.40)' }}>
-                <Eyebrow>The move</Eyebrow>
+                <Eyebrow>What you'll do</Eyebrow>
                 <p style={{ ...body, fontSize: '1.1875rem', color: at.text, lineHeight: 1.6, margin: 0 }}>
                   {call.the_move}
                 </p>

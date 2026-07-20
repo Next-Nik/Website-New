@@ -67,7 +67,7 @@ export function GapSignalBadge({ domainId, focusId, focusName }) {
           Gap Signal
         </span>
         <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.45 }}>
-          firing at {focusName || 'this Focus'}. Low score, low actor density, low funding.
+          firing at {focusName || 'this Focus'}. Low score, few people working on it, low funding.
         </span>
       </button>
 

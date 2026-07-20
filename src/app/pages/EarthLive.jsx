@@ -32,7 +32,7 @@ function fmtDate(iso) {
   if (!iso) return null
   const [y, m, d] = String(iso).split('-').map(Number)
   if (!y) return null
-  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+  return new Date(y, m - 1, d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
 }
 function daysUntil(iso) {
   if (!iso) return null
@@ -58,7 +58,7 @@ const CADENCE_LINE = {
   'daily-absolute': 'Every single day',
   weekly: 'Weekly',
   monthly: 'Monthly',
-  once: 'One real act',
+  once: 'One action, done for real',
 }
 
 const K = ({ children }) => (
@@ -127,7 +127,7 @@ export default function EarthLive() {
           letterSpacing: '0.2em', textTransform: 'uppercase', color: GOLD_T,
           border: '1px solid rgba(242,196,90,0.4)', borderRadius: '20px', padding: '6px 16px' }}>
           <span className="el-pulse" style={{ width: '9px', height: '9px', borderRadius: '50%', background: AMBER }} />
-          Live
+          Live · updating
         </div>
         <style>{`
           .el-pulse { animation: elPulse 1.6s ease-in-out infinite; }
@@ -152,6 +152,11 @@ export default function EarthLive() {
                 {closes ? ` · to ${fmtDate(closes)}` : ''}
               </>}
         </div>
+        {!newlyLit && (
+          <div style={{ ...body, fontSize: '13.5px', color: CREAM_60, margin: '-14px 0 20px' }}>
+            1 spark = one real action, checked in
+          </div>
+        )}
         {!newlyLit && feed && feed.sparks_today > 0 && (
           <div style={{ ...body, fontSize: '15px', color: CREAM_80, margin: '-12px 0 20px' }}>
             <b style={{ ...serif, fontSize: '18px', color: AMBER, fontWeight: 300 }}>{feed.sparks_today}</b> sparks today, and counting
@@ -170,7 +175,7 @@ export default function EarthLive() {
               @media (prefers-reduced-motion: reduce) { .el-count { animation: none; } }
             `}</style>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: GOLD_T, marginBottom: '4px' }}>
-              The shared close
+              Closes {fmtDate(closes)}
             </div>
             {days > 0 ? (
               <>
@@ -178,7 +183,10 @@ export default function EarthLive() {
                   {days.toLocaleString()}
                 </div>
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: CREAM_60, marginTop: '6px' }}>
-                  {days === 1 ? 'day' : 'days'} to {fmtDate(closes)} · one close, held together
+                  {days === 1 ? 'day' : 'days'} left
+                </div>
+                <div style={{ ...body, fontSize: '14px', color: CREAM_80, marginTop: '8px' }}>
+                  Every challenge ends on the same day: {fmtDate(closes)}.
                 </div>
               </>
             ) : (
@@ -217,7 +225,7 @@ export default function EarthLive() {
                           <b style={{ ...serif, color: CREAM, fontSize: '17px', letterSpacing: 0, fontWeight: 300 }}>{c.people}</b> in
                           {' · '}<b style={{ ...serif, color: CREAM, fontSize: '17px', letterSpacing: 0, fontWeight: 300 }}>{c.checkins}</b> sparks
                         </>
-                      : <>{CADENCE_LINE[c.cadence] || 'Open'} · open to you</>}
+                      : <>{CADENCE_LINE[c.cadence] || 'Open'} · no one has taken this on yet · be first</>}
                   </div>
                 </Link>
               ))}
@@ -228,7 +236,7 @@ export default function EarthLive() {
         {/* ── 3 · Now: only once there is a now ── */}
         {events.length > 0 && (
           <>
-            <K>Now · as it happens</K>
+            <K>Happening now</K>
             <div style={{ border: HAIR, borderRadius: '14px', overflow: 'hidden' }}>
               {events.slice(0, 6).map((e, i) => (
                 <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'baseline',

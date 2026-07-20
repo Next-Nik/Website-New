@@ -36,7 +36,7 @@ function Node({ n, depthFromFocus, isFocus, colour }) {
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: colour, textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: colour, display: 'inline-block' }} />
             {(n.domain || '').replace(/(^|\s)\S/g, t => t.toUpperCase())}
-            {isFocus && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: tokens.gold, marginLeft: '8px' }}>YOU ARE HERE</span>}
+            {isFocus && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: tokens.gold, marginLeft: '8px', textTransform: 'none' }}>You're part of this one</span>}
           </span>
           <div style={{ ...serif, fontWeight: 300, fontSize: `${s.title}px`, color: tokens.dark, lineHeight: 1.2, margin: '4px 0 0' }}>
             {n.slug && !isFocus ? <a href={`/stretch/c/${n.slug}`} style={{ color: tokens.dark, textDecoration: 'none' }}>{n.title}</a> : n.title}

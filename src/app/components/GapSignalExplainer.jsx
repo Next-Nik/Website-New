@@ -167,7 +167,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
             What this signals
           </div>
           <p style={{ ...body, fontSize: '13px', color: at.meta, lineHeight: 1.7, margin: 0 }}>
-            This territory is structurally underserved at this Focus. The work is not just hard, it is largely unattended. New actors, fresh capital, and contributor knowledge would all move the picture. If you know an organisation working here that isn't on the map, nominate them.
+            Very few people are working on this here. The work is not just hard, it is largely unattended. New people, fresh funding, and shared knowledge would all move the picture. If you know an organisation working here that isn't on the map, nominate them.
           </p>
         </div>
 
@@ -175,7 +175,6 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.ghost }}>
             Computed from {payload.indicator_count} indicator{payload.indicator_count === 1 ? '' : 's'}
-            {payload.fresh === false ? ' \u00b7 cached' : ' \u00b7 fresh'}
           </div>
           <button
             onClick={onClose}

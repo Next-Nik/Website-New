@@ -37,7 +37,7 @@ export const PLANET_DOMAINS = [
   },
   {
     key: 'finance_economy',
-    label: 'Finance & Economy',
+    label: 'Economy',
     tip: 'Systems of exchange.',
     description: 'The management and exchange of resources.',
     horizonGoal: 'Resources flow toward what sustains and generates life — rewarding care, contribution, and long-term thinking.',

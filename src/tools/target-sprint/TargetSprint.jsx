@@ -1754,7 +1754,7 @@ const CIV_DOMAIN_OPTIONS = [
   { slug: 'society',         label: 'Society'           },
   { slug: 'nature',          label: 'Nature'            },
   { slug: 'technology',      label: 'Technology'        },
-  { slug: 'finance-economy', label: 'Finance & Economy' },
+  { slug: 'finance-economy', label: 'Economy' },
   { slug: 'legacy',          label: 'Legacy'            },
   { slug: 'vision',          label: 'Vision'            },
 ]

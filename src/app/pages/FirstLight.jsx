@@ -68,9 +68,9 @@ function Track({ d, now, onSet }){
       </div>
       <div style={{ fontSize:13, color:GHOST, marginTop:-7, marginBottom:12, minHeight:16 }}>
         {focus
-          ? <><span style={{ color:RED, fontWeight:500 }}>below the line</span> · cross to <b style={{ color:GOLD, fontWeight:500 }}>5</b> first — this is the priority</>
+          ? <><span style={{ color:RED, fontWeight:500 }}>below the line</span> · cross to <b style={{ color:GOLD, fontWeight:500 }}>5</b> first · this is the priority</>
           : reaching
-            ? <>{lab(now)} · aim <b style={{ color:GOLD, fontWeight:500 }}>{fmt(aim)}</b> — {(aim-now)>=1?'a level':'half a level'} up</>
+            ? <>{lab(now)} · aim <b style={{ color:GOLD, fontWeight:500 }}>{fmt(aim)}</b> · {(aim-now)>=1?'a level':'half a level'} up</>
             : <>{lab(now)} · already at the top</>}
       </div>
       <div ref={ref} onPointerDown={down} onPointerMove={move}
@@ -128,8 +128,8 @@ export default function FirstLight(){
         <h1 style={{ fontFamily:SERIF, fontWeight:500, fontSize:34, lineHeight:1.06, letterSpacing:'-0.01em', margin:'10px 0 8px' }}>Your first light</h1>
         <p style={{ fontSize:16, color:META, margin:'0 0 4px' }}>
           {cover
-            ? <>Two minutes to wake up the personal side. Mark where each part of life is now — the system points you at the next move on its own.</>
-            : <>Mark where each part of life is <b style={{ color:INK, fontWeight:500 }}>now</b>. The system <span style={{ color:GOLD }}>aims you</span> — above the line fast where you&rsquo;re under it, a level up where you&rsquo;re over it.</>}
+            ? <>Two minutes: mark where each part of your life is now. You&rsquo;ll see your next move marked · the part of life that needs attention first.</>
+            : <>Mark where each part of your life is <b style={{ color:INK, fontWeight:500 }}>now</b>. The line is <span style={{ color:GOLD }}>5 out of 10</span>. Below it, that part of life comes first.</>}
         </p>
 
         {/* the wheel */}
@@ -140,8 +140,8 @@ export default function FirstLight(){
           {!cover && (
             <div style={{ fontSize:15, color:META, textAlign:'center', margin:'10px 8px 4px', lineHeight:1.42, minHeight:42 }}>
               {below.length > 0
-                ? <>Your focus: {below.map((d,i)=><span key={d.key}><span style={{ color:RED, fontWeight:500 }}>{d.name}</span>{i<below.length-1?(i===below.length-2?' and ':', '):''}</span>)} — under the line, so the aim is to cross to <b style={{ color:GOLD, fontWeight:500 }}>5</b> as fast as possible, before anything above gets pushed.</>
-                : <>Everything&rsquo;s above the line. The system&rsquo;s pointing each a level up — the Map is where you set real targets.</>}
+                ? <>Your focus: {below.map((d,i)=><span key={d.key}><span style={{ color:RED, fontWeight:500 }}>{d.name}</span>{i<below.length-1?(i===below.length-2?' and ':', '):''}</span>)} · under the line, so the aim is to cross to <b style={{ color:GOLD, fontWeight:500 }}>5</b> as fast as possible.</>
+                : <>Everything&rsquo;s above the line. Each part is aimed a level up · the Map is where you set your own targets.</>}
             </div>
           )}
           {cover && (
@@ -158,7 +158,7 @@ export default function FirstLight(){
               {SELF_DOMAINS.map(d => <Track key={d.key} d={d} now={scores[d.key]} onSet={v => setOne(d.key, v)} />)}
             </div>
             <p style={{ fontSize:13, color:GHOST, textAlign:'center', marginTop:16 }}>
-              The system aims you until the Map. The Map is where you set real targets.
+              These first aims are set for you. The Map is where you set your own targets.
             </p>
             <div style={{ position:'fixed', left:0, right:0, bottom:0, padding:'14px 22px calc(16px + env(safe-area-inset-bottom))', background:'linear-gradient(to top, #FAFAF7 72%, rgba(250,250,247,0))' }}>
               <div style={{ maxWidth:480, margin:'0 auto' }}>
