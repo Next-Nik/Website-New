@@ -25,6 +25,7 @@ import { OrgDomainsTab } from '../components/OrgDomainsTab'
 import { OrgNeedsTab } from '../components/OrgNeedsTab'
 import { PrincipleStrip } from '../components/PrincipleStrip'
 import { VoiceTab } from '../components/manage/VoiceTab'
+import { ShowcaseTab } from '../components/manage/ShowcaseTab'
 import { CoordinationTab } from '../components/manage/CoordinationTab'
 import { LinksTab } from '../components/manage/LinksTab'
 import { CredentialsTab } from '../components/manage/CredentialsTab'
@@ -910,6 +911,7 @@ function MatchesTab({ actorId, toast }) {
 const TABS = [
   { key: 'profile',       label: 'Profile' },
   { key: 'voice',         label: 'Voice' },
+  { key: 'showcase',      label: 'Showcase' },
   { key: 'credentials',   label: 'Credentials' },
   { key: 'testimonials',  label: 'Testimonials' },
   { key: 'coordination',  label: 'Offers & Needs' },
@@ -1124,6 +1126,7 @@ export function OrgManagePage() {
 
         {activeTab === 'profile'       && <ProfileTab       actor={actor} onSave={reloadActor} toast={showToast} />}
         {activeTab === 'voice'         && <VoiceTab         actor={actor} onSave={reloadActor} toast={showToast} />}
+        {activeTab === 'showcase'      && <ShowcaseTab      actor={actor} onSave={reloadActor} toast={showToast} />}
         {activeTab === 'credentials'   && <CredentialsTab   actorId={actor.id} toast={showToast} />}
         {activeTab === 'testimonials'  && <TestimonialsTab  actorId={actor.id} toast={showToast} />}
         {activeTab === 'coordination'  && <CoordinationTab  actorId={actor.id} toast={showToast} />}

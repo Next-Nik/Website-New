@@ -157,16 +157,16 @@ const MEMBERSHIP_STATUS_LABEL = {
 // or when the mode doesn't change order materially. 'practice' foregrounds
 // offerings (programmes / retreats) earlier in the page.
 const MODE_PROFILE_ORDER = {
-  practice:   ['identity', 'mission', 'story', 'description', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
-  enterprise: ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'needs', 'credentials', 'testimonials', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
-  platform:   ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'credentials', 'testimonials', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
-  collective: ['identity', 'mission', 'description', 'story', 'placement', 'working_on', 'needs', 'offers', 'testimonials', 'credentials', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
-  mixed:      ['identity', 'mission', 'description', 'story', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
+  practice:   ['identity', 'mission', 'story', 'how_we_work', 'track_record', 'description', 'placement', 'offers', 'testimonials', 'credentials', 'best_practices', 'working_on', 'direction', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'main_challenges', 'calls', 'relationships', 'provenance'],
+  enterprise: ['identity', 'mission', 'description', 'story', 'how_we_work', 'track_record', 'working_on', 'direction', 'placement', 'offers', 'needs', 'credentials', 'best_practices', 'testimonials', 'events', 'listen', 'contact', 'links', 'press', 'main_challenges', 'calls', 'relationships', 'provenance'],
+  platform:   ['identity', 'mission', 'description', 'story', 'how_we_work', 'track_record', 'working_on', 'direction', 'placement', 'offers', 'credentials', 'best_practices', 'testimonials', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'main_challenges', 'calls', 'relationships', 'provenance'],
+  collective: ['identity', 'mission', 'description', 'story', 'how_we_work', 'track_record', 'placement', 'working_on', 'direction', 'needs', 'offers', 'testimonials', 'credentials', 'best_practices', 'events', 'listen', 'contact', 'links', 'press', 'main_challenges', 'calls', 'relationships', 'provenance'],
+  mixed:      ['identity', 'mission', 'description', 'story', 'how_we_work', 'track_record', 'placement', 'offers', 'testimonials', 'credentials', 'best_practices', 'working_on', 'direction', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'main_challenges', 'calls', 'relationships', 'provenance'],
   // default (NULL mode) — story sits directly after description, matching the
   // named modes. Every unclaimed seeded actor lands here, and the old order
   // buried story below placement/offers/needs — so a freshly seeded profile
   // with a good story read as nearly empty at the top of the page.
-  default:    ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'needs', 'testimonials', 'credentials', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
+  default:    ['identity', 'mission', 'description', 'story', 'how_we_work', 'track_record', 'working_on', 'direction', 'placement', 'offers', 'needs', 'testimonials', 'credentials', 'best_practices', 'events', 'listen', 'contact', 'links', 'press', 'main_challenges', 'calls', 'relationships', 'provenance'],
 }
 
 function getSectionOrder(actorMode) {
@@ -587,6 +587,47 @@ function WorkingOnNow({ actor }) {
         {actor.working_on_now}
       </p>
     </div>
+  )
+}
+
+// ── Showcase layer — five owner-authored narrative sections ──
+//
+// track_record, how_we_work, best_practices, direction, main_challenges.
+// All owner-only fields (never seeded) — they render only on claimed
+// profiles, same law as mission_statement and working_on_now.
+
+function ShowcaseSection({ eyebrow, text, children }) {
+  if (!text) return null
+  const paragraphs = text.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean)
+  return (
+    <div>
+      <Eyebrow>{eyebrow}</Eyebrow>
+      {paragraphs.map((para, i) => (
+        <p key={i} style={{ ...body, fontSize: '16px',
+          color: 'rgba(234,241,237,0.78)', lineHeight: 1.65,
+          margin: i === paragraphs.length - 1 ? 0 : '0 0 18px',
+          maxWidth: '620px' }}>
+          {para}
+        </p>
+      ))}
+      {children}
+    </div>
+  )
+}
+
+function MainChallenges({ actor, isOwner }) {
+  return (
+    <ShowcaseSection eyebrow="Main challenges" text={actor.main_challenges}>
+      {isOwner && (
+        <div style={{ marginTop: '16px' }}>
+          <Link to="/challenges/new"
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
+              color: gold, textDecoration: 'none' }}>
+            Turn one into an open challenge →
+          </Link>
+        </div>
+      )}
+    </ShowcaseSection>
   )
 }
 
@@ -1796,6 +1837,33 @@ export function OrgPublicPage() {
     ),
     working_on: () => (
       isClaimed && actor.working_on_now ? <WorkingOnNow actor={actor} /> : null
+    ),
+    how_we_work: () => (
+      isClaimed && actor.how_we_work
+        ? <ShowcaseSection
+            eyebrow={actor.actor_mode === 'practice' ? 'How I work' : 'How we work'}
+            text={actor.how_we_work} />
+        : null
+    ),
+    track_record: () => (
+      isClaimed && actor.track_record
+        ? <ShowcaseSection eyebrow="Track record" text={actor.track_record} />
+        : null
+    ),
+    best_practices: () => (
+      isClaimed && actor.best_practices
+        ? <ShowcaseSection eyebrow="Best practices" text={actor.best_practices} />
+        : null
+    ),
+    direction: () => (
+      isClaimed && actor.direction
+        ? <ShowcaseSection eyebrow="Where this is heading" text={actor.direction} />
+        : null
+    ),
+    main_challenges: () => (
+      isClaimed && actor.main_challenges
+        ? <MainChallenges actor={actor} isOwner={isOwner} />
+        : null
     ),
     placement: () => (
       allDomains.length > 0
