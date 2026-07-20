@@ -13,6 +13,7 @@ import { Nav }        from '../../components/Nav'
 import { useAuth }    from '../../hooks/useAuth'
 import { tokens, serif, body, sc, at } from '../../lib/designTokens'
 import PublicBeacon   from '../components/challenge/PublicBeacon'
+import MomentCapture  from '../components/MomentCapture'
 
 const GOLD_C = at.verdigris
 const hair   = `1px solid ${at.verdigrisEdge}`
@@ -264,6 +265,9 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
                       <> &middot; {returned.others} {returned.others === 1 ? 'other' : 'others'} did this today</>
                     )}
                   </FadeIn>
+                )}
+                {done && (
+                  <MomentCapture challengeId={p.call_id} domain={p.domain || p.domain_id || null} />
                 )}
               </div>
             )

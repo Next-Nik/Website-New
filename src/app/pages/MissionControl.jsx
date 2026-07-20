@@ -1231,6 +1231,13 @@ export default function MissionControl() {
               title="Your guide — the organisations you've met"
             />
             <Tile
+              glyph="◉"
+              label="TODAY"
+              state={null}
+              onClick={() => navigate('/today')}
+              title="Today — the work being done, in photos and lines"
+            />
+            <Tile
               glyph="＋"
               label="ADD ORG"
               state={null}
