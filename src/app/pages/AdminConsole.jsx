@@ -42,6 +42,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { useAuth } from '../../hooks/useAuth'
 import { Nav } from '../../components/Nav'
 import HorizonFloorAdmissionCheck from '../components/HorizonFloorAdmissionCheck'
+import MomentsReviewQueue from '../components/MomentsReviewQueue'
 import SeedTab from '../components/admin/SeedTab'
 import PrincipleStrip from '../components/PrincipleStrip'
 
@@ -302,7 +303,7 @@ function PrismTab() {
 
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Seed', 'Place', 'Flags', 'Chains', 'Practices', 'Prism', 'Floor', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Seed', 'Place', 'Flags', 'Moments', 'Chains', 'Practices', 'Prism', 'Floor', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
@@ -4671,6 +4672,7 @@ export function AdminConsolePage() {
         {tab === 'Seed'          && <SeedTab         toast={showToast} />}
         {tab === 'Place'         && <PlaceTab        toast={showToast} />}
         {tab === 'Flags'         && <FlagsTab        toast={showToast} />}
+        {tab === 'Moments'       && <MomentsReviewQueue toast={showToast} />}
         {tab === 'Chains'        && <ChainsTab       toast={showToast} />}
         {tab === 'Practices'     && <PracticesTab    toast={showToast} />}
         {tab === 'Prism'         && <PrismTab />}
