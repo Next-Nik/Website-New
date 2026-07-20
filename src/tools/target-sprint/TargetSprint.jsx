@@ -875,7 +875,7 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: fn.moss, textTransform: 'uppercase' }}>Month {mi + 1}</span>
                 {mDate && (
-                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: tokens.ghost }}>{new Date(mDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: tokens.ghost }}>{new Date(mDate + 'T12:00:00').toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}</span>
                 )}
                 <button type="button" onClick={() => addCalEvent(`${domain} — Month ${mi + 1} milestone`, mDate)}
                   style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: calAdded[`${domain} — Month ${mi + 1} milestone`] ? fn.moss : tokens.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
@@ -905,7 +905,7 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
                                   style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', background: 'none', border: 'none', color: tokens.ghost, cursor: 'pointer', outline: 'none', padding: 0 }} />
                               ) : (
                                 <span onClick={() => setEditingDate(`task-${mi}-${ti}`)} style={{ cursor: 'pointer' }}>
-                                  {new Date(tDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                  {new Date(tDate + 'T12:00:00').toLocaleDateString('en-GB', { month: 'short', day: 'numeric' })}
                                 </span>
                               )}
                             </span>
@@ -1327,7 +1327,7 @@ function FeedbackPrompt({ callId, userId, onDone }) {
 
 export function computeClock(type) {
   const today = new Date()
-  const fmt = d => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  const fmt = d => d.toLocaleDateString('en-GB', { month: 'long', day: 'numeric', year: 'numeric' })
   if (type === 'calendar') {
     const month = today.getMonth()
     let qEnd
@@ -2041,7 +2041,7 @@ function PhaseQuarter({ quarterType, setQuarterType, setTargetDate, setEndDateLa
   else if (month < 6) qEnd = new Date(today.getFullYear(), 5, 30)
   else if (month < 9) qEnd = new Date(today.getFullYear(), 8, 30)
   else                qEnd = new Date(today.getFullYear(), 11, 31)
-  const fmt = d => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  const fmt = d => d.toLocaleDateString('en-GB', { month: 'long', day: 'numeric', year: 'numeric' })
   const qL  = month < 3 ? 'Q1' : month < 6 ? 'Q2' : month < 9 ? 'Q3' : 'Q4'
   const calDays = Math.round((qEnd - today) / (1000 * 60 * 60 * 24))
 

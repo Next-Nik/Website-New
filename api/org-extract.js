@@ -21,6 +21,7 @@
 //
 // What the extractor deliberately does NOT return:
 //   mission_statement, working_on_now, offerings, credentials, testimonials,
+//   track_record, how_we_work, best_practices, direction, main_challenges,
 //   accepting_status, medium, actor_mode
 // These are owner-only fields — they land on the entry when the owner claims
 // it and adds depth. The extractor does not infer them.
@@ -589,6 +590,9 @@ Do not return them in your output:
 - offerings (formal products, programmes, sessions — claimed by the owner)
 - credentials (training, certifications, lineage — require verification)
 - testimonials (first-person quotes from others — never invent, never scrape)
+- track_record, how_we_work, best_practices, direction, main_challenges
+  (the Showcase layer — first-person depth the owner writes in their own
+  voice once they claim the entry; never extracted or inferred)
 - accepting_status, medium, actor_mode, membership_status
 
 If the source clearly shows any of these (a "currently accepting clients"
