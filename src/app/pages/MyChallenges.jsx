@@ -69,6 +69,20 @@ const CADENCE_LABEL = {
   'custom':         '',
 }
 
+// Quiet fade-in wrapper for the returned line after a check-in.
+function FadeIn({ children, style }) {
+  const [on, setOn] = useState(false)
+  useEffect(() => {
+    const t = requestAnimationFrame(() => setOn(true))
+    return () => cancelAnimationFrame(t)
+  }, [])
+  return (
+    <div style={{ ...style, opacity: on ? 1 : 0, transition: 'opacity 0.6s ease' }}>
+      {children}
+    </div>
+  )
+}
+
 // ─── A single challenge card ──────────────────────────────────────────────────
 
 function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
@@ -79,6 +93,7 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
     : null
   const [doneToday, setDoneToday] = useState(new Set(p.done_today || []))
   const [busy, setBusy]           = useState(null)
+  const [returned, setReturned]   = useState(null)   // { strandId, others } — real data back from the check-in
 
   const [localComplete, setLocalComplete] = useState(false)
   const [finishing,  setFinishing]  = useState(false)
@@ -114,9 +129,12 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
     const tk  = todayKey()
     return Array.from({ length: window }, (_, i) => {
       const key = addDays(p.started_on, i)
-      return { key, filled: set.has(key), isToday: key === tk, future: key > tk }
+      // Today counts as filled the moment any strand is checked in, so the
+      // dot ignites without a refetch.
+      const filled = set.has(key) || (key === tk && doneToday.size > 0)
+      return { key, filled, isToday: key === tk, future: key > tk }
     })
-  }, [p.started_on, p.done_dates, window])
+  }, [p.started_on, p.done_dates, window, doneToday])
 
   async function toggle(strandId, btnEl) {
     const next = new Set(doneToday)
@@ -129,8 +147,14 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
     // on the beacon is a real, recorded action (data-integrity law); the
     // checkbox is optimistic, the fire is not.
     try {
-      await actorCallsRaw({ action: 'log_strand', userId, call_id: p.call_id, strand_id: strandId, done: willBeDone })
+      const r = await actorCallsRaw({ action: 'log_strand', userId, call_id: p.call_id, strand_id: strandId, done: willBeDone })
       if (willBeDone && inConstellation && onSpark) onSpark(btnEl)
+      if (willBeDone) {
+        const d = await r.json().catch(() => null)
+        if (r.ok && d && typeof d.others_today === 'number') setReturned({ strandId, others: d.others_today })
+      } else {
+        setReturned(prev => (prev && prev.strandId === strandId ? null : prev))
+      }
     } catch {
       // revert on failure
       const revert = new Set(doneToday)
@@ -179,10 +203,19 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
             <span key={d.key} title={fmtDayTitle(d.key)}
               style={{
                 width: '9px', height: '9px', borderRadius: '50%', flexShrink: 0,
-                background: d.filled ? GOLD_C : 'transparent',
-                border: d.filled ? `1px solid ${GOLD_C}` : `1px solid rgba(234,241,237,0.18)`,
-                boxShadow: d.isToday ? `0 0 0 2px rgba(217,178,74,0.30)` : 'none',
-                opacity: d.future ? 0.5 : 1,
+                // Today's checked-in dot ignites at.brass (MyChallenges is not
+                // on the heritage-gold whitelist); other days keep verdigris.
+                background: d.filled ? (d.isToday ? at.brass : GOLD_C) : 'transparent',
+                border: d.filled
+                  ? `1px solid ${d.isToday ? at.brass : GOLD_C}`
+                  : `1px solid rgba(234,241,237,0.18)`,
+                boxShadow: d.isToday
+                  ? (d.filled
+                      ? `0 0 6px rgba(217,178,74,0.55), 0 0 0 2px rgba(217,178,74,0.30)`
+                      : `0 0 0 2px rgba(217,178,74,0.30)`)
+                  : 'none',
+                opacity: d.future ? 0.55 : 1,
+                transition: 'background 0.3s, box-shadow 0.3s',
               }} />
           ))}
         </div>
@@ -200,7 +233,7 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
             const cadence = CADENCE_LABEL[s.cadence] || ''
             return (
               <div key={s.id} style={{ padding: '10px 0 16px', borderBottom: hair }}>
-                <div style={{ ...body, fontSize: '1.0625rem', color: 'rgba(234,241,237,0.85)', lineHeight: 1.5, textDecoration: done ? 'line-through' : 'none', opacity: done ? 0.55 : 1, transition: 'all 0.25s' }}>
+                <div style={{ ...body, fontSize: '1.0625rem', color: done ? at.verdigris : 'rgba(234,241,237,0.85)', lineHeight: 1.5, transition: 'all 0.25s' }}>
                   {s.text}
                   {cadence && (
                     <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: at.ghost, marginLeft: '10px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none' }}>{cadence}</span>
@@ -224,6 +257,14 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
                     </button>
                   )}
                 </div>
+                {done && returned && returned.strandId === s.id && (
+                  <FadeIn style={{ ...body, fontSize: '14px', color: at.ghost, marginTop: '10px', lineHeight: 1.5 }}>
+                    Day {dayNo} of {window}
+                    {returned.others > 0 && (
+                      <> &middot; {returned.others} {returned.others === 1 ? 'other' : 'others'} did this today</>
+                    )}
+                  </FadeIn>
+                )}
               </div>
             )
           })}

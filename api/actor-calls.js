@@ -446,6 +446,11 @@ module.exports = async (req, res) => {
       .select('id').eq('call_id', call_id).eq('user_id', userId).maybeSingle()
     if (!p) return res.status(404).json({ error: 'Not a participant' })
 
+    // Returned line: two real numbers sent back with a successful check-in.
+    // Additive fields only — the existing response shape is unchanged.
+    let othersToday = 0
+    let sparksTodayAll = 0
+
     if (done) {
       const { error } = await supabase.from('actor_call_strand_log').upsert(
         { participant_id: p.id, strand_id, log_date: day, done: true },
@@ -462,12 +467,41 @@ module.exports = async (req, res) => {
           .update({ status: 'complete', completed_at: new Date().toISOString() })
           .eq('id', p.id).eq('status', 'active')
       }
+
+      // others_today: distinct OTHER people who logged this same challenge on
+      // the same day. One participant row per user per call (join reactivates
+      // the same row), so distinct participant_id == distinct user_id here.
+      try {
+        const { data: otherParts } = await supabase.from('actor_call_participants')
+          .select('id').eq('call_id', call_id).neq('id', p.id)
+        const otherIds = (otherParts || []).map(r => r.id)
+        if (otherIds.length) {
+          const { data: otherLogs } = await supabase.from('actor_call_strand_log')
+            .select('participant_id')
+            .in('participant_id', otherIds)
+            .eq('done', true).eq('log_date', day)
+          othersToday = new Set((otherLogs || []).map(l => l.participant_id)).size
+        }
+      } catch (_) { /* the line is optional — never fail the check-in for it */ }
+
+      // sparks_today: total done rows across all calls today. Same cheap
+      // head-count shape as sparksToday in api/_beaconStrip.js, minus the
+      // participant filter.
+      try {
+        const { count } = await supabase.from('actor_call_strand_log')
+          .select('id', { count: 'exact', head: true })
+          .eq('done', true).eq('log_date', day)
+        sparksTodayAll = count || 0
+      } catch (_) { /* optional */ }
     } else {
       await supabase.from('actor_call_strand_log')
         .delete()
         .eq('participant_id', p.id).eq('strand_id', strand_id).eq('log_date', day)
     }
-    return res.json({ ok: true, strand_id, log_date: day, done: !!done })
+    return res.json({
+      ok: true, strand_id, log_date: day, done: !!done,
+      others_today: othersToday, sparks_today: sparksTodayAll,
+    })
   }
 
   // ── get_participation ──────────────────────────────────────────────────────

@@ -90,6 +90,7 @@ import { MemberPublicPage } from './app/pages/MemberPublic'
 import { FocusProfile } from './app/pages/FocusProfile'
 import { FocusIndex } from './app/pages/FocusIndex'
 import { Explore } from './app/pages/Explore'
+import { FieldGuidePage } from './app/pages/FieldGuide'
 import { SearchPage } from './app/pages/Search'
 import { ClaimPage } from './app/pages/Claim'
 import { InviteAuthorPage } from './app/pages/InviteAuthor'
@@ -384,6 +385,7 @@ function AppInner() {
         <Route path="/explore/:domain"                                   element={<Explore />} />
         <Route path="/explore/:domain/:subdomain"                        element={<Explore />} />
         <Route path="/explore/:domain/:subdomain/:field"                 element={<Explore />} />
+        <Route path="/guide"                        element={<FieldGuidePage />} /> {/* slug provisional · naming session pending */}
         <Route path="/tuned-in"                     element={<WatchedFeed />} />
         <Route path="/watched"                      element={<Navigate to="/tuned-in" replace />} />
         <Route path="/curated"                      element={<CuratedFeed />} />

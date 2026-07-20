@@ -242,10 +242,15 @@ export default function EarthLive() {
                 <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'baseline',
                   padding: '12px 16px', borderBottom: i < Math.min(events.length, 6) - 1 ? 'rgba(242,196,90,0.12) 1px solid' : 'none' }}>
                   <span style={{ ...serif, fontSize: '18px', fontWeight: 400, whiteSpace: 'nowrap',
-                    color: e.kind === 'spark' ? AMBER : CREAM }}>{e.name}</span>
+                    color: e.kind === 'spark' ? AMBER : CREAM }}>
+                    {e.kind === 'sighting'
+                      ? `${e.count} ${e.count === 1 ? 'organisation' : 'organisations'}`
+                      : e.name}
+                  </span>
                   <span style={{ ...body, fontSize: '15px', color: CREAM_80 }}>
                     {e.kind === 'spark' ? `checked in on ${e.title}`
                       : e.kind === 'join' ? `took on ${e.title}`
+                      : e.kind === 'sighting' ? (e.count === 1 ? 'was written into a guide today' : 'were written into guides today')
                       : `published ${e.title}`}
                   </span>
                   <span style={{ marginLeft: 'auto', ...sc, fontSize: '13px', letterSpacing: '0.08em', color: CREAM_60, whiteSpace: 'nowrap' }}>

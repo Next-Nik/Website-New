@@ -487,10 +487,15 @@ export default function BeaconStrip({ userId }) {
                   <div className="bcn-orgs-k">Now &middot; as it happens</div>
                   {(feed.events || []).slice(0, 4).map((e, i) => (
                     <div className="bcn-ev" key={i}>
-                      <span className={`bcn-ev-who${e.kind === 'spark' ? ' hot' : ''}`}>{e.name}</span>
+                      <span className={`bcn-ev-who${e.kind === 'spark' ? ' hot' : ''}`}>
+                        {e.kind === 'sighting'
+                          ? `${e.count} ${e.count === 1 ? 'organisation' : 'organisations'}`
+                          : e.name}
+                      </span>
                       <span className="bcn-ev-what">
                         {e.kind === 'spark' ? `checked in on ${e.title}`
                           : e.kind === 'join' ? `took on ${e.title}`
+                          : e.kind === 'sighting' ? (e.count === 1 ? 'was written into a guide today' : 'were written into guides today')
                           : `published ${e.title}`}
                       </span>
                       <span className="bcn-ev-when">{ago(e.at)}</span>

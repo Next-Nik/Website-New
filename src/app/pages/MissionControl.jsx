@@ -1217,6 +1217,13 @@ export default function MissionControl() {
               title="Search the Atlas"
             />
             <Tile
+              glyph="⊞"
+              label={<>YOUR<br/>GUIDE</>}
+              state={null}
+              onClick={() => navigate('/guide')} // label + slug provisional · naming session pending
+              title="Your guide — the organisations you've met"
+            />
+            <Tile
               glyph="◈"
               label="MY ORG"
               state={null}
