@@ -1,0 +1,584 @@
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { supabase } from '../hooks/useSupabase'
+import { useAuth } from '../hooks/useAuth'
+import { TIER_MAP as FLAME_TIER, LABEL_MAP as FLAME_LABEL } from '../constants/horizonScale'
+
+// ─── Colour scale — cool ember to blazing scarf gold ─────────────────────────
+
+// ─── Horizon Scale labels — 0.5 increments ───────────────────────────────────
+// Three named anchor labels drawn from the locked Horizon Scale:
+//   0  = Complete Reset
+//   5  = The Pass/Fail Mark
+//   10 = Best in the World
+// All other values show the numeric value itself rather than a label.
+// Visual props (color / glow / scale) preserve the flame's expression
+// across the range; only the labels are restricted to the three anchor points.
+const FLAME_SCALE = {
+  0:    { color: '#4B5563', glow: 'rgba(75,85,99,0.10)',    scale: 0.42, label: 'Complete Reset' },
+  0.5:  { color: '#5C6675', glow: 'rgba(92,102,117,0.12)',  scale: 0.47, label: '' },
+  1:    { color: '#6B7280', glow: 'rgba(107,114,128,0.14)', scale: 0.52, label: '' },
+  1.5:  { color: '#7A7A72', glow: 'rgba(122,122,114,0.16)', scale: 0.57, label: '' },
+  2:    { color: '#8B7355', glow: 'rgba(139,115,85,0.20)',  scale: 0.62, label: '' },
+  2.5:  { color: '#96804A', glow: 'rgba(150,128,74,0.24)',  scale: 0.67, label: '' },
+  3:    { color: '#A0845C', glow: 'rgba(160,132,92,0.26)',  scale: 0.72, label: '' },
+  3.5:  { color: '#AA8A42', glow: 'rgba(170,138,66,0.30)',  scale: 0.77, label: '' },
+  4:    { color: '#B8923A', glow: 'rgba(184,146,58,0.33)',  scale: 0.80, label: '' },
+  4.5:  { color: '#C09A30', glow: 'rgba(192,154,48,0.36)',  scale: 0.82, label: '' },
+  5:    { color: '#26302A', glow: 'rgba(110,127,92,0.38)',  scale: 0.84, label: 'The Pass/Fail Mark' },
+  5.5:  { color: '#C4821A', glow: 'rgba(196,130,26,0.42)',  scale: 0.87, label: '' },
+  6:    { color: '#D4821A', glow: 'rgba(212,130,26,0.46)',  scale: 0.89, label: '' },
+  6.5:  { color: '#CC7818', glow: 'rgba(204,120,24,0.50)',  scale: 0.91, label: '' },
+  7:    { color: '#C8721A', glow: 'rgba(200,114,26,0.54)',  scale: 0.93, label: '' },
+  7.5:  { color: '#C26418', glow: 'rgba(194,100,24,0.58)', scale: 0.95, label: '' },
+  8:    { color: '#C05A10', glow: 'rgba(192,90,16,0.62)',   scale: 0.97, label: '' },
+  8.5:  { color: '#B85010', glow: 'rgba(184,80,16,0.66)',   scale: 0.99, label: '' },
+  9:    { color: '#26302A', glow: 'rgba(38,48,42,0.70)',  scale: 1.01, label: '' },
+  9.5:  { color: '#6E7F5C', glow: 'rgba(110,127,92,0.76)', scale: 1.04, label: '' },
+  10:   { color: '#6E7F5C', glow: 'rgba(110,127,92,0.82)', scale: 1.08, label: 'Best in the World' },
+}
+
+// Numeric display helper for non-anchor values. Renders integers without a
+// decimal, half-values as "X.5".
+function formatScaleValue(v) {
+  const n = Math.round(v * 2) / 2
+  return Number.isInteger(n) ? String(n) : n.toFixed(1)
+}
+
+function getFlameProps(v) {
+  const key = Math.round(v * 2) / 2
+  return FLAME_SCALE[Math.max(0, Math.min(10, key))] || FLAME_SCALE[5]
+}
+
+function flickerIntensity(v) {
+  if (v <= 1) return 0.04
+  if (v <= 3) return 0.12
+  if (v <= 5) return 0.22
+  if (v <= 7) return 0.38
+  if (v <= 9) return 0.55
+  return 0.75
+}
+
+// ─── Animated flame SVG ───────────────────────────────────────────────────────
+
+export function FlameGlyph({ value = 5, size = 64, ghost = false }) {
+  const { color, glow, scale } = getFlameProps(value)
+  const fi   = flickerIntensity(value)
+  const uid  = useRef(`f${Math.random().toString(36).slice(2,7)}`).current
+
+  const dur1 = (1.8  - fi * 0.7).toFixed(2)
+  const dur2 = (2.5  - fi * 1.0).toFixed(2)
+  const dur3 = (0.85 - fi * 0.3).toFixed(2)
+  const sMin = (1 - fi * 0.16).toFixed(3)
+  const sMax = (1 + fi * 0.13).toFixed(3)
+  const rAmp = (fi * 9).toFixed(1)
+
+  return (
+    <span style={{
+      display: 'inline-block', lineHeight: 0,
+      opacity: ghost ? 0.3 : 1,
+      filter: ghost
+        ? 'none'
+        : `drop-shadow(0 0 ${(8 * fi).toFixed(0)}px ${color}) drop-shadow(0 0 ${(18 * fi).toFixed(0)}px ${glow})`,
+      transition: 'filter 0.5s ease, opacity 0.4s ease',
+    }}>
+    <svg
+      width={size} height={size}
+      viewBox="0 0 64 64"
+      display="block"
+    >
+      <defs>
+        <radialGradient id={`${uid}-g`} cx="50%" cy="85%" r="65%">
+          <stop offset="0%"   stopColor={color}    stopOpacity="1" />
+          <stop offset="55%"  stopColor={color}    stopOpacity="0.75" />
+          <stop offset="100%" stopColor="#FFF4E0"  stopOpacity="0.2" />
+        </radialGradient>
+      </defs>
+
+      {/* Outer glow — slow sway */}
+      <g style={{ transformOrigin: '32px 56px' }}>
+        <animateTransform attributeName="transform" type="rotate"
+          values={`-${rAmp} 32 56; ${rAmp} 32 56; -${(rAmp*0.6).toFixed(1)} 32 56; ${(rAmp*0.8).toFixed(1)} 32 56; -${rAmp} 32 56`}
+          dur={`${dur2}s`} repeatCount="indefinite" />
+        <path
+          d="M32 58 C19 58 11 47 13 35 C15 25 22 21 24 13 C26 7 28 3 32 1 C36 3 38 7 40 13 C42 21 49 25 51 35 C53 47 45 58 32 58Z"
+          fill={`url(#${uid}-g)`}
+          opacity="0.32"
+          style={{ transform: `scale(${(scale*1.18).toFixed(2)})`, transformOrigin: '32px 56px' }}
+        />
+      </g>
+
+      {/* Main body — primary flicker */}
+      <g style={{ transformOrigin: '32px 56px' }}>
+        <animateTransform attributeName="transform" type="scale"
+          values={`1 1; ${sMax} ${sMin}; ${sMin} ${sMax}; ${(+sMax*0.97).toFixed(3)} ${(+sMin*1.02).toFixed(3)}; 1 1`}
+          dur={`${dur1}s`} repeatCount="indefinite" additive="sum" />
+        <path
+          d="M32 56 C22 56 15 47 17 37 C19 29 25 25 27 17 C29 11 30 7 32 4 C34 7 35 11 37 17 C39 25 45 29 47 37 C49 47 42 56 32 56Z"
+          fill={color}
+          style={{ transform: `scale(${scale})`, transformOrigin: '32px 56px' }}
+        />
+      </g>
+
+      {/* Inner bright core */}
+      {value > 2 && (
+        <g style={{ transformOrigin: '32px 52px' }}>
+          <animateTransform attributeName="transform" type="scale"
+            values={`1 1; ${(1+fi*0.14).toFixed(3)} ${(1-fi*0.11).toFixed(3)}; ${(1-fi*0.09).toFixed(3)} ${(1+fi*0.16).toFixed(3)}; 1 1`}
+            dur={`${dur3}s`} repeatCount="indefinite" />
+          <path
+            d="M32 54 C27 54 24 48 25 42 C26 37 29 34 30 29 C31 25 31 23 32 21 C33 23 33 25 34 29 C35 34 38 37 39 42 C40 48 37 54 32 54Z"
+            fill="#FFF4E0"
+            opacity={Math.min(0.92, fi * 1.3 + 0.08)}
+            style={{ transform: `scale(${(scale*0.72).toFixed(2)})`, transformOrigin: '32px 52px' }}
+          />
+        </g>
+      )}
+
+      {/* Flying sparks — only when really lit */}
+      {value >= 7 && (
+        <>
+          <circle cx="25" cy="16" r="2">
+            <animate attributeName="opacity" values="0;0.85;0" dur={`${(+dur3*1.4).toFixed(2)}s`} repeatCount="indefinite" begin="0.15s" />
+            <animate attributeName="cy" values="16;9;16" dur={`${(+dur3*1.4).toFixed(2)}s`} repeatCount="indefinite" begin="0.15s" />
+            <animate attributeName="fill" values={`${color};#FFF4E0;${color}`} dur={`${(+dur3*1.4).toFixed(2)}s`} repeatCount="indefinite" begin="0.15s" />
+          </circle>
+          <circle cx="39" cy="12" r="1.5">
+            <animate attributeName="opacity" values="0;0.65;0" dur={`${(+dur3*0.9).toFixed(2)}s`} repeatCount="indefinite" begin="0.55s" />
+            <animate attributeName="cy" values="12;5;12" dur={`${(+dur3*0.9).toFixed(2)}s`} repeatCount="indefinite" begin="0.55s" />
+            <animate attributeName="fill" values="#FFF4E0;#6E7F5C;#FFF4E0" dur={`${(+dur3*0.9).toFixed(2)}s`} repeatCount="indefinite" begin="0.55s" />
+          </circle>
+          {value >= 9 && (
+            <circle cx="31" cy="8" r="1.2">
+              <animate attributeName="opacity" values="0;0.9;0" dur={`${(+dur3*0.7).toFixed(2)}s`} repeatCount="indefinite" begin="0.35s" />
+              <animate attributeName="cy" values="8;1;8" dur={`${(+dur3*0.7).toFixed(2)}s`} repeatCount="indefinite" begin="0.35s" />
+              <animate attributeName="fill" values="#FFF4E0;#6E7F5C;#FFF4E0" dur={`${(+dur3*0.7).toFixed(2)}s`} repeatCount="indefinite" begin="0.35s" />
+            </circle>
+          )}
+        </>
+      )}
+    </svg>
+    </span>
+  )
+}
+
+// ─── Vertical slider ──────────────────────────────────────────────────────────
+
+function useIsMobile() {
+  const [mobile, setMobile] = useState(typeof window !== 'undefined' && window.innerWidth <= 640)
+  useEffect(() => {
+    function check() { setMobile(window.innerWidth <= 640) }
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+  return mobile
+}
+
+// Scale notches — all 21 stops in display order (top = 10, bottom = 0)
+const SCALE_NOTCHES = [
+  10, 9.5, 9, 8.5, 8, 7.5, 7, 6.5, 6, 5.5,
+  5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1, 0.5, 0
+]
+
+export function FlameSlider({ value, onChange, ghostValue = null }) {
+  const trackRef  = useRef(null)
+  const dragging  = useRef(false)
+  const lastValue = useRef(value)
+  const isMobile  = useIsMobile()
+
+  // Taller track so 21 notches have breathing room
+  // Each notch gets ~24px on desktop, ~17px on mobile
+  const TRACK_H = isMobile ? 360 : 480
+
+  function haptic(v) {
+    if (!navigator.vibrate) return
+    if (v === 0 || v === 10) navigator.vibrate([12, 40, 12])
+    else if (v === 5)        navigator.vibrate(8)
+    else                     navigator.vibrate(4)
+  }
+
+  function posToValue(clientY) {
+    const rect = trackRef.current?.getBoundingClientRect()
+    if (!rect) return value
+    const pct = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height))
+    const raw = 10 - pct * 10
+    return Math.round(raw * 2) / 2
+  }
+
+  const onDown = useCallback(e => {
+    dragging.current = true
+    const clientY = e.clientY ?? e.touches?.[0]?.clientY
+    const next = posToValue(clientY)
+    if (next !== lastValue.current) { haptic(next); lastValue.current = next }
+    onChange(next)
+    e.preventDefault()
+  }, [onChange])
+
+  useEffect(() => {
+    function move(e) {
+      if (!dragging.current) return
+      const clientY = e.clientY ?? e.touches?.[0]?.clientY
+      const next = posToValue(clientY)
+      if (next !== lastValue.current) { haptic(next); lastValue.current = next }
+      onChange(next)
+    }
+    function up() { dragging.current = false }
+    window.addEventListener('mousemove', move)
+    window.addEventListener('mouseup', up)
+    window.addEventListener('touchmove', move, { passive: false })
+    window.addEventListener('touchend', up)
+    return () => {
+      window.removeEventListener('mousemove', move)
+      window.removeEventListener('mouseup', up)
+      window.removeEventListener('touchmove', move)
+      window.removeEventListener('touchend', up)
+    }
+  }, [onChange])
+
+  useEffect(() => {
+    const el = trackRef.current
+    if (!el) return
+    function preventScroll(e) { if (dragging.current) e.preventDefault() }
+    el.addEventListener('touchmove', preventScroll, { passive: false })
+    return () => el.removeEventListener('touchmove', preventScroll)
+  }, [])
+
+  const pct = v => 100 - (v / 10) * 100
+
+  const { color } = getFlameProps(value)
+  const tier      = FLAME_TIER[value]
+  const label     = FLAME_LABEL[value]
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0' }}>
+
+      {/* ── Scale + track + flame, side by side ── */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0' }}>
+
+        {/* Left column: scale labels */}
+        <div style={{
+          display: 'flex', flexDirection: 'column',
+          justifyContent: 'space-between',
+          height: `${TRACK_H}px`,
+          paddingRight: '10px',
+          pointerEvents: 'none',
+          userSelect: 'none',
+        }}>
+          {SCALE_NOTCHES.map(n => {
+            const isActive   = n === value
+            const isWhole    = Number.isInteger(n)
+            const isAnchor   = n === 0 || n === 5 || n === 10
+            const isTheLine  = n === 5
+
+            return (
+              <div key={n} style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                justifyContent: 'flex-end',
+                height: `${TRACK_H / 20}px`,
+                opacity: isActive ? 1 : isAnchor ? 0.55 : isWhole ? 0.35 : 0.2,
+                transition: 'opacity 0.15s ease',
+              }}>
+                {/* Tier label — always shown for whole numbers, always shown when active */}
+                {(isWhole || isActive) && (
+                  <span style={{
+                    fontFamily: "'IBM Plex Mono', Georgia, serif",
+                    fontSize: isActive ? (isMobile ? '0.625rem' : '0.6875rem') : (isMobile ? '0.5rem' : '0.5625rem'),
+                    letterSpacing: '0.1em',
+                    color: isActive ? color : isTheLine ? 'rgba(110,127,92,0.7)' : 'rgba(15,21,35,0.55)',
+                    whiteSpace: 'nowrap',
+                    fontWeight: isActive ? 600 : 400,
+                    transition: 'color 0.2s ease, font-size 0.15s ease',
+                  }}>
+                    {FLAME_TIER[n]}
+                  </span>
+                )}
+                {/* Tick mark */}
+                <div style={{
+                  width: isActive ? '14px' : isAnchor ? '10px' : isWhole ? '7px' : '4px',
+                  height: isTheLine ? '2px' : '1px',
+                  background: isActive
+                    ? color
+                    : isTheLine
+                      ? 'rgba(110,127,92,0.5)'
+                      : 'rgba(15,21,35,0.25)',
+                  borderRadius: '1px',
+                  transition: 'width 0.15s ease, background 0.2s ease',
+                  flexShrink: 0,
+                }} />
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Centre: track + flame */}
+        <div
+          ref={trackRef}
+          onMouseDown={onDown}
+          onTouchStart={onDown}
+          style={{
+            position: 'relative', width: '56px', height: `${TRACK_H}px`,
+            cursor: 'pointer',
+            padding: '0 20px',
+            margin: '0 -20px',
+            touchAction: 'none',
+            flexShrink: 0,
+          }}
+        >
+          {/* Track fill */}
+          <div style={{
+            position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+            top: 0, bottom: 0, width: '10px', borderRadius: '5px',
+            background: 'rgba(110,127,92,0.08)', overflow: 'hidden',
+          }}>
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0,
+              height: `${(value / 10) * 100}%`,
+              background: 'linear-gradient(to top, #4B5563 0%, #8B7355 22%, #B8923A 42%, #6E7F5C 58%, #C8721A 73%, #26302A 87%, #6E7F5C 100%)',
+              borderRadius: '5px',
+              transition: 'height 0.1s ease',
+            }} />
+          </div>
+
+          {/* Ghost flame */}
+          {ghostValue !== null && (
+            <div style={{
+              position: 'absolute', left: '50%',
+              top: `${pct(ghostValue)}%`,
+              transform: 'translate(-50%, -50%)',
+              pointerEvents: 'none',
+            }}>
+              <FlameGlyph value={ghostValue} size={36} ghost />
+            </div>
+          )}
+
+          {/* Live flame */}
+          <div style={{
+            position: 'absolute', left: '50%',
+            top: `${pct(value)}%`,
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none',
+            transition: dragging.current ? 'none' : 'top 0.1s ease',
+          }}>
+            <FlameGlyph value={value} size={isMobile ? 56 : 72} />
+          </div>
+        </div>
+
+        {/* Right column: descriptive label for active value */}
+        <div style={{
+          display: 'flex', flexDirection: 'column',
+          justifyContent: 'space-between',
+          height: `${TRACK_H}px`,
+          paddingLeft: '12px',
+          pointerEvents: 'none',
+          userSelect: 'none',
+        }}>
+          {SCALE_NOTCHES.map(n => {
+            const isActive = n === value
+            return (
+              <div key={n} style={{
+                height: `${TRACK_H / 20}px`,
+                display: 'flex', alignItems: 'center',
+                opacity: isActive ? 1 : 0,
+                transition: 'opacity 0.15s ease',
+              }}>
+                {isActive && (
+                  <span style={{
+                    fontFamily: "'Newsreader', Georgia, serif",
+                    fontSize: isMobile ? '0.6875rem' : '0.8125rem',
+                    color: 'rgba(15,21,35,0.6)',
+                    whiteSpace: 'nowrap',
+                    maxWidth: isMobile ? '110px' : '160px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
+                    {label}
+                  </span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Score + tier display below — large, clear, always visible */}
+      <div style={{
+        marginTop: '20px',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
+      }}>
+        <span style={{
+          fontFamily: "'IBM Plex Mono', Georgia, serif",
+          fontSize: isMobile ? '2rem' : '2.5rem',
+          fontWeight: 600,
+          color,
+          lineHeight: 1,
+          transition: 'color 0.3s ease',
+        }}>
+          {formatScaleValue(value)}
+        </span>
+        <span style={{
+          fontFamily: "'IBM Plex Mono', Georgia, serif",
+          fontSize: isMobile ? '0.6875rem' : '0.8125rem',
+          letterSpacing: '0.14em',
+          color,
+          opacity: 0.8,
+          transition: 'color 0.3s ease',
+        }}>
+          {tier}
+        </span>
+        <span style={{
+          fontFamily: "'Newsreader', Georgia, serif",
+          fontSize: isMobile ? '0.875rem' : '1rem',
+          color: 'rgba(15,21,35,0.55)',
+          textAlign: 'center',
+          maxWidth: isMobile ? '200px' : '260px',
+          lineHeight: 1.5,
+          transition: 'opacity 0.2s ease',
+        }}>
+          {label}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+// ─── FlamePicker — single-stage, one confirm ─────────────────────────────────
+// Used by BaselineCard for both before and after check-ins.
+// One slider, one note, one button. No internal two-stage flow.
+
+export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostValue = null, onComplete, onSkip, locked = false }) {
+  const [value,   setValue]   = useState(ghostValue ?? 5)
+  const [note,    setNote]    = useState('')
+  const [saving,  setSaving]  = useState(false)
+  const { user } = useAuth()
+
+  const phaseLabel = audioPhase === 'baseline' ? 'Foundation' : audioPhase.charAt(0).toUpperCase() + audioPhase.slice(1)
+
+  const isBefore = stage === 'before'
+
+  async function confirm() {
+    if (locked) return
+    setSaving(true)
+    try {
+      if (user?.id && supabase) {
+        const now     = new Date()
+        const today   = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`
+        const weekId  = (() => {
+          const d = new Date(now); d.setHours(0,0,0,0)
+          const day = d.getDay()
+          const mon = new Date(d); mon.setDate(d.getDate() - ((day + 6) % 7))
+          return `${mon.getFullYear()}-${String(mon.getMonth()+1).padStart(2,'0')}-${String(mon.getDate()).padStart(2,'0')}`
+        })()
+        const monthId   = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`
+        const quarterId = `${now.getFullYear()}-Q${Math.floor(now.getMonth()/3)+1}`
+        const yearId    = String(now.getFullYear())
+        const periodId  = `${today}-horizon-state-${audioPhase}-${stage}`
+
+        await supabase.from('pulse_entries').upsert({
+          user_id:      user.id,
+          type:         'horizon_state_checkin',
+          period_id:    periodId,
+          source:       'foundation',
+          audio_phase:  audioPhase,
+          checkin_stage: stage,
+          week_id:      weekId,
+          month_id:     monthId,
+          quarter_id:   quarterId,
+          year_id:      yearId,
+          value,
+          note:         note || null,
+          completed_at: now.toISOString(),
+          updated_at:   now.toISOString(),
+        }, { onConflict: 'user_id,type,period_id' })
+      }
+    } catch (e) {
+      console.warn('[FlamePicker] Save error:', e)
+    }
+    setSaving(false)
+    onComplete?.({ value, note, timestamp: new Date().toISOString() })
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0' }}>
+      <span style={{
+        fontFamily: "'IBM Plex Mono',Georgia,serif",
+        fontSize: '0.5625rem', letterSpacing: '0.2em',
+        color: '#26302A', textTransform: 'uppercase',
+        marginBottom: '6px',
+      }}>
+        {isBefore ? `Before · ${phaseLabel}` : `After · ${phaseLabel}`}
+      </span>
+
+      <p style={{
+        fontFamily: "'Newsreader', Georgia, serif",
+        fontSize: '1.25rem',
+        color: 'rgba(15,21,35,0.6)', lineHeight: 1.7,
+        textAlign: 'center', marginBottom: '24px',
+      }}>
+        {isBefore ? 'Where is the flame right now?' : 'And now—?'}
+      </p>
+
+      <div style={{ marginBottom: '24px', pointerEvents: locked ? 'none' : 'auto' }}>
+        <FlameSlider
+          value={value}
+          onChange={locked ? () => {} : setValue}
+          ghostValue={ghostValue}
+        />
+      </div>
+
+      <textarea
+        value={note}
+        onChange={e => setNote(e.target.value)}
+        placeholder={isBefore ? 'what walked in with you today…' : `what you're leaving with…`}
+        rows={2}
+        disabled={locked}
+        style={{
+          width: '100%', padding: '10px 14px',
+          fontFamily: "'Newsreader', Georgia, serif",
+          fontSize: '1.125rem',
+          color: 'rgba(15,21,35,0.75)',
+          background: 'rgba(110,127,92,0.025)',
+          border: '1px solid rgba(110,127,92,0.2)',
+          borderRadius: '8px', outline: 'none',
+          resize: 'none', lineHeight: 1.65,
+          marginBottom: '16px', transition: 'border-color 0.2s',
+        }}
+        onFocus={e => { e.target.style.borderColor = 'rgba(110,127,92,0.5)' }}
+        onBlur={e => { e.target.style.borderColor = 'rgba(110,127,92,0.2)' }}
+      />
+
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', width: '100%' }}>
+        <button
+          onClick={confirm}
+          disabled={saving || locked}
+          style={{
+            flex: 1, padding: '13px',
+            fontFamily: "'IBM Plex Mono',Georgia,serif",
+            fontSize: '1.3125rem', letterSpacing: '0.14em',
+            color: locked ? 'rgba(110,127,92,0.35)' : 'rgba(110,127,92,0.9)',
+            background: 'rgba(110,127,92,0.05)',
+            border: '1.5px solid rgba(110,127,92,0.78)',
+            borderRadius: '40px',
+            cursor: (saving || locked) ? 'default' : 'pointer',
+            transition: 'all 0.2s',
+            opacity: locked ? 0.5 : saving ? 0.6 : 1,
+          }}
+        >
+          {saving ? 'Saving…' : isBefore ? 'Begin →' : 'Save ✓'}
+        </button>
+        {onSkip && !locked && (
+          <button onClick={onSkip} style={{
+            fontFamily: "'Newsreader', Georgia, serif",
+            fontSize: '1.3125rem',
+            color: 'rgba(15,21,35,0.55)',
+            background: 'none', border: 'none',
+            cursor: 'pointer', padding: '10px',
+          }}>
+            skip
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── FlameCheckIn — legacy export, kept for compatibility ─────────────────────
+export { FlamePicker as FlameCheckIn }
