@@ -212,7 +212,7 @@ function RootRoute() {
     seen = window.localStorage.getItem('nextus.welcomeSeen') === '1'
   } catch {}
 
-  if (!welcomePath || seen) return <MissionControl />
+  if (!welcomePath || seen) return <MissionControlNext />  // reshaped loop home (test push · was <MissionControl />)
 
   const path = ['org', 'practitioner', 'self'].includes(welcomePath)
     ? welcomePath
