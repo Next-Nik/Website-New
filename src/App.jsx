@@ -53,7 +53,6 @@ import { WatchPage }              from './pages/Watch'
 // The live NextUs application. Mission Control, Welcome flows,
 // profiles, organisations, the Atlas (map / domain / actors / practices).
 import MissionControl         from './app/pages/MissionControl'
-import MissionControlNext     from './app/pages/MissionControlNext'  // reshape preview · additive · /next
 import WelcomeStart           from './app/pages/WelcomeStart'
 import FirstLight             from './app/pages/FirstLight'
 import { hasMapEngagement } from './app/util/onboarding'
@@ -212,7 +211,7 @@ function RootRoute() {
     seen = window.localStorage.getItem('nextus.welcomeSeen') === '1'
   } catch {}
 
-  if (!welcomePath || seen) return <MissionControlNext />  // reshaped loop home (test push · was <MissionControl />)
+  if (!welcomePath || seen) return <MissionControl />
 
   const path = ['org', 'practitioner', 'self'].includes(welcomePath)
     ? welcomePath
@@ -362,7 +361,6 @@ function AppInner() {
         <Route path="/profile/edit"                 element={<ProfileEdit />} />
         <Route path="/profile/:id"                  element={<MemberPublicPage />} />
         <Route path="/feed"                         element={<FeedPage />} />
-        <Route path="/next"                         element={<MissionControlNext />} />  {/* reshape preview · additive, non-destructive */}
         <Route path="/contribution"                 element={<ContributionPage />} />
         <Route path="/contribution/legacy"          element={<Contribution />} />
         <Route path="/stretch/c/:slug"              element={<ChallengePage />} />
