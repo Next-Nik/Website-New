@@ -43,9 +43,9 @@ import IdentityStrip      from '../components/mission-control/IdentityStrip'
 import BeaconStrip       from '../components/mission-control/BeaconStrip'
 import PoleHeader         from '../components/mission-control/PoleHeader'
 import FirstLightPrompt   from '../components/FirstLightPrompt'
-import HorizonBanner       from '../components/mission-control/HorizonBanner'
 import WorldMapSubstrate  from '../components/mission-control/WorldMapSubstrate'
 import WheelStage         from '../components/mission-control/WheelStage'
+import SideRail           from '../components/mission-control/SideRail'
 import Tile               from '../components/mission-control/Tile'
 import Panel              from '../components/mission-control/Panel'
 import CivDomainPanel             from '../components/mission-control/CivDomainPanel'
@@ -76,7 +76,7 @@ import InterestsIcon       from '../components/mission-control/InterestsIcon'
 import MyInterestsPanel    from '../components/mission-control/MyInterestsPanel'
 
 import useMissionControlData from '../components/mission-control/useMissionControlData'
-import { BG_PARCHMENT, BG_INK, GOLD, TEXT_META, TEXT_WHITE_META } from '../components/mission-control/tokens'
+import { BG_PARCHMENT, BG_INK } from '../components/mission-control/tokens'
 
 import { fetchDomains, STATIC_DOMAINS, TOP_LEVEL_GOAL } from '../../components/domain-explorer/data'
 import { CURRENT_STATE } from '../../components/domain-explorer/currentState'
@@ -1065,19 +1065,53 @@ export default function MissionControl() {
 
       <main className="mc-body">
 
-        {/* HORIZON · where you're headed */}
-        <div className="mc-beat">Horizon · where you're headed</div>
-        {/* The declared horizon's home — top of Mission Control (BP-8).
-            Shows the line verbatim once declared, else the declare affordance. */}
-        <HorizonBanner userId={data.user?.id} />
-
         <FirstLightPrompt style={{ margin: '0 auto 18px', maxWidth: 720 }} />
 
         {(activeScope === 'self' || activeScope === 'planet') && (
         <>
-        {/* NOW · where you are — the wheel, and the domain navigator */}
-        <div className="mc-beat">Now · where you are</div>
-        <div className="mc-centre-col">
+        <div className="mc-grid">
+
+          {/* LEFT RAIL — My Life */}
+          <SideRail side="left">
+            <Tile
+              glyph={<MapPinGlyph />}
+              label="NextU"
+              state={nextUState}
+              onClick={() => navigate('/nextu')}
+              title="NextU — your personal journey"
+            />
+            <Tile
+              glyph={<HorizonStateGauge />}
+              label="Daily"
+              state={hsState}
+              onClick={openDaily}
+              title="Daily — arrive, work, embark"
+            />
+            <Tile
+              glyph="✦"
+              label={<>GET TO<br/>DO</>}
+              state={toDoCount > 0 ? `${toDoCount} TO DO` : null}
+              onClick={() => openPersonalPanel('get-to-do')}
+              title="Get To Do — your stretch items and calendar"
+            />
+            <Tile
+              glyph="≡"
+              label="Journal"
+              state={null}
+              onClick={() => navigate('/journal')}
+              title="Journal — your record of becoming"
+            />
+            <Tile
+              glyph={<MessagesIcon />}
+              label="Mail"
+              state={null}
+              onClick={() => setActivePanel('messages')}
+              title="Mail — your inboxes"
+            />
+          </SideRail>
+
+          {/* CENTRE — wheel */}
+          <div className="mc-centre-col">
             {/* Civ breadcrumb — appears only on planet side. Sits above
                 the wheel; current segment in gold, prior segments are
                 tappable to jump back up the tree. Lifted from the
@@ -1151,7 +1185,58 @@ export default function MissionControl() {
             />
           </div>
 
-        {/* where you are, per domain */}
+          {/* RIGHT RAIL — Our Planet */}
+          <SideRail side="right">
+            <Tile
+              glyph="◎"
+              label={<>MY<br/>FOCUS</>}
+              state={null}
+              active={!!hasActiveFocus}
+              onClick={() => setActivePanel('focus')}
+              title="My Focus — places, domains, organisations you're centring on"
+            />
+            <Tile
+              glyph="◯"
+              label={<>WORLD<br/>VIEW</>}
+              state={worldViewState}
+              onClick={() => openCivPanel('world-view')}
+              title="World View — explore the planetary state"
+            />
+            <Tile
+              glyph="⇶"
+              label={<>PLANET<br/>SPRINT</>}
+              state={planetSprintState}
+              onClick={() => openCivPanel('missions')}
+              title="Planet Sprint — quests offered by orgs"
+            />
+            <Tile
+              glyph={<SearchGlyph />}
+              label="SEARCH"
+              state={null}
+              onClick={() => navigate('/search')}
+              title="Search the Atlas"
+            />
+            <Tile
+              glyph="◈"
+              label="MY ORG"
+              state={null}
+              onClick={() => setOrgOpen(true)}
+              title="My Org — the org tree you steward"
+            />
+            <Tile
+              glyph="＋"
+              label="ADD ORG"
+              state={null}
+              onClick={() => navigate('/add')}
+              title="Add to the ecosystem"
+            />
+          </SideRail>
+
+        </div>
+
+        {/* SCROLL-BELOW — civ side gets the slim civ-domain panel.
+            Self side now gets its parchment-mode counterpart, fed
+            with the user's actual Map data per domain. */}
         {!isCiv && !actingAsActorNow && (
           <SelfDomainPanel
             currentList={SELF_DOMAINS}
@@ -1197,142 +1282,6 @@ export default function MissionControl() {
             busy={false}
           />
         )}
-
-        {/* YOUR NEXT STEP · one solid move, chosen by state */}
-        <div className="mc-beat">Your next step</div>
-        <div className="mc-loop-cta-wrap">
-          <button
-            type="button"
-            className="mc-next-door"
-            onClick={isCiv
-              ? () => openCivPanel('world-view')
-              : (mapComplete ? openDaily : () => openPersonalPanel('map'))}
-          >
-            {isCiv ? 'See the state of the world' : (mapComplete ? 'Step into today' : 'Find where you stand · open The Map')}
-            <span className="mc-next-arrow">→</span>
-          </button>
-        </div>
-
-        {/* YOUR TOOLS · every tool kept, grouped by scale */}
-        <div className="mc-beat">Your tools · reach anything</div>
-        <div className="mc-toolshelf">
-          <div className="mc-tool-group">
-            <div className="mc-tool-group-label">My Life</div>
-            <div className="mc-tool-grid">
-              <Tile
-              glyph={<MapPinGlyph />}
-              label="NextU"
-              state={nextUState}
-              onClick={() => navigate('/nextu')}
-              title="NextU — your personal journey"
-            />
-            <Tile
-              glyph="★"
-              label={<>NORTH<br/>STAR</>}
-              state={null}
-              onClick={() => navigate('/north-star')}
-              title="North Star — the whole-life synthesis, near The Map"
-            />
-            <Tile
-              glyph={<HorizonStateGauge />}
-              label="Daily"
-              state={hsState}
-              onClick={openDaily}
-              title="Daily — arrive, work, embark"
-            />
-            <Tile
-              glyph="✦"
-              label={<>GET TO<br/>DO</>}
-              state={toDoCount > 0 ? `${toDoCount} TO DO` : null}
-              onClick={() => openPersonalPanel('get-to-do')}
-              title="Get To Do — your stretch items and calendar"
-            />
-            <Tile
-              glyph="≡"
-              label="Journal"
-              state={null}
-              onClick={() => navigate('/journal')}
-              title="Journal — your record of becoming"
-            />
-            <Tile
-              glyph="◍"
-              label="Circles"
-              state={null}
-              onClick={() => navigate('/circles')}
-              title="Your circles — small, member-only rooms"
-            />
-            <Tile
-              glyph={<MessagesIcon />}
-              label="Mail"
-              state={null}
-              onClick={() => setActivePanel('messages')}
-              title="Mail — your inboxes"
-            />
-            </div>
-          </div>
-          <div className="mc-tool-group">
-            <div className="mc-tool-group-label">Our Planet</div>
-            <div className="mc-tool-grid">
-              <Tile
-              glyph="◈"
-              label="MY ORG"
-              state={null}
-              onClick={() => setOrgOpen(true)}
-              title="My Org — the org tree you steward"
-            />
-            <Tile
-              glyph="◎"
-              label={<>MY<br/>FOCUS</>}
-              state={null}
-              active={!!hasActiveFocus}
-              onClick={() => setActivePanel('focus')}
-              title="My Focus — places, domains, organisations you're centring on"
-            />
-            <Tile
-              glyph="◯"
-              label={<>WORLD<br/>VIEW</>}
-              state={worldViewState}
-              onClick={() => openCivPanel('world-view')}
-              title="World View — explore the planetary state"
-            />
-            <Tile
-              glyph="⇶"
-              label={<>PLANET<br/>SPRINT</>}
-              state={planetSprintState}
-              onClick={() => openCivPanel('missions')}
-              title="Planet Sprint — quests offered by orgs"
-            />
-            <Tile
-              glyph={<SearchGlyph />}
-              label="SEARCH"
-              state={null}
-              onClick={() => navigate('/search')}
-              title="Search the Atlas"
-            />
-            <Tile
-              glyph="⊞"
-              label={<>YOUR<br/>GUIDE</>}
-              state={null}
-              onClick={() => navigate('/guide')} // label + slug provisional · naming session pending
-              title="Your guide — the organisations you've met"
-            />
-            <Tile
-              glyph="◉"
-              label="TODAY"
-              state={null}
-              onClick={() => navigate('/today')}
-              title="Today — the work being done, in photos and lines"
-            />
-            <Tile
-              glyph="＋"
-              label="ADD ORG"
-              state={null}
-              onClick={() => navigate('/add')}
-              title="Add to the ecosystem"
-            />
-            </div>
-          </div>
-        </div>
         </>
         )}
 
@@ -1588,70 +1537,6 @@ const STAGE_CSS = `
   flex: 1;
   display: flex;
   flex-direction: column;
-}
-
-/* ── Loop reflow · beat framing + tool shelf (same tools, clearer flow) ── */
-.mc-beat {
-  font-family: 'IBM Plex Mono', Georgia, serif;
-  font-size: 13px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: ${GOLD};
-  opacity: 0.85;
-  text-align: center;
-  margin: 26px auto 12px;
-}
-.mc-stage-root[data-stage="dark"] .mc-beat { color: ${TEXT_WHITE_META}; opacity: 1; }
-
-.mc-loop-cta-wrap { display: flex; justify-content: center; padding: 0 24px 4px; }
-.mc-next-door {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 18px;
-  border: none;
-  border-radius: 6px;
-  padding: 16px 30px;
-  background: ${GOLD};
-  color: ${BG_PARCHMENT};
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: 0 6px 16px rgba(15,21,35,0.22);
-  transition: filter 0.2s ease;
-  max-width: 560px;
-  text-align: left;
-}
-.mc-next-door:hover { filter: brightness(1.07); }
-.mc-next-arrow { font-family: 'IBM Plex Mono', Georgia, serif; }
-
-.mc-toolshelf {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  justify-content: center;
-  padding: 4px 24px 30px;
-  max-width: 1100px;
-  margin: 0 auto;
-  width: 100%;
-}
-.mc-tool-group { flex: 1 1 340px; min-width: 260px; }
-.mc-tool-group-label {
-  font-family: 'IBM Plex Mono', Georgia, serif;
-  font-size: 13px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: ${TEXT_META};
-  margin-bottom: 10px;
-  text-align: center;
-}
-.mc-stage-root[data-stage="dark"] .mc-tool-group-label { color: ${TEXT_WHITE_META}; }
-.mc-tool-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
-  gap: 8px;
-}
-@media (min-width: 1024px) {
-  .mc-tool-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
 }
 
 .mc-grid {
