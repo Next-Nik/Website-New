@@ -16,6 +16,9 @@ import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import { serif, body, sc, at } from '../../lib/designTokens'
 import { momentImageUrl, reportMoment } from '../../lib/momentCapture'
+import { getMyHorizonDeclaration } from '../lib/horizonDeclaration'
+import ShareArtifactButton from '../components/ShareArtifactButton'
+import { platformUrl } from '../lib/shareArtifact'
 
 function startOfTodayISO() {
   const d = new Date()
@@ -29,7 +32,7 @@ function timeLabel(ts) {
   } catch (_) { return '' }
 }
 
-function MomentCard({ moment, onReported }) {
+function MomentCard({ moment, onReported, isMine, horizonLine }) {
   const [menu, setMenu] = useState(false)
   const [reported, setReported] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -49,6 +52,21 @@ function MomentCard({ moment, onReported }) {
         <img src={img} alt="A moment" style={{ width: '100%', display: 'block', aspectRatio: '1 / 1', objectFit: 'cover' }} />
       )}
       <div style={{ padding: '14px 16px' }}>
+        {/* Step-toward — only above the viewer's OWN moments, only when they
+            have declared. Turns "I did a thing today" into trajectory (BP-8).
+            The horizon is shown verbatim. */}
+        {isMine && horizonLine && (
+          <div style={{ marginBottom: '10px' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
+              textTransform: 'uppercase', color: at.verdigris }}>
+              A step toward
+            </span>
+            <p style={{ ...body, fontSize: '14px', color: at.meta, lineHeight: 1.45,
+              margin: '3px 0 0', fontStyle: 'italic' }}>
+              {horizonLine}
+            </p>
+          </div>
+        )}
         {moment.line && (
           <p style={{ ...body, fontSize: '15px', color: at.text, lineHeight: 1.5, margin: 0, fontStyle: 'italic' }}>
             &ldquo;{moment.line}&rdquo;
@@ -56,6 +74,22 @@ function MomentCard({ moment, onReported }) {
         )}
         <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: at.ghost, marginTop: moment.line ? '10px' : 0 }}>
           {timeLabel(moment.created_at)}{moment.domain ? ` · ${moment.domain}` : ''}
+        </div>
+        {/* Mint this moment as a shareable image — the reach engine (BP-7).
+            The viewer's own horizon rides along on their own moments. */}
+        <div style={{ marginTop: '12px' }}>
+          <ShareArtifactButton
+            size="sm"
+            filename="nextus-moment.png"
+            shareText="A moment on NextUs"
+            artifact={{
+              eyebrow: 'A moment on NextUs',
+              headline: moment.line || 'A step taken today.',
+              horizon: isMine ? horizonLine : null,
+              footNote: moment.domain ? String(moment.domain) : null,
+              url: platformUrl('/today'),
+            }}
+          />
         </div>
       </div>
 
@@ -90,13 +124,14 @@ export function DailySurfacePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [hidden, setHidden] = useState(() => new Set())
+  const [horizonLine, setHorizonLine] = useState(null)
 
   const load = useCallback(async () => {
     setLoading(true); setError(false)
     try {
       const { data, error: qErr } = await supabase
         .from('moments')
-        .select('id, line, image_path, thumb_path, domain, created_at')
+        .select('id, line, image_path, thumb_path, domain, created_at, user_id')
         .is('deleted_at', null)
         .gte('created_at', startOfTodayISO())
         .order('created_at', { ascending: false })
@@ -111,6 +146,15 @@ export function DailySurfacePage() {
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  // The viewer's own declared horizon, for the step-toward line on their
+  // moments. Personal rail only — never fetched for other people.
+  useEffect(() => {
+    let live = true
+    if (!user) { setHorizonLine(null); return }
+    getMyHorizonDeclaration().then(d => { if (live) setHorizonLine(d?.line || null) })
+    return () => { live = false }
+  }, [user])
 
   const visible = moments.filter(m => !hidden.has(m.id))
   const hero = { ...serif, fontWeight: 300, color: at.text }
@@ -150,7 +194,10 @@ export function DailySurfacePage() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '18px' }}>
               {visible.map(m => (
-                <MomentCard key={m.id} moment={m} onReported={id => setHidden(h => new Set(h).add(id))} />
+                <MomentCard key={m.id} moment={m}
+                  isMine={!!user && m.user_id === user.id}
+                  horizonLine={horizonLine}
+                  onReported={id => setHidden(h => new Set(h).add(id))} />
               ))}
             </div>
           </>

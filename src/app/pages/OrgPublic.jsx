@@ -37,6 +37,8 @@ import {
 import { at } from '../../lib/designTokens'
 import { DOMAIN_COLORS } from '../constants/domains'
 import { ShareButton } from '../components/ShareButton'
+import { Door } from '../components/Door'
+import { loadGuideState } from '../lib/guideTiers'
 import { WatchButton } from '../components/WatchButton'
 import { MessageButton } from '../components/MessageButton'
 import { EventsSection } from '../components/EventsSection'
@@ -930,7 +932,7 @@ function CallsSection({ calls, isOwner, actorName }) {
     // The space still exists for the owner when empty — a quiet invitation.
     if (!isOwner) return null
     return (
-      <div>
+      <div id="asks">
         <Eyebrow>Challenges &amp; asks</Eyebrow>
         <div style={{ background: at.object, border: '1px dashed rgba(217,178,74,0.35)',
           borderRadius: '10px', padding: '18px 20px' }}>
@@ -951,7 +953,7 @@ function CallsSection({ calls, isOwner, actorName }) {
   }
 
   return (
-    <div>
+    <div id="asks">
       <Eyebrow>Challenges &amp; asks</Eyebrow>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
         {CALL_TYPES.map(({ type, groupLabel }) => {
@@ -1666,6 +1668,70 @@ function TestimonialsSection({ testimonials, actorMode }) {
 
 // ── Main page ────────────────────────────────────────────────
 
+// ── Guide tier chip — the viewer's own standing with this actor ──────
+// Private to the viewer (BP-12): where they sit on the connection ladder
+// (known · following · allied · companion), derived, never a count. Not
+// shown to the owner about their own actor, nor to signed-out visitors.
+function GuideTierChip({ actorId, userId, isOwner }) {
+  const [tier, setTier] = useState(null)
+  useEffect(() => {
+    let live = true
+    if (!userId || isOwner || !actorId) return
+    loadGuideState(supabase, userId).then(state => {
+      if (!live) return
+      const t = state.get(actorId)?.tier
+      if (t && t !== 'found') setTier(t)
+    })
+    return () => { live = false }
+  }, [userId, actorId, isOwner])
+  if (!tier) return null
+  const label = { known: 'Known', following: 'Following', allied: 'Allied', companion: 'Companion' }[tier] || tier
+  const high = tier === 'allied' || tier === 'companion'
+  return (
+    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase',
+      color: high ? at.brass : at.verdigris, marginBottom: '18px',
+      display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+      <span style={{ width: '9px', height: '9px', borderRadius: '50%',
+        background: high ? at.brass : at.verdigris, display: 'inline-block' }} />
+      In your guide · {label}
+    </div>
+  )
+}
+
+// ── Scale, framed as invitation not rank ─────────────────────────
+// Operating scale stated honestly (local → regional → wider). Never a
+// score, never a league position — a descriptive band and a question.
+// Under-supported is framed as under-supported, never as weak. The
+// answer to the question is the doors beneath it.
+function ScaleInvitation({ actor }) {
+  const bandLabel = actor.scale ? (SCALE_LABEL?.[actor.scale] || actor.scale) : null
+  return (
+    <div>
+      <Eyebrow>Scale</Eyebrow>
+      <div style={{
+        background: at.object,
+        border: `1px solid ${at.verdigrisEdge}`,
+        borderRadius: '12px',
+        padding: '22px 24px',
+      }}>
+        {bandLabel && (
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
+            textTransform: 'uppercase', color: at.verdigris, marginBottom: '10px' }}>
+            Working at {bandLabel} scale
+          </div>
+        )}
+        <p style={{ ...serif, fontSize: '19px', lineHeight: 1.4, color: at.text,
+          margin: '0 0 8px' }}>
+          One river, done well.
+        </p>
+        <p style={{ ...body, fontSize: '16px', lineHeight: 1.55, color: at.meta, margin: 0 }}>
+          What would it take for this to reach more rivers?
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export function OrgPublicPage() {
   // Route is /org/:slug (App.jsx line 230). Accept both `slug` (canonical) and
   // `id` (legacy / fallback for any route still using ':id') so the RPC always
@@ -1985,6 +2051,9 @@ export function OrgPublicPage() {
         {/* Claim banner — only on unclaimed wards */}
         <ClaimBanner actor={actor} user={user} />
 
+        {/* The viewer's own tier with this actor — private, derived (BP-12) */}
+        {user && !isOwner && <GuideTierChip actorId={actor.id} userId={user.id} isOwner={isOwner} />}
+
         {/* Render sections in mode-determined order. Skip nulls. Each section
             is followed by a Rule (visual divider) except for the sections in
             SECTIONS_WITHOUT_TRAILING_RULE. This matches the original page's
@@ -2004,6 +2073,20 @@ export function OrgPublicPage() {
           }
           return rendered
         })()}
+
+        {/* Scale as invitation, then the door — every story ends in one.
+            Placed once, after the mode-ordered sections. The door picks
+            its target by claim state (BP-4). */}
+        <ScaleInvitation actor={actor} />
+        <Rule />
+        <Door
+          isClaimed={isClaimed}
+          actorName={actor.name}
+          calls={calls}
+          domainSlug={primaryDomain}
+          domainLabel={primaryDomain ? (DOMAIN_LABEL?.[primaryDomain] || primaryDomain) : null}
+          tone="dark"
+        />
 
       </div>
 

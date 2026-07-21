@@ -43,6 +43,7 @@ import IdentityStrip      from '../components/mission-control/IdentityStrip'
 import BeaconStrip       from '../components/mission-control/BeaconStrip'
 import PoleHeader         from '../components/mission-control/PoleHeader'
 import FirstLightPrompt   from '../components/FirstLightPrompt'
+import HorizonBanner       from '../components/mission-control/HorizonBanner'
 import WorldMapSubstrate  from '../components/mission-control/WorldMapSubstrate'
 import WheelStage         from '../components/mission-control/WheelStage'
 import SideRail           from '../components/mission-control/SideRail'
@@ -1065,6 +1066,10 @@ export default function MissionControl() {
 
       <main className="mc-body">
 
+        {/* The declared horizon's home — top of Mission Control (BP-8).
+            Shows the line verbatim once declared, else the declare affordance. */}
+        <HorizonBanner userId={data.user?.id} />
+
         <FirstLightPrompt style={{ margin: '0 auto 18px', maxWidth: 720 }} />
 
         {(activeScope === 'self' || activeScope === 'planet') && (
@@ -1079,6 +1084,13 @@ export default function MissionControl() {
               state={nextUState}
               onClick={() => navigate('/nextu')}
               title="NextU — your personal journey"
+            />
+            <Tile
+              glyph="★"
+              label={<>NORTH<br/>STAR</>}
+              state={null}
+              onClick={() => navigate('/north-star')}
+              title="North Star — the whole-life synthesis, near The Map"
             />
             <Tile
               glyph={<HorizonStateGauge />}
@@ -1100,6 +1112,13 @@ export default function MissionControl() {
               state={null}
               onClick={() => navigate('/journal')}
               title="Journal — your record of becoming"
+            />
+            <Tile
+              glyph="◍"
+              label="Circles"
+              state={null}
+              onClick={() => navigate('/circles')}
+              title="Your circles — small, member-only rooms"
             />
             <Tile
               glyph={<MessagesIcon />}

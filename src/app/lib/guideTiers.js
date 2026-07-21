@@ -130,6 +130,12 @@ export async function loadGuideState(supabase, userId) {
         if (actorId) actorByParticipant.set(p.id, actorId)
       }
 
+      // Joining is itself a real act: taking on a challenge or answering an
+      // ask ties you to that actor at the allied tier, before any check-in
+      // is logged (BP-12 · full derivation from real acts, not only strand
+      // logs). Companion still requires the sustained action below.
+      for (const actorId of actorByParticipant.values()) lift(actorId, 'allied')
+
       const participantIds = [...actorByParticipant.keys()]
       if (participantIds.length > 0) {
         const logs = await selectIn(

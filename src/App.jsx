@@ -128,6 +128,13 @@ import { HorizonPracticePage }                     from './tools/horizon-practic
 import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import JournalPage                                 from './app/pages/Journal'
 import HorizonExport                               from './app/pages/HorizonExport'
+import HorizonDeclarePage                          from './app/pages/HorizonDeclare'
+import CirclesPage                                 from './app/pages/Circles'
+import CirclePage                                  from './app/pages/CirclePage'
+import TrailsPage                                  from './app/pages/Trails'
+import TrailPage                                   from './app/pages/TrailPage'
+import BoardPage                                   from './app/pages/BoardPage'
+import NorthStarSurface                            from './app/pages/NorthStar'
 import SentenceCompletion                          from './app/pages/SentenceCompletion'
 import IAmPractice                                 from './app/pages/IAmPractice'
 import IAmSpoken                                    from './app/pages/IAmSpoken'
@@ -324,6 +331,14 @@ function AppInner() {
         <Route path="/atlas/goals/:domain"      element={<HorizonGoalsPage />} />
         <Route path="/tools/horizon-practice"    element={<RequirePersonal><HorizonPracticePage /></RequirePersonal>} />
         <Route path="/journal"                   element={<RequirePersonal><JournalPage /></RequirePersonal>} />
+        <Route path="/horizon/declare"           element={<HorizonDeclarePage />} />  {/* BP-8 · the declaration screen */}
+        <Route path="/circles"                   element={<CirclesPage />} />  {/* BP-14 · your circles */}
+        <Route path="/circles/:id"               element={<CirclePage />} />   {/* BP-14 · the room */}
+        <Route path="/trails"                    element={<TrailsPage />} />   {/* BP-16 · trails index */}
+        <Route path="/trail/:id"                 element={<TrailPage />} />    {/* BP-16 · a walkable trail */}
+        <Route path="/boards"                    element={<BoardPage />} />    {/* BP-16 · domain boards */}
+        <Route path="/boards/:domain"            element={<BoardPage />} />
+        <Route path="/north-star"                element={<NorthStarSurface />} />  {/* BP-18 · whole-life synthesis */}
         <Route path="/me/export"                 element={<HorizonExport />} />
         <Route path="/tools/sentence-completion" element={<SentenceCompletion />} />
         <Route path="/tools/i-am"                element={<IAmPractice />} />

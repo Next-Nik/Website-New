@@ -14,6 +14,13 @@ import { useAuth }    from '../../hooks/useAuth'
 import { tokens, serif, body, sc, at } from '../../lib/designTokens'
 import PublicBeacon   from '../components/challenge/PublicBeacon'
 import MomentCapture  from '../components/MomentCapture'
+import TendedThing    from '../components/TendedThing'
+import Grove          from '../components/Grove'
+import ShareArtifactButton from '../components/ShareArtifactButton'
+import { getTendedThing, tendThing } from '../lib/tendedThing'
+import { getMyHorizonDeclaration } from '../lib/horizonDeclaration'
+import { platformUrl } from '../lib/shareArtifact'
+import { recordHorizonAction } from '../lib/horizonActions'
 
 const GOLD_C = at.verdigris
 const hair   = `1px solid ${at.verdigrisEdge}`
@@ -86,7 +93,7 @@ function FadeIn({ children, style }) {
 
 // ─── A single challenge card ──────────────────────────────────────────────────
 
-function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
+function ChallengeCard({ p, userId, founding, onLeft, onSpark, horizonLine }) {
   const [leaving, setLeaving] = useState(false)   // false | 'confirm' | 'busy'
   const inConstellation = !!(founding && founding.ids && founding.ids.has(p.call_id))
   const closeStr = founding && founding.closes_on
@@ -94,6 +101,8 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
     : null
   const [doneToday, setDoneToday] = useState(new Set(p.done_today || []))
   const [busy, setBusy]           = useState(null)
+  // The tended thing — this person's living thing for this challenge (BP-11).
+  const [tended, setTended]       = useState(null)
   const [returned, setReturned]   = useState(null)   // { strandId, others } — real data back from the check-in
 
   const [localComplete, setLocalComplete] = useState(false)
@@ -137,6 +146,14 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
     })
   }, [p.started_on, p.done_dates, window, doneToday])
 
+  // Load the living thing for this challenge.
+  useEffect(() => {
+    let live = true
+    if (!userId || !p.call_id) return
+    getTendedThing(p.call_id).then(t => { if (live) setTended(t) })
+    return () => { live = false }
+  }, [userId, p.call_id])
+
   async function toggle(strandId, btnEl) {
     const next = new Set(doneToday)
     const willBeDone = !next.has(strandId)
@@ -153,6 +170,11 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
       if (willBeDone) {
         const d = await r.json().catch(() => null)
         if (r.ok && d && typeof d.others_today === 'number') setReturned({ strandId, others: d.others_today })
+        // A real act grows the tended thing — check-ins are its only food (BP-11).
+        if (r.ok) tendThing(p.call_id).then(t => { if (t) setTended(t) })
+        // …and accrues to the horizon-actions ledger (BP-18). Fire-and-forget:
+        // a ledger miss must never disturb the check-in itself.
+        if (r.ok) recordHorizonAction({ kind: 'drive', source: 'checkin', domain: p.domain || null })
       } else {
         setReturned(prev => (prev && prev.strandId === strandId ? null : prev))
       }
@@ -221,6 +243,37 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
           ))}
         </div>
       )}
+
+      {/* The tended thing — belonging felt as growth, not points (BP-11).
+          Shown from the day you join (a seed), grows on each real check-in,
+          rests but never dies when you're away. */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '22px',
+        paddingBottom: '18px', borderBottom: hair }}>
+        <TendedThing stage={tended?.stage ?? 0} lastTendedAt={tended?.last_tended_at || null} size="md" />
+        <div style={{ ...body, fontSize: '14px', color: at.ghost, lineHeight: 1.5, maxWidth: '280px' }}>
+          Your living thing, lit from the fire the day you joined. It grows each time you show up · and only rests when you&rsquo;re away.
+        </div>
+      </div>
+
+      {/* Mint the progress view as a shareable image (BP-7): where things
+          stand · the step taken · the horizon. */}
+      <div style={{ marginBottom: '18px' }}>
+        <ShareArtifactButton
+          size="sm"
+          filename="nextus-progress.png"
+          shareText={`${p.title} · on NextUs`}
+          artifact={{
+            eyebrow: 'Progress on NextUs',
+            headline: p.title,
+            stepLine: complete
+              ? `Completed · ${window} days`
+              : `Day ${dayNo} of ${window}${streak > 1 ? ` · ${streak} days running` : ''}`,
+            horizon: horizonLine,
+            footNote: p.domain ? String(p.domain) : null,
+            url: platformUrl(p.slug ? `/stretch/c/${p.slug}` : '/challenges'),
+          }}
+        />
+      </div>
 
       {complete ? (
         <div style={{ ...body, fontSize: '15px', color: at.brass, paddingTop: '4px' }}>Completed.</div>
@@ -318,6 +371,11 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
         </div>
       )}
 
+      {/* The grove — the constellation view of everyone's tended things, a
+          grove becoming a forest. Aggregate only, no names (BP-11). Shown for
+          constellation challenges, where there is a shared community to see. */}
+      {inConstellation && <Grove challengeId={p.call_id} title="The grove" />}
+
       {/* Leave — the mistake-acceptor's way out. Quiet by design: a foot-of-card
           affordance, one confirm, done. Past check-ins stay recorded; taking
           the challenge on again later picks the same thread back up. */}
@@ -363,6 +421,7 @@ export default function MyChallenges() {
   const [rows, setRows]       = useState([])
   const [loading, setLoading] = useState(true)
   const [founding, setFounding] = useState({ ids: new Set(), closes_on: null })
+  const [horizonLine, setHorizonLine] = useState(null)
   const beaconRef = useRef(null)   // PublicBeacon imperative API — emberFrom()/spark()
 
   // A check-in, made visible: the beacon flies an ember from the button to
@@ -371,6 +430,14 @@ export default function MyChallenges() {
   const sendEmber = useCallback((fromEl) => {
     try { beaconRef.current && beaconRef.current.emberFrom(fromEl) } catch (_) { /* visual only */ }
   }, [])
+
+  // The viewer's horizon, for the share artifact (BP-7 · BP-8). Loaded once.
+  useEffect(() => {
+    let live = true
+    if (!user) { setHorizonLine(null); return }
+    getMyHorizonDeclaration().then(d => { if (live) setHorizonLine(d?.line || null) })
+    return () => { live = false }
+  }, [user])
 
   useEffect(() => {
     if (!user) { setLoading(false); return }
@@ -448,7 +515,7 @@ export default function MyChallenges() {
           </div>
         ) : (
           rows.map(p => <ChallengeCard key={p.participant_id} p={p} userId={user.id} founding={founding}
-            onSpark={sendEmber}
+            onSpark={sendEmber} horizonLine={horizonLine}
             onLeft={pid => setRows(prev => prev.filter(r => r.participant_id !== pid))} />)
         )}
       </div>

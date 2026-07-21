@@ -15,6 +15,7 @@ import BroadcastComposer from '../components/challenge/BroadcastComposer'
 import BroadcastFeed from '../components/challenge/BroadcastFeed'
 import ConstellationMeter from '../components/challenge/ConstellationMeter'
 import PublicBeacon from '../components/challenge/PublicBeacon'
+import { Door } from '../components/Door'
 
 // ─── Design shortcuts ─────────────────────────────────────────────────────────
 
@@ -1303,6 +1304,19 @@ export function ChallengePage() {
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.ghost, textDecoration: 'none' }}>
             See all challenges building toward {call.domain ? call.domain.replace('-', ' ') : 'this goal'} →
           </a>
+        </div>
+
+        {/* The door — every story ends in one (BP-4). A challenge page a
+            stranger lands on always offers a way onward, out to the domain
+            where the rest of the work lives. */}
+        <div style={{ marginTop: '28px' }}>
+          <Door
+            isClaimed={false}
+            domainSlug={call.domain}
+            domainLabel={call.domain ? call.domain.replace(/-/g, ' ') : null}
+            tone="dark"
+            eyebrow="Where this goes"
+          />
         </div>
 
         {/* Flag */}

@@ -29,7 +29,13 @@ import { supabase } from '../../hooks/useSupabase'
 import { useAuth } from '../../hooks/useAuth'
 import { at, atText, display } from '../../lib/designTokens'
 import { CIV_DOMAINS } from '../constants/domains'
-import { loadGuideState } from '../lib/guideTiers'
+import { loadGuideState, TIER_ORDER } from '../lib/guideTiers'
+import { useWatch } from '../hooks/useWatch'
+
+const TIER_RANK = Object.fromEntries(TIER_ORDER.map((t, i) => [t, i]))
+// Human labels for the derived tier, shown in the guide grid (BP-12). Never a
+// count or threshold — just the state.
+const TIER_LABEL = { known: 'Known', following: 'Following', allied: 'Allied', companion: 'Companion' }
 
 const CIV_COLOUR_BY_SLUG = Object.fromEntries(
   CIV_DOMAINS.map(d => [d.slug, d.color]),
@@ -164,6 +170,39 @@ export function FieldGuidePage() {
     })
   }
 
+  // Following from the guide grid (BP-12) — the quiet tier. Reuses the watch
+  // system (nextus_user_watches) so the actor's events and calls reach the
+  // follower; guideTiers already derives 'following' from a watch row.
+  const { isWatching, toggle: toggleWatch } = useWatch()
+
+  async function handleFollow(actorId, actorName) {
+    let res
+    try {
+      res = await toggleWatch('actor', actorId)
+    } catch (_) {
+      return  // cap reached or offline — the tune-in system surfaces this elsewhere
+    }
+    setGuide(prev => {
+      const next = new Map(prev)
+      const entry = next.get(actorId)
+      if (res?.added) {
+        // Lift to following, but never downgrade a real-act tier (allied/companion).
+        if (!entry) next.set(actorId, { tier: 'following', note: null })
+        else if (TIER_RANK[entry.tier] < TIER_RANK['following']) next.set(actorId, { ...entry, tier: 'following' })
+      } else {
+        // Unfollowed. Real-act tiers stand; a bare 'following' falls back to
+        // known (if a note exists) or found.
+        if (entry && entry.tier === 'following') {
+          if (entry.note) next.set(actorId, { ...entry, tier: 'known' })
+          else next.delete(actorId)
+        }
+      }
+      return next
+    })
+  }
+
+  const watch = { isWatching, onFollow: handleFollow }
+
   const visibleDomains = selectedDomain
     ? domains.filter(d => d.slug === selectedDomain)
     : domains
@@ -230,6 +269,7 @@ export function FieldGuidePage() {
                       guide={guide}
                       user={user}
                       onSaved={handleSaved}
+                      watch={watch}
                     />
                   ))}
                   {bucket.rest.length > 0 && (
@@ -240,6 +280,7 @@ export function FieldGuidePage() {
                       guide={guide}
                       user={user}
                       onSaved={handleSaved}
+                      watch={watch}
                     />
                   )}
                 </section>
@@ -254,6 +295,7 @@ export function FieldGuidePage() {
                 guide={guide}
                 user={user}
                 onSaved={handleSaved}
+                watch={watch}
               />
             )}
           </div>
@@ -313,7 +355,7 @@ function DomainChips({ domains, selected, onSelect }) {
 }
 
 // ── One subdomain grid ────────────────────────────────────────────────────
-function ActorGrid({ heading, colour, actors, guide, user, onSaved }) {
+function ActorGrid({ heading, colour, actors, guide, user, onSaved, watch }) {
   return (
     <div style={{ marginBottom: '24px' }}>
       <div style={{
@@ -335,6 +377,7 @@ function ActorGrid({ heading, colour, actors, guide, user, onSaved }) {
             entry={guide.get(a.id) || null}
             user={user}
             onSaved={onSaved}
+            watch={watch}
           />
         ))}
       </div>
@@ -368,7 +411,7 @@ function TierMark({ tier }) {
 }
 
 // ── Actor card ────────────────────────────────────────────────────────────
-function ActorCard({ actor, entry, user, onSaved }) {
+function ActorCard({ actor, entry, user, onSaved, watch }) {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState('')
   const [saving, setSaving] = useState(false)
@@ -426,6 +469,35 @@ function ActorCard({ actor, entry, user, onSaved }) {
           {actor.name}
         </Link>
       </div>
+
+      {/* Tier state, in words — private to the viewer (BP-12). Only ever the
+          state, never a count or threshold. */}
+      {met && TIER_LABEL[tier] && (
+        <div style={{ ...atText.chrome, fontSize: '13px', letterSpacing: '0.14em',
+          color: (tier === 'allied' || tier === 'companion') ? at.brass : at.verdigris }}>
+          {TIER_LABEL[tier]}
+        </div>
+      )}
+
+      {/* Follow — the quiet tier, a Watch action right from the guide grid. */}
+      {user && watch && (
+        <button
+          type="button"
+          onClick={e => { e.stopPropagation(); watch.onFollow(actor.id, actor.name) }}
+          style={{
+            ...atText.chrome, fontSize: '13px', letterSpacing: '0.12em',
+            alignSelf: 'flex-start', cursor: 'pointer',
+            background: 'transparent',
+            color: watch.isWatching('actor', actor.id) ? at.verdigris : at.ghost,
+            border: watch.isWatching('actor', actor.id)
+              ? `1px solid ${at.verdigrisEdge}`
+              : `1px dashed ${at.verdigrisEdge}`,
+            borderRadius: '14px', padding: '4px 12px',
+          }}
+        >
+          {watch.isWatching('actor', actor.id) ? '● Following' : '+ Follow'}
+        </button>
+      )}
 
       {desc && (
         <div style={{ ...atText.caption, lineHeight: 1.5, color: at.meta }}>

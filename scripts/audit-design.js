@@ -91,6 +91,15 @@ const ITALIC_WHITELIST = [
   'app/pages/Claim.jsx', // {actor.tagline} — the actor's own self-authored tagline
   'tools/horizon-practice/HorizonPractice.jsx', // {orderedIam[iamIdx].full} — the user's own I Am statement
   'components/NorthStarPortal.jsx', // user chat bubble (m.role === 'user') — the user's own message
+  'app/pages/HorizonDeclare.jsx', // BP-8 · the declared horizon line + its input — user-authored, verbatim
+  'mission-control/HorizonBanner.jsx', // BP-8 · {declaration.line} — the user's own declared horizon
+  'app/pages/DailySurface.jsx', // BP-8 · {moment.line} + {horizonLine} step-toward — both user-authored
+  'components/MomentCapture.jsx', // BP-8 · {horizonLine} step-toward on the saved state — user-authored
+  'app/pages/CirclePage.jsx', // BP-14 · {focus_line}/{offered_horizon_text}/{moment.line} — members' own offered words
+  'app/pages/Trails.jsx', // BP-16 · {horizon} — the walker's own declared horizon
+  'app/pages/TrailPage.jsx', // BP-16 · {horizon_text} — the walker's own declared horizon
+  'app/pages/BoardPage.jsx', // BP-16 · {moment.line} on the path layer — the walker's own words
+  'app/pages/NorthStar.jsx', // BP-18 · {horizon} + North Star synthesis — the person's own words
 ]
 
 // Files where heritage gold is legal (Master Spec §4). Keep this
