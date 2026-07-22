@@ -51,7 +51,7 @@ import { selfColor, SELF_KEYS_ORDERED } from '../../constants/domainColors'
 
 const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const head = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const head = { fontFamily: "'Lora', Georgia, serif" }
 
 const SELF_LABELS = ['Path', 'Spark', 'Body', 'Finances', 'Connection', 'Inner Game', 'Signal']
 const SELF_KEYS   = SELF_KEYS_ORDERED // ['path', 'spark', 'body', 'finances', 'connection', 'inner_game', 'signal']
@@ -685,7 +685,7 @@ function PointySun({ cx, cy, r, scored, glowing }) {
 // --- Popover ------------------------------------------------------------
 function Popover({ popover, getPopoverStyle, horizonGoals, currentReflections, activeSprintDomains, onClose }) {
   const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const head = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const head = { fontFamily: "'Lora', Georgia, serif" }
   const body = { fontFamily: "'Lora', Georgia, serif" }
 
   const labelMap = {

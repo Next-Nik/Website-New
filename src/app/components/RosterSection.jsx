@@ -19,7 +19,7 @@ import { InfoButton } from './InfoButton'
 
 const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body    = { fontFamily: "'Lora', Georgia, serif" }
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 const gold    = '#262420'
 const dark    = '#0F1523'
 

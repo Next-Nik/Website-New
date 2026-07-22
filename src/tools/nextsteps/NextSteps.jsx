@@ -224,7 +224,7 @@ export function NextStepsPage() {
           text-transform: uppercase;
         }
         .ns-title {
-          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 2.75rem;
           font-weight: 400;
           color: #0F1523;

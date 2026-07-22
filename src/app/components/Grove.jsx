@@ -13,7 +13,7 @@ import { at } from '../../lib/designTokens'
 import { getGroveCounts } from '../lib/tendedThing'
 import TendedThing from './TendedThing'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const serif = { fontFamily: "'Lora', Georgia, serif" }
 const mono  = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
 

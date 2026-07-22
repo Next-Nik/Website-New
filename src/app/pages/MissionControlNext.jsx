@@ -27,7 +27,7 @@ import GlanceWheel from '../components/mission-control/GlanceWheel'
 import WorldMapSubstrate from '../components/mission-control/WorldMapSubstrate'
 import { SELF_DOMAINS } from '../../components/self-explorer/selfData'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 const body    = { fontFamily: "'Lora', Georgia, serif" }
 const mono    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 

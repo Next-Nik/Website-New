@@ -66,7 +66,7 @@ const S = {
     boxShadow: '0 2px 20px rgba(15,21,35,0.06)',
   },
   heading: {
-    fontFamily: "'Cormorant Garamond', serif",
+    fontFamily: "'Lora', Georgia, serif",
     fontSize: '1.45rem',
     fontWeight: 600,
     marginBottom: '0.5rem',
@@ -153,7 +153,7 @@ const S = {
     lineHeight: 1,
   },
   successText: {
-    fontFamily: "'Cormorant Garamond', serif",
+    fontFamily: "'Lora', Georgia, serif",
     fontSize: '1.3rem',
     fontWeight: 600,
   },

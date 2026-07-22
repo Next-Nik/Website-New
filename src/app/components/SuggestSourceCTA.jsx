@@ -20,7 +20,7 @@ import { at } from '../../lib/designTokens'
 // ─────────────────────────────────────────────────────────────────────────────
 
 const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 const body    = { fontFamily: "'Lora', Georgia, serif" }
 
 export default function SuggestSourceCTA({

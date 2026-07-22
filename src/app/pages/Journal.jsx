@@ -33,7 +33,7 @@ import WorldMapSubstrate from '../components/mission-control/WorldMapSubstrate'
 import BreathPacer from '../components/daily/BreathPacer'
 import { body, sc } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 const tokens = {
   bg:        '#FAFAF7',
   ink:       '#0F1523',

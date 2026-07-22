@@ -103,11 +103,11 @@ export const shadow = {
 /**
  * Typography spreads — use with object spread: { ...display, fontSize: '28px' }
  *
- * display  → Cormorant Garamond:      "the thing" — titles, card headings, ≥18px
+ * display  → Lora:      "the thing" — titles, card headings, ≥18px
  * bodyFont → Lora:    reading text, meta, user voice
  * mono     → Cormorant SC: chrome — eyebrows, labels, status, coordinates
  */
-export const display  = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+export const display  = { fontFamily: "'Lora', Georgia, serif" }
 export const bodyFont = { fontFamily: "'Lora', Georgia, serif" }
 export const mono     = { fontFamily: "'Cormorant SC', Georgia, serif" }
 

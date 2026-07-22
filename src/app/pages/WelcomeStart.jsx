@@ -136,7 +136,7 @@ const START_CSS = `
   --text-ink:      #0F1523;
   --text-meta:     rgba(15, 21, 35, 0.65);
   --text-faint:    rgba(15, 21, 35, 0.40);
-  --font-display:  'Cormorant Garamond', Georgia, serif;
+  --font-display:  'Lora', Georgia, serif;
   --font-sc:       'Cormorant SC', Georgia, serif;
   --font-body:     'Lora', Georgia, serif;
 

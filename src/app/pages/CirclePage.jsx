@@ -18,7 +18,7 @@ import {
   setOffers, leaveCohort, addMemberByEmail, removeMember, updateCharter,
 } from '../lib/cohorts'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 const body    = { fontFamily: "'Lora', Georgia, serif" }
 const mono    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 

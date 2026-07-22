@@ -4,7 +4,7 @@
 //
 // Default rendering: gold left border, Lora body text.
 // When traditional / indigenous / ancestral lineage is detected:
-//   - text renders in Cormorant Garamond italic
+//   - text renders in Lora italic
 //   - the slim gold border thickens slightly
 //   - prefixed with the indigenous-relational PrincipleBadge
 // The attributed source's self-description is never abbreviated or
@@ -21,7 +21,7 @@ import { detectsTraditionalLineage } from '../../constants/practices'
 
 const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body    = { fontFamily: "'Lora', Georgia, serif" }
-const garamond = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const garamond = { fontFamily: "'Lora', Georgia, serif" }
 
 export default function LineageBlock({ text, forceTraditional = false, className }) {
   if (!text || !text.trim()) return null

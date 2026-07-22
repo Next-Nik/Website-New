@@ -29,7 +29,7 @@ import { body, sc } from '../../lib/designTokens'
 // References Module 1.5 for principle primitives.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 
 const CIV_DOMAIN_OPTIONS = [
   { value: 'human-being',     label: 'Human Being' },
@@ -1041,7 +1041,7 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
                 flexWrap: 'wrap',
               }}>
                 <span style={{
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  fontFamily: "'Lora', Georgia, serif",
                   fontSize: '17px',
                   fontWeight: 500,
                   color: '#0F1523',

@@ -12,7 +12,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { TYPE_LABEL } from '../components/FocusSearch'
 import { body, sc, at } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 const gold    = at.brass
 const dark    = at.text
 const parch   = at.ground

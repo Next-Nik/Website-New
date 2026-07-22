@@ -95,7 +95,7 @@ export function ToolCompassPanel() {
                 <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
                   Where do I start?
                 </h2>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                   Five tools. One ecosystem. The right entry depends on where you are.
                 </p>
               </div>
@@ -120,7 +120,7 @@ export function ToolCompassPanel() {
 
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
+              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
                 Begin with North Star — it reads where you are and points you somewhere real. Everything else follows from honest location.
               </p>
             </div>
@@ -164,7 +164,7 @@ export function ToolCompassPanel() {
                   <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: '#262420', marginBottom: '6px', lineHeight: 1.2 }}>
                     {tool.label}
                   </div>
-                  <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
+                  <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
                     {tool.hook}
                   </div>
                 </Link>

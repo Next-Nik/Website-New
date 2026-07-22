@@ -20,7 +20,7 @@ const BG   = '#FAFAF7'
 const INK  = '#0F1523'
 const GOLD = '#262420'
 const GC   = '#4c6b45'
-const SERIF = "'Cormorant Garamond', Georgia, serif"
+const SERIF = "'Lora', Georgia, serif"
 const SC    = "'Cormorant SC', Georgia, serif"
 const LORA  = "'Lora', Georgia, serif"
 

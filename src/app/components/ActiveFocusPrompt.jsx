@@ -22,7 +22,7 @@ import { useActiveFocus } from '../hooks/useActiveFocus'
 
 const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body    = { fontFamily: "'Lora', Georgia, serif" }
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 
 const GOLD = '#262420'
 const GOLD_LIGHT = '#4c6b45'

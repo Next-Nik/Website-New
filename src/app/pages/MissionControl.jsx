@@ -1073,16 +1073,25 @@ export default function MissionControl() {
       )
     : null
 
-  // ─── The edge — the domain with the most room right now. Not a
-  //     completion badge; an invitation toward where the pull is. ───
-  const edgeSelf = (() => {
+  // ─── The signal domain beside momentum. Godspark framing: anchor
+  //     what you're MOVING, not what's weakest. So it shows the domain
+  //     your Target Sprint is on ("your focus"), and when no sprint is
+  //     running it falls back to your STRONGEST domain ("most alive").
+  //     It never anchors the lowest score — that read as a deficit
+  //     callout, which is the opposite of orienting toward the pull. ───
+  const focusSelf = (() => {
+    const i = SELF_KEYS.indexOf(sprintKey)
+    return i >= 0 ? { label: SELF_LABELS[i], lbl: 'Your focus right now' } : null
+  })()
+  const strongSelf = (() => {
     let best = null
     SELF_KEYS.forEach((k, i) => {
       const v = selfCurrent?.[k]
-      if (v != null && (best === null || v < best.v)) best = { v, label: SELF_LABELS[i] }
+      if (v != null && (best === null || v > best.v)) best = { v, label: SELF_LABELS[i] }
     })
-    return best
+    return best ? { label: best.label, lbl: 'Where you’re most alive' } : null
   })()
+  const signalSelf = focusSelf || strongSelf
   const edgeCiv = (() => {
     let best = null
     CIV_KEYS.forEach((k, i) => {
@@ -1118,7 +1127,7 @@ export default function MissionControl() {
       ]
     : [
         ...(streakDays > 0 ? [{ big: String(streakDays), small: ' day', lbl: 'Momentum' }] : []),
-        ...(edgeSelf ? [{ word: edgeSelf.label, lbl: 'The edge · where you’re called' }] : []),
+        ...(signalSelf ? [{ word: signalSelf.label, lbl: signalSelf.lbl }] : []),
       ]
 
   // ─── Beat cards ──────────────────────────────────────────────
@@ -1761,7 +1770,7 @@ const STAGE_CSS = `
   background: var(--mc-bg);
   color: var(--mc-ink);
   /* NextUs type system — display / body / chrome. */
-  --mc-display: 'Cormorant Garamond', Georgia, serif;
+  --mc-display: 'Lora', Georgia, serif;
   --mc-body:    'Lora', Georgia, serif;
   --mc-mono:    'Cormorant SC', Georgia, serif;
   font-family: var(--mc-body);
@@ -1915,9 +1924,9 @@ const STAGE_CSS = `
 .mc-beat-h {
   font-family: var(--mc-display);
   font-size: clamp(32px, 4.6vw, 56px);
-  line-height: 1.04;
+  line-height: 1.05;
   letter-spacing: -.005em;
-  font-weight: 500;
+  font-weight: 600;
   margin: 14px 0 6px;
   max-width: 18ch;
 }

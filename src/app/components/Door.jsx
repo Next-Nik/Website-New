@@ -24,7 +24,7 @@
 import { Link } from 'react-router-dom'
 import { fn, at, space } from '../../lib/designTokens'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const serif = { fontFamily: "'Lora', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
 const mono  = { fontFamily: "'Cormorant SC', Georgia, serif" }
 

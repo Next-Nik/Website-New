@@ -22,7 +22,7 @@ import { NavigatorWheel } from '../components/NavigatorWheel'
 import { IntersectionPage } from '../components/IntersectionPage'
 import { body, sc } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 
 const GOLD = '#262420'
 const INK = '#0F1523'

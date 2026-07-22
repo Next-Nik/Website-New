@@ -26,7 +26,7 @@
 //                                          Forwarded to /nominate as
 //                                          location.state.prefill.
 //
-// Design tokens locked: gold-on-cream, Cormorant Garamond / Cormorant SC / Lora.
+// Design tokens locked: gold-on-cream, Lora / Cormorant SC / Lora.
 // No em dashes in copy.
 // ─────────────────────────────────────────────────────────────
 

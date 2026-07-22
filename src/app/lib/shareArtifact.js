@@ -11,7 +11,7 @@
 // carousel is a later enhancement).
 //
 // Atlas palette, brand type. Fonts are awaited via document.fonts so the
-// mint uses Cormorant Garamond/Lora/Cormorant SC when they are loaded, falling
+// mint uses Lora/Lora/Cormorant SC when they are loaded, falling
 // back to serif/mono otherwise.
 
 const W = 1080
@@ -26,7 +26,7 @@ const VERD   = '#58A08A'   // living systems
 const BRASS  = '#D9B24A'   // human coordination
 const GRID   = 'rgba(217,226,221,0.06)'
 
-const DISPLAY = "'Cormorant Garamond', Georgia, serif"
+const DISPLAY = "'Lora', Georgia, serif"
 const BODY    = "'Lora', Georgia, serif"
 const MONO    = "'Cormorant SC', Georgia, serif"
 

@@ -140,7 +140,7 @@ export function InstallPrompt() {
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          fontFamily: 'Cormorant Garamond, serif',
+          fontFamily: 'Lora, serif',
           fontSize: 15,
           fontWeight: 600,
           color: fn.ink,

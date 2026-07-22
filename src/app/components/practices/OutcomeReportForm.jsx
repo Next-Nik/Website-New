@@ -15,7 +15,7 @@ import { useState } from 'react'
 
 const sc       = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body     = { fontFamily: "'Lora', Georgia, serif" }
-const garamond = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const garamond = { fontFamily: "'Lora', Georgia, serif" }
 
 export default function OutcomeReportForm({ practice, supabase, user, onClose, onReported }) {
   const [text, setText]           = useState('')

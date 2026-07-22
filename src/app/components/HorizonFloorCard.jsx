@@ -27,7 +27,7 @@ import { getHorizonFloor, isValidDomainSlug } from '../constants/horizonFloor'
 
 const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body    = { fontFamily: "'Lora', Georgia, serif" }
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 
 export default function HorizonFloorCard({
   domainSlug,

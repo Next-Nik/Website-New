@@ -8,7 +8,7 @@ import { at } from '../../lib/designTokens'
 // One signal card per indicator. Single number per card — no chart, no
 // sparkline. The default render shows:
 //   - Indicator name (Cormorant SC eyebrow)
-//   - The number (Cormorant Garamond display)
+//   - The number (Lora display)
 //   - The direction arrow (up / down / sideways), coloured per the score
 //     palette: blue for progress, warm grey for plateau, amber for friction,
 //     deep red for crisis
@@ -35,7 +35,7 @@ import { at } from '../../lib/designTokens'
 
 const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body    = { fontFamily: "'Lora', Georgia, serif" }
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 
 // Score palette per Design System v3.
 const COLOUR = {

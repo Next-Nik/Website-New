@@ -166,7 +166,7 @@ export function TrackLoop({ tracks, onOpenTrack, onStartNew }) {
           color: rgba(15,21,35,0.55);
         }
         .ns-track-toward {
-          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 1.3rem;
           font-weight: 400;
           line-height: 1.45;

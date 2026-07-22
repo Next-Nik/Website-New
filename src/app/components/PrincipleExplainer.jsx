@@ -36,7 +36,7 @@ import { fetchEntitiesEngagingPrinciple } from '../hooks/useTaggedPrinciples'
 
 const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body    = { fontFamily: "'Lora', Georgia, serif" }
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 
 const TYPE_LABELS = {
   actor:        'Actors',

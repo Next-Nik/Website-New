@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom'
 import { fn, space } from '../../../lib/designTokens'
 import { getMyHorizonDeclaration } from '../../lib/horizonDeclaration'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 const body    = { fontFamily: "'Lora', Georgia, serif" }
 const mono    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 

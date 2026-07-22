@@ -243,7 +243,7 @@ export function StretchRings({ domainId, domainData, targetDate, onPlanetClick, 
       {daysLeft !== null && (
         <g>
           <text x={cx} y={cy - 2} textAnchor="middle" fill={tokens.dark}
-            fontFamily="'Cormorant Garamond', Georgia, serif" fontSize={size * 0.21} fontWeight="300">
+            fontFamily="'Lora', Georgia, serif" fontSize={size * 0.21} fontWeight="300">
             {daysLeft}
           </text>
           <text x={cx} y={cy + size * 0.085} textAnchor="middle" fill={fn.moss}

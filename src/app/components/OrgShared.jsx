@@ -5,7 +5,7 @@
 import { at } from '../../lib/designTokens'
 
 export const body  = { fontFamily: "'Lora', Georgia, serif" }
-export const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+export const serif = { fontFamily: "'Lora', Georgia, serif" }
 export const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 export const gold = at.brass
 export const dark = at.text

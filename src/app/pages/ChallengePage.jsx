@@ -951,7 +951,7 @@ export function ChallengePage() {
     <div style={{ background: at.ground, minHeight: '100dvh' }}>
       <Nav />
       <style>{`
-        .np-lede::first-letter{ -webkit-initial-letter: 2; initial-letter: 2; color: ${at.brass}; font-weight: 500; font-family: 'Cormorant Garamond', Georgia, serif; margin-right: 14px; }
+        .np-lede::first-letter{ -webkit-initial-letter: 2; initial-letter: 2; color: ${at.brass}; font-weight: 500; font-family: 'Lora', Georgia, serif; margin-right: 14px; }
       `}</style>
 
       {showDoors && user && (

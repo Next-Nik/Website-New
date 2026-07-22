@@ -74,7 +74,7 @@ export function InfoButton({ title, children, size = 'sm', ariaLabel, tone = 'li
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontFamily: "'Cormorant Garamond', Georgia, serif",
+          fontFamily: "'Lora', Georgia, serif",
           fontSize,
           lineHeight: 1,
           transition: 'background 120ms ease',

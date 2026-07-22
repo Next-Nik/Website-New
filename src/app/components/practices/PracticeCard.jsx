@@ -19,7 +19,7 @@ import { CIV_DOMAIN_BY_SLUG } from '../../constants/domains'
 
 const sc       = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body     = { fontFamily: "'Lora', Georgia, serif" }
-const garamond = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const garamond = { fontFamily: "'Lora', Georgia, serif" }
 
 function previewText(text, max = 180) {
   if (!text) return ''

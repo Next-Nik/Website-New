@@ -238,7 +238,7 @@ export function ArrivalReflection({ user, onReflectionLanded }) {
         .ns-chat--fresh { justify-content:center; }
         .ns-chat--fresh .ns-msgs { flex:0 0 auto; overflow:visible; padding:0 24px; }
         .ns-msgs { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:20px; padding:28px 24px 16px; max-width:680px; width:100%; margin:0 auto; box-sizing:border-box; }
-        .ns-bubble.assistant.ns-opener { background:transparent; border:none; padding:0 0 20px; font-family:'Cormorant Garamond',Georgia,serif; font-size:clamp(1.35rem,2.2vw,1.65rem); font-weight:400; line-height:1.55; color:rgba(15,21,35,0.88); max-width:100%; border-bottom:1px solid rgba(38,36,32,0.18); }
+        .ns-bubble.assistant.ns-opener { background:transparent; border:none; padding:0 0 20px; font-family:'Lora', Georgia, serif; font-size:clamp(1.35rem,2.2vw,1.65rem); font-weight:400; line-height:1.55; color:rgba(15,21,35,0.88); max-width:100%; border-bottom:1px solid rgba(38,36,32,0.18); }
         .ns-bubble { padding:14px 20px; border-radius:3px; font-family:'Lora',Georgia,serif; font-size:1rem; line-height:1.65; max-width:86%; color:#0F1523; }
         .ns-bubble.assistant { background:#FFFFFF; border:1px solid rgba(38,36,32,0.16); align-self:flex-start; box-shadow:0 2px 8px rgba(15,21,35,0.06); }
         .ns-bubble.user { background:rgba(38,36,32,0.08); border:1px solid rgba(38,36,32,0.20); align-self:flex-end; }

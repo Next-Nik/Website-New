@@ -1,6 +1,6 @@
 import { at } from '../../lib/designTokens'
 // Design tokens
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const serif = { fontFamily: "'Lora', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const dark     = at.text

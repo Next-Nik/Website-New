@@ -283,7 +283,7 @@ export function PathView({ track, user, onBackToLoop }) {
           margin-right: 6px;
         }
         .ns-path-note {
-          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 1.35rem;
           line-height: 1.45;
           color: #0F1523;
@@ -320,7 +320,7 @@ export function PathView({ track, user, onBackToLoop }) {
           border-radius: 50%;
           background: rgba(38,36,32,0.12);
           color: #262420;
-          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 1.3rem;
           display: flex;
           align-items: center;

@@ -16,7 +16,7 @@ import { useState } from 'react'
 // ── Brand ─────────────────────────────────────────────────────────
 export const BODY  = { fontFamily: "'Lora', Georgia, serif" }
 export const SC    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-export const SERIF = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+export const SERIF = { fontFamily: "'Lora', Georgia, serif" }
 export const GOLD  = '#26302A'
 export const DARK  = '#0F1523'
 export const PARCH = '#FAFAF7'

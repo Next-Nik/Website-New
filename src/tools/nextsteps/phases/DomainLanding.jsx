@@ -186,7 +186,7 @@ export function DomainLanding({ track, onAccept }) {
           margin-bottom: 8px;
         }
         .ns-landing-toward-text {
-          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 1.6rem;
           font-weight: 400;
           color: #0F1523;
@@ -248,7 +248,7 @@ export function DomainLanding({ track, onAccept }) {
           gap: 10px;
         }
         .ns-landing-actor-name {
-          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 1.15rem;
           color: #0F1523;
         }
@@ -265,7 +265,7 @@ export function DomainLanding({ track, onAccept }) {
           font-style: italic;
         }
         .ns-landing-closing {
-          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 1.3rem;
           line-height: 1.5;
           color: #0F1523;

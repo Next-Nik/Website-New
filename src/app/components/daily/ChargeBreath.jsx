@@ -34,7 +34,7 @@ const T = {
 }
 const SC    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const BODY  = { fontFamily: "'Lora', Georgia, serif" }
-const SERIF = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const SERIF = { fontFamily: "'Lora', Georgia, serif" }
 
 function makeBeep(freq, dur = 0.12, gain = 0.18) {
   try {
