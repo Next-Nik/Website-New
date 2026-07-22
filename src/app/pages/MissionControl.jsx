@@ -1055,16 +1055,52 @@ export default function MissionControl() {
       )
     : null
 
+  // ─── The edge — the domain with the most room right now. Not a
+  //     completion badge; an invitation toward where the pull is. ───
+  const edgeSelf = (() => {
+    let best = null
+    SELF_KEYS.forEach((k, i) => {
+      const v = selfCurrent?.[k]
+      if (v != null && (best === null || v < best.v)) best = { v, label: SELF_LABELS[i] }
+    })
+    return best
+  })()
+  const edgeCiv = (() => {
+    let best = null
+    CIV_KEYS.forEach((k, i) => {
+      const v = civCurrent?.[k]
+      if (v != null && (best === null || v < best.v)) best = { v, label: CIV_LABELS[i] }
+    })
+    return best
+  })()
+
+  // ─── The next step — ALWAYS one real move. Walks the journey and
+  //     never resolves to "nothing to do". ───
+  const selfNextStep =
+    toDoCount > 0
+      ? { label: 'Your open to-dos', onClick: () => openPersonalPanel('get-to-do') }
+      : mapAudited < 7
+        ? { label: `Continue The Map · ${mapAudited} of 7`, onClick: () => openPersonalPanel('map') }
+        : iaCount < 7
+          ? { label: `Your I Am statements · ${iaCount} of 7`, onClick: () => navigate('/nextu/i-am') }
+          : !hasHorizonSelfMeta
+            ? { label: 'Name your Horizon Self', onClick: () => navigate('/nextu/horizon-self') }
+            : { label: 'Set a 90-day Target Sprint', onClick: () => openPersonalPanel('target-sprint') }
+  const civNextStep =
+    civPlacedCount === 0
+      ? { label: 'Open the world view', onClick: () => openCivPanel('world-view') }
+      : { label: 'Join a Planet Sprint', onClick: () => openCivPanel('missions') }
+  const nowNextStep = isCiv ? civNextStep : selfNextStep
+
+  // Two quiet signal tiles beside the next step: momentum + the edge.
   const glanceStats = isCiv
     ? [
-        { big: String(civPlacedCount), small: ' / 7', lbl: 'Domains tracked' },
         ...(civAvgPct != null ? [{ big: String(civAvgPct), small: '%', lbl: 'Toward the goal' }] : []),
+        ...(edgeCiv ? [{ word: edgeCiv.label, lbl: 'Where the work is thin' }] : []),
       ]
     : [
-        { big: String(mapAudited), small: ' / 7', lbl: 'Domains mapped' },
-        ...(streakDays > 0 ? [{ big: String(streakDays), small: ' day', lbl: 'Streak' }] : []),
-        { big: String(toDoCount), lbl: 'Open next steps' },
-        { big: String(iaCount), small: ' / 7', lbl: 'I am statements' },
+        ...(streakDays > 0 ? [{ big: String(streakDays), small: ' day', lbl: 'Momentum' }] : []),
+        ...(edgeSelf ? [{ word: edgeSelf.label, lbl: 'The edge · where you’re called' }] : []),
       ]
 
   // ─── Beat cards ──────────────────────────────────────────────
@@ -1185,13 +1221,13 @@ export default function MissionControl() {
         {/* ─── BEAT 1 · HORIZON — What we want ─────────────────── */}
         <section className="mc-beat" id="beat-horizon">
           <div className="mc-eyebrow"><span className="mc-dot" /> What we want <span className="mc-n">· Horizon</span></div>
-          <h2 className="mc-beat-h">{isCiv ? 'The future we’re reaching for.' : 'The future you’re reaching for.'}</h2>
+          <h2 className="mc-beat-h">{isCiv ? 'The future we’re choosing, now.' : 'The future you’re choosing, now.'}</h2>
           <p className="mc-lede">{isCiv
             ? 'Name it together, hold it in view, and let the work line up behind it.'
             : 'Name it, hold it in view, and let everything else line up behind it.'}</p>
 
           {/* The declared horizon's home (BP-8) — verbatim once declared. */}
-          <HorizonBanner userId={data.user?.id} />
+          <HorizonBanner userId={data.user?.id} fallbackLine={!isCiv ? lifeHorizon : null} />
           <FirstLightPrompt style={{ margin: '18px 0 0', maxWidth: 720 }} />
 
           <div className="mc-cards">
@@ -1300,16 +1336,27 @@ export default function MissionControl() {
                     </div>
                   </div>
 
-                  {glanceStats.length > 0 && (
-                    <div className="mc-stats">
-                      {glanceStats.map((s, i) => (
-                        <div key={s.lbl + i} className="mc-stat">
-                          <div className="mc-stat-big">{s.big}{s.small && <small>{s.small}</small>}</div>
-                          <div className="mc-stat-lbl">{s.lbl}</div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <div className="mc-glance-side">
+                    {/* The next step — always one real move, never a dead zero. */}
+                    <button type="button" className="mc-nextstep" onClick={nowNextStep.onClick}>
+                      <span className="mc-nextstep-eye">Your next step</span>
+                      <span className="mc-nextstep-label">{nowNextStep.label}</span>
+                      <span className="mc-nextstep-go" aria-hidden="true">→</span>
+                    </button>
+
+                    {glanceStats.length > 0 && (
+                      <div className="mc-stats">
+                        {glanceStats.map((s, i) => (
+                          <div key={s.lbl + i} className="mc-stat">
+                            {s.word
+                              ? <div className="mc-stat-word">{s.word}</div>
+                              : <div className="mc-stat-big">{s.big}{s.small && <small>{s.small}</small>}</div>}
+                            <div className="mc-stat-lbl">{s.lbl}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Selecting a spoke opens its detail below the wheel —
@@ -1997,7 +2044,36 @@ const STAGE_CSS = `
 }
 .mc-stat-big { font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
 .mc-stat-big small { font-size: 14px; font-weight: 700; color: var(--mc-muted); }
+.mc-stat-word { font-size: 21px; font-weight: 800; letter-spacing: -.01em; color: var(--mc-accent); line-height: 1.05; }
 .mc-stat-lbl { font-size: 13px; color: var(--mc-muted); font-weight: 600; margin-top: 2px; }
+
+/* The next-step call — the one live move, leading the glance side. */
+.mc-glance-side { display: flex; flex-direction: column; gap: 16px; }
+.mc-nextstep {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid var(--mc-accent);
+  border-radius: 16px;
+  padding: 18px 46px 18px 20px;
+  background: var(--mc-accent-soft);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.mc-nextstep:hover { transform: translateY(-2px); box-shadow: var(--mc-shadow); }
+.mc-nextstep-eye {
+  font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--mc-accent);
+}
+.mc-nextstep-label { font-size: 19px; font-weight: 700; letter-spacing: -.01em; color: var(--mc-ink); }
+.mc-nextstep-go {
+  position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+  font-size: 20px; font-weight: 700; color: var(--mc-accent);
+}
 
 .mc-glance-detail { padding: 0 30px 30px; }
 .mc-glance-detail--dark {

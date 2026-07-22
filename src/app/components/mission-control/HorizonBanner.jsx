@@ -18,7 +18,7 @@ const display = { fontFamily: "'Fraunces', Georgia, serif" }
 const body    = { fontFamily: "'Newsreader', Georgia, serif" }
 const mono    = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
 
-export default function HorizonBanner({ userId, style }) {
+export default function HorizonBanner({ userId, style, fallbackLine = null }) {
   const navigate = useNavigate()
   const [declaration, setDeclaration] = useState(undefined) // undefined = loading
 
@@ -42,7 +42,29 @@ export default function HorizonBanner({ userId, style }) {
     ...style,
   }
 
-  // Not yet declared — the affordance.
+  // Not formally declared, but the person has already named a life
+  // horizon through The Map — show that verbatim rather than asking
+  // again. Tapping opens the declaration screen to make it official.
+  if (!declaration && fallbackLine) {
+    return (
+      <div style={wrap}
+        role="button" tabIndex={0}
+        onClick={() => navigate('/horizon/declare')}
+        onKeyDown={e => { if (e.key === 'Enter') navigate('/horizon/declare') }}
+        title="Your horizon · tap to refine">
+        <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.18em',
+          textTransform: 'uppercase', color: fn.moss, marginBottom: space.sm }}>
+          My horizon
+        </div>
+        <p style={{ ...body, fontSize: '20px', color: fn.ink,
+          lineHeight: 1.4, margin: 0, cursor: 'pointer' }}>
+          {fallbackLine}
+        </p>
+      </div>
+    )
+  }
+
+  // Nothing declared and nothing from the Map — the affordance.
   if (!declaration) {
     return (
       <div style={{ ...wrap, borderStyle: 'dashed' }}>
