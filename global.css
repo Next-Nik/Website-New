@@ -1,0 +1,507 @@
+/* ─── NextUs Design System — Field Notes (default/shared rail) ─
+ * See NextUs_Retheme_Master_Spec_v1.md. The Atlas rail's tokens
+ * live in src/lib/designTokens.js and are applied per-component on
+ * civ surfaces (Phase 3); these :root variables cover shared chrome
+ * and the personal rail, which default here.
+ * ──────────────────────────────────────────────────────────── */
+
+:root {
+  /* Four-beat home system (TED + Omega + Tesla). One bright warm
+     ground for every surface; the accent alone carries scale —
+     moss for My Life, clay for Our Planet. The NextUs wordmark keeps
+     its scarf-gold `Us`. See MissionControl STAGE_CSS for the source. */
+  --bg:           #f3f0e9;   /* Omega-bright warm cream — page background */
+  --moss:         #4c6b45;   /* living accent · My Life pole */
+  --moss-dk:      #3c5637;
+  --moss-line:    rgba(76, 107, 69, 0.30);
+  --moss-faint:   rgba(76, 107, 69, 0.08);
+  --clay:         #a9743f;   /* attention accent · Our Planet pole */
+  --clay-line:    rgba(169, 116, 63, 0.35);
+  --text:         #262420;   /* warm ink */
+  --text-meta:    rgba(38, 36, 32, 0.68);
+  --text-ghost:   rgba(38, 36, 32, 0.58);
+  --border:       rgba(38, 36, 32, 0.11);
+
+  /* Scarf-gold — the NextUs wordmark `Us`, constant across both poles.
+     Distinct from heritage gold; not subject to the retheme gold law. */
+  --gold:          #cf9a24;
+  /* Heritage gold — logo, beacons, and ≤3 approved moments ONLY.
+     See designTokens.js `gold` export and audit-design.js `gold` law. */
+  --gold-heritage: #C8922A;
+  --gold-glow:      rgba(200, 146, 42, 0.55);
+
+  /* Shared surfaces + chrome (mirror the home's STAGE_CSS vars). */
+  --surface:      #ffffff;
+  --surface-2:    #eae5da;
+  --line:         rgba(38, 36, 32, 0.11);
+  --muted:        rgba(38, 36, 32, 0.58);
+  --shadow:       0 1px 2px rgba(38,36,32,.06), 0 10px 32px rgba(38,36,32,.08);
+
+  --bg-page:      #ffffff;   /* card / raised surface */
+  --bg-tool:      #f3f0e9;
+  --bg-warm:      #eae5da;
+  --bg-dark:      #10222B;   /* at.ground — legacy, for surfaces still on the Atlas rail */
+  --bg-card:      rgba(76, 107, 69, 0.06);
+  --bg-hover:     rgba(76, 107, 69, 0.08);
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sc:      'IBM Plex Mono', 'Courier New', monospace;
+  --font-body:    'Newsreader', Georgia, serif;
+
+  --max-w:        680px;
+  --nav-h:        64px;
+}
+
+/* ─── Type scale ────────────────────────────────────────────── */
+:root {
+  --text-xs:    15px;       /* UI labels, metadata, badges */
+  --text-sm:    17px;       /* Eyebrows, captions, nav labels */
+  --text-base:  1.25rem;    /* 20px — standard body copy */
+  --text-md:    1.375rem;   /* 22px — tool body copy */
+  --text-lg:    1.625rem;   /* 26px — subheadings, lead copy */
+  --text-xl:    1.875rem;   /* 30px — section headings */
+  --text-2xl:   2.25rem;    /* 36px — tool titles */
+
+  /* Shared spacing scale — both rails */
+  --space-xs:   4px;
+  --space-sm:   8px;
+  --space-md:   12px;
+  --space-lg:   16px;
+  --space-xl:   24px;
+  --space-xxl:  32px;
+  --space-xxxl: 48px;
+  --space-huge: 72px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  line-height: 1.65;
+  min-height: 100dvh;
+}
+
+a {
+  color: var(--moss-dk);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+/* ─── Loading spinner ───────────────────────────────────────── */
+
+.loading {
+  width: 100dvw;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.loading::after {
+  content: '';
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--moss-line);
+  border-top-color: var(--moss-dk);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Auth overlay ──────────────────────────────────────────── */
+
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(38,36,32, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1.5rem;
+  backdrop-filter: blur(4px);
+}
+
+.auth-card {
+  background: var(--bg-page);
+  border: 1.5px solid rgba(76,107,69,0.55);
+  border-radius: 14px;
+  padding: 2.5rem 2rem;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(38,36,32,.08), 0 6px 16px rgba(38,36,32,.07);
+}
+
+.auth-eyebrow {
+  display: block;
+  font-family: var(--font-sc);
+  font-size: 0.8125rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-ghost);
+  margin-bottom: 1rem;
+}
+
+.auth-card h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.auth-card p {
+  font-size: 1.375rem;
+  color: var(--text-meta);
+  margin-bottom: 1.75rem;
+  line-height: 1.55;
+}
+
+.auth-card a {
+  display: inline-block;
+  font-family: var(--font-sc);
+  font-size: 0.9375rem;
+  letter-spacing: 0.1em;
+  color: var(--moss-dk);
+  border: 1px solid var(--moss-line);
+  border-radius: 10px;
+  padding: 0.65rem 1.5rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.auth-card a:hover {
+  background: var(--moss-faint);
+  border-color: var(--moss);
+  text-decoration: none;
+}
+
+/* ─── Nav ───────────────────────────────────────────────────── */
+
+.site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-h);
+  background: rgba(243, 240, 233, 0.88);
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  z-index: 1000;
+  max-width: 100%;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.nav-logo img {
+  height: 34px;
+  width: auto;
+  display: block;
+}
+
+/* Text wordmark — matches the four-beat home. Scarf-gold `Us`. */
+.nav-wordmark {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: 19px;
+  color: var(--text);
+  text-decoration: none;
+  line-height: 1;
+}
+.nav-wordmark span { color: var(--gold); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  font-family: var(--font-sc);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--text-meta);
+  text-decoration: none;
+  font-weight: 400;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.nav-profile-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--moss-faint);
+  border: 1.5px solid var(--moss);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sc);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--moss-dk);
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.nav-profile-dot:hover {
+  background: rgba(76, 107, 69, 0.15);
+  border-color: var(--moss-dk);
+  text-decoration: none;
+}
+
+/* ─── Page shell (below nav) ────────────────────────────────── */
+
+.page-shell {
+  padding-top: var(--nav-h);
+  min-height: 100dvh;
+}
+
+/* ─── Tool layout ───────────────────────────────────────────── */
+
+.tool-wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.tool-header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.25rem;
+}
+
+.tool-eyebrow {
+  font-family: var(--font-sc);
+  font-size: 0.8125rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-ghost);
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.tool-title {
+  font-family: var(--font-display);
+  font-size: 2.125rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* ─── Chat bubbles ──────────────────────────────────────────── */
+
+.chat-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.bubble {
+  max-width: 88%;
+  line-height: 1.65;
+  font-size: 1.25rem;
+}
+
+.bubble-assistant {
+  align-self: flex-start;
+  color: var(--text);
+}
+
+.bubble-user {
+  align-self: flex-end;
+  background: var(--moss-faint);
+  border: 1px solid var(--moss-line);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+}
+
+/* ─── Typing indicator ──────────────────────────────────────── */
+
+.typing-indicator {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 0.25rem 0;
+}
+
+.typing-indicator span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--moss-dk);
+  opacity: 0.4;
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes pulse-dot {
+  0%, 80%, 100% { opacity: 0.4; transform: scale(1); }
+  40%           { opacity: 1;   transform: scale(1.2); }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.8); opacity: 0.7; }
+  70%  { transform: scale(2.0); opacity: 0; }
+  100% { transform: scale(2.0); opacity: 0; }
+}
+
+/* ─── Input area ────────────────────────────────────────────── */
+
+.input-area {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  border-top: 1px solid var(--border);
+  padding-top: 1.25rem;
+}
+
+.input-area textarea {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  color: var(--text-meta);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.65rem 0.875rem;
+  resize: none;
+  line-height: 1.55;
+  min-height: 44px;
+  max-height: 160px;
+  transition: border-color 0.2s;
+}
+
+.input-area textarea:focus {
+  outline: none;
+  border-color: var(--moss);
+}
+
+.input-area textarea::placeholder {
+  color: var(--text-ghost);
+}
+
+.btn-send {
+  font-family: var(--font-sc);
+  font-size: 0.9375rem;
+  letter-spacing: 0.08em;
+  color: var(--moss-dk);
+  background: transparent;
+  border: 1px solid var(--moss-line);
+  border-radius: 10px;
+  padding: 0.65rem 1.25rem;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s;
+  height: 44px;
+}
+
+.btn-send:hover:not(:disabled) {
+  background: var(--moss-faint);
+  border-color: var(--moss);
+}
+
+.btn-send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ─── Mobile ────────────────────────────────────────────────── */
+
+/* Hide hamburger on desktop */
+.mobile-menu-btn {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .nav-links { display: none; }
+
+  .tool-wrap {
+    padding: 2rem 1rem 3rem;
+  }
+}
+
+/* ─── Bottom tabs (mobile only) ────────────────────────────────── */
+
+.bottom-tabs-spacer {
+  height: 60px;
+}
+
+@media (min-width: 641px) {
+  /* Hide bottom tabs on desktop */
+  [data-bottom-tabs] {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Global clearance: whenever the fixed bottom tab bar is present, reserve
+     space beneath every page so no element (buttons especially) hides under
+     it. Scoped with :has() so pages that hide the bar — Mission Control, the
+     first-light gate — keep their full-viewport layout untouched. */
+  body:has([data-bottom-tabs]) {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Add bottom padding so content clears the tab bar */
+  .page-shell {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+  .tool-wrap {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Mobile font boosts — ensure minimum readable sizes */
+  .bubble            { font-size: 1.25rem !important; line-height: 1.7 !important; }
+  .bubble-user       { font-size: 1.125rem !important; }
+  .tool-eyebrow      { font-size: 0.8125rem !important; }
+  .auth-eyebrow      { font-size: 0.8125rem !important; }
+  .btn-send          { font-size: 1.0625rem !important; }
+  .input-area textarea { font-size: 1.125rem !important; }
+  .nav-links a       { font-size: 13px !important; }
+}
