@@ -17,18 +17,20 @@
 
 /* ── Field Notes — personal rail + shared chrome ──────────────── */
 export const fn = {
-  ground:    '#E9EDE4',                    // sage paper — page background
-  object:    '#F4F5EF',                    // leaf — cards, panels, modals
-  ink:       '#26302A',                    // graphite — primary text
-  moss:      '#6E7F5C',                    // living — active, progress, sync-ok, primary actions
-  mossTint:  'rgba(110,127,92,0.08)',
-  mossEdge:  'rgba(110,127,92,0.30)',
-  clay:      '#B45A3C',                    // attention — needs-you, warnings
-  clayTint:  'rgba(180,90,60,0.08)',
-  clayEdge:  'rgba(180,90,60,0.35)',
-  meta:      'rgba(38,48,42,0.68)',        // secondary text
-  ghost:     'rgba(38,48,42,0.55)',        // floor — nothing below
-  rule:      'rgba(38,48,42,0.14)',        // hairlines, dividers
+  ground:    '#f3f0e9',                    // Omega-bright warm cream — page background
+  object:    '#ffffff',                    // card / raised surface
+  surface2:  '#eae5da',                    // recessed / stat tiles
+  ink:       '#262420',                    // warm ink — primary text
+  moss:      '#4c6b45',                    // living accent · My Life pole
+  mossTint:  'rgba(76,107,69,0.08)',
+  mossEdge:  'rgba(76,107,69,0.30)',
+  clay:      '#a9743f',                    // attention accent · Our Planet pole
+  clayTint:  'rgba(169,116,63,0.08)',
+  clayEdge:  'rgba(169,116,63,0.35)',
+  gold:      '#cf9a24',                    // scarf-gold — the NextUs wordmark `Us`
+  meta:      'rgba(38,36,32,0.68)',        // secondary text
+  ghost:     'rgba(38,36,32,0.58)',        // floor — nothing below
+  rule:      'rgba(38,36,32,0.11)',        // hairlines, dividers
 }
 
 /* ── The Atlas — civilisational rail ──────────────────────────── */

@@ -35,7 +35,7 @@ import { CIV_DOMAINS } from '../constants/domains'
 import { body, sc } from '../../lib/designTokens'
 
 const heading = { fontFamily: "'Fraunces', Georgia, serif", fontWeight: 300 }
-const gold  = '#26302A'
+const gold  = '#262420'
 const goldB = '#6E7F5C'
 const ink   = '#0F1523'
 const bg    = '#FAFAF7'
@@ -59,8 +59,8 @@ function FilterPill({ label, active, onClick }) {
       style={{
         ...sc, fontSize: '13px', letterSpacing: '0.10em',
         color: active ? '#FFFFFF' : 'rgba(15,21,35,0.65)',
-        background: active ? gold : 'rgba(110,127,92,0.06)',
-        border: `1px solid ${active ? gold : 'rgba(110,127,92,0.25)'}`,
+        background: active ? gold : 'rgba(76,107,69,0.06)',
+        border: `1px solid ${active ? gold : 'rgba(76,107,69,0.25)'}`,
         borderRadius: '40px', padding: '6px 14px',
         cursor: 'pointer', whiteSpace: 'nowrap',
       }}>
@@ -79,8 +79,8 @@ function OfferingCard({ offering, actor }) {
   return (
     <div style={{
       padding: '22px 24px',
-      background: offering.is_flagship ? 'rgba(110,127,92,0.04)' : '#FFFFFF',
-      border: offering.is_flagship ? `1.5px solid rgba(110,127,92,0.35)` : '1px solid rgba(110,127,92,0.14)',
+      background: offering.is_flagship ? 'rgba(76,107,69,0.04)' : '#FFFFFF',
+      border: offering.is_flagship ? `1.5px solid rgba(76,107,69,0.35)` : '1px solid rgba(76,107,69,0.14)',
       borderRadius: '12px',
       display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
       minHeight: '220px',
@@ -94,7 +94,7 @@ function OfferingCard({ offering, actor }) {
             </span>
           )}
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
-            background: 'rgba(110,127,92,0.07)', border: '1px solid rgba(110,127,92,0.22)',
+            background: 'rgba(76,107,69,0.07)', border: '1px solid rgba(76,107,69,0.22)',
             borderRadius: '4px', padding: '2px 8px' }}>
             {typeLabel}
           </span>
@@ -126,7 +126,7 @@ function OfferingCard({ offering, actor }) {
         <a href={offering.url} target="_blank" rel="noopener noreferrer"
           style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold,
             textDecoration: 'none', marginTop: '14px',
-            paddingTop: '14px', borderTop: '1px solid rgba(110,127,92,0.18)' }}>
+            paddingTop: '14px', borderTop: '1px solid rgba(76,107,69,0.18)' }}>
           Learn more →
         </a>
       )}
@@ -280,7 +280,7 @@ export function NextMarketPage() {
           ) : filtered.length === 0 ? (
             <div style={{
               padding: '60px 40px', background: '#FFFFFF',
-              border: '1px solid rgba(110,127,92,0.18)', borderRadius: '14px',
+              border: '1px solid rgba(76,107,69,0.18)', borderRadius: '14px',
               textAlign: 'center',
             }}>
               <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6, margin: '0 0 8px' }}>
@@ -311,7 +311,7 @@ export function NextMarketPage() {
           {/* ── Footer note ── */}
           <div style={{
             marginTop: '80px', paddingTop: '32px',
-            borderTop: '1px solid rgba(110,127,92,0.18)',
+            borderTop: '1px solid rgba(76,107,69,0.18)',
             ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7,
           }}>
             Every link goes directly to the source. NextUs doesn't take a cut

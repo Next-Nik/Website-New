@@ -37,13 +37,9 @@ export function Nav({ activePath, hideHamburger = false }) {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
 
-          {/* Logo */}
-          <Link to="/" className="nav-logo" onClick={closeMobile}>
-            <picture>
-              {/* Darker gold mark on mobile — reads better on the light background */}
-              <source srcSet="/logo_nav_mobile.png" media="(max-width: 640px)" />
-              <img src="/logo_nav.png" alt="NextUs" />
-            </picture>
+          {/* Wordmark — text, scarf-gold `Us`, matching the four-beat home */}
+          <Link to="/" className="nav-wordmark" onClick={closeMobile} aria-label="NextUs · home">
+            Next<span>Us</span>
           </Link>
 
           {/* Desktop centre — marketing nav links (signed-out only) */}
@@ -127,18 +123,18 @@ export function Nav({ activePath, hideHamburger = false }) {
         .nav-sign-in {
           padding: 10px 22px;
           border-radius: 40px;
-          border: 1.5px solid rgba(110,127,92,0.55);
-          background: rgba(110,127,92,0.06);
+          border: 1.5px solid rgba(76,107,69,0.55);
+          background: rgba(76,107,69,0.06);
           font-family: 'IBM Plex Mono', 'Courier New', monospace;
           font-size: 13px;
           font-weight: 500;
           letter-spacing: 0.14em;
-          color: #56634A;
+          color: #3c5637;
           text-decoration: none;
           transition: background 0.18s;
           white-space: nowrap;
         }
-        .nav-sign-in:hover { background: rgba(110,127,92,0.10); }
+        .nav-sign-in:hover { background: rgba(76,107,69,0.10); }
 
         /* ── Hamburger (mobile only) ── */
         .nav-hamburger {

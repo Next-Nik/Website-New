@@ -27,10 +27,10 @@ import { supabase }    from '../hooks/useSupabase'
 import { WheelSVG }    from '../app/components/WheelSVG'
 import WorldWheel      from '../app/components/mission-control/WorldWheel'
 
-const gold      = '#56634A'   // fn.moss (dark) — heritage bridge name kept, value moved
-const goldBdr   = 'rgba(110,127,92,0.55)'
-const ink       = '#26302A'   // fn.ink
-const inkFaint  = 'rgba(38,48,42,0.68)'
+const gold      = '#3c5637'   // fn.moss (dark) — heritage bridge name kept, value moved
+const goldBdr   = 'rgba(76,107,69,0.55)'
+const ink       = '#262420'   // fn.ink
+const inkFaint  = 'rgba(38,36,32,0.68)'
 
 // ── Fractal hero data ────────────────────────────────────────
 // Illustrative scores only — this is the signed-out front door,
@@ -146,7 +146,7 @@ function ProofOfLife() {
       maxWidth: '1100px',
       margin: '0 auto',
       padding: 'clamp(40px,5vw,64px) clamp(20px,5vw,40px)',
-      borderTop: '1px solid rgba(38,48,42,0.10)',
+      borderTop: '1px solid rgba(38,36,32,0.10)',
     }}>
       <div style={{ textAlign: 'center', marginBottom: countItems.length ? 'clamp(28px,3vw,40px)' : 0 }}>
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '14px' }}>
@@ -213,13 +213,13 @@ function PillButton({ href, children, light }) {
     gap: '8px',
     padding: '13px 28px',
     borderRadius: '40px',
-    border: `1.5px solid ${light ? goldBdr : 'rgba(88,160,138,0.45)'}`,
-    background: light ? 'rgba(110,127,92,0.06)' : 'transparent',
+    border: `1.5px solid ${light ? goldBdr : 'rgba(76,107,69,0.45)'}`,
+    background: light ? 'rgba(76,107,69,0.06)' : 'transparent',
     ...sc,
     fontSize: '13px',
     fontWeight: 500,
     letterSpacing: '0.14em',
-    color: light ? gold : 'rgba(88,160,138,0.9)',
+    color: light ? gold : 'rgba(76,107,69,0.9)',
     textDecoration: 'none',
     cursor: 'pointer',
     transition: 'all 0.18s',
@@ -230,14 +230,14 @@ function PillButton({ href, children, light }) {
       href={href}
       style={base}
       onMouseEnter={e => {
-        e.currentTarget.style.background = light ? 'rgba(110,127,92,0.10)' : 'rgba(88,160,138,0.12)'
-        e.currentTarget.style.borderColor = light ? goldBdr : 'rgba(88,160,138,0.6)'
-        e.currentTarget.style.color = light ? gold : '#58A08A'
+        e.currentTarget.style.background = light ? 'rgba(76,107,69,0.10)' : 'rgba(76,107,69,0.12)'
+        e.currentTarget.style.borderColor = light ? goldBdr : 'rgba(76,107,69,0.6)'
+        e.currentTarget.style.color = light ? gold : '#4c6b45'
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.background = light ? 'rgba(110,127,92,0.06)' : 'transparent'
-        e.currentTarget.style.borderColor = light ? goldBdr : 'rgba(88,160,138,0.45)'
-        e.currentTarget.style.color = light ? gold : 'rgba(88,160,138,0.9)'
+        e.currentTarget.style.background = light ? 'rgba(76,107,69,0.06)' : 'transparent'
+        e.currentTarget.style.borderColor = light ? goldBdr : 'rgba(76,107,69,0.45)'
+        e.currentTarget.style.color = light ? gold : 'rgba(76,107,69,0.9)'
       }}
     >
       {children}
@@ -248,13 +248,13 @@ function PillButton({ href, children, light }) {
 // ── Path card — horizontal split (image | copy) ──────────────
 function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dark }) {
   // dark = The Atlas door (civilisational) · light = Field Notes door (personal)
-  const bg     = dark ? '#10222B' : '#F4F5EF'
-  const clr    = dark ? '#EAF1ED' : ink
+  const bg     = dark ? '#10222B' : '#f3f0e9'
+  const clr    = dark ? '#f3f0e9' : ink
   const clrDim = dark ? 'rgba(217,226,221,0.66)' : inkFaint
-  const btnBorder = dark ? 'rgba(88,160,138,0.45)' : goldBdr
-  const btnBg     = dark ? 'transparent' : 'rgba(110,127,92,0.06)'
-  const btnClr    = dark ? 'rgba(88,160,138,0.9)' : gold
-  const imageBg   = dark ? '#10222B' : '#F4F5EF'
+  const btnBorder = dark ? 'rgba(76,107,69,0.45)' : goldBdr
+  const btnBg     = dark ? 'transparent' : 'rgba(76,107,69,0.06)'
+  const btnClr    = dark ? 'rgba(76,107,69,0.9)' : gold
+  const imageBg   = dark ? '#10222B' : '#f3f0e9'
 
   const imagePanel = (
     <div className="path-card-image" style={{ background: imageBg }}>
@@ -265,14 +265,14 @@ function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dar
   const copyPanel = (
     <div className="path-card-copy">
       {eyebrow && (
-        <span className="path-card-eyebrow" style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', textTransform: 'uppercase', color: dark ? '#58A08A' : gold, display: 'block', marginBottom: '14px' }}>
+        <span className="path-card-eyebrow" style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', textTransform: 'uppercase', color: dark ? '#4c6b45' : gold, display: 'block', marginBottom: '14px' }}>
           {eyebrow}
         </span>
       )}
       <h2 className="path-card-heading" style={{ ...serif, fontSize: 'clamp(26px,2.8vw,38px)', fontWeight: 500, color: clr, lineHeight: 1.1, margin: 0, letterSpacing: '-0.005em' }}>
         {heading}
       </h2>
-      <div className="path-card-divider" style={{ width: '32px', height: '1px', background: dark ? '#58A08A' : gold, opacity: 0.55, margin: '18px 0 20px' }} />
+      <div className="path-card-divider" style={{ width: '32px', height: '1px', background: dark ? '#4c6b45' : gold, opacity: 0.55, margin: '18px 0 20px' }} />
       <p className="path-card-body" style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: clrDim, margin: '0 0 28px 0' }}>
         {bodyText}
       </p>
@@ -291,9 +291,9 @@ function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dar
           transition: 'all 0.18s',
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.background = dark ? 'rgba(88,160,138,0.12)' : 'rgba(110,127,92,0.10)'
-          e.currentTarget.style.borderColor = dark ? 'rgba(88,160,138,0.6)' : goldBdr
-          e.currentTarget.style.color = dark ? '#58A08A' : gold
+          e.currentTarget.style.background = dark ? 'rgba(76,107,69,0.12)' : 'rgba(76,107,69,0.10)'
+          e.currentTarget.style.borderColor = dark ? 'rgba(76,107,69,0.6)' : goldBdr
+          e.currentTarget.style.color = dark ? '#4c6b45' : gold
         }}
         onMouseLeave={e => {
           e.currentTarget.style.background = btnBg
@@ -309,7 +309,7 @@ function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dar
   return (
     <div
       className={`path-card path-card--image-${imageSide}`}
-      style={{ background: bg, border: dark ? '1px solid rgba(88,160,138,0.20)' : '1px solid rgba(38,48,42,0.10)' }}
+      style={{ background: bg, border: dark ? '1px solid rgba(76,107,69,0.20)' : '1px solid rgba(38,36,32,0.10)' }}
     >
       {imagePanel}
       {copyPanel}
@@ -373,7 +373,7 @@ export function MarketingHomePage() {
   const PERSONAL_STEPS = buildPersonalSteps(t)
   const PLANET_STEPS   = buildPlanetSteps(t)
   return (
-    <div style={{ background: '#F4F5EF', minHeight: '100dvh' }}>
+    <div style={{ background: '#f3f0e9', minHeight: '100dvh' }}>
       <Nav />
 
       {/* ── Hero ─────────────────────────────────── */}
@@ -436,7 +436,7 @@ export function MarketingHomePage() {
 
       {/* ── The Earth Challenge · front door ─────── */}
       <section style={{
-        background: 'radial-gradient(ellipse at 50% 0%, rgba(242,196,90,0.09), transparent 62%), #141B2C',
+        background: 'radial-gradient(ellipse at 50% 0%, rgba(76,107,69,0.09), transparent 62%), #141B2C',
         padding: 'clamp(40px,5vw,56px) clamp(20px,5vw,40px)',
       }}>
         <div className="mh-earth" style={{
@@ -446,7 +446,7 @@ export function MarketingHomePage() {
           <img src="/beacon/mark.png?v=2" alt="" loading="lazy"
             style={{ width: 'clamp(150px,18vw,210px)', flex: 'none' }} />
           <div style={{ flex: '1 1 340px', minWidth: '280px', maxWidth: '520px' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#D7A24A', display: 'block' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#4c6b45', display: 'block' }}>
               The NextUs Earth Challenge
             </span>
             <h2 style={{ ...serif, fontWeight: 300, fontSize: 'clamp(28px,3.4vw,38px)', color: '#FBF8F0', lineHeight: 1.1, margin: '8px 0 10px' }}>
@@ -455,12 +455,12 @@ export function MarketingHomePage() {
             <p style={{ ...body, fontSize: '16px', lineHeight: 1.6, color: 'rgba(251,248,240,0.82)', margin: '0 0 14px', maxWidth: '46ch' }}>
               Organisations working for the living world are posting real challenges. People are taking them on. Every action adds a spark to one shared beacon.
             </p>
-            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#D7A24A', marginBottom: '18px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#4c6b45', marginBottom: '18px' }}>
               Runs to 28 September &middot; Climate Week NYC
             </div>
             <Link to="/earth" style={{
               display: 'inline-block', ...sc, fontSize: '14px', letterSpacing: '0.14em', textTransform: 'uppercase',
-              color: '#1a1320', background: '#F2C45A', borderRadius: '28px', padding: '13px 28px', textDecoration: 'none',
+              color: '#ffffff', background: '#4c6b45', borderRadius: '28px', padding: '13px 28px', textDecoration: 'none',
             }}>
               See the challenge →
             </Link>
@@ -475,7 +475,7 @@ export function MarketingHomePage() {
         padding: '0 clamp(20px,5vw,40px)',
       }}>
         <div style={{ textAlign: 'center', marginBottom: 'clamp(20px,2.4vw,28px)' }}>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#58A08A' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#4c6b45' }}>
             <Copy id="home.doors.eyebrow" />
           </span>
         </div>
@@ -542,7 +542,7 @@ export function MarketingHomePage() {
               ...sc, fontSize: '14px', letterSpacing: '0.16em',
               color: gold, textDecoration: 'underline', textUnderlineOffset: '4px',
             }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#8A5C15' }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#3c5637' }}
             onMouseLeave={e => { e.currentTarget.style.color = gold }}
           >
             <Copy id="home.hiw.seeall" />
@@ -578,7 +578,7 @@ export function MarketingHomePage() {
             ...serif,
             fontSize: 'clamp(22px,3.5vw,36px)',
             fontWeight: 300,
-            color: '#F4F5EF',
+            color: '#f3f0e9',
             lineHeight: 1.5,
             maxWidth: '640px',
             margin: '0 auto 32px',
@@ -592,13 +592,13 @@ export function MarketingHomePage() {
               display: 'inline-flex', alignItems: 'center', gap: '8px',
               padding: '14px 32px', borderRadius: '40px',
               border: `1.5px solid ${goldBdr}`,
-              background: '#58A08A',
+              background: '#4c6b45',
               ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.16em',
               color: '#FFFFFF', textDecoration: 'none',
               transition: 'background 0.18s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#58A08A' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#58A08A' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#4c6b45' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#4c6b45' }}
           >
             <Copy id="home.align.cta" />
           </a>
@@ -607,9 +607,9 @@ export function MarketingHomePage() {
 
       {/* ── Founder band ──────────────────────────── */}
       <section style={{
-        background: '#F4F5EF',
+        background: '#f3f0e9',
         padding: 'clamp(28px,3.5vw,40px) clamp(20px,5vw,40px)',
-        borderTop: '1px solid rgba(38,48,42,0.10)',
+        borderTop: '1px solid rgba(38,36,32,0.10)',
       }}>
         <div style={{ maxWidth: '720px', margin: '0 auto', textAlign: 'center' }}>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '10px' }}>
@@ -627,13 +627,13 @@ export function MarketingHomePage() {
               display: 'inline-flex', alignItems: 'center', gap: '8px',
               padding: '12px 26px', borderRadius: '40px',
               border: `1.5px solid ${goldBdr}`,
-              background: 'rgba(110,127,92,0.06)',
+              background: 'rgba(76,107,69,0.06)',
               ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
               color: gold, textDecoration: 'none',
               transition: 'background 0.18s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.10)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.06)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(76,107,69,0.10)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(76,107,69,0.06)' }}
           >
             <Copy id="home.founder.cta" />
           </a>
@@ -642,9 +642,9 @@ export function MarketingHomePage() {
 
       {/* ── Maker entry point ─────────────────────── */}
       <section style={{
-        background: '#F4F5EF',
+        background: '#f3f0e9',
         padding: 'clamp(48px,6vw,72px) clamp(20px,5vw,40px)',
-        borderTop: '1px solid rgba(38,48,42,0.10)',
+        borderTop: '1px solid rgba(38,36,32,0.10)',
       }}>
         <div style={{
           maxWidth: '720px',
@@ -666,13 +666,13 @@ export function MarketingHomePage() {
               display: 'inline-flex', alignItems: 'center', gap: '8px',
               padding: '12px 26px', borderRadius: '40px',
               border: `1.5px solid ${goldBdr}`,
-              background: 'rgba(110,127,92,0.06)',
+              background: 'rgba(76,107,69,0.06)',
               ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
               color: gold, textDecoration: 'none',
               transition: 'background 0.18s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.10)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.06)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(76,107,69,0.10)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(76,107,69,0.06)' }}
           >
             <Copy id="home.maker.cta" />
           </a>
@@ -702,7 +702,7 @@ export function MarketingHomePage() {
         .fractal-link {
           width: clamp(36px,6vw,88px);
           height: 1px;
-          background: linear-gradient(90deg, rgba(110,127,92,0.15), rgba(110,127,92,0.6), rgba(110,127,92,0.15));
+          background: linear-gradient(90deg, rgba(76,107,69,0.15), rgba(76,107,69,0.6), rgba(76,107,69,0.15));
           flex-shrink: 0;
           margin-bottom: 28px;
         }
@@ -727,7 +727,7 @@ export function MarketingHomePage() {
           .fractal-link {
             width: 1px;
             height: 32px;
-            background: linear-gradient(180deg, rgba(110,127,92,0.15), rgba(110,127,92,0.6), rgba(110,127,92,0.15));
+            background: linear-gradient(180deg, rgba(76,107,69,0.15), rgba(76,107,69,0.6), rgba(76,107,69,0.15));
             margin-bottom: 0;
           }
         }
@@ -751,21 +751,21 @@ export function MarketingHomePage() {
           display: flex;
           flex-direction: column;
           background: #FFFFFF;
-          border: 1px solid rgba(38,48,42,0.12);
+          border: 1px solid rgba(38,36,32,0.12);
           border-radius: 12px;
           overflow: hidden;
           text-decoration: none;
           transition: border-color 0.18s, box-shadow 0.18s;
         }
         .pol-actor-card:hover {
-          border-color: rgba(110,127,92,0.4);
-          box-shadow: 0 2px 12px rgba(38,48,42,0.06);
+          border-color: rgba(76,107,69,0.4);
+          box-shadow: 0 2px 12px rgba(38,36,32,0.06);
         }
         .pol-actor-image {
           height: 150px;
           overflow: hidden;
           flex-shrink: 0;
-          background: rgba(38,48,42,0.04);
+          background: rgba(38,36,32,0.04);
         }
         .pol-actor-image img {
           width: 100%;
@@ -888,7 +888,7 @@ export function MarketingHomePage() {
         }
         .hiw-grid > .hiw-track:first-child {
           padding-right: clamp(32px,5vw,64px);
-          border-right: 1px solid rgba(38,48,42,0.14);
+          border-right: 1px solid rgba(38,36,32,0.14);
         }
         .hiw-steps {
           display: flex;
@@ -903,7 +903,7 @@ export function MarketingHomePage() {
           .hiw-grid > .hiw-track:first-child {
             padding-right: 0;
             border-right: none;
-            border-bottom: 1px solid rgba(38,48,42,0.14);
+            border-bottom: 1px solid rgba(38,36,32,0.14);
             padding-bottom: 48px;
           }
         }

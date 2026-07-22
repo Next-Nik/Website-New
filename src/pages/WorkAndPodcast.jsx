@@ -8,9 +8,9 @@ import { serif, body, sc } from '../lib/designTokens'
 
 function Quote({ text, cite }) {
   return (
-    <div style={{ borderLeft: '2px solid rgba(110,127,92,0.20)', padding: '14px 0 14px 28px', margin: '0 0 28px', maxWidth: '600px' }}>
+    <div style={{ borderLeft: '2px solid rgba(76,107,69,0.20)', padding: '14px 0 14px 28px', margin: '0 0 28px', maxWidth: '600px' }}>
       <p style={{ ...body, fontSize: '16px', color: '#0F1523', lineHeight: 1.75, marginBottom: '10px' }}>{text}</p>
-      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#26302A' }}>{'—'} {cite}</span>
+      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#262420' }}>{'—'} {cite}</span>
     </div>
   )
 }
@@ -42,14 +42,14 @@ function TestimonialCard({ q, cite }) {
       flexShrink: 0,
       width: '300px',
       background: '#FFFFFF',
-      border: '1.5px solid rgba(110,127,92,0.20)',
+      border: '1.5px solid rgba(76,107,69,0.20)',
       borderRadius: '14px',
       padding: '24px 28px',
       marginRight: '20px',
     }}>
       <Stars />
       <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '16px' }}>{q}</p>
-      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#26302A' }}>{'—'} {cite}</span>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#262420' }}>{'—'} {cite}</span>
     </div>
   )
 }
@@ -106,8 +106,8 @@ function TestimonialCarousel() {
 
 function Card({ label, body }) {
   return (
-    <div style={{ background: 'rgba(110,127,92,0.05)', borderRadius: '14px', padding: '26px 28px', marginBottom: '10px', border: '1.5px solid rgba(110,127,92,0.78)' }}>
-      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: '#26302A', display: 'block', marginBottom: '10px' }}>{label}</span>
+    <div style={{ background: 'rgba(76,107,69,0.05)', borderRadius: '14px', padding: '26px 28px', marginBottom: '10px', border: '1.5px solid rgba(76,107,69,0.78)' }}>
+      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: '#262420', display: 'block', marginBottom: '10px' }}>{label}</span>
       <div style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '16px', color: '#0F1523', lineHeight: 1.7 }}>{body}</div>
     </div>
   )
@@ -121,7 +121,7 @@ function CalendlyEmbed() {
       height="700"
       frameBorder="0"
       title="Book a call with Nik"
-      style={{ borderRadius: '14px', border: '1.5px solid rgba(110,127,92,0.78)', display: 'block' }}
+      style={{ borderRadius: '14px', border: '1.5px solid rgba(76,107,69,0.78)', display: 'block' }}
     />
   )
 }
@@ -136,22 +136,22 @@ export function WorkWithNikPage() {
         {/* Two-column hero: text left, photo right */}
         <div style={{ display: 'flex', gap: '56px', alignItems: 'flex-start', marginBottom: '64px', flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 320px' }}>
-            <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '16px' }}>Work with Nik</span>
+            <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px' }}>Work with Nik</span>
             <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-              From circling<br /><em style={{ fontStyle: 'normal', color: '#26302A' }}>to building.</em>
+              From circling<br /><em style={{ fontStyle: 'normal', color: '#262420' }}>to building.</em>
             </h1>
             <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '40px', maxWidth: '480px' }}>One-on-one work for people who are ready to move {'—'} not just understand.</p>
-            <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(38,48,42,0.8)', background: '#6E7F5C', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Book a discovery call {'→'}</a>
+            <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#6E7F5C', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Book a discovery call {'→'}</a>
           </div>
           {/* Photo — drop /nik.png into your /public folder. Graceful fallback until then. */}
           <div style={{ flex: '0 0 auto', width: 'clamp(160px, 28vw, 260px)' }}>
             <div style={{
               width: '100%', aspectRatio: '3/4',
               borderRadius: '4px', overflow: 'hidden',
-              border: '1.5px solid rgba(110,127,92,0.70)',
-              outline: '1px solid rgba(110,127,92,0.35)',
+              border: '1.5px solid rgba(76,107,69,0.70)',
+              outline: '1px solid rgba(76,107,69,0.35)',
               outlineOffset: '5px',
-              background: 'rgba(110,127,92,0.05)',
+              background: 'rgba(76,107,69,0.05)',
             }}>
               <img
                 src="/nik.jpeg"
@@ -162,7 +162,7 @@ export function WorkWithNikPage() {
                   e.currentTarget.parentNode.style.display = 'flex'
                   e.currentTarget.parentNode.style.alignItems = 'center'
                   e.currentTarget.parentNode.style.justifyContent = 'center'
-                  e.currentTarget.parentNode.style.background = 'rgba(110,127,92,0.05)'
+                  e.currentTarget.parentNode.style.background = 'rgba(76,107,69,0.05)'
                 }}
               />
             </div>
@@ -171,7 +171,7 @@ export function WorkWithNikPage() {
 
         <Quote text="Someone who will shift you out of emotional processing, analysis, or healing mode and into 'what's next, what are you building, what does your future look like' — and who treats you as someone capable of operating at a high level." cite="B.G.B." />
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', margin: '0 0 40px' }} />
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '0 0 40px' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>What this is.</h2>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>One-on-one work built around where you actually are and what you're trying to build. Not a fixed programme. A real conversation and real support {'—'} determined by the work, not a curriculum.</p>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>The work draws on the full ecosystem {'—'} the Horizon Suite, Purpose Piece, Horizon Leap {'—'} but what it draws on in any engagement is determined by what's actually needed.</p>
@@ -191,11 +191,11 @@ export function WorkWithNikPage() {
       <div className="wap-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 0' }}>
         <TestimonialCarousel />
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', margin: '40px 0' }} />
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '40px 0' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>How it works.</h2>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Start with a discovery call. No commitment, no obligation {'—'} just an honest conversation about where you are and whether this is the right container for the work.</p>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '32px', maxWidth: '600px' }}>Engagements begin at $3,500/month with a three-month commitment. The Horizon Suite included for the duration. If that's in range, let's talk.</p>
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '20px' }}>Book a time</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '20px' }}>Book a time</span>
 
         {/* Calendly embed */}
         <CalendlyEmbed />
@@ -204,9 +204,9 @@ export function WorkWithNikPage() {
 
       {/* Nik's story */}
       <div className="wap-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 0' }}>
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', margin: '0 0 64px' }} />
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '0 0 64px' }} />
 
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '14px' }}>Nik Wood · Founder</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '14px' }}>Nik Wood · Founder</span>
         <h2 style={{ ...serif, fontSize: 'clamp(32px,4.5vw,52px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, marginBottom: '40px' }}>
           The person behind the work.
         </h2>
@@ -221,7 +221,7 @@ export function WorkWithNikPage() {
           NextUs is that understanding, made into infrastructure.
         </p>
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', margin: '0 0 52px' }} />
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '0 0 52px' }} />
 
         <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.25, margin: '0 0 20px' }}>The long arm.</h3>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '18px', maxWidth: '640px' }}>
@@ -234,7 +234,7 @@ export function WorkWithNikPage() {
           Eventually, something shifted. People started noticing it. They asked if he could help them find it for themselves. By his early twenties he was being paid to coach. The question was never whether this was the work. It was always how far it could go.
         </p>
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', margin: '0 0 52px' }} />
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '0 0 52px' }} />
 
         <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.25, margin: '0 0 20px' }}>Cracked open.</h3>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '18px', maxWidth: '640px' }}>
@@ -247,7 +247,7 @@ export function WorkWithNikPage() {
           The podcast went quiet for seven years. The ecosystem was being built.
         </p>
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', margin: '0 0 52px' }} />
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '0 0 52px' }} />
 
         <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.25, margin: '0 0 20px' }}>What drives this.</h3>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '18px', maxWidth: '640px' }}>
@@ -260,7 +260,7 @@ export function WorkWithNikPage() {
           Life on earth and humanity could be genuinely thriving, if that's what we individually and collectively aimed ourselves at.
         </p>
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', margin: '0 0 52px' }} />
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '0 0 52px' }} />
 
         <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.25, margin: '0 0 28px' }}>Values.</h3>
         <div style={{ display: 'grid', gap: '4px', marginBottom: '80px' }}>
@@ -274,8 +274,8 @@ export function WorkWithNikPage() {
             ['Wabi Sabi',    'The beauty of imperfection, impermanence, and incompleteness.'],
             ['Meliorism',    'The world can be made better through human effort. The belief beneath all of this.'],
           ].map(([name, desc]) => (
-            <div key={name} style={{ borderRight: '3px solid rgba(110,127,92,0.20)', padding: '14px 24px 14px 0', textAlign: 'right' }}>
-              <strong style={{ display: 'block', ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#26302A', marginBottom: '4px' }}>{name}</strong>
+            <div key={name} style={{ borderRight: '3px solid rgba(76,107,69,0.20)', padding: '14px 24px 14px 0', textAlign: 'right' }}>
+              <strong style={{ display: 'block', ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#262420', marginBottom: '4px' }}>{name}</strong>
               <p style={{ margin: 0, ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)' }}>{desc}</p>
             </div>
           ))}
@@ -319,8 +319,8 @@ function EpisodeCard({ ep, isPlaying, onPlay }) {
 
   return (
     <div style={{
-      background: isPlaying ? 'rgba(110,127,92,0.05)' : '#FFFFFF',
-      border: `1.5px solid ${isPlaying ? 'rgba(110,127,92,0.78)' : 'rgba(110,127,92,0.20)'}`,
+      background: isPlaying ? 'rgba(76,107,69,0.05)' : '#FFFFFF',
+      border: `1.5px solid ${isPlaying ? 'rgba(76,107,69,0.78)' : 'rgba(76,107,69,0.20)'}`,
       borderRadius: '14px',
       padding: '18px 22px',
       transition: 'border-color 0.2s, background 0.2s',
@@ -335,9 +335,9 @@ function EpisodeCard({ ep, isPlaying, onPlay }) {
             width: '36px',
             height: '36px',
             borderRadius: '50%',
-            border: '1.5px solid rgba(110,127,92,0.78)',
-            background: isPlaying ? '#6E7F5C' : 'rgba(110,127,92,0.05)',
-            color: isPlaying ? '#FFFFFF' : '#26302A',
+            border: '1.5px solid rgba(76,107,69,0.78)',
+            background: isPlaying ? '#6E7F5C' : 'rgba(76,107,69,0.05)',
+            color: isPlaying ? '#FFFFFF' : '#262420',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -346,7 +346,7 @@ function EpisodeCard({ ep, isPlaying, onPlay }) {
             marginTop: '2px',
           }}
           onMouseEnter={e => { if (!isPlaying) { e.currentTarget.style.background = '#6E7F5C'; e.currentTarget.style.color = '#FFFFFF' } }}
-          onMouseLeave={e => { if (!isPlaying) { e.currentTarget.style.background = 'rgba(110,127,92,0.05)'; e.currentTarget.style.color = '#26302A' } }}
+          onMouseLeave={e => { if (!isPlaying) { e.currentTarget.style.background = 'rgba(76,107,69,0.05)'; e.currentTarget.style.color = '#262420' } }}
         >
           {isPlaying ? <PauseIcon /> : <PlayIcon />}
         </button>
@@ -355,7 +355,7 @@ function EpisodeCard({ ep, isPlaying, onPlay }) {
           {/* Meta row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px', flexWrap: 'wrap' }}>
             {ep.episodeNum && (
-              <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: '#26302A' }}>
+              <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: '#262420' }}>
                 EP {ep.episodeNum}
               </span>
             )}
@@ -389,7 +389,7 @@ function EpisodeCard({ ep, isPlaying, onPlay }) {
               {ep.description.length > 180 && (
                 <button
                   onClick={() => setExpanded(v => !v)}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em', color: '#26302A' }}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em', color: '#262420' }}
                 >
                   {expanded ? 'Show less' : 'Read more'}
                 </button>
@@ -443,14 +443,14 @@ function StickyPlayer({ episode, onClose }) {
   }
 
   return (
-    <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#0F1523', borderTop: '1px solid rgba(110,127,92,0.30)', padding: '12px 24px', zIndex: 200, display: 'flex', alignItems: 'center', gap: '14px' }}>
+    <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#0F1523', borderTop: '1px solid rgba(76,107,69,0.30)', padding: '12px 24px', zIndex: 200, display: 'flex', alignItems: 'center', gap: '14px' }}>
       <audio ref={audioRef} src={episode.audioUrl} preload="metadata" />
-      <button onClick={toggle} style={{ flexShrink: 0, width: '36px', height: '36px', borderRadius: '50%', border: '1.5px solid rgba(110,127,92,0.78)', background: 'rgba(110,127,92,0.15)', color: '#26302A', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+      <button onClick={toggle} style={{ flexShrink: 0, width: '36px', height: '36px', borderRadius: '50%', border: '1.5px solid rgba(76,107,69,0.78)', background: 'rgba(76,107,69,0.15)', color: '#262420', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
         {playing ? <PauseIcon /> : <PlayIcon />}
       </button>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ ...sc, fontSize: '13px', color: '#26302A', letterSpacing: '0.14em', marginBottom: '5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{episode.title}</div>
-        <div onClick={seek} style={{ width: '100%', height: '3px', background: 'rgba(110,127,92,0.20)', borderRadius: '2px', cursor: 'pointer', position: 'relative' }}>
+        <div style={{ ...sc, fontSize: '13px', color: '#262420', letterSpacing: '0.14em', marginBottom: '5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{episode.title}</div>
+        <div onClick={seek} style={{ width: '100%', height: '3px', background: 'rgba(76,107,69,0.20)', borderRadius: '2px', cursor: 'pointer', position: 'relative' }}>
           <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${progress}%`, background: '#6E7F5C', borderRadius: '2px' }} />
         </div>
       </div>
@@ -490,12 +490,12 @@ function PodcastArchive() {
 
   return (
     <>
-      <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', margin: '0 0 48px' }} />
+      <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '0 0 48px' }} />
 
       {/* Archive header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px', marginBottom: '28px', flexWrap: 'wrap' }}>
         <div>
-          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '4px' }}>Episode Archive</span>
+          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '4px' }}>Episode Archive</span>
           {!loading && (
             <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
               {query ? `${filtered.length} episodes found` : `${episodes.length} episodes`}
@@ -513,9 +513,9 @@ function PodcastArchive() {
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Search episodes..."
-            style={{ ...body, fontSize: '15px', paddingLeft: '38px', paddingRight: '16px', paddingTop: '10px', paddingBottom: '10px', border: '1.5px solid rgba(110,127,92,0.40)', borderRadius: '40px', background: '#FFFFFF', color: '#0F1523', outline: 'none', width: '210px', transition: 'border-color 0.2s' }}
-            onFocus={e => e.target.style.borderColor = 'rgba(110,127,92,0.78)'}
-            onBlur={e => e.target.style.borderColor = 'rgba(110,127,92,0.40)'}
+            style={{ ...body, fontSize: '15px', paddingLeft: '38px', paddingRight: '16px', paddingTop: '10px', paddingBottom: '10px', border: '1.5px solid rgba(76,107,69,0.40)', borderRadius: '40px', background: '#FFFFFF', color: '#0F1523', outline: 'none', width: '210px', transition: 'border-color 0.2s' }}
+            onFocus={e => e.target.style.borderColor = 'rgba(76,107,69,0.78)'}
+            onBlur={e => e.target.style.borderColor = 'rgba(76,107,69,0.40)'}
           />
         </div>
       </div>
@@ -551,9 +551,9 @@ function PodcastArchive() {
         <div style={{ textAlign: 'center', marginBottom: '16px' }}>
           <button
             onClick={() => setPage(p => p + 1)}
-            style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.16em', padding: '14px 36px', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '40px', background: 'rgba(110,127,92,0.05)', color: '#26302A', cursor: 'pointer', transition: 'all 0.2s' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.08)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.05)'; e.currentTarget.style.transform = 'translateY(0)' }}
+            style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.16em', padding: '14px 36px', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '40px', background: 'rgba(76,107,69,0.05)', color: '#262420', cursor: 'pointer', transition: 'all 0.2s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(76,107,69,0.08)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(76,107,69,0.05)'; e.currentTarget.style.transform = 'translateY(0)' }}
           >
             Load more episodes
           </button>
@@ -580,25 +580,25 @@ export function PodcastPage() {
       <style>{`@media (max-width: 640px) { .pod-main { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
       <Nav activePath="podcast" />
       <div className="pod-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '16px' }}>The Podcast</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px' }}>The Podcast</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           NextUs Conversations.
         </h1>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '500px' }}>220+ episodes since 2015. Long-form conversations at the intersection of personal development, human potential, and civilisational possibility.</p>
 
-        <div style={{ marginBottom: '64px', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid rgba(110,127,92,0.78)' }}>
+        <div style={{ marginBottom: '64px', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid rgba(76,107,69,0.78)' }}>
           <iframe title="Embed Player" style={{ border: 'none', display: 'block' }} src="https://play.libsyn.com/embed/destination/id/267499/height/476/theme/modern/size/extra-large/thumbnail/yes/custom-color/c8922a/video-height/200/playlist-height/64/direction/backward/download/yes/font-color/FFFFFF" height="476" width="100%" scrolling="no" allowFullScreen webkitallowfullscreen="true" mozallowfullscreen="true" />
         </div>
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', margin: '0 0 32px' }} />
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '16px' }}>Listen on</span>
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '0 0 32px' }} />
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px' }}>Listen on</span>
         {platforms.map(p => (
-          <a key={p.label} href={p.url} target="_blank" rel="noopener" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 22px', borderRadius: '14px', marginBottom: '8px', background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', textDecoration: 'none', transition: 'all 0.15s' }}
+          <a key={p.label} href={p.url} target="_blank" rel="noopener" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 22px', borderRadius: '14px', marginBottom: '8px', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', textDecoration: 'none', transition: 'all 0.15s' }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
           >
-            <div style={{ ...body, fontSize: '16px', color: '#26302A' }}>{p.label}</div>
-            <span style={{ color: '#26302A', fontSize: '16px' }}>{'→'}</span>
+            <div style={{ ...body, fontSize: '16px', color: '#262420' }}>{p.label}</div>
+            <span style={{ color: '#262420', fontSize: '16px' }}>{'→'}</span>
           </a>
         ))}
 
@@ -619,8 +619,8 @@ export function PodcastPage() {
         <div style={{ maxWidth: '380px', margin: '0 auto' }}>
           <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
           <form action="https://app.kit.com/forms/9215183/subscriptions" className="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
-            <input type="email" name="email_address" placeholder="your email" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(110,127,92,0.25)', borderRadius: '40px', fontFamily: "'Newsreader', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
-            <button type="submit" style={{ width: '100%', padding: '16px', background: '#6E7F5C', border: '1px solid rgba(38,48,42,0.8)', borderRadius: '40px', fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Join us →</button>
+            <input type="email" name="email_address" placeholder="your email" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(76,107,69,0.25)', borderRadius: '40px', fontFamily: "'Newsreader', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
+            <button type="submit" style={{ width: '100%', padding: '16px', background: '#6E7F5C', border: '1px solid rgba(38,36,32,0.8)', borderRadius: '40px', fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Join us →</button>
           </form>
         </div>
       </DarkSection>
