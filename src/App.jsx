@@ -3,6 +3,8 @@ import { useAuth } from './hooks/useAuth'
 import { supabase } from './hooks/useSupabase'
 import { ActingAsProvider } from './app/context/ActingAsContext'
 import { SiteCopyProvider } from './lib/siteCopy'
+import { EditModeProvider } from './app/context/EditModeContext'
+import FounderEditBar from './app/components/FounderEditBar'
 import { useEffect, useState, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
 import { TermsAcceptanceModal } from './components/TermsAcceptanceModal'
@@ -494,9 +496,12 @@ export default function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <SiteCopyProvider>
-          <ActingAsProvider>
-            <AppInner />
-          </ActingAsProvider>
+          <EditModeProvider>
+            <ActingAsProvider>
+              <AppInner />
+              <FounderEditBar />
+            </ActingAsProvider>
+          </EditModeProvider>
         </SiteCopyProvider>
       </BrowserRouter>
     </ErrorBoundary>

@@ -1174,10 +1174,10 @@ export default function MissionControl() {
             style={imgUrl ? { backgroundImage: `url(${imgUrl})` } : undefined}
           />
           <span className="mc-card-body">
-            <span className="mc-card-kicker">{c.kicker}</span>
-            <span className="mc-card-h">{c.title}</span>
-            <span className="mc-card-p">{c.blurb}</span>
-            <span className="mc-card-go">{c.cta}</span>
+            <EditableText as="span" className="mc-card-kicker">{c.kicker}</EditableText>
+            <EditableText as="span" className="mc-card-h">{c.title}</EditableText>
+            <EditableText as="span" className="mc-card-p">{c.blurb}</EditableText>
+            <EditableText as="span" className="mc-card-go">{c.cta}</EditableText>
           </span>
         </button>
         {isFounderUser && <CardPhotoEditor imgId={imgId} hasImage={!!imgUrl} />}
@@ -1235,10 +1235,10 @@ export default function MissionControl() {
           <div className="mc-nav-spacer" />
 
           <div className="mc-nav-links">
-            <a href="#beat-horizon">Horizon</a>
-            <a href="#beat-now">Now</a>
-            <a href="#beat-next">Next step</a>
-            <a href="#beat-path">Path</a>
+            <a href="#beat-horizon"><EditableText>Horizon</EditableText></a>
+            <a href="#beat-now"><EditableText>Now</EditableText></a>
+            <a href="#beat-next"><EditableText>Next step</EditableText></a>
+            <a href="#beat-path"><EditableText>Path</EditableText></a>
           </div>
 
           <button
@@ -1268,7 +1268,7 @@ export default function MissionControl() {
 
         {/* ─── BEAT 1 · HORIZON — What we want ─────────────────── */}
         <section className="mc-beat" id="beat-horizon">
-          <div className="mc-eyebrow"><span className="mc-dot" /> {isCiv ? 'What we want' : 'What you want'} <span className="mc-n">· Horizon</span></div>
+          <div className="mc-eyebrow"><span className="mc-dot" /> <EditableText>{isCiv ? 'What we want' : 'What you want'}</EditableText> <span className="mc-n"><EditableText>· Horizon</EditableText></span></div>
           <EditableText as="h2" className="mc-beat-h"
             id={isCiv ? 'mc.horizon.h.planet' : 'mc.horizon.h.self'}
             defaultText={isCiv ? 'The future we’re choosing, now.' : 'The future you’re choosing, now.'} />
@@ -1291,7 +1291,7 @@ export default function MissionControl() {
         <section className="mc-beat" id="beat-now">
           <div className="mc-ribbon-head">
             <div>
-              <div className="mc-eyebrow"><span className="mc-dot" /> {isCiv ? 'Where we are' : 'Where you are'} <span className="mc-n">· Now</span></div>
+              <div className="mc-eyebrow"><span className="mc-dot" /> <EditableText>{isCiv ? 'Where we are' : 'Where you are'}</EditableText> <span className="mc-n"><EditableText>· Now</EditableText></span></div>
               <EditableText as="h2" className="mc-beat-h"
                 id={isCiv ? 'mc.now.h.planet' : 'mc.now.h.self'}
                 defaultText={isCiv ? 'Where the planet stands.' : 'Right now, at a glance.'} />
@@ -1300,7 +1300,7 @@ export default function MissionControl() {
 
           <div className="mc-now-shell">
             <div className="mc-now-bar">
-              <span className="mc-state-word">{isCiv ? 'Planet state' : 'Your state'}</span>
+              <EditableText as="span" className="mc-state-word">{isCiv ? 'Planet state' : 'Your state'}</EditableText>
               <div className="mc-now-toggle" role="tablist" aria-label="Now view">
                 <button type="button" role="tab" aria-selected={nowView === 'glance'} className={nowView === 'glance' ? 'on' : ''} onClick={() => setNowView('glance')}>Glance</button>
                 <button type="button" role="tab" aria-selected={nowView === 'feed'} className={nowView === 'feed' ? 'on' : ''} onClick={() => setNowView('feed')}>Feed</button>
@@ -1383,7 +1383,7 @@ export default function MissionControl() {
                   <div className="mc-glance-side">
                     {/* The next step — always one real move, never a dead zero. */}
                     <button type="button" className="mc-nextstep" onClick={nowNextStep.onClick}>
-                      <span className="mc-nextstep-eye">{isCiv ? 'Our next step' : 'Your next step'}</span>
+                      <EditableText as="span" className="mc-nextstep-eye">{isCiv ? 'Our next step' : 'Your next step'}</EditableText>
                       <span className="mc-nextstep-label">{nowNextStep.label}</span>
                       <span className="mc-nextstep-go" aria-hidden="true">→</span>
                     </button>
@@ -1464,14 +1464,14 @@ export default function MissionControl() {
               </div>
             )}
           </div>
-          <p className="mc-mode-note">Glance is quiet by default. Lean in and the feed takes over the same space.</p>
+          <EditableText as="p" className="mc-mode-note" multiline>Glance is quiet by default. Lean in and the feed takes over the same space.</EditableText>
         </section>
 
         {/* ─── BEAT 3 · NEXT STEP — What's next ─────────────────── */}
         <section className="mc-beat" id="beat-next">
           <div className="mc-ribbon-head">
             <div>
-              <div className="mc-eyebrow"><span className="mc-dot" /> What’s next <span className="mc-n">· Next step</span></div>
+              <div className="mc-eyebrow"><span className="mc-dot" /> <EditableText>What’s next</EditableText> <span className="mc-n"><EditableText>· Next step</EditableText></span></div>
               <EditableText as="h2" className="mc-beat-h"
                 id={isCiv ? 'mc.next.h.planet' : 'mc.next.h.self'}
                 defaultText={isCiv ? 'The next move together.' : 'The one thing to do next.'} />
@@ -1486,7 +1486,7 @@ export default function MissionControl() {
         <section className="mc-beat" id="beat-path">
           <div className="mc-ribbon-head">
             <div>
-              <div className="mc-eyebrow"><span className="mc-dot" /> {isCiv ? 'How we get there' : 'How you get there'} <span className="mc-n">· Path</span></div>
+              <div className="mc-eyebrow"><span className="mc-dot" /> <EditableText>{isCiv ? 'How we get there' : 'How you get there'}</EditableText> <span className="mc-n"><EditableText>· Path</EditableText></span></div>
               <EditableText as="h2" className="mc-beat-h"
                 id={isCiv ? 'mc.path.h.planet' : 'mc.path.h.self'}
                 defaultText={isCiv ? 'The route we take together.' : 'The way forward, kept in sight.'} />
@@ -1504,7 +1504,7 @@ export default function MissionControl() {
       </main>
 
       <footer className="mc-foot">
-        <div className="mc-wrap">NextUs · What we want · Where we are · What’s next · How we get there</div>
+        <div className="mc-wrap"><EditableText>NextUs · What we want · Where we are · What’s next · How we get there</EditableText></div>
       </footer>
 
       {/* ─── MY ORG — opens from the right-rail tile, fades up in place ─ */}
