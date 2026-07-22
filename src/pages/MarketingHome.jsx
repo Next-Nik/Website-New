@@ -431,7 +431,32 @@ export function MarketingHomePage() {
         >
           <Copy id="home.hero.whatis" />
         </p>
+        <p
+          className="mh-hero-closer"
+          style={{
+            ...serif,
+            fontSize: 'clamp(18px,2vw,24px)',
+            fontWeight: 400,
+            lineHeight: 1.4,
+            color: ink,
+            maxWidth: '640px',
+            margin: 'clamp(24px,3vw,34px) auto 0',
+          }}
+        >
+          <Copy id="home.hero.closer" />
+        </p>
         <FractalWheels />
+        <div style={{ maxWidth: '680px', margin: 'clamp(28px,3.4vw,44px) auto 0', textAlign: 'center' }}>
+          <p style={{ ...serif, fontSize: 'clamp(20px,2.4vw,28px)', fontWeight: 400, color: ink, lineHeight: 1.3, margin: '0 auto clamp(16px,2vw,22px)', maxWidth: '560px' }}>
+            <Copy id="home.hero.domains" />
+          </p>
+          <p style={{ ...body, fontSize: 'clamp(15px,1.4vw,17px)', fontWeight: 400, lineHeight: 1.7, color: inkFaint, maxWidth: '660px', margin: '0 auto' }}>
+            <Copy id="home.hero.builton" />
+          </p>
+          <p style={{ ...body, fontSize: 'clamp(15px,1.4vw,17px)', fontWeight: 400, lineHeight: 1.7, color: inkFaint, maxWidth: '660px', margin: 'clamp(12px,1.4vw,16px) auto 0' }}>
+            <Copy id="home.hero.twosides" />
+          </p>
+        </div>
       </section>
 
       {/* ── The Earth Challenge · front door ─────── */}

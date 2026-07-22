@@ -37,10 +37,20 @@ export const COPY_GROUPS = [
     items: [
       // Hero
       { id: 'home.hero.eyebrow',  label: 'Hero · eyebrow',  default: 'A LIFE WORTH LIVING. A FUTURE WORTH BUILDING.' },
-      { id: 'home.hero.title',    label: 'Hero · title',    default: 'Your life and the world run on the same seven domains.' },
+      { id: 'home.hero.title',    label: 'Hero · title',    default: "NextUs builds the future. The world's future and yours, built in unison." },
       { id: 'home.hero.subtitle', label: 'Hero · subtitle', multiline: true,
-        default: "NextUs is built on that. An honest picture of where you stand, a clear direction for where you're going, and the people already building the future you want to live in. One set of tools, two scales: your life, and your world." },
+        default: "Both have to be built at the same time, or the structure collapses. The world runs the way a person does when they have no clear goals and are carrying old unprocessed pain. That's because the world is made up of roughly 8 billion people in roughly that state." },
       { id: 'home.hero.whatis', label: 'Hero · what NextUs is', multiline: true,
+        default: "Build a dream world without getting people ready for it and it collapses. Do only personal development without building the wider structures to match and the pain is unbearable. So NextUs does both: the tools, concepts and strategies that develop a person are almost the same as the ones that develop the world, and they're built in here." },
+      { id: 'home.hero.closer', label: 'Hero · closer', multiline: true,
+        default: 'Get clear on where you are going, then where you are, then plot the way there. NextUs, building the future, now.' },
+
+      // Fractal wheels · caption (moved-down original hero copy)
+      { id: 'home.hero.domains', label: 'Wheels · framing line',
+        default: 'Your life and the world run on seven mirrored domains. Similar at both scales, not identical.' },
+      { id: 'home.hero.builton', label: 'Wheels · built on that', multiline: true,
+        default: "NextUs is built on that. An honest picture of where you stand, a clear direction for where you're going, and the people already building the future you want to live in. One set of tools, two scales: your life, and your world." },
+      { id: 'home.hero.twosides', label: 'Wheels · two sides', multiline: true,
         default: 'NextUs is a website with two sides: tools to get your own life where you want it, and a map of the people and organisations building a better world · so you can join them.' },
 
       // Two doors
