@@ -9,7 +9,7 @@
 // (registered in App.jsx).
 
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { fn, space } from '../../lib/designTokens'
@@ -27,6 +27,11 @@ const mono    = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
 export default function HorizonDeclarePage() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  // When you arrive here by tapping a horizon you already have (declared,
+  // or drawn from your Map), that line is passed in so this screen opens on
+  // your words to refine — not a blank field.
+  const prefill = location.state?.prefill || null
 
   const [existing, setExisting] = useState(null)   // current declaration or null
   const [loading, setLoading]   = useState(true)
@@ -44,6 +49,7 @@ export default function HorizonDeclarePage() {
       const d = await getMyHorizonDeclaration()
       if (!live) return
       if (d) { setExisting(d); setLine(d.line); setCommunal(!!d.communal_visible) }
+      else if (prefill) { setLine(prefill) }   // seed with the Map horizon to refine
       setLoading(false)
     })()
     return () => { live = false }

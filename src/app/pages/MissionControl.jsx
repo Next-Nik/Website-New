@@ -47,6 +47,9 @@ import HorizonBanner       from '../components/mission-control/HorizonBanner'
 import WorldMapSubstrate  from '../components/mission-control/WorldMapSubstrate'
 import WheelStage         from '../components/mission-control/WheelStage'
 import NowFeed            from '../components/mission-control/NowFeed'
+import EditableText       from '../components/EditableText'
+import CardPhotoEditor    from '../components/mission-control/CardPhotoEditor'
+import { useCopy, siteImageUrl } from '../../lib/siteCopy'
 import SideRail           from '../components/mission-control/SideRail'
 import Tile               from '../components/mission-control/Tile'
 import Panel              from '../components/mission-control/Panel'
@@ -383,6 +386,7 @@ export default function MissionControl() {
   const location = useLocation()
   const data = useMissionControlData()
   const { actingAsActor } = useActingAs()
+  const copy = useCopy()   // site-copy resolver (founder overrides → card photos + text)
   const [activePanel, setActivePanel] = useState(null)
   const { focus: activeFocus, hasFocus: hasActiveFocus } = useActiveFocus()
 
@@ -422,7 +426,21 @@ export default function MissionControl() {
   // to 'self' — the identity-change effect below already skips its
   // initial run, so no other change is needed.
   const DEFAULT_SCOPE = 'planet'
-  const [activeScope, setActiveScope] = useState(DEFAULT_SCOPE)
+  // Start on the default (planet · Earth Challenge season), but remember
+  // where you were: once you switch poles, navigating away and back — or
+  // hitting the browser Back button — returns you to your last pole rather
+  // than snapping to planet. First visit of a session has nothing stored,
+  // so it lands on the default.
+  const [activeScope, setActiveScope] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('mc.scope')
+      if (saved === 'self' || saved === 'planet' || saved === 'practice') return saved
+    } catch (_) {}
+    return DEFAULT_SCOPE
+  })
+  useEffect(() => {
+    try { sessionStorage.setItem('mc.scope', activeScope) } catch (_) {}
+  }, [activeScope])
   const [orgOpen, setOrgOpen] = useState(false)
   // The Now beat holds two states in one surface: a quiet 'glance'
   // (wheel + live counts) and, when leaned into, the 'feed'.
@@ -1109,7 +1127,7 @@ export default function MissionControl() {
   const horizonCards = isCiv
     ? [
         { kicker: 'World View', title: 'The world we want', blurb: 'A shared picture of the future worth building.', cta: 'Open World View', img: 'mc-im3', onClick: () => openCivPanel('world-view') },
-        { kicker: 'My Focus', title: 'What you’re here for', blurb: 'The domain of the planet you’re choosing to move.', cta: 'Set your focus', img: 'mc-im2', onClick: () => { setActiveScope('planet'); setActivePanel('focus') } },
+        { kicker: 'My Focus', title: 'What we’re here for', blurb: 'The domain of the planet we’re choosing to move.', cta: 'Set a focus', img: 'mc-im2', onClick: () => { setActiveScope('planet'); setActivePanel('focus') } },
       ]
     : [
         { kicker: 'North Star', title: 'Your guiding aim', blurb: 'The one direction the whole loop points towards.', cta: 'Set your star', img: 'mc-im1', onClick: () => navigate('/north-star') },
@@ -1119,7 +1137,7 @@ export default function MissionControl() {
   const nextCards = isCiv
     ? [
         { kicker: 'Planet Sprint', title: 'Join a sprint', blurb: 'A focused push on a real-world goal.', cta: 'Find a sprint', img: 'mc-im8', onClick: () => openCivPanel('missions') },
-        { kicker: 'My Org', title: 'Your organisation', blurb: 'Rally a team behind the work.', cta: 'Open My Org', img: 'mc-im4', onClick: () => setOrgOpen(true) },
+        { kicker: 'My Org', title: 'Our organisation', blurb: 'Rally a team behind the work.', cta: 'Open My Org', img: 'mc-im4', onClick: () => setOrgOpen(true) },
         { kicker: 'Add Org', title: 'Start something', blurb: 'Bring a new organisation onto the map.', cta: 'Add an org', img: 'mc-im2', onClick: () => navigate('/add') },
       ]
     : [
@@ -1129,13 +1147,43 @@ export default function MissionControl() {
 
   const pathCards = isCiv
     ? [
-        { kicker: 'Your Guide', title: 'Find the way', blurb: 'Guidance for the route from here to there.', cta: 'Open your guide', img: 'mc-im3', onClick: () => navigate('/guide') },
+        { kicker: 'Your Guide', title: 'Find the way', blurb: 'Guidance for the route from here to there.', cta: 'Open the guide', img: 'mc-im3', onClick: () => navigate('/guide') },
         { kicker: 'Search', title: 'Find anything', blurb: 'People, orgs, missions, moments across the planet.', cta: 'Search', img: 'mc-im4', onClick: () => navigate('/search') },
       ]
     : [
         { kicker: 'Daily', title: 'Your loop, closing', blurb: 'Each step bends the path back to your horizon.', cta: 'Open your day', img: 'mc-im7', onClick: openDaily },
         { kicker: 'Journal', title: 'The record of becoming', blurb: 'Where the path is written down, day by day.', cta: 'Open Journal', img: 'mc-im5', onClick: () => navigate('/journal') },
       ]
+
+  // Founder can swap each card's photo in place; everyone sees the result.
+  const isFounderUser =
+    data.user?.app_metadata?.role === 'founder' || data.user?.user_metadata?.role === 'founder'
+
+  // One card renderer for all three beats. The image is a founder-swappable
+  // photo (stored as a site_copy override) falling back to the gradient.
+  const renderCard = (c, i) => {
+    const slug = c.kicker.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+    const imgId = `mc.card.${slug}.image`
+    const imgPath = copy(imgId)
+    const imgUrl = imgPath ? siteImageUrl(imgPath) : null
+    return (
+      <div className="mc-card-wrap" key={c.kicker + i}>
+        <button type="button" className="mc-card" onClick={c.onClick}>
+          <span
+            className={`mc-card-img${imgUrl ? '' : ' ' + c.img}`}
+            style={imgUrl ? { backgroundImage: `url(${imgUrl})` } : undefined}
+          />
+          <span className="mc-card-body">
+            <span className="mc-card-kicker">{c.kicker}</span>
+            <span className="mc-card-h">{c.title}</span>
+            <span className="mc-card-p">{c.blurb}</span>
+            <span className="mc-card-go">{c.cta}</span>
+          </span>
+        </button>
+        {isFounderUser && <CardPhotoEditor imgId={imgId} hasImage={!!imgUrl} />}
+      </div>
+    )
+  }
 
   return (
     <div
@@ -1220,28 +1268,22 @@ export default function MissionControl() {
 
         {/* ─── BEAT 1 · HORIZON — What we want ─────────────────── */}
         <section className="mc-beat" id="beat-horizon">
-          <div className="mc-eyebrow"><span className="mc-dot" /> What we want <span className="mc-n">· Horizon</span></div>
-          <h2 className="mc-beat-h">{isCiv ? 'The future we’re choosing, now.' : 'The future you’re choosing, now.'}</h2>
-          <p className="mc-lede">{isCiv
-            ? 'Name it together, hold it in view, and let the work line up behind it.'
-            : 'Name it, hold it in view, and let everything else line up behind it.'}</p>
+          <div className="mc-eyebrow"><span className="mc-dot" /> {isCiv ? 'What we want' : 'What you want'} <span className="mc-n">· Horizon</span></div>
+          <EditableText as="h2" className="mc-beat-h"
+            id={isCiv ? 'mc.horizon.h.planet' : 'mc.horizon.h.self'}
+            defaultText={isCiv ? 'The future we’re choosing, now.' : 'The future you’re choosing, now.'} />
+          <EditableText as="p" className="mc-lede" multiline
+            id={isCiv ? 'mc.horizon.lede.planet' : 'mc.horizon.lede.self'}
+            defaultText={isCiv
+              ? 'Name it together, hold it in view, and let the work line up behind it.'
+              : 'Name it, hold it in view, and let everything else line up behind it.'} />
 
           {/* The declared horizon's home (BP-8) — verbatim once declared. */}
           <HorizonBanner userId={data.user?.id} fallbackLine={!isCiv ? lifeHorizon : null} />
           <FirstLightPrompt style={{ margin: '18px 0 0', maxWidth: 720 }} />
 
           <div className="mc-cards">
-            {horizonCards.map((c, i) => (
-              <button key={c.kicker + i} type="button" className="mc-card" onClick={c.onClick}>
-                <span className={`mc-card-img ${c.img}`} />
-                <span className="mc-card-body">
-                  <span className="mc-card-kicker">{c.kicker}</span>
-                  <span className="mc-card-h">{c.title}</span>
-                  <span className="mc-card-p">{c.blurb}</span>
-                  <span className="mc-card-go">{c.cta}</span>
-                </span>
-              </button>
-            ))}
+            {horizonCards.map(renderCard)}
           </div>
         </section>
 
@@ -1249,8 +1291,10 @@ export default function MissionControl() {
         <section className="mc-beat" id="beat-now">
           <div className="mc-ribbon-head">
             <div>
-              <div className="mc-eyebrow"><span className="mc-dot" /> Where we are <span className="mc-n">· Now</span></div>
-              <h2 className="mc-beat-h">{isCiv ? 'Where the planet stands.' : 'Right now, at a glance.'}</h2>
+              <div className="mc-eyebrow"><span className="mc-dot" /> {isCiv ? 'Where we are' : 'Where you are'} <span className="mc-n">· Now</span></div>
+              <EditableText as="h2" className="mc-beat-h"
+                id={isCiv ? 'mc.now.h.planet' : 'mc.now.h.self'}
+                defaultText={isCiv ? 'Where the planet stands.' : 'Right now, at a glance.'} />
             </div>
           </div>
 
@@ -1339,7 +1383,7 @@ export default function MissionControl() {
                   <div className="mc-glance-side">
                     {/* The next step — always one real move, never a dead zero. */}
                     <button type="button" className="mc-nextstep" onClick={nowNextStep.onClick}>
-                      <span className="mc-nextstep-eye">Your next step</span>
+                      <span className="mc-nextstep-eye">{isCiv ? 'Our next step' : 'Your next step'}</span>
                       <span className="mc-nextstep-label">{nowNextStep.label}</span>
                       <span className="mc-nextstep-go" aria-hidden="true">→</span>
                     </button>
@@ -1428,21 +1472,13 @@ export default function MissionControl() {
           <div className="mc-ribbon-head">
             <div>
               <div className="mc-eyebrow"><span className="mc-dot" /> What’s next <span className="mc-n">· Next step</span></div>
-              <h2 className="mc-beat-h">{isCiv ? 'The next move together.' : 'The one thing to do next.'}</h2>
+              <EditableText as="h2" className="mc-beat-h"
+                id={isCiv ? 'mc.next.h.planet' : 'mc.next.h.self'}
+                defaultText={isCiv ? 'The next move together.' : 'The one thing to do next.'} />
             </div>
           </div>
           <div className="mc-cards">
-            {nextCards.map((c, i) => (
-              <button key={c.kicker + i} type="button" className="mc-card" onClick={c.onClick}>
-                <span className={`mc-card-img ${c.img}`} />
-                <span className="mc-card-body">
-                  <span className="mc-card-kicker">{c.kicker}</span>
-                  <span className="mc-card-h">{c.title}</span>
-                  <span className="mc-card-p">{c.blurb}</span>
-                  <span className="mc-card-go">{c.cta}</span>
-                </span>
-              </button>
-            ))}
+            {nextCards.map(renderCard)}
           </div>
         </section>
 
@@ -1450,22 +1486,14 @@ export default function MissionControl() {
         <section className="mc-beat" id="beat-path">
           <div className="mc-ribbon-head">
             <div>
-              <div className="mc-eyebrow"><span className="mc-dot" /> How we get there <span className="mc-n">· Path</span></div>
-              <h2 className="mc-beat-h">{isCiv ? 'The route we take together.' : 'The way forward, kept in sight.'}</h2>
+              <div className="mc-eyebrow"><span className="mc-dot" /> {isCiv ? 'How we get there' : 'How you get there'} <span className="mc-n">· Path</span></div>
+              <EditableText as="h2" className="mc-beat-h"
+                id={isCiv ? 'mc.path.h.planet' : 'mc.path.h.self'}
+                defaultText={isCiv ? 'The route we take together.' : 'The way forward, kept in sight.'} />
             </div>
           </div>
           <div className="mc-cards">
-            {pathCards.map((c, i) => (
-              <button key={c.kicker + i} type="button" className="mc-card" onClick={c.onClick}>
-                <span className={`mc-card-img ${c.img}`} />
-                <span className="mc-card-body">
-                  <span className="mc-card-kicker">{c.kicker}</span>
-                  <span className="mc-card-h">{c.title}</span>
-                  <span className="mc-card-p">{c.blurb}</span>
-                  <span className="mc-card-go">{c.cta}</span>
-                </span>
-              </button>
-            ))}
+            {pathCards.map(renderCard)}
           </div>
         </section>
 
@@ -1907,6 +1935,27 @@ const STAGE_CSS = `
   gap: 18px;
   margin-top: 22px;
 }
+.mc-card-wrap { position: relative; display: flex; }
+.mc-card-wrap > .mc-card { width: 100%; }
+
+/* Founder-only photo control, over the card image. */
+.mc-card-photoedit {
+  position: absolute; top: 10px; right: 10px; z-index: 3;
+  display: flex; align-items: center; gap: 6px;
+}
+.mc-card-photobtn, .mc-card-photoclear {
+  width: 32px; height: 32px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.6); background: rgba(0,0,0,0.45);
+  color: #fff; display: grid; place-items: center; cursor: pointer;
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+}
+.mc-card-photobtn:hover, .mc-card-photoclear:hover { background: rgba(0,0,0,0.65); }
+.mc-card-photoclear { font-size: 18px; line-height: 1; font-weight: 700; }
+.mc-card-photoerr {
+  font-size: 13px; color: #fff; background: rgba(169,116,63,0.92);
+  padding: 3px 8px; border-radius: 6px; white-space: nowrap;
+}
+
 .mc-card {
   position: relative;
   border-radius: 18px;

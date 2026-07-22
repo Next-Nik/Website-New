@@ -49,8 +49,8 @@ export default function HorizonBanner({ userId, style, fallbackLine = null }) {
     return (
       <div style={wrap}
         role="button" tabIndex={0}
-        onClick={() => navigate('/horizon/declare')}
-        onKeyDown={e => { if (e.key === 'Enter') navigate('/horizon/declare') }}
+        onClick={() => navigate('/horizon/declare', { state: { prefill: fallbackLine } })}
+        onKeyDown={e => { if (e.key === 'Enter') navigate('/horizon/declare', { state: { prefill: fallbackLine } }) }}
         title="Your horizon · tap to refine">
         <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.18em',
           textTransform: 'uppercase', color: fn.moss, marginBottom: space.sm }}>
@@ -90,8 +90,8 @@ export default function HorizonBanner({ userId, style, fallbackLine = null }) {
   return (
     <div style={wrap}
       role="button" tabIndex={0}
-      onClick={() => navigate('/horizon/declare')}
-      onKeyDown={e => { if (e.key === 'Enter') navigate('/horizon/declare') }}
+      onClick={() => navigate('/horizon/declare', { state: { prefill: declaration.line } })}
+      onKeyDown={e => { if (e.key === 'Enter') navigate('/horizon/declare', { state: { prefill: declaration.line } }) }}
       title="Your horizon · tap to refine">
       <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.18em',
         textTransform: 'uppercase', color: fn.moss, marginBottom: space.sm }}>

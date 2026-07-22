@@ -173,3 +173,44 @@ export function useCopy() {
 export function useSiteCopyMeta() {
   return useContext(SiteCopyContext)
 }
+
+// ── Founder write ────────────────────────────────────────────
+// Upsert a single override. Founder-only at the DB (site_copy RLS,
+// migration 156). Returns true on success. Also used to store card
+// image paths (id like 'mc.card.northstar.image', value = storage path).
+export async function saveCopy(id, value) {
+  try {
+    const { data: auth } = await supabase.auth.getUser()
+    const uid = auth?.user?.id || null
+    const { error } = await supabase
+      .from('site_copy')
+      .upsert(
+        { id, value, updated_at: new Date().toISOString(), updated_by: uid },
+        { onConflict: 'id' }
+      )
+    if (error) throw error
+    return true
+  } catch (e) {
+    console.warn('saveCopy failed', e?.message)
+    return false
+  }
+}
+
+// Public URL for a founder-uploaded site image (bucket from migration 177).
+export function siteImageUrl(path) {
+  if (!path) return null
+  const { data } = supabase.storage.from('site-images').getPublicUrl(path)
+  return data?.publicUrl || null
+}
+
+// Remove an override — the string reverts to its in-code default.
+export async function clearCopy(id) {
+  try {
+    const { error } = await supabase.from('site_copy').delete().eq('id', id)
+    if (error) throw error
+    return true
+  } catch (e) {
+    console.warn('clearCopy failed', e?.message)
+    return false
+  }
+}
