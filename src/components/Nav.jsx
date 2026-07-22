@@ -125,7 +125,7 @@ export function Nav({ activePath, hideHamburger = false }) {
           border-radius: 40px;
           border: 1.5px solid rgba(76,107,69,0.55);
           background: rgba(76,107,69,0.06);
-          font-family: 'IBM Plex Mono', 'Courier New', monospace;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 13px;
           font-weight: 500;
           letter-spacing: 0.14em;
@@ -169,7 +169,7 @@ export function Nav({ activePath, hideHamburger = false }) {
           align-items: center;
           gap: 10px;
           padding: 13px 28px;
-          font-family: 'IBM Plex Mono', 'Courier New', monospace;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 13px;
           letter-spacing: 0.08em;
           color: rgba(38,36,32,0.68);

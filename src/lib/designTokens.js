@@ -103,13 +103,13 @@ export const shadow = {
 /**
  * Typography spreads — use with object spread: { ...display, fontSize: '28px' }
  *
- * display  → Fraunces:      "the thing" — titles, card headings, ≥18px
- * bodyFont → Newsreader:    reading text, meta, user voice
- * mono     → IBM Plex Mono: chrome — eyebrows, labels, status, coordinates
+ * display  → Cormorant Garamond:      "the thing" — titles, card headings, ≥18px
+ * bodyFont → Lora:    reading text, meta, user voice
+ * mono     → Cormorant SC: chrome — eyebrows, labels, status, coordinates
  */
-export const display  = { fontFamily: "'Fraunces', Georgia, serif" }
-export const bodyFont = { fontFamily: "'Newsreader', Georgia, serif" }
-export const mono     = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
+export const display  = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+export const bodyFont = { fontFamily: "'Lora', Georgia, serif" }
+export const mono     = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 /**
  * Text presets — locked compositions with the floors baked in.

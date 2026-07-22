@@ -41,7 +41,7 @@ export function ToolCompassPanel() {
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
-          fontFamily: "'IBM Plex Mono', Georgia, serif",
+          fontFamily: "'Cormorant SC', Georgia, serif",
           fontSize: '13px',
           letterSpacing: '0.14em',
           color: '#262420',
@@ -89,13 +89,13 @@ export function ToolCompassPanel() {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#262420', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#262420', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   Horizon Suite
                 </span>
-                <h2 style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
+                <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
                   Where do I start?
                 </h2>
-                <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                   Five tools. One ecosystem. The right entry depends on where you are.
                 </p>
               </div>
@@ -120,7 +120,7 @@ export function ToolCompassPanel() {
 
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
-              <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
                 Begin with North Star — it reads where you are and points you somewhere real. Everything else follows from honest location.
               </p>
             </div>
@@ -156,15 +156,15 @@ export function ToolCompassPanel() {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#262420', textTransform: 'uppercase' }}>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#262420', textTransform: 'uppercase' }}>
                       {tool.eyebrow}
                     </span>
                     <span style={{ color: '#262420', fontSize: '1.3125rem' }}>→</span>
                   </div>
-                  <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '1.25rem', color: '#262420', marginBottom: '6px', lineHeight: 1.2 }}>
+                  <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: '#262420', marginBottom: '6px', lineHeight: 1.2 }}>
                     {tool.label}
                   </div>
-                  <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
+                  <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
                     {tool.hook}
                   </div>
                 </Link>
@@ -196,7 +196,7 @@ export function ToolCompassPanel() {
               borderRadius: '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', color: '#262420' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', color: '#262420' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

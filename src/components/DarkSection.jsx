@@ -208,7 +208,7 @@ export function DarkPullQuote({ quote, attribution }) {
   return (
     <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
       <div style={{
-        fontFamily: "'Fraunces', Georgia, serif",
+        fontFamily: "'Cormorant Garamond', Georgia, serif",
         fontSize: '80px', fontWeight: 300,
         color: 'rgba(76,107,69,0.45)', lineHeight: 0.8, marginBottom: '28px',
       }}>"</div>

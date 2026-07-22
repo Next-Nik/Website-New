@@ -18,9 +18,9 @@ import {
   setOffers, leaveCohort, addMemberByEmail, removeMember, updateCharter,
 } from '../lib/cohorts'
 
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const mono    = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const mono    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 export default function CirclePage() {
   const { id } = useParams()
@@ -291,6 +291,6 @@ function btn(disabled) {
     padding: '11px 20px', cursor: disabled ? 'default' : 'pointer', opacity: disabled ? 0.5 : 1 }
 }
 function sel() {
-  return { fontFamily: "'Newsreader', Georgia, serif", fontSize: '15px', color: fn.ink,
+  return { fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: fn.ink,
     background: fn.ground, border: `1px solid ${fn.mossEdge}`, borderRadius: '9px', padding: '9px 12px', outline: 'none' }
 }

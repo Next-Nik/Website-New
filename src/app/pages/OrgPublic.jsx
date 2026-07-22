@@ -437,8 +437,8 @@ function DisputeModal({ actor, user, onClose }) {
 
   const gold = at.brass, dark = at.text, parch = at.ground
   const hair = '1px solid rgba(169,116,63,0.22)'
-  const sc_style = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-  const body_style = { fontFamily: "'Newsreader', Georgia, serif" }
+  const sc_style = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const body_style = { fontFamily: "'Lora', Georgia, serif" }
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: at.ghost, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}

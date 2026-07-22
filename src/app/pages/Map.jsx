@@ -204,7 +204,7 @@ function buildMarkerSVG({ domains, winning, opacity }) {
     const bx = cx + (ringOuterR - badgeOverlap) * diag
     const by = cy - (ringOuterR - badgeOverlap) * diag
     svg += `<circle cx="${bx}" cy="${by}" r="${badgeR}" fill="${goldDark}"/>`
-    svg += `<text x="${bx}" y="${by + 2.6}" text-anchor="middle" font-family="'IBM Plex Mono',serif" font-size="7" fill="white" font-weight="600">+${extraCount}</text>`
+    svg += `<text x="${bx}" y="${by + 2.6}" text-anchor="middle" font-family="'Cormorant SC',serif" font-size="7" fill="white" font-weight="600">+${extraCount}</text>`
   }
 
   svg += `</svg>`
@@ -644,8 +644,8 @@ export function MapPage() {
       const prim = domains[0]
       const extras = domains.length > 1 ? ` +${domains.length - 1}` : ''
       marker.bindTooltip(
-        `<div style="font-family:'Newsreader',serif;font-size:13px;font-weight:300;color:#0F1523">${actor.name}</div>
-         <div style="font-family:'IBM Plex Mono',serif;font-size:11px;letter-spacing:0.1em;color:rgba(15,21,35,0.55);margin-top:2px">${DOMAIN_LABEL[prim] || ''}${extras}${actor.scale ? ' · ' + (SCALE_LABEL[actor.scale] || actor.scale) : ''}</div>`,
+        `<div style="font-family:'Lora',serif;font-size:13px;font-weight:300;color:#0F1523">${actor.name}</div>
+         <div style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.1em;color:rgba(15,21,35,0.55);margin-top:2px">${DOMAIN_LABEL[prim] || ''}${extras}${actor.scale ? ' · ' + (SCALE_LABEL[actor.scale] || actor.scale) : ''}</div>`,
         { direction: 'top', offset: [0, -8], className: 'beta-map-tooltip' }
       )
 

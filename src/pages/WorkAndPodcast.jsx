@@ -108,7 +108,7 @@ function Card({ label, body }) {
   return (
     <div style={{ background: 'rgba(76,107,69,0.05)', borderRadius: '14px', padding: '26px 28px', marginBottom: '10px', border: '1.5px solid rgba(76,107,69,0.78)' }}>
       <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: '#262420', display: 'block', marginBottom: '10px' }}>{label}</span>
-      <div style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '16px', color: '#0F1523', lineHeight: 1.7 }}>{body}</div>
+      <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: '#0F1523', lineHeight: 1.7 }}>{body}</div>
     </div>
   )
 }
@@ -619,8 +619,8 @@ export function PodcastPage() {
         <div style={{ maxWidth: '380px', margin: '0 auto' }}>
           <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
           <form action="https://app.kit.com/forms/9215183/subscriptions" className="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
-            <input type="email" name="email_address" placeholder="your email" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(76,107,69,0.25)', borderRadius: '40px', fontFamily: "'Newsreader', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
-            <button type="submit" style={{ width: '100%', padding: '16px', background: '#4c6b45', border: '1px solid rgba(38,36,32,0.8)', borderRadius: '40px', fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Join us →</button>
+            <input type="email" name="email_address" placeholder="your email" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(76,107,69,0.25)', borderRadius: '40px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
+            <button type="submit" style={{ width: '100%', padding: '16px', background: '#4c6b45', border: '1px solid rgba(38,36,32,0.8)', borderRadius: '40px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Join us →</button>
           </form>
         </div>
       </DarkSection>

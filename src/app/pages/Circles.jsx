@@ -11,9 +11,9 @@ import { useAuth } from '../../hooks/useAuth'
 import { fn, space } from '../../lib/designTokens'
 import { listMyCohorts, createCohort } from '../lib/cohorts'
 
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const mono    = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const mono    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 export default function CirclesPage() {
   const { user } = useAuth()
@@ -177,7 +177,7 @@ function Choice({ value, onChange, options }) {
   )
 }
 function input() {
-  return { fontFamily: "'Newsreader', Georgia, serif", fontSize: '16px', color: fn.ink,
+  return { fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: fn.ink,
     width: '100%', boxSizing: 'border-box', background: fn.ground,
     border: `1px solid ${fn.mossEdge}`, borderRadius: '9px', padding: '10px 14px', outline: 'none' }
 }

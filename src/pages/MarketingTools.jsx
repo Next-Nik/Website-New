@@ -152,7 +152,7 @@ function WheelPreview() {
         return (
           <text key={i} x={lx} y={ly}
             textAnchor="middle" dominantBaseline="middle"
-            style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.08em' }}
+            style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.08em' }}
             fill="rgba(15,21,35,0.55)"
           >
             {p.label}

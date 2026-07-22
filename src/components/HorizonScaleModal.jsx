@@ -49,7 +49,7 @@ export const SCALE_LINK_STYLE = {
   border:      'none',
   padding:     0,
   cursor:      'pointer',
-  fontFamily:  "'Newsreader', Georgia, serif",
+  fontFamily:  "'Lora', Georgia, serif",
   fontSize:    'inherit',
   color:       '#262420',
   textDecoration: 'underline',
@@ -146,7 +146,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
           }}>
             <div>
               <span style={{
-                fontFamily:    "'IBM Plex Mono', Georgia, serif",
+                fontFamily:    "'Cormorant SC', Georgia, serif",
                 fontSize:      '13px',
                 letterSpacing: '0.2em',
                 color:         '#262420',
@@ -156,7 +156,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                 {intro.eyebrow}
               </span>
               <h2 style={{
-                fontFamily:   "'IBM Plex Mono', Georgia, serif",
+                fontFamily:   "'Cormorant SC', Georgia, serif",
                 fontSize:     '1.5rem',
                 fontWeight:   400,
                 color:        '#0F1523',
@@ -166,7 +166,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                 {intro.title}
               </h2>
               <p style={{
-                fontFamily: "'Newsreader', Georgia, serif",
+                fontFamily: "'Lora', Georgia, serif",
                 fontSize:   '1rem',
                 color:      'rgba(15,21,35,0.55)',
                 lineHeight: 1.5,
@@ -201,7 +201,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
           <div style={{ padding: '20px 28px 8px' }}>
             {intro.body.map((p, i) => (
               <p key={i} style={{
-                fontFamily:   "'Newsreader', Georgia, serif",
+                fontFamily:   "'Lora', Georgia, serif",
                 fontSize:     '1rem',
                 color:        'rgba(15,21,35,0.72)',
                 lineHeight:   1.7,
@@ -218,7 +218,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
             {/* Above line zone label */}
             <div style={{ padding: '4px 8px 12px' }}>
               <span style={{
-                fontFamily:    "'IBM Plex Mono', Georgia, serif",
+                fontFamily:    "'Cormorant SC', Georgia, serif",
                 fontSize:      '13px',
                 letterSpacing: '0.18em',
                 color:         '#262420',
@@ -228,7 +228,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                 {intro.aboveLine.label}
               </span>
               <span style={{
-                fontFamily: "'Newsreader', Georgia, serif",
+                fontFamily: "'Lora', Georgia, serif",
                 fontSize:   '13px',
                 color:      'rgba(15,21,35,0.55)',
               }}>
@@ -253,7 +253,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                   {showBelow && (
                     <div style={{ padding: '16px 8px 12px' }}>
                       <span style={{
-                        fontFamily:    "'IBM Plex Mono', Georgia, serif",
+                        fontFamily:    "'Cormorant SC', Georgia, serif",
                         fontSize:      '13px',
                         letterSpacing: '0.18em',
                         color:         'rgba(107,80,64,0.9)',
@@ -263,7 +263,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                         {intro.belowLine.label}
                       </span>
                       <span style={{
-                        fontFamily: "'Newsreader', Georgia, serif",
+                        fontFamily: "'Lora', Georgia, serif",
                         fontSize:   '13px',
                         color:      'rgba(15,21,35,0.55)',
                       }}>
@@ -298,7 +298,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                   >
                     {/* Score */}
                     <span style={{
-                      fontFamily:  "'IBM Plex Mono', Georgia, serif",
+                      fontFamily:  "'Cormorant SC', Georgia, serif",
                       fontSize:    isWhole ? '1.25rem' : '1rem',
                       fontWeight:  600,
                       color:       col,
@@ -318,7 +318,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                         flexWrap:    'wrap',
                       }}>
                         <span style={{
-                          fontFamily:    "'IBM Plex Mono', Georgia, serif",
+                          fontFamily:    "'Cormorant SC', Georgia, serif",
                           fontSize:      '14px',
                           letterSpacing: '0.08em',
                           color:         col,
@@ -328,7 +328,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                         </span>
                         {label && (
                           <span style={{
-                            fontFamily: "'Newsreader', Georgia, serif",
+                            fontFamily: "'Lora', Georgia, serif",
                             fontSize:   '14px',
                             color:      'rgba(15,21,35,0.6)',
                           }}>
@@ -338,7 +338,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                       </div>
                       {sig && (
                         <p style={{
-                          fontFamily: "'Newsreader', Georgia, serif",
+                          fontFamily: "'Lora', Georgia, serif",
                           fontSize:   '13px',
                           color:      'rgba(15,21,35,0.65)',
                           lineHeight: 1.6,
@@ -361,7 +361,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
             marginTop:    '8px',
           }}>
             <p style={{
-              fontFamily: "'Newsreader', Georgia, serif",
+              fontFamily: "'Lora', Georgia, serif",
               fontSize:   '13px',
               color:      'rgba(15,21,35,0.55)',
               lineHeight: 1.65,

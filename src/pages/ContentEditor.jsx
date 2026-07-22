@@ -499,21 +499,21 @@ function FocusGoalsTab({ toast }) {
   return (
     <div style={{ maxWidth: '680px' }}>
       <Eyebrow>Focus Goals</Eyebrow>
-      <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '17px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '28px' }}>
+      <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '17px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '28px' }}>
         Set locally-ratified horizon goals for any Focus. These appear in the Domain Explorer when a visitor sets that Focus as their viewing context.
       </p>
 
       <div style={{ marginBottom: '32px' }}>
-        <label style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '8px' }}>
+        <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '8px' }}>
           Select a Focus
         </label>
         <input
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="Search — Canada, British Columbia, Vancouver…"
-          style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '17px', color: '#0F1523', padding: '11px 16px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(76,107,69,0.30)', background: '#FAFAF7', outline: 'none' }}
+          style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '17px', color: '#0F1523', padding: '11px 16px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(76,107,69,0.30)', background: '#FAFAF7', outline: 'none' }}
         />
-        {searching && <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.55)', marginTop: '8px' }}>Searching…</p>}
+        {searching && <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.55)', marginTop: '8px' }}>Searching…</p>}
         {results.length > 0 && (
           <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(76,107,69,0.25)', borderRadius: '8px', marginTop: '6px', overflow: 'hidden' }}>
             {results.map(f => (
@@ -522,8 +522,8 @@ function FocusGoalsTab({ toast }) {
                 onMouseEnter={e => e.currentTarget.style.background = 'rgba(76,107,69,0.05)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'none'}
               >
-                <span style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '17px', color: '#0F1523' }}>{f.name}</span>
-                <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.12em', color: gold }}>{TYPE_LABEL[f.type] || f.type}</span>
+                <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '17px', color: '#0F1523' }}>{f.name}</span>
+                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.12em', color: gold }}>{TYPE_LABEL[f.type] || f.type}</span>
               </button>
             ))}
           </div>
@@ -534,10 +534,10 @@ function FocusGoalsTab({ toast }) {
         <>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid rgba(76,107,69,0.18)' }}>
             <div>
-              <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '4px' }}>{TYPE_LABEL[selectedFocus.type] || selectedFocus.type}</span>
-              <span style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '22px', color: '#0F1523' }}>{selectedFocus.name}</span>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '4px' }}>{TYPE_LABEL[selectedFocus.type] || selectedFocus.type}</span>
+              <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '22px', color: '#0F1523' }}>{selectedFocus.name}</span>
             </div>
-            <button onClick={() => setSelected(null)} style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer' }}>Change ×</button>
+            <button onClick={() => setSelected(null)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer' }}>Change ×</button>
           </div>
 
           {FOCUS_DOMAINS.map(domain => {
@@ -550,16 +550,16 @@ function FocusGoalsTab({ toast }) {
               <div key={domain.id} style={{ ...card, borderColor: isSet ? 'rgba(76,107,69,0.35)' : 'rgba(76,107,69,0.12)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
                   <div>
-                    <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '14px', letterSpacing: '0.14em', color: gold }}>{domain.label}</span>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '14px', letterSpacing: '0.14em', color: gold }}>{domain.label}</span>
                     {isSet && (
-                      <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#2A6B3A', background: 'rgba(42,107,58,0.08)', border: '1px solid rgba(42,107,58,0.25)', borderRadius: '40px', padding: '2px 8px', marginLeft: '10px' }}>Ratified</span>
+                      <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#2A6B3A', background: 'rgba(42,107,58,0.08)', border: '1px solid rgba(42,107,58,0.25)', borderRadius: '40px', padding: '2px 8px', marginLeft: '10px' }}>Ratified</span>
                     )}
                   </div>
                   {isSet && (
-                    <button onClick={() => deleteGoal(domain.id)} style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(180,40,40,0.60)', background: 'none', border: 'none', cursor: 'pointer' }}>Remove</button>
+                    <button onClick={() => deleteGoal(domain.id)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(180,40,40,0.60)', background: 'none', border: 'none', cursor: 'pointer' }}>Remove</button>
                   )}
                 </div>
-                <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '12px' }}>
+                <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '12px' }}>
                   Global: {domain.goal}
                 </p>
                 <textarea
@@ -567,7 +567,7 @@ function FocusGoalsTab({ toast }) {
                   onChange={e => setEditing(ed => ({ ...ed, [domain.id]: e.target.value }))}
                   placeholder={`Local horizon goal for ${selectedFocus.name} — ${domain.label}…`}
                   rows={3}
-                  style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '16px', color: '#0F1523', padding: '10px 14px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(76,107,69,0.25)', background: draft ? '#FFFFFF' : 'rgba(76,107,69,0.02)', outline: 'none', resize: 'vertical', lineHeight: 1.65 }}
+                  style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: '#0F1523', padding: '10px 14px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(76,107,69,0.25)', background: draft ? '#FFFFFF' : 'rgba(76,107,69,0.02)', outline: 'none', resize: 'vertical', lineHeight: 1.65 }}
                 />
                 <div style={{ marginTop: '10px', display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <Btn small variant="solid" disabled={!draft.trim() || saving[domain.id]} onClick={() => saveGoal(domain.id)}>
@@ -575,7 +575,7 @@ function FocusGoalsTab({ toast }) {
                   </Btn>
                   {isDirty && existing && (
                     <button onClick={() => setEditing(ed => ({ ...ed, [domain.id]: existing.horizon_goal }))}
-                      style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                      style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer' }}>
                       Reset
                     </button>
                   )}

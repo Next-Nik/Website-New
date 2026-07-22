@@ -47,7 +47,7 @@ export function CivilisationalFramePanel() {
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
-          fontFamily: "'IBM Plex Mono', Georgia, serif",
+          fontFamily: "'Cormorant SC', Georgia, serif",
           fontSize: '13px',
           letterSpacing: '0.14em',
           color: '#262420',
@@ -96,13 +96,13 @@ export function CivilisationalFramePanel() {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#262420', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#262420', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   NextUs
                 </span>
-                <h2 style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
+                <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
                   The Seven Domains
                 </h2>
-                <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                   The frame for civilisational work {'·'} Each with a Horizon Goal
                 </p>
               </div>
@@ -127,7 +127,7 @@ export function CivilisationalFramePanel() {
 
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
-              <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
+              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
                 NextUs organises collective life into seven domains. Each domain has a Horizon Goal {'—'} a shared directional picture of what flourishing looks like at civilisational scale.
               </p>
             </div>
@@ -164,10 +164,10 @@ export function CivilisationalFramePanel() {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', minWidth: '18px' }}>
+                        <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', minWidth: '18px' }}>
                           {String(i + 1).padStart(2, '0')}
                         </span>
-                        <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '1.25rem', color: '#262420', lineHeight: 1.2, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: '#262420', lineHeight: 1.2, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                           {domain.name}
                           <DomainTooltip domainKey={NEXTUS_LABEL_MAP[domain.name] || domain.id} system="nextus" position="below" />
                         </span>
@@ -179,14 +179,14 @@ export function CivilisationalFramePanel() {
 
                     {isOpen && (
                       <div style={{ padding: '0 18px 16px' }}>
-                        <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55, marginBottom: '10px' }}>
+                        <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55, marginBottom: '10px' }}>
                           {domain.description}
                         </p>
                         <div style={{ padding: '10px 14px', background: 'rgba(76,107,69,0.06)', borderLeft: '2px solid rgba(76,107,69,0.55)', borderRadius: '0 6px 6px 0' }}>
-                          <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.18em', color: '#262420', textTransform: 'uppercase', marginBottom: '5px' }}>
+                          <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.18em', color: '#262420', textTransform: 'uppercase', marginBottom: '5px' }}>
                             Horizon Goal
                           </div>
-                          <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.65 }}>
+                          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.65 }}>
                             {domain.horizonGoal}
                           </p>
                         </div>
@@ -199,7 +199,7 @@ export function CivilisationalFramePanel() {
 
             {/* Footer */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(76,107,69,0.12)', marginTop: 'auto' }}>
-              <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 Seven domains. Every scale. One map of what humanity is working on {'—'} and what still needs attention.
               </p>
             </div>
@@ -229,7 +229,7 @@ export function CivilisationalFramePanel() {
               borderRadius: '12px 0 0 12px',
             }}
           >
-            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', color: '#262420' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', color: '#262420' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

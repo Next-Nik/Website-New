@@ -162,7 +162,7 @@ export function BeginBuildOrgPage() {
           </Field>
 
           <div style={{ paddingTop: '24px', borderTop: '1px solid rgba(76,107,69,0.18)', marginTop: '8px' }}>
-            <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>
+            <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>
               Your details
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
@@ -185,7 +185,7 @@ export function BeginBuildOrgPage() {
             onSubmit={submit}
           />
 
-          <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, textAlign: 'center', marginTop: '12px' }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, textAlign: 'center', marginTop: '12px' }}>
             Continue on the next page — there's a bit more to set, and a real human will see it before it goes live.
           </p>
         </form>

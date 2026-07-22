@@ -348,7 +348,7 @@ function ResourcesNextStepsInput({ onSubmit }) {
   }
   return (
     <div>
-      <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#262420', marginBottom: '10px' }}>NEXT STEPS</div>
+      <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#262420', marginBottom: '10px' }}>NEXT STEPS</div>
       <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
         <textarea
           value={val}
@@ -358,7 +358,7 @@ function ResourcesNextStepsInput({ onSubmit }) {
           placeholder="What's on your mind right now…"
           style={{
             flex: 1, resize: 'none', border: '1px solid rgba(76,107,69,0.28)', borderRadius: '3px',
-            padding: '10px 12px', fontFamily: "'Newsreader', Georgia, serif", fontSize: '14px',
+            padding: '10px 12px', fontFamily: "'Lora', Georgia, serif", fontSize: '14px',
             lineHeight: 1.55, color: '#0F1523', background: '#FAFAF7', outline: 'none',
           }}
         />
@@ -369,12 +369,12 @@ function ResourcesNextStepsInput({ onSubmit }) {
           style={{
             background: val.trim() ? '#4c6b45' : 'rgba(15,21,35,0.55)', color: val.trim() ? '#FFFFFF' : 'rgba(15,21,35,0.55)',
             border: 'none', borderRadius: '3px', padding: '10px 16px', cursor: val.trim() ? 'pointer' : 'not-allowed',
-            fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase',
+            fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase',
             transition: 'background 0.15s', flexShrink: 0,
           }}
         >→</button>
       </div>
-      <div style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '6px' }}>
+      <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '6px' }}>
         Press enter or → to begin
       </div>
     </div>
@@ -1541,7 +1541,7 @@ export default function MissionControl() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <span style={{ color: '#262420', fontSize: '14px' }}>✦</span>
-            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#262420' }}>WHAT'S BEEN PULLING AT YOU</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#262420' }}>WHAT'S BEEN PULLING AT YOU</span>
           </div>
           <MyInterestsPanel userId={data.user?.id} />
         </div>
@@ -1607,9 +1607,9 @@ export default function MissionControl() {
         <div style={{ borderTop: '1px solid rgba(76,107,69,0.15)', paddingTop: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <span style={{ color: '#262420', fontSize: '14px' }}>✦</span>
-            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)' }}>YOUR FEED</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)' }}>YOUR FEED</span>
           </div>
-          <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0, lineHeight: 1.6 }}>
             Articles, conversations, practitioners, and exercises — surfaced as your work moves.
           </p>
         </div>
@@ -1760,7 +1760,11 @@ const STAGE_CSS = `
   flex-direction: column;
   background: var(--mc-bg);
   color: var(--mc-ink);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* NextUs type system — display / body / chrome. */
+  --mc-display: 'Cormorant Garamond', Georgia, serif;
+  --mc-body:    'Lora', Georgia, serif;
+  --mc-mono:    'Cormorant SC', Georgia, serif;
+  font-family: var(--mc-body);
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -1812,25 +1816,26 @@ const STAGE_CSS = `
   height: 66px;
 }
 .mc-brand {
-  font-weight: 800;
-  letter-spacing: -.02em;
-  font-size: 19px;
+  font-family: var(--mc-display);
+  font-weight: 500;
+  letter-spacing: -.01em;
+  font-size: 22px;
   color: var(--mc-ink);
   background: none;
   border: 0;
   padding: 0;
   cursor: pointer;
-  font-family: inherit;
 }
 .mc-brand span { color: var(--mc-gold); }
 .mc-nav-spacer { flex: 1; }
 .mc-nav-links { display: flex; gap: 22px; }
 .mc-nav-links a {
+  font-family: var(--mc-mono);
   color: var(--mc-muted);
   text-decoration: none;
   font-size: 13px;
-  font-weight: 600;
-  letter-spacing: .01em;
+  font-weight: 500;
+  letter-spacing: .08em;
 }
 .mc-nav-links a:hover { color: var(--mc-ink); }
 
@@ -1847,10 +1852,10 @@ const STAGE_CSS = `
   background: transparent;
   color: var(--mc-muted);
   cursor: pointer;
-  font: inherit;
+  font-family: var(--mc-mono);
   font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .01em;
+  font-weight: 600;
+  letter-spacing: .06em;
   padding: 7px 16px;
   border-radius: 999px;
   transition: all .25s ease;
@@ -1889,9 +1894,10 @@ const STAGE_CSS = `
   display: flex;
   align-items: center;
   gap: 10px;
+  font-family: var(--mc-mono);
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: .14em;
+  font-weight: 600;
+  letter-spacing: .16em;
   text-transform: uppercase;
   color: var(--mc-accent);
 }
@@ -1907,10 +1913,11 @@ const STAGE_CSS = `
   letter-spacing: .06em;
 }
 .mc-beat-h {
-  font-size: clamp(30px, 4.4vw, 52px);
-  line-height: 1.02;
-  letter-spacing: -.03em;
-  font-weight: 800;
+  font-family: var(--mc-display);
+  font-size: clamp(32px, 4.6vw, 56px);
+  line-height: 1.04;
+  letter-spacing: -.005em;
+  font-weight: 500;
   margin: 14px 0 6px;
   max-width: 18ch;
 }
@@ -1994,16 +2001,17 @@ const STAGE_CSS = `
   flex-direction: column;
 }
 .mc-card-kicker {
+  font-family: var(--mc-mono);
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: .08em;
+  font-weight: 600;
+  letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--mc-accent);
   margin-bottom: 6px;
 }
-.mc-card-h { font-size: 19px; letter-spacing: -.01em; margin-bottom: 5px; font-weight: 700; }
+.mc-card-h { font-family: var(--mc-display); font-size: 23px; letter-spacing: 0; margin-bottom: 4px; font-weight: 500; }
 .mc-card-p { font-size: 13px; color: var(--mc-muted); line-height: 1.45; }
-.mc-card-go { margin-top: auto; padding-top: 12px; font-size: 13px; font-weight: 700; color: var(--mc-ink); }
+.mc-card-go { font-family: var(--mc-mono); margin-top: auto; padding-top: 12px; font-size: 13px; font-weight: 600; letter-spacing: .06em; color: var(--mc-ink); }
 .mc-card-go::after { content: " ›"; color: var(--mc-accent); }
 
 /* card gradient palettes (placeholder photography) */
@@ -2091,10 +2099,10 @@ const STAGE_CSS = `
   padding: 16px 18px;
   background: var(--mc-surface-2);
 }
-.mc-stat-big { font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+.mc-stat-big { font-family: var(--mc-display); font-size: 34px; font-weight: 500; letter-spacing: -.01em; }
 .mc-stat-big small { font-size: 14px; font-weight: 700; color: var(--mc-muted); }
-.mc-stat-word { font-size: 21px; font-weight: 800; letter-spacing: -.01em; color: var(--mc-accent); line-height: 1.05; }
-.mc-stat-lbl { font-size: 13px; color: var(--mc-muted); font-weight: 600; margin-top: 2px; }
+.mc-stat-word { font-family: var(--mc-display); font-size: 24px; font-weight: 500; letter-spacing: 0; color: var(--mc-accent); line-height: 1.08; }
+.mc-stat-lbl { font-family: var(--mc-mono); font-size: 13px; color: var(--mc-muted); font-weight: 500; letter-spacing: .04em; margin-top: 2px; }
 
 /* The next-step call — the one live move, leading the glance side. */
 .mc-glance-side { display: flex; flex-direction: column; gap: 16px; }
@@ -2118,7 +2126,7 @@ const STAGE_CSS = `
   font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
   color: var(--mc-accent);
 }
-.mc-nextstep-label { font-size: 19px; font-weight: 700; letter-spacing: -.01em; color: var(--mc-ink); }
+.mc-nextstep-label { font-family: var(--mc-display); font-size: 22px; font-weight: 500; letter-spacing: 0; color: var(--mc-ink); }
 .mc-nextstep-go {
   position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
   font-size: 20px; font-weight: 700; color: var(--mc-accent);
@@ -2136,7 +2144,7 @@ const STAGE_CSS = `
 
 /* ── civ breadcrumb (reused from the legacy DomainPanel) ─────── */
 .mc-civ-crumbs {
-  font-family: 'IBM Plex Mono', Georgia, serif;
+  font-family: 'Cormorant SC', Georgia, serif;
   font-size: 15px;
   font-weight: 400;
   letter-spacing: .12em;

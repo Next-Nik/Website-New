@@ -23,7 +23,7 @@ import { PRINCIPLES_ORDERED } from '../constants/principles'
 import PracticeCard from '../components/practices/PracticeCard'
 import { body, sc } from '../../lib/designTokens'
 
-const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
+const garamond = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 // ─── Header ────────────────────────────────────────────────
 

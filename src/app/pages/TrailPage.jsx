@@ -11,9 +11,9 @@ import { useAuth } from '../../hooks/useAuth'
 import { fn, space } from '../../lib/designTokens'
 import { getTrail, addTrailStep, removeTrailStep, setTrailPublic } from '../lib/trails'
 
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const mono    = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const mono    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const KINDS = [['practice', 'Practice'], ['challenge', 'Challenge'], ['stretch', 'Stretch'], ['note', 'Note']]
 

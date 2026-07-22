@@ -21,9 +21,9 @@ import { CIV_DOMAINS } from '../constants/domains'
 import { momentImageUrl } from '../../lib/momentCapture'
 import { ensureBoard, getBoardItems, addBoardItem, removeBoardItem, getPathSteps } from '../lib/trails'
 
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const mono    = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const mono    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const DOMAIN_NAME = Object.fromEntries(CIV_DOMAINS.map(d => [d.slug, d.name]))
 

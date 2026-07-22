@@ -280,7 +280,7 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
                 {/* Tier label — always shown for whole numbers, always shown when active */}
                 {(isWhole || isActive) && (
                   <span style={{
-                    fontFamily: "'IBM Plex Mono', Georgia, serif",
+                    fontFamily: "'Cormorant SC', Georgia, serif",
                     fontSize: isActive ? (isMobile ? '0.625rem' : '0.6875rem') : (isMobile ? '0.5rem' : '0.5625rem'),
                     letterSpacing: '0.1em',
                     color: isActive ? color : isTheLine ? 'rgba(76,107,69,0.7)' : 'rgba(15,21,35,0.55)',
@@ -382,7 +382,7 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
               }}>
                 {isActive && (
                   <span style={{
-                    fontFamily: "'Newsreader', Georgia, serif",
+                    fontFamily: "'Lora', Georgia, serif",
                     fontSize: isMobile ? '0.6875rem' : '0.8125rem',
                     color: 'rgba(15,21,35,0.6)',
                     whiteSpace: 'nowrap',
@@ -405,7 +405,7 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
       }}>
         <span style={{
-          fontFamily: "'IBM Plex Mono', Georgia, serif",
+          fontFamily: "'Cormorant SC', Georgia, serif",
           fontSize: isMobile ? '2rem' : '2.5rem',
           fontWeight: 600,
           color,
@@ -415,7 +415,7 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
           {formatScaleValue(value)}
         </span>
         <span style={{
-          fontFamily: "'IBM Plex Mono', Georgia, serif",
+          fontFamily: "'Cormorant SC', Georgia, serif",
           fontSize: isMobile ? '0.6875rem' : '0.8125rem',
           letterSpacing: '0.14em',
           color,
@@ -425,7 +425,7 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
           {tier}
         </span>
         <span style={{
-          fontFamily: "'Newsreader', Georgia, serif",
+          fontFamily: "'Lora', Georgia, serif",
           fontSize: isMobile ? '0.875rem' : '1rem',
           color: 'rgba(15,21,35,0.55)',
           textAlign: 'center',
@@ -499,7 +499,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0' }}>
       <span style={{
-        fontFamily: "'IBM Plex Mono',Georgia,serif",
+        fontFamily: "'Cormorant SC',Georgia,serif",
         fontSize: '0.5625rem', letterSpacing: '0.2em',
         color: '#262420', textTransform: 'uppercase',
         marginBottom: '6px',
@@ -508,7 +508,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
       </span>
 
       <p style={{
-        fontFamily: "'Newsreader', Georgia, serif",
+        fontFamily: "'Lora', Georgia, serif",
         fontSize: '1.25rem',
         color: 'rgba(15,21,35,0.6)', lineHeight: 1.7,
         textAlign: 'center', marginBottom: '24px',
@@ -532,7 +532,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
         disabled={locked}
         style={{
           width: '100%', padding: '10px 14px',
-          fontFamily: "'Newsreader', Georgia, serif",
+          fontFamily: "'Lora', Georgia, serif",
           fontSize: '1.125rem',
           color: 'rgba(15,21,35,0.75)',
           background: 'rgba(76,107,69,0.025)',
@@ -551,7 +551,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
           disabled={saving || locked}
           style={{
             flex: 1, padding: '13px',
-            fontFamily: "'IBM Plex Mono',Georgia,serif",
+            fontFamily: "'Cormorant SC',Georgia,serif",
             fontSize: '1.3125rem', letterSpacing: '0.14em',
             color: locked ? 'rgba(76,107,69,0.35)' : 'rgba(76,107,69,0.9)',
             background: 'rgba(76,107,69,0.05)',
@@ -566,7 +566,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
         </button>
         {onSkip && !locked && (
           <button onClick={onSkip} style={{
-            fontFamily: "'Newsreader', Georgia, serif",
+            fontFamily: "'Lora', Georgia, serif",
             fontSize: '1.3125rem',
             color: 'rgba(15,21,35,0.55)',
             background: 'none', border: 'none',

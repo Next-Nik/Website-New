@@ -1097,7 +1097,7 @@ function ActorsTab({ toast }) {
 function ExTierBadge({ tier }) {
   const c = TIER_CFG[tier]; if (!c) return null
   return (
-    <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.12em',
+    <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.12em',
       padding:'3px 10px', borderRadius:'40px', border:`1px solid ${c.border}`, color:c.color, background:c.bg }}>
       {c.label}
     </span>
@@ -1107,7 +1107,7 @@ function ExTierBadge({ tier }) {
 function ExLabelBadge({ label }) {
   const c = LABEL_COLORS[label] || LABEL_COLORS.Planet
   return (
-    <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.14em',
+    <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.14em',
       padding:'4px 12px', borderRadius:'40px', border:`1px solid ${c.border}`, color:c.color, background:c.bg }}>
       {label}
     </span>
@@ -1122,7 +1122,7 @@ function ExPill({ label, variant = 'green' }) {
   }
   const c = cols[variant] || cols.green
   return (
-    <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.10em',
+    <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.10em',
       padding:'2px 9px', borderRadius:'40px', border:`1px solid ${c.border}`,
       color:c.color, background:c.bg, display:'inline-block', margin:'2px' }}>
       {label}
@@ -1135,13 +1135,13 @@ function DimPills({ label, values = [], color = gold }) {
   if (!values || values.length === 0) return null
   return (
     <div style={{ marginBottom: '6px' }}>
-      <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.16em',
+      <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.16em',
         color: 'rgba(15,21,35,0.55)', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>
         {label}
       </span>
       <div>
         {values.map((v, i) => (
-          <span key={v} style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.08em',
+          <span key={v} style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.08em',
             padding:'2px 8px', borderRadius:'40px', margin:'2px', display:'inline-block',
             color: i === 0 ? color : 'rgba(15,21,35,0.55)',
             background: i === 0 ? `${color}14` : 'rgba(15,21,35,0.04)',
@@ -1204,14 +1204,14 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
             <ExLabelBadge label={proposal.label} />
             <ExTierBadge tier={proposal.placement_tier} />
             {proposal._duplicate && (
-              <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.10em', textTransform:'uppercase', color:'#8A6020',
                 background:'rgba(76,107,69,0.10)', border:'1px solid rgba(76,107,69,0.40)',
                 borderRadius:'40px', padding:'2px 10px' }}>
                 Already on the map
               </span>
             )}
-            <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.10em', color:'rgba(15,21,35,0.55)' }}>
               {proposal.confidence}% confidence
             </span>
@@ -1226,22 +1226,22 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
                     style={{ width:'100%', height:'100%', objectFit:'contain' }}
                     onError={e => { e.currentTarget.style.display = 'none'
                       e.currentTarget.parentNode.dataset.broken = '1' }} />
-                : <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+                : <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                     letterSpacing:'0.10em', color:'rgba(15,21,35,0.55)', textAlign:'center' }}>NO IMAGE</span>}
             </div>
             <div style={{ flex:1, minWidth:0 }}>
-              <div style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'19px', fontWeight: 400,
+              <div style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'19px', fontWeight: 400,
                 color:'#0F1523' }}>
                 {proposal.name}
               </div>
               {proposal.tagline && (
-                <div style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'14px',
+                <div style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'14px',
                   color:'rgba(15,21,35,0.70)', lineHeight:1.4, marginTop:'3px' }}>
                   {proposal.tagline}
                 </div>
               )}
               {proposal.floor_check?.has_favicon_fallback && (
-                <div style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+                <div style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                   letterSpacing:'0.10em', color:'#8A6020', marginTop:'4px' }}>
                   FAVICON FALLBACK · NO LOGO FOUND
                 </div>
@@ -1249,11 +1249,11 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
             </div>
           </div>
           <div style={{ display:'flex', alignItems:'baseline', gap:'6px', marginBottom:'8px' }}>
-            <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'40px',
+            <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'40px',
               fontWeight:700, color:'#0F1523', lineHeight:1 }}>
               {proposal.alignment_score}
             </span>
-            <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'14px',
+            <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'14px',
               color:'rgba(15,21,35,0.55)' }}>/10</span>
           </div>
 
@@ -1261,12 +1261,12 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
              that should read like the actor's own site, not a review. */}
           {proposal.description && (
             <div style={{ marginBottom:'12px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px',
                 textTransform:'uppercase' }}>
                 Profile
               </p>
-              <p style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'15px',
+              <p style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'15px',
                 color:'#0F1523', lineHeight:1.65, margin:0 }}>
                 {proposal.description}
               </p>
@@ -1276,13 +1276,13 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           {/* Story — the longer narrative, shown so it's reviewable before placing */}
           {proposal.story && (
             <div style={{ marginBottom:'12px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px',
                 textTransform:'uppercase' }}>
                 Story
               </p>
               {proposal.story.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean).map((para, i) => (
-                <p key={i} style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'14px',
+                <p key={i} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'14px',
                   color:'rgba(15,21,35,0.72)', lineHeight:1.65, margin:'0 0 8px' }}>
                   {para}
                 </p>
@@ -1292,12 +1292,12 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           {proposal.score_reasoning && (
             <div style={{ borderLeft:'2px solid rgba(15,21,35,0.14)', paddingLeft:'12px', marginBottom:'12px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'4px',
                 textTransform:'uppercase' }}>
                 Why this score · internal
               </p>
-              <p style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'13px',
                 color:'rgba(15,21,35,0.55)', lineHeight:1.6, margin:0 }}>
                 {proposal.score_reasoning}
               </p>
@@ -1312,12 +1312,12 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
             {lenses.length > 0 && <DimPills label="Lenses"  values={lenses}    color="#6B2A9E" />}
             {problems.length > 0 && (
               <div style={{ marginBottom: '6px' }}>
-                <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.16em',
+                <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.16em',
                   color: 'rgba(15,21,35,0.55)', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>
                   Problem chains
                 </span>
                 {problems.map((p, i) => (
-                  <div key={i} style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'13px',
+                  <div key={i} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'13px',
                     color: i === 0 ? '#0F1523' : 'rgba(15,21,35,0.55)',
                     lineHeight: 1.5, marginBottom: '3px' }}>
                     {i === 0 ? '' : '+ '}{p}
@@ -1335,7 +1335,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           {/* HAL signals (preserved — canonical structural-integrity surface) */}
           {proposal.hal_signals?.length > 0 && (
             <div style={{ marginBottom:'8px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'#2A6B3A', marginBottom:'5px' }}>
                 HAL conditions
               </p>
@@ -1345,7 +1345,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           {/* SFP patterns (preserved — canonical structural-integrity surface) */}
           {proposal.sfp_patterns?.length > 0 && (
             <div style={{ marginBottom:'8px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'#8A6020', marginBottom:'5px' }}>
                 SFP patterns
               </p>
@@ -1357,13 +1357,13 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
              before placement. Written on save by linkRelationships(). */}
           {proposal.relationships?.length > 0 && (
             <div style={{ marginBottom:'8px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px' }}>
                 Linked to
               </p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:'5px' }}>
                 {proposal.relationships.map((r, i) => (
-                  <span key={i} style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'13px',
+                  <span key={i} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'13px',
                     color:'rgba(15,21,35,0.72)', background:'rgba(15,21,35,0.04)',
                     border:'1px solid rgba(15,21,35,0.10)', borderRadius:'40px', padding:'3px 10px' }}>
                     {r.to_name}
@@ -1377,14 +1377,14 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
              socials, contact). Shown so they're reviewable before placing. */}
           {proposal.links?.length > 0 && (
             <div style={{ marginBottom:'8px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px' }}>
                 Channels · {proposal.links.length}
               </p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:'5px' }}>
                 {proposal.links.map((l, i) => (
                   <a key={i} href={l.url} target="_blank" rel="noreferrer"
-                    style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+                    style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                       letterSpacing:'0.08em', textTransform:'uppercase', textDecoration:'none',
                       color:gold, background:'rgba(76,107,69,0.06)',
                       border:'1px solid rgba(76,107,69,0.30)', borderRadius:'40px', padding:'3px 10px' }}>
@@ -1397,7 +1397,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
         </div>
 
         <button onClick={() => setExpanded(e => !e)}
-          style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+          style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
             letterSpacing:'0.12em', color:'rgba(15,21,35,0.55)',
             background:'none', border:'none', cursor:'pointer', flexShrink:0, paddingTop:'4px' }}>
           {expanded ? 'Done' : 'Edit'}
@@ -1408,26 +1408,26 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
       {expanded && (
         <div style={{ borderTop:'1px solid rgba(76,107,69,0.15)', padding:'18px 20px 20px', display:'grid', gap:'14px' }}>
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Name</label>
             <Input value={proposal.name} onChange={v => set('name', v)} placeholder="Name" />
           </div>
 
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'10px' }}>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Type</label>
               <Select value={proposal.type} onChange={v => set('type', v)}
                 options={TYPES_EX.map(t => ({ value:t, label:t }))} />
             </div>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Track</label>
               <Select value={proposal.track} onChange={v => { set('track', v); set('domain_id','') }}
                 options={[{ value:'planet', label:'Planet' }, { value:'self', label:'Self' }]} />
             </div>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Scale</label>
               <Select value={proposal.scale || ''} onChange={v => set('scale', v)}
                 options={[{ value:'', label:'-- Select --' }, ...SCALES_EX.map(s => ({ value:s, label:s }))]} />
@@ -1435,7 +1435,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           </div>
 
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Primary domain *</label>
             <Select value={domains[0] || ''} onChange={v => {
               set('domain_id', v)
@@ -1446,7 +1446,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           {/* Secondary domains */}
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'6px' }}>Secondary domains</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
               {PLANET_DOMAINS_EX.filter(d => d.value !== domains[0]).map(d => {
@@ -1459,7 +1459,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
                       set('domains', [domains[0], ...next].filter(Boolean))
                     }}
                     style={{
-                      fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.06em',
+                      fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.06em',
                       padding:'3px 9px', borderRadius:'40px', cursor:'pointer',
                       color: isOn ? gold : 'rgba(15,21,35,0.72)',
                       background: isOn ? 'rgba(76,107,69,0.08)' : '#FFFFFF',
@@ -1474,7 +1474,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           {/* Platform principles */}
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'6px' }}>Platform principles</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
               {PRINCIPLES_ORDERED.map(p => {
@@ -1485,7 +1485,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
                       set('platform_principles', isOn ? principles.filter(x => x !== p.slug) : [...principles, p.slug])
                     }}
                     style={{
-                      fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.06em',
+                      fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.06em',
                       padding:'3px 9px', borderRadius:'40px', cursor:'pointer',
                       color: isOn ? gold : 'rgba(15,21,35,0.72)',
                       background: isOn ? 'rgba(76,107,69,0.08)' : '#FFFFFF',
@@ -1500,23 +1500,23 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Location</label>
               <Input value={proposal.location_name || ''} onChange={v => set('location_name', v)}
                 placeholder="e.g. Mexico City, Mexico" />
             </div>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Website</label>
               <Input value={proposal.website || ''} onChange={v => set('website', v)} placeholder="https://..." />
             </div>
           </div>
 
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Description</label>
             <textarea value={proposal.description || ''} onChange={e => set('description', e.target.value)}
-              rows={3} style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'15px', color:'#0F1523',
+              rows={3} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'15px', color:'#0F1523',
                 padding:'9px 14px', borderRadius:'8px', border:'1.5px solid rgba(76,107,69,0.35)',
                 background:'#FFFFFF', outline:'none', width:'100%', resize:'vertical',
                 lineHeight:1.6, boxSizing:'border-box' }} />
@@ -1525,22 +1525,22 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           {/* Source — provenance for seeding (optional, free-text).
               Format suggestion: "podcast | Episode 47 — Guest Name | https://..." */}
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Source (optional)</label>
             <input type="text" value={proposal.data_source || ''}
               onChange={e => set('data_source', e.target.value)}
               placeholder="e.g. podcast | Episode 47 — Guest Name | https://..."
-              style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'14px', color:'#0F1523',
+              style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'14px', color:'#0F1523',
                 padding:'9px 14px', borderRadius:'8px',
                 border:'1.5px solid rgba(76,107,69,0.35)', background:'#FFFFFF',
                 outline:'none', width:'100%', boxSizing:'border-box' }} />
           </div>
 
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Impact summary</label>
             <textarea value={proposal.impact_summary || ''} onChange={e => set('impact_summary', e.target.value)}
-              rows={2} style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'15px', color:'#0F1523',
+              rows={2} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'15px', color:'#0F1523',
                 padding:'9px 14px', borderRadius:'8px', border:'1.5px solid rgba(76,107,69,0.35)',
                 background:'#FFFFFF', outline:'none', width:'100%', resize:'vertical',
                 lineHeight:1.6, boxSizing:'border-box' }} />
@@ -1548,14 +1548,14 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           <div style={{ display:'grid', gridTemplateColumns:'120px 1fr', gap:'12px', alignItems:'end' }}>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Score (0–10)</label>
               <Input value={proposal.alignment_score ?? ''} onChange={handleScoreChange}
                 type="number" step="0.5" placeholder="0–10" />
             </div>
             <div style={{ paddingBottom:'2px' }}>
               {!isNaN(score) && <ExTierBadge tier={TIER_FROM_SCORE(score)} />}
-              <span style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'13px',
+              <span style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'13px',
                 color:'rgba(15,21,35,0.55)', marginLeft:'10px' }}>
                 Adjust if your read differs from the AI draft.
               </span>

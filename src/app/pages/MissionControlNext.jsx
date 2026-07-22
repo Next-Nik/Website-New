@@ -27,9 +27,9 @@ import GlanceWheel from '../components/mission-control/GlanceWheel'
 import WorldMapSubstrate from '../components/mission-control/WorldMapSubstrate'
 import { SELF_DOMAINS } from '../../components/self-explorer/selfData'
 
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const mono    = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const mono    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 // ── Section-level error boundary — contains a failure to one beat ──
 class Guard extends Component {

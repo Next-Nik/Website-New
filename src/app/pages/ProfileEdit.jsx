@@ -29,7 +29,7 @@ import { body, sc } from '../../lib/designTokens'
 // References Module 1.5 for principle primitives.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 const CIV_DOMAIN_OPTIONS = [
   { value: 'human-being',     label: 'Human Being' },
@@ -988,7 +988,7 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <p style={{
-        fontFamily: "'Newsreader', Georgia, serif",
+        fontFamily: "'Lora', Georgia, serif",
         fontSize: '14px',
         color: '#777',
         margin: '0 0 6px',
@@ -1041,7 +1041,7 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
                 flexWrap: 'wrap',
               }}>
                 <span style={{
-                  fontFamily: "'Fraunces', Georgia, serif",
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
                   fontSize: '17px',
                   fontWeight: 500,
                   color: '#0F1523',
@@ -1050,7 +1050,7 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
                 </span>
                 {isLast && (
                   <span style={{
-                    fontFamily: "'IBM Plex Mono', Georgia, serif",
+                    fontFamily: "'Cormorant SC', Georgia, serif",
                     fontSize: '13px',
                     letterSpacing: '0.18em',
                     color: '#999',
@@ -1061,7 +1061,7 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
                 )}
                 {isSaving && (
                   <span style={{
-                    fontFamily: "'IBM Plex Mono', Georgia, serif",
+                    fontFamily: "'Cormorant SC', Georgia, serif",
                     fontSize: '13px',
                     letterSpacing: '0.18em',
                     color: '#262420',
@@ -1072,7 +1072,7 @@ function ScopeSettings({ scopes, loaded, saving, onToggle }) {
                 )}
               </div>
               <p style={{
-                fontFamily: "'Newsreader', Georgia, serif",
+                fontFamily: "'Lora', Georgia, serif",
                 fontSize: '13.5px',
                 color: '#666',
                 margin: 0,
