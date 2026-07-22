@@ -41,7 +41,7 @@ const body    = { fontFamily: "'Newsreader', Georgia, serif" }
 const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
 const GOLD       = '#262420'
-const GOLD_LIGHT = '#6E7F5C'
+const GOLD_LIGHT = '#4c6b45'
 const INK        = '#0F1523'
 
 const DOMAINS = [

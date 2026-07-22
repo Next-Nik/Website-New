@@ -39,7 +39,7 @@ export default function WheelsToggleSection({
     <div
       className={className}
       style={{
-        background: isCiv ? '#0F1523' : '#FAFAF7',
+        background: isCiv ? '#a9743f' : '#FFFFFF',
         borderRadius: '14px',
         padding: '24px 22px',
         transition: 'background 240ms ease',
@@ -65,7 +65,7 @@ export default function WheelsToggleSection({
               display: 'block',
               fontSize: '13px',
               letterSpacing: '0.08em',
-              color: isCiv ? '#6E7F5C' : '#262420',
+              color: isCiv ? '#4c6b45' : '#262420',
               fontWeight: 600,
               marginBottom: '4px',
             }}

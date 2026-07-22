@@ -120,7 +120,7 @@ function InvitationCard({ bilateral, partyAName, onAccepted, onDeclined }) {
           style={{
             ...sc, fontSize: '13px', letterSpacing: '0.14em',
             padding: '10px 22px', borderRadius: '40px', cursor: acting ? 'not-allowed' : 'pointer',
-            background: '#6E7F5C', border: '1.5px solid rgba(38,36,32,0.8)',
+            background: '#4c6b45', border: '1.5px solid rgba(38,36,32,0.8)',
             color: '#FFFFFF', opacity: acting ? 0.6 : 1,
           }}
         >

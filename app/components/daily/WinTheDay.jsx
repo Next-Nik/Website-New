@@ -28,7 +28,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../../hooks/useSupabase'
 
-const GOLD     = '#6E7F5C'
+const GOLD     = '#4c6b45'
 const GOLD_DK  = '#262420'
 const INK      = '#0F1523'
 const SC       = "'IBM Plex Mono', Georgia, serif"

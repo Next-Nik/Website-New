@@ -29,7 +29,7 @@ const DOMAIN_META = {
   'society':         { label: 'Society',         color: '#8E7BB5' },
   'nature':          { label: 'Nature',          color: '#5C8A5C' },
   'technology':      { label: 'Technology',      color: '#5B8DB8' },
-  'finance-economy': { label: 'Economy',         color: '#6E7F5C' },
+  'finance-economy': { label: 'Economy',         color: '#4c6b45' },
   'legacy':          { label: 'Legacy',          color: '#A07850' },
   'vision':          { label: 'Vision',          color: '#9E7B9E' },
 }

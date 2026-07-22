@@ -306,7 +306,7 @@ export default function NeedCard({
                   fontSize: '13px',
                   letterSpacing: '0.14em',
                   color: '#FFFFFF',
-                  background: submitting ? 'rgba(76,107,69,0.5)' : '#6E7F5C',
+                  background: submitting ? 'rgba(76,107,69,0.5)' : '#4c6b45',
                   border: 'none',
                   borderRadius: '40px',
                   padding: '8px 18px',

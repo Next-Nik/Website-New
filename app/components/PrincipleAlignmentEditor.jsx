@@ -377,7 +377,7 @@ function WeightSelect({ value, onChange }) {
             onClick={() => onChange(w)}
             style={{
               ...sc,
-              background: active ? '#0F1523' : 'transparent',
+              background: active ? '#4c6b45' : 'transparent',
               color: active ? '#FFFFFF' : 'rgba(15, 21, 35, 0.72)',
               border: 'none',
               borderRadius: '40px',

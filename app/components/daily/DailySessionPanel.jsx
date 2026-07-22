@@ -33,7 +33,7 @@ import BreathPacer from './BreathPacer'
 import WinTheDay   from './WinTheDay'
 
 // ─── Design tokens ────────────────────────────────────────────
-const GOLD    = '#6E7F5C'
+const GOLD    = '#4c6b45'
 const GOLD_DK = '#262420'
 const INK     = '#0F1523'
 const SC      = "'IBM Plex Mono', Georgia, serif"

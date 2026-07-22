@@ -75,7 +75,7 @@ export default function TendedThing({
 }) {
   const rest    = restStateFromLast(lastTendedAt)
   const opacity = REST_OPACITY[rest] ?? 1
-  const live    = tone === 'light' ? '#6E7F5C' : at.verdigris
+  const live    = tone === 'light' ? '#4c6b45' : at.verdigris
   const px      = size === 'sm' ? 34 : size === 'lg' ? 72 : 52
 
   return (

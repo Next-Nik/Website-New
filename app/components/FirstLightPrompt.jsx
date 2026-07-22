@@ -19,7 +19,7 @@ import { hasMapEngagement } from '../util/onboarding'
 const BG   = '#FAFAF7'
 const INK  = '#0F1523'
 const GOLD = '#262420'
-const GC   = '#6E7F5C'
+const GC   = '#4c6b45'
 const SERIF = "'Fraunces', Georgia, serif"
 const SC    = "'IBM Plex Mono', Georgia, serif"
 const LORA  = "'Newsreader', Georgia, serif"

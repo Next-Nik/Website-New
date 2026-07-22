@@ -13,7 +13,7 @@ import { useAuth } from '../../../hooks/useAuth'
 import { tokens, body, sc } from '../../../lib/designTokens'
 
 const goldText  = tokens.gold            // text only
-const goldChrome = '#6E7F5C'             // borders / chrome
+const goldChrome = '#4c6b45'             // borders / chrome
 const hair = '1px solid rgba(76,107,69,0.18)'
 
 function parseUrls(text) {

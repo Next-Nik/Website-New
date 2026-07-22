@@ -591,7 +591,7 @@ export function BilateralCardEditor({
             style={{
               ...sc, fontSize: '14px', letterSpacing: '0.14em',
               padding: '12px 24px', borderRadius: '40px', cursor: saving ? 'not-allowed' : 'pointer',
-              background: '#6E7F5C', border: '1.5px solid rgba(38,36,32,0.8)',
+              background: '#4c6b45', border: '1.5px solid rgba(38,36,32,0.8)',
               color: '#FFFFFF', opacity: saving ? 0.6 : 1,
             }}
           >

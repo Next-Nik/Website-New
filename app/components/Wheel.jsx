@@ -34,7 +34,7 @@ function pickScale(map, v) {
   return map[Math.round(v)]
 }
 
-const GOLD     = '#6E7F5C'   // chrome / borders
+const GOLD     = '#4c6b45'   // chrome / borders
 const GOLD_DK  = '#262420'   // gold text
 const INK      = '#0F1523'
 const LORA     = "'Newsreader', Georgia, serif"

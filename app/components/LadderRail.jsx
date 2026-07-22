@@ -122,7 +122,7 @@ export function LadderRail({ watchEntity, exploreHref, dark = false }) {
       onClick={onClick}
       style={{
         ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
-        color: dark ? '#6E7F5C' : GOLD, background: 'none', border: 'none',
+        color: dark ? '#4c6b45' : GOLD, background: 'none', border: 'none',
         cursor: 'pointer', padding: 0,
       }}
     >
