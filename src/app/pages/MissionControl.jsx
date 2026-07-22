@@ -980,6 +980,7 @@ export default function MissionControl() {
   // Identity strings.
   const rawName  = data.profile?.display_name || data.user?.email?.split('@')[0] || (data.user ? 'Your name' : 'Welcome')
   const userName = rawName
+  const avatarInitial = (data.profile?.display_name || data.user?.email || '?').trim().charAt(0).toUpperCase()
 
   // Placement: internal sentinel for control flow + display variant.
   const placement = formatPlacement(data.purposeData) || 'PURPOSE PIECE NOT YET PLACED'
@@ -1217,7 +1218,8 @@ export default function MissionControl() {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             aria-label="NextUs · home"
           >
-            Next<span>Us</span>
+            <img src="/logo_nav.png" alt="" aria-hidden="true" className="mc-brand-mark" />
+            <span className="mc-brand-text">Next<span>Us</span></span>
           </button>
 
           <div className="mc-pole" role="tablist" aria-label="Scale">
@@ -1268,7 +1270,9 @@ export default function MissionControl() {
             onClick={() => setActivePanel('profile')}
             aria-label={userName}
             title={userName}
-          />
+          >
+            {avatarInitial}
+          </button>
         </div>
       </nav>
 
@@ -1825,6 +1829,9 @@ const STAGE_CSS = `
   height: 66px;
 }
 .mc-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   font-family: var(--mc-display);
   font-weight: 500;
   letter-spacing: -.01em;
@@ -1835,7 +1842,9 @@ const STAGE_CSS = `
   padding: 0;
   cursor: pointer;
 }
-.mc-brand span { color: var(--mc-gold); }
+.mc-brand-mark { height: 26px; width: auto; display: block; }
+.mc-brand-text { color: var(--mc-ink); }
+.mc-brand-text > span { color: var(--mc-gold); }
 .mc-nav-spacer { flex: 1; }
 .mc-nav-links { display: flex; gap: 22px; }
 .mc-nav-links a {
@@ -1891,9 +1900,23 @@ const STAGE_CSS = `
   width: 38px;
   height: 38px;
   border-radius: 999px;
-  border: 1px solid var(--mc-line);
+  border: 1.5px solid #4c6b45;
+  background: rgba(76, 107, 69, 0.08);
+  color: #3c5637;
+  font-family: var(--mc-mono);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;
+  display: grid;
+  place-items: center;
   cursor: pointer;
-  background: linear-gradient(135deg, var(--mc-accent), color-mix(in srgb, var(--mc-accent) 55%, #000));
+  transition: background .2s ease, border-color .2s ease;
+}
+.mc-avatar:hover { background: rgba(76, 107, 69, 0.14); }
+[data-stage="dark"] .mc-avatar {
+  border-color: #7ea877;
+  color: #cfe3c9;
+  background: rgba(126, 168, 119, 0.12);
 }
 
 /* ── beat ribbon ────────────────────────────────────────────── */

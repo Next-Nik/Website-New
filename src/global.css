@@ -234,15 +234,24 @@ button {
 
 /* Text wordmark — matches the four-beat home. Scarf-gold `Us`. */
 .nav-wordmark {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  font-size: 19px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-size: 22px;
   color: var(--text);
   text-decoration: none;
   line-height: 1;
 }
-.nav-wordmark span { color: var(--gold); }
+.nav-wordmark-text { color: var(--text); }
+.nav-wordmark-text > span { color: var(--gold); }
+.nav-wordmark-logo {
+  height: 26px;
+  width: auto;
+  display: block;
+}
 
 .nav-links {
   display: flex;

@@ -37,9 +37,10 @@ export function Nav({ activePath, hideHamburger = false }) {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
 
-          {/* Wordmark — text, scarf-gold `Us`, matching the four-beat home */}
+          {/* Wordmark — compass mark + Lora text, scarf-gold `Us`, matching the four-beat home */}
           <Link to="/" className="nav-wordmark" onClick={closeMobile} aria-label="NextUs · home">
-            Next<span>Us</span>
+            <img src="/logo_nav.png" alt="" aria-hidden="true" className="nav-wordmark-logo" />
+            <span className="nav-wordmark-text">Next<span>Us</span></span>
           </Link>
 
           {/* Desktop centre — marketing nav links (signed-out only) */}
