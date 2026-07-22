@@ -84,7 +84,7 @@ const WHEEL_STAGE_CSS = `
 }
 [data-stage="light"] .mc-wheel-stage::before {
   background: radial-gradient(ellipse at center,
-    rgba(110,127,92,0.03) 0%,
+    rgba(76,107,69,0.03) 0%,
     rgba(250,250,247,0.88) 40%,
     transparent 72%
   );

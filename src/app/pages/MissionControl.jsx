@@ -345,7 +345,7 @@ function ResourcesNextStepsInput({ onSubmit }) {
   }
   return (
     <div>
-      <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', marginBottom: '10px' }}>NEXT STEPS</div>
+      <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#262420', marginBottom: '10px' }}>NEXT STEPS</div>
       <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
         <textarea
           value={val}
@@ -354,7 +354,7 @@ function ResourcesNextStepsInput({ onSubmit }) {
           rows={2}
           placeholder="What's on your mind right now…"
           style={{
-            flex: 1, resize: 'none', border: '1px solid rgba(110,127,92,0.28)', borderRadius: '3px',
+            flex: 1, resize: 'none', border: '1px solid rgba(76,107,69,0.28)', borderRadius: '3px',
             padding: '10px 12px', fontFamily: "'Newsreader', Georgia, serif", fontSize: '14px',
             lineHeight: 1.55, color: '#0F1523', background: '#FAFAF7', outline: 'none',
           }}
@@ -364,7 +364,7 @@ function ResourcesNextStepsInput({ onSubmit }) {
           onClick={() => { if (val.trim()) onSubmit(val.trim()) }}
           disabled={!val.trim()}
           style={{
-            background: val.trim() ? '#6E7F5C' : 'rgba(15,21,35,0.55)', color: val.trim() ? '#FFFFFF' : 'rgba(15,21,35,0.55)',
+            background: val.trim() ? '#4c6b45' : 'rgba(15,21,35,0.55)', color: val.trim() ? '#FFFFFF' : 'rgba(15,21,35,0.55)',
             border: 'none', borderRadius: '3px', padding: '10px 16px', cursor: val.trim() ? 'pointer' : 'not-allowed',
             fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase',
             transition: 'background 0.15s', flexShrink: 0,
@@ -1453,13 +1453,13 @@ export default function MissionControl() {
       >
         <FocusPanelContent />
         <div style={{
-          borderTop: '1px solid rgba(110,127,92,0.18)',
+          borderTop: '1px solid rgba(76,107,69,0.18)',
           marginTop: '28px',
           paddingTop: '20px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <span style={{ color: '#26302A', fontSize: '14px' }}>✦</span>
-            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#26302A' }}>WHAT'S BEEN PULLING AT YOU</span>
+            <span style={{ color: '#262420', fontSize: '14px' }}>✦</span>
+            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#262420' }}>WHAT'S BEEN PULLING AT YOU</span>
           </div>
           <MyInterestsPanel userId={data.user?.id} />
         </div>
@@ -1522,9 +1522,9 @@ export default function MissionControl() {
         </div>
 
         {/* Feed — empty for now, fills as content is surfaced */}
-        <div style={{ borderTop: '1px solid rgba(110,127,92,0.15)', paddingTop: '20px' }}>
+        <div style={{ borderTop: '1px solid rgba(76,107,69,0.15)', paddingTop: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <span style={{ color: '#26302A', fontSize: '14px' }}>✦</span>
+            <span style={{ color: '#262420', fontSize: '14px' }}>✦</span>
             <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)' }}>YOUR FEED</span>
           </div>
           <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0, lineHeight: 1.6 }}>
@@ -1541,7 +1541,6 @@ export default function MissionControl() {
         actions={[
           { label: 'CLOSE', onClick: closePanel },
         ]}
-        dark
       >
         <WorldViewMissionPanel />
       </Panel>
@@ -1551,7 +1550,6 @@ export default function MissionControl() {
         onClose={closePanel}
         eyebrow="OUTWARD AIM · PLANET SPRINT"
         title="Quests in your range"
-        dark
       >
         <p>Planet Sprint is Target Sprint pointed outward. Same architecture, civilisational target. Quests are sprints offered by orgs and other actors, ready to accept. Time-frames vary: a doc edit by Tuesday, a community garden build over six weeks, a multi-month policy push.</p>
         <div className="mc-panel-build-edge">
@@ -1965,12 +1963,13 @@ const STAGE_CSS = `
   border-radius: 18px;
   padding: 8px;
 }
-/* Civ wheel + civ header are drawn for a dark stage; give them a
-   contained dark instrument frame so they read on the bright ground. */
+/* Civ wheel + civ header — a contained bright instrument card, framing
+   the wheel without a dark stage (full retheme: both poles bright). */
 .mc-instrument--dark {
-  background: ${BG_INK};
+  background: var(--mc-surface);
   padding: 20px 16px;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 1px var(--mc-line);
 }
 .mc-stats {
   display: grid;
@@ -1992,8 +1991,9 @@ const STAGE_CSS = `
   margin: 0 20px 24px;
   padding: 20px;
   border-radius: 18px;
-  background: ${BG_INK};
-  color: #ffffff;
+  background: var(--mc-surface);
+  border: 1px solid var(--mc-line);
+  color: var(--mc-ink);
 }
 
 /* ── civ breadcrumb (reused from the legacy DomainPanel) ─────── */
@@ -2002,7 +2002,7 @@ const STAGE_CSS = `
   font-size: 15px;
   font-weight: 400;
   letter-spacing: .12em;
-  color: rgba(255,255,255,.72);
+  color: var(--mc-muted);
   text-transform: uppercase;
   display: flex;
   align-items: center;
@@ -2019,12 +2019,12 @@ const STAGE_CSS = `
   margin: 0;
   font: inherit;
   letter-spacing: inherit;
-  color: rgba(255,255,255,.72);
+  color: var(--mc-muted);
   text-transform: inherit;
   cursor: pointer;
   transition: color 150ms ease;
 }
-.mc-crumb-seg:hover { color: #ffffff; }
+.mc-crumb-seg:hover { color: var(--mc-ink); }
 .mc-crumb-sep { color: var(--mc-gold); margin: 0 2px; }
 .mc-crumb-current { color: var(--mc-gold); }
 

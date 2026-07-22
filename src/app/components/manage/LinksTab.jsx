@@ -85,7 +85,7 @@ function LinksSection({ actorId, toast }) {
 
       {/* Add new link form */}
       <div style={{ background: '#FFFFFF',
-        border: '1px solid rgba(88,160,138,0.20)',
+        border: '1px solid rgba(76,107,69,0.20)',
         borderRadius: '10px', padding: '14px 18px',
         display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr', gap: '10px' }}>
@@ -130,13 +130,13 @@ function LinksSection({ actorId, toast }) {
           return (
             <div key={link.id}
               style={{ background: '#FFFFFF',
-                border: '1px solid rgba(88,160,138,0.20)',
+                border: '1px solid rgba(76,107,69,0.20)',
                 borderRadius: '8px', padding: '12px 16px',
                 display: 'flex', alignItems: 'center', gap: '14px' }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
                   <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
-                    color: gold, background: 'rgba(88,160,138,0.06)',
+                    color: gold, background: 'rgba(76,107,69,0.06)',
                     padding: '2px 10px', borderRadius: '40px' }}>
                     {typeLabel}
                   </span>
@@ -219,7 +219,7 @@ function PressSection({ actorId, toast }) {
 
       {/* Add form */}
       <div style={{ background: '#FFFFFF',
-        border: '1px solid rgba(88,160,138,0.20)',
+        border: '1px solid rgba(76,107,69,0.20)',
         borderRadius: '10px', padding: '14px 18px',
         display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div>
@@ -262,7 +262,7 @@ function PressSection({ actorId, toast }) {
         press.map(item => (
           <div key={item.id}
             style={{ background: '#FFFFFF',
-              border: '1px solid rgba(88,160,138,0.20)',
+              border: '1px solid rgba(76,107,69,0.20)',
               borderRadius: '8px', padding: '12px 16px',
               display: 'flex', alignItems: 'center', gap: '14px' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -303,8 +303,8 @@ function PressSection({ actorId, toast }) {
 export function LinksTab({ actorId, toast }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-      <div style={{ background: 'rgba(88,160,138,0.04)',
-        border: '1px solid rgba(88,160,138,0.18)',
+      <div style={{ background: 'rgba(76,107,69,0.04)',
+        border: '1px solid rgba(76,107,69,0.18)',
         borderRadius: '10px', padding: '14px 18px' }}>
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.65)',
           lineHeight: 1.6, margin: 0 }}>

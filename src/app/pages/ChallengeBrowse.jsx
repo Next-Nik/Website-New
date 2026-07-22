@@ -16,7 +16,7 @@ import { INTENSITY_LEVELS, INTENSITY_BY_LEVEL } from '../../constants/challengeI
 import ChiliRung from '../components/challenge/ChiliRung'
 
 const hair  = `1px solid ${at.verdigrisEdge}`
-const muted = { color: 'rgba(234,241,237,0.78)' }
+const muted = { color: 'rgba(38,36,32,0.78)' }
 
 const LABELS = {
   ...Object.fromEntries(SELF_DOMAINS.map(d => [d.slug, d.label])),
@@ -43,7 +43,7 @@ function Card({ c }) {
       style={{ textDecoration: 'none', display: 'block', background: at.object, border: hair, borderRadius: '14px', padding: '20px 22px' }}>
       <DomainChip slug={c.domain} />
       <h2 style={{ ...serif, fontWeight: 300, fontSize: '23px', color: at.text, lineHeight: 1.2, margin: '8px 0 4px' }}>{c.title}</h2>
-      {c.tagline && <p style={{ ...body, fontSize: '15px', color: 'rgba(234,241,237,0.72)', lineHeight: 1.55, margin: '0 0 14px' }}>{c.tagline}</p>}
+      {c.tagline && <p style={{ ...body, fontSize: '15px', color: 'rgba(38,36,32,0.72)', lineHeight: 1.55, margin: '0 0 14px' }}>{c.tagline}</p>}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', ...sc, fontSize: '13px', letterSpacing: '0.08em', color: at.ghost, marginTop: '4px' }}>
         <span>{c.duration_days || 90} days</span>
         <span>{c.strand_count || 1} {(c.strand_count || 1) === 1 ? 'part to keep' : 'parts to keep'}</span>
@@ -116,8 +116,8 @@ export default function ChallengeBrowse() {
             {[{ slug: '', label: 'All' }, ...domainsPresent.map(s => ({ slug: s, label: LABELS[s] || s }))].map(d => (
               <button key={d.slug || 'all'} type="button" onClick={() => setDomain(d.slug)}
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '6px 15px', borderRadius: '20px', cursor: 'pointer',
-                  border: `1px solid ${domain === d.slug ? 'rgba(217,178,74,0.78)' : 'rgba(217,178,74,0.28)'}`,
-                  background: domain === d.slug ? 'rgba(217,178,74,0.08)' : 'transparent',
+                  border: `1px solid ${domain === d.slug ? 'rgba(169,116,63,0.78)' : 'rgba(169,116,63,0.28)'}`,
+                  background: domain === d.slug ? 'rgba(169,116,63,0.08)' : 'transparent',
                   color: domain === d.slug ? at.brass : at.ghost }}>
                 {d.label}
               </button>
@@ -132,8 +132,8 @@ export default function ChallengeBrowse() {
               <button key={l.level || 'any'} type="button" onClick={() => setIntensity(l.level)}
                 title={l.blurb || ''}
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '6px 15px', borderRadius: '20px', cursor: 'pointer',
-                  border: `1px solid ${intensity === l.level ? 'rgba(217,178,74,0.78)' : 'rgba(217,178,74,0.28)'}`,
-                  background: intensity === l.level ? 'rgba(217,178,74,0.08)' : 'transparent',
+                  border: `1px solid ${intensity === l.level ? 'rgba(169,116,63,0.78)' : 'rgba(169,116,63,0.28)'}`,
+                  background: intensity === l.level ? 'rgba(169,116,63,0.08)' : 'transparent',
                   color: intensity === l.level ? at.brass : at.ghost }}>
                 {l.level ? `${l.level} · ${l.label}` : l.label}
               </button>

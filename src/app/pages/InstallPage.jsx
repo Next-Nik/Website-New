@@ -58,7 +58,7 @@ const S = {
   },
   card: {
     background: '#fff',
-    border: '1px solid rgba(110,127,92,0.25)',
+    border: '1px solid rgba(76,107,69,0.25)',
     borderRadius: 16,
     padding: '2rem 1.75rem',
     maxWidth: 380,
@@ -81,7 +81,7 @@ const S = {
   primaryBtn: {
     width: '100%',
     padding: '0.9rem 1rem',
-    background: '#0F1523',
+    background: '#3c5637',
     color: '#FAFAF7',
     border: 'none',
     borderRadius: 10,
@@ -108,8 +108,8 @@ const S = {
     width: 28,
     height: 28,
     minWidth: 28,
-    background: 'rgba(110,127,92,0.12)',
-    border: '1px solid rgba(110,127,92,0.35)',
+    background: 'rgba(76,107,69,0.12)',
+    border: '1px solid rgba(76,107,69,0.35)',
     borderRadius: '50%',
     display: 'flex',
     alignItems: 'center',
@@ -117,7 +117,7 @@ const S = {
     fontFamily: "'IBM Plex Mono', serif",
     fontSize: '0.85rem',
     fontWeight: 600,
-    color: '#26302A',
+    color: '#262420',
     marginTop: 2,
   },
   stepText: {
@@ -130,14 +130,14 @@ const S = {
     color: '#0F1523',
   },
   divider: {
-    borderTop: '1px solid rgba(110,127,92,0.2)',
+    borderTop: '1px solid rgba(76,107,69,0.2)',
     margin: '1.5rem 0',
   },
   openLink: {
     display: 'block',
     textAlign: 'center',
     fontSize: '0.85rem',
-    color: '#26302A',
+    color: '#262420',
     textDecoration: 'none',
     marginTop: '1.25rem',
   },
@@ -176,7 +176,7 @@ function ShareIcon() {
       width="18" height="18"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#26302A"
+      stroke="#262420"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -318,7 +318,7 @@ function DesktopPanel() {
           alt="QR code for nextus.world/app"
           width={200}
           height={200}
-          style={{ borderRadius: 12, border: '1px solid rgba(110,127,92,0.25)' }}
+          style={{ borderRadius: 12, border: '1px solid rgba(76,107,69,0.25)' }}
         />
       </div>
       <p style={{ fontSize: '0.8rem', color: 'rgba(15,21,35,0.55)', textAlign: 'center' }}>

@@ -142,7 +142,7 @@ export function DomainPage() {
 
         {/* Actor grid placeholder */}
         <div style={{
-          border: '1.5px dashed rgba(88,160,138,0.30)',
+          border: '1.5px dashed rgba(76,107,69,0.30)',
           borderRadius: '14px',
           padding: '40px',
           textAlign: 'center',

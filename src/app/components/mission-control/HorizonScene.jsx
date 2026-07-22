@@ -149,7 +149,7 @@ const HORIZON_CSS = `
 }
 .mc-horizon-build-btn:hover {
   border-color: ${GOLD};
-  background: rgba(110,127,92,0.05);
+  background: rgba(76,107,69,0.05);
   transform: translateY(-1px);
 }
 .mc-build-context {
@@ -194,7 +194,7 @@ const HORIZON_CSS = `
   letter-spacing: 0.24em;
   padding: 4px 12px;
   border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(110,127,92,0.20);
+  box-shadow: 0 2px 8px rgba(76,107,69,0.20);
 }
 
 .mc-horizon-below {

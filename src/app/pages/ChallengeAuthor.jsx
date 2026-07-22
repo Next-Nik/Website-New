@@ -97,8 +97,8 @@ function Btn({ children, onClick, disabled, variant = 'solid' }) {
         borderRadius: '40px', padding: '12px 28px', transition: 'all 0.2s',
         opacity: disabled ? 0.5 : 1,
         color: solid ? '#FFFFFF' : at.brass,
-        background: solid ? at.brass : 'rgba(217,178,74,0.08)',
-        border: `1.5px solid ${solid ? at.brass : 'rgba(217,178,74,0.78)'}`,
+        background: solid ? at.brass : 'rgba(169,116,63,0.08)',
+        border: `1.5px solid ${solid ? at.brass : 'rgba(169,116,63,0.78)'}`,
       }}>
       {children}
     </button>
@@ -583,12 +583,12 @@ export default function ChallengeAuthor() {
         )}
 
         {!user ? (
-          <div style={{ padding: '24px', background: 'rgba(217,178,74,0.05)', border: '1px solid rgba(217,178,74,0.2)', borderRadius: '12px', textAlign: 'center' }}>
+          <div style={{ padding: '24px', background: 'rgba(169,116,63,0.05)', border: '1px solid rgba(169,116,63,0.2)', borderRadius: '12px', textAlign: 'center' }}>
             <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '14px' }}>
               Sign in or create an account to author a challenge.
             </p>
             <a href={`/login?redirect=${encodeURIComponent(backTo)}`}
-              style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: at.brass, background: 'rgba(217,178,74,0.08)', border: '1.5px solid rgba(217,178,74,0.78)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
+              style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: at.brass, background: 'rgba(169,116,63,0.08)', border: '1.5px solid rgba(169,116,63,0.78)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
               Sign in →
             </a>
           </div>
@@ -607,7 +607,7 @@ export default function ChallengeAuthor() {
                     <div key={i} style={{
                       alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '88%',
                       ...body, fontSize: '15px', lineHeight: 1.55, color: at.text,
-                      background: m.role === 'user' ? 'rgba(217,178,74,0.08)' : 'rgba(234,241,237,0.06)',
+                      background: m.role === 'user' ? 'rgba(169,116,63,0.08)' : 'rgba(38,36,32,0.06)',
                       borderRadius: '12px', padding: '9px 13px',
                     }}>{m.content}</div>
                   ))}
@@ -637,7 +637,7 @@ export default function ChallengeAuthor() {
                 </select>
                 <a href={`/invite/new?then=${encodeURIComponent(backTo)}`} onClick={stashDraft}
                   style={{ ...body, fontSize: '14px', color: at.brass, textDecoration: 'none',
-                    display: 'inline-block', marginTop: '10px', borderBottom: '1px solid rgba(217,178,74,0.4)' }}>
+                    display: 'inline-block', marginTop: '10px', borderBottom: '1px solid rgba(169,116,63,0.4)' }}>
                   or invite an organisation to take part
                 </a>
               </div>
@@ -655,8 +655,8 @@ export default function ChallengeAuthor() {
                   ].map(o => (
                     <button key={o.v} type="button" onClick={() => setAuthorMode(o.v)}
                       style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '7px 16px', borderRadius: '20px', cursor: 'pointer',
-                        border: `1px solid ${authorMode === o.v ? 'rgba(217,178,74,0.78)' : 'rgba(217,178,74,0.3)'}`,
-                        background: authorMode === o.v ? 'rgba(217,178,74,0.08)' : 'transparent',
+                        border: `1px solid ${authorMode === o.v ? 'rgba(169,116,63,0.78)' : 'rgba(169,116,63,0.3)'}`,
+                        background: authorMode === o.v ? 'rgba(169,116,63,0.08)' : 'transparent',
                         color: authorMode === o.v ? at.brass : at.ghost }}>
                       {o.l}
                     </button>
@@ -671,7 +671,7 @@ export default function ChallengeAuthor() {
                       placeholder="One line on what you do" style={inputStyle} />
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
                       <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '9px 18px', borderRadius: '20px',
-                        cursor: selfImgBusy ? 'default' : 'pointer', border: '1px solid rgba(217,178,74,0.4)',
+                        cursor: selfImgBusy ? 'default' : 'pointer', border: '1px solid rgba(169,116,63,0.4)',
                         color: at.brass, textTransform: 'uppercase', whiteSpace: 'nowrap', opacity: selfImgBusy ? 0.55 : 1 }}>
                         {selfImgBusy ? 'Uploading…' : (selfImg ? 'Change photo' : 'Add a photo')}
                         <input type="file" accept="image/*" disabled={selfImgBusy} onChange={onPickSelfImage} style={{ display: 'none' }} />
@@ -716,7 +716,7 @@ export default function ChallengeAuthor() {
                     )}
                     <a href={`/add?mine=1&type=org&then=${encodeURIComponent(backTo)}`} onClick={stashDraft}
                       style={{ ...body, fontSize: '14px', color: at.brass, textDecoration: 'none',
-                        display: 'inline-block', marginTop: '10px', borderBottom: '1px solid rgba(217,178,74,0.4)' }}>
+                        display: 'inline-block', marginTop: '10px', borderBottom: '1px solid rgba(169,116,63,0.4)' }}>
                       {orgQ.trim() ? `Not there? Create ${orgQ.trim()} as a new organisation` : 'Set up a new organisation'}
                     </a>
                   </div>
@@ -729,7 +729,7 @@ export default function ChallengeAuthor() {
                     </p>
                     <a href={`/invite/new?then=${encodeURIComponent(backTo)}`} onClick={stashDraft}
                       style={{ ...body, fontSize: '14px', color: at.brass, textDecoration: 'none',
-                        display: 'inline-block', borderBottom: '1px solid rgba(217,178,74,0.4)' }}>
+                        display: 'inline-block', borderBottom: '1px solid rgba(169,116,63,0.4)' }}>
                       Invite an organisation to take part →
                     </a>
                   </div>
@@ -746,8 +746,8 @@ export default function ChallengeAuthor() {
                     return (
                       <button key={s.slug} type="button" onClick={() => setSubdomainSlug(on ? '' : s.slug)}
                         style={{ ...sc, fontSize: '14px', letterSpacing: '0.06em', cursor: 'pointer',
-                          border: `1px solid ${on ? GOLD_C : 'rgba(217,178,74,0.28)'}`,
-                          background: on ? 'rgba(217,178,74,0.10)' : 'transparent',
+                          border: `1px solid ${on ? GOLD_C : 'rgba(169,116,63,0.28)'}`,
+                          background: on ? 'rgba(169,116,63,0.10)' : 'transparent',
                           color: on ? at.brass : at.ghost,
                           borderRadius: '24px', padding: '8px 16px' }}>
                         {s.label}
@@ -815,8 +815,8 @@ export default function ChallengeAuthor() {
                 {[{ v: '21', l: '21 days' }, { v: '90', l: '90 days' }, { v: 'custom', l: 'Custom' }].map(o => (
                   <button key={o.v} type="button" onClick={() => setDurPreset(o.v)}
                     style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '8px 18px', borderRadius: '20px', cursor: 'pointer',
-                      border: `1px solid ${durPreset === o.v ? 'rgba(217,178,74,0.78)' : 'rgba(217,178,74,0.3)'}`,
-                      background: durPreset === o.v ? 'rgba(217,178,74,0.08)' : 'transparent',
+                      border: `1px solid ${durPreset === o.v ? 'rgba(169,116,63,0.78)' : 'rgba(169,116,63,0.3)'}`,
+                      background: durPreset === o.v ? 'rgba(169,116,63,0.08)' : 'transparent',
                       color: durPreset === o.v ? at.brass : at.ghost }}>
                     {o.l}
                   </button>
@@ -859,7 +859,7 @@ export default function ChallengeAuthor() {
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <input type="text" value={coverUrl} onChange={e => setCoverUrl(e.target.value)}
                   placeholder="Upload a photo, or paste an image URL" style={{ ...inputStyle, flex: 1, minWidth: '180px' }} />
-                <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '9px 18px', borderRadius: '20px', cursor: imgBusy ? 'default' : 'pointer', border: '1px solid rgba(217,178,74,0.4)', color: at.brass, textTransform: 'uppercase', whiteSpace: 'nowrap', opacity: imgBusy ? 0.55 : 1 }}>
+                <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '9px 18px', borderRadius: '20px', cursor: imgBusy ? 'default' : 'pointer', border: '1px solid rgba(169,116,63,0.4)', color: at.brass, textTransform: 'uppercase', whiteSpace: 'nowrap', opacity: imgBusy ? 0.55 : 1 }}>
                   {imgBusy ? 'Uploading…' : 'Upload'}
                   <input type="file" accept="image/*" disabled={imgBusy} onChange={onPickImage} style={{ display: 'none' }} />
                 </label>
@@ -885,8 +885,8 @@ export default function ChallengeAuthor() {
                       onClick={() => setIntensity(on ? null : l.level)}
                       style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', cursor: 'pointer',
                         display: 'inline-flex', alignItems: 'center', gap: '7px',
-                        border: `1px solid ${on ? GOLD_C : 'rgba(217,178,74,0.28)'}`,
-                        background: on ? 'rgba(217,178,74,0.10)' : 'transparent',
+                        border: `1px solid ${on ? GOLD_C : 'rgba(169,116,63,0.28)'}`,
+                        background: on ? 'rgba(169,116,63,0.10)' : 'transparent',
                         color: on ? at.brass : at.ghost,
                         borderRadius: '24px', padding: '8px 14px' }}>
                       <ChiliRung level={l.level} size={13} />

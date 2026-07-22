@@ -18,11 +18,11 @@ import { serif, sc, body, at } from '../../lib/designTokens'
 import BeaconFire from '../components/challenge/BeaconFire'
 
 const NIGHT2   = at.ground  // Atlas sea-ink — aligned to the canonical rail ground
-const CREAM    = '#FBF8F0'
-const CREAM_80 = 'rgba(251,248,240,0.82)'
-const CREAM_60 = 'rgba(251,248,240,0.60)'
-const AMBER    = '#F2C45A'
-const GOLD_T   = '#D7A24A'
+const CREAM    = '#262420'
+const CREAM_80 = 'rgba(38,36,32,0.68)'
+const CREAM_60 = 'rgba(38,36,32,0.58)'
+const AMBER    = '#a9743f'
+const GOLD_T   = '#a9743f'
 const HAIR     = '1px solid rgba(242,196,90,0.26)'
 
 const ROOT_SLUG_FALLBACK = 'inaugural-nextus-earth-challenge'
@@ -103,7 +103,7 @@ export default function EarthLive() {
 
   const btnSolid = {
     display: 'inline-block', ...sc, fontSize: '14px', letterSpacing: '0.14em',
-    textTransform: 'uppercase', color: '#1a1320', background: AMBER,
+    textTransform: 'uppercase', color: '#ffffff', background: AMBER,
     borderRadius: '28px', padding: '14px 30px', textDecoration: 'none',
   }
   const btnGhost = {
@@ -119,7 +119,7 @@ export default function EarthLive() {
 
       {/* ── 1 · The invitation: beacon, tagline, the ask ── */}
       <div style={{ textAlign: 'center', padding: '38px 20px 10px',
-        background: `radial-gradient(ellipse at 50% 0%, rgba(242,196,90,0.10), transparent 62%)` }}>
+        background: `radial-gradient(ellipse at 50% 0%, rgba(169,116,63,0.08), transparent 62%)` }}>
         <div style={{ maxWidth: '260px', margin: '0 auto 2px' }}>
           <BeaconFire sparks={sparks} />
         </div>

@@ -85,7 +85,7 @@ export default function MyInterestsPanel({ userId }) {
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
               padding: '6px 12px', borderRadius: '40px',
               border: filter === opt.v ? `1.5px solid ${GOLD}` : `1.5px solid ${GOLD_RULE}`,
-              background: filter === opt.v ? 'rgba(110,127,92,0.07)' : 'transparent',
+              background: filter === opt.v ? 'rgba(76,107,69,0.07)' : 'transparent',
               color: filter === opt.v ? GOLD_DK : TEXT_META,
               cursor: 'pointer' }}>
             {opt.label}

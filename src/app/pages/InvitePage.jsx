@@ -13,7 +13,7 @@ import { Nav } from '../../components/Nav'
 import { SiteFooter } from '../../components/SiteFooter'
 import { serif, body, sc } from '../../lib/designTokens'
 
-const gold  = '#26302A'
+const gold  = '#262420'
 const dark  = '#0F1523'
 const parch = '#FAFAF7'
 
@@ -95,10 +95,10 @@ export function InvitePage() {
         </p>
 
         {/* The profile held in trust */}
-        <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(110,127,92,0.22)',
+        <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(76,107,69,0.22)',
           borderRadius: '14px', padding: '20px', margin: '24px 0', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
           <div style={{ width: '64px', height: '64px', borderRadius: '10px', flexShrink: 0, overflow: 'hidden',
-            border: '1px solid rgba(110,127,92,0.25)', background: '#FAFAF7',
+            border: '1px solid rgba(76,107,69,0.25)', background: '#FAFAF7',
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {actor.image_url
               ? <img src={actor.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
@@ -133,7 +133,7 @@ export function InvitePage() {
               Claim this profile &rarr;
             </Link>
             <Link to={profileUrl} style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', padding: '13px 28px',
-              borderRadius: '40px', background: 'transparent', border: '1px solid rgba(110,127,92,0.3)',
+              borderRadius: '40px', background: 'transparent', border: '1px solid rgba(76,107,69,0.3)',
               color: 'rgba(15,21,35,0.72)', textDecoration: 'none', display: 'inline-block' }}>
               See the profile first
             </Link>

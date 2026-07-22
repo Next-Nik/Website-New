@@ -38,7 +38,7 @@ class Guard extends Component {
   render() {
     if (this.state.err) {
       return (
-        <div style={{ ...mono, fontSize: 13, color: 'rgba(38,48,42,0.55)', padding: '18px 4px' }}>
+        <div style={{ ...mono, fontSize: 13, color: 'rgba(38,36,32,0.55)', padding: '18px 4px' }}>
           this panel could not load · the rest of the page is unaffected
         </div>
       )
@@ -70,7 +70,7 @@ function deriveScores(mapData) {
 
 const BeatLabel = ({ children }) => (
   <div style={{ ...mono, fontSize: 13, letterSpacing: '0.22em', textTransform: 'uppercase',
-    color: 'rgba(38,48,42,0.55)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+    color: 'rgba(38,36,32,0.55)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
     <span style={{ color: fn.moss }}>●</span> {children}
   </div>
 )
@@ -104,7 +104,7 @@ export default function MissionControlNext() {
       <div style={{ maxWidth: 780, margin: '0 auto', padding: '18px 22px', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ ...display, fontSize: 22, fontWeight: 500 }}>NextUs</span>
-        <span style={{ ...mono, fontSize: 13, letterSpacing: '0.12em', color: 'rgba(38,48,42,0.5)' }}>
+        <span style={{ ...mono, fontSize: 13, letterSpacing: '0.12em', color: 'rgba(38,36,32,0.5)' }}>
           reshape preview · /next
         </span>
       </div>
@@ -123,7 +123,7 @@ export default function MissionControlNext() {
         </div>
       </div>
       <div style={{ textAlign: 'center', ...mono, fontSize: 13, letterSpacing: '0.1em',
-        color: 'rgba(38,48,42,0.5)', marginBottom: 26 }}>
+        color: 'rgba(38,36,32,0.5)', marginBottom: 26 }}>
         the fractal · one loop, two scales · as above, so below
       </div>
 
@@ -151,14 +151,14 @@ export default function MissionControlNext() {
               </div>
               <div style={{ flex: 1, minWidth: 220 }}>
                 <div style={{ ...mono, fontSize: 13, letterSpacing: '0.16em', textTransform: 'uppercase',
-                  color: 'rgba(38,48,42,0.55)', marginBottom: 6 }}>Your seven domains</div>
-                <div style={{ ...body, fontSize: 15, lineHeight: 1.6, color: 'rgba(38,48,42,0.72)' }}>
+                  color: 'rgba(38,36,32,0.55)', marginBottom: 6 }}>Your seven domains</div>
+                <div style={{ ...body, fontSize: 15, lineHeight: 1.6, color: 'rgba(38,36,32,0.72)' }}>
                   {hasMap
                     ? 'A glance at where you stand across the seven — each spoke reaching toward its horizon. Tap into the Map for the full picture.'
                     : 'Your Map is not filled in yet. The wheel fills as you place yourself across the seven domains.'}
                 </div>
                 <Link to="/nextu/map" style={{ ...mono, fontSize: 13, letterSpacing: '0.1em', color: fn.ink,
-                  opacity: 0.7, textDecoration: 'none', borderBottom: `1px dashed rgba(38,48,42,0.2)`,
+                  opacity: 0.7, textDecoration: 'none', borderBottom: `1px dashed rgba(38,36,32,0.2)`,
                   display: 'inline-block', marginTop: 14 }}>open the Map →</Link>
               </div>
             </div>
@@ -175,7 +175,7 @@ export default function MissionControlNext() {
               <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginTop: 16 }}>
                 {[['/nextu/map', 'the Map'], ['/today', "today's practice"], ['/challenges', 'a challenge to join']].map(([to, label]) => (
                   <Link key={to} to={to} style={{ ...mono, fontSize: 13, letterSpacing: '0.1em', color: fn.ink,
-                    opacity: 0.6, textDecoration: 'none', borderBottom: '1px dashed rgba(38,48,42,0.2)' }}>{label}</Link>
+                    opacity: 0.6, textDecoration: 'none', borderBottom: '1px dashed rgba(38,36,32,0.2)' }}>{label}</Link>
                 ))}
               </div>
             </div>
@@ -189,7 +189,7 @@ export default function MissionControlNext() {
                 The seven domain Horizon Goals — the shared future each domain is moving toward.
               </div>
               <Link to="/atlas/goals" style={{ ...mono, fontSize: 13, letterSpacing: '0.1em', color: fn.ink,
-                opacity: 0.7, textDecoration: 'none', borderBottom: '1px dashed rgba(38,48,42,0.2)',
+                opacity: 0.7, textDecoration: 'none', borderBottom: '1px dashed rgba(38,36,32,0.2)',
                 display: 'inline-block', marginTop: 14 }}>read the domain horizons →</Link>
             </div>
 
@@ -217,7 +217,7 @@ export default function MissionControlNext() {
               <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginTop: 16 }}>
                 {[['/asks/new', 'post an ask'], ['/map', 'the planet map'], ['/feed', 'act with an actor']].map(([to, label]) => (
                   <Link key={to} to={to} style={{ ...mono, fontSize: 13, letterSpacing: '0.1em', color: fn.ink,
-                    opacity: 0.6, textDecoration: 'none', borderBottom: '1px dashed rgba(38,48,42,0.2)' }}>{label}</Link>
+                    opacity: 0.6, textDecoration: 'none', borderBottom: '1px dashed rgba(38,36,32,0.2)' }}>{label}</Link>
                 ))}
               </div>
             </div>
@@ -227,25 +227,25 @@ export default function MissionControlNext() {
         {/* THE FEED — featured, framed by the four invisible categories */}
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 8, marginBottom: 12 }}>
           <BeatLabel>The feed</BeatLabel>
-          <span style={{ ...mono, fontSize: 13, letterSpacing: '0.1em', color: 'rgba(38,48,42,0.5)' }}>people at your scale</span>
+          <span style={{ ...mono, fontSize: 13, letterSpacing: '0.1em', color: 'rgba(38,36,32,0.5)' }}>people at your scale</span>
         </div>
         <div style={cardStyle()}>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
             {['Horizon goals', 'Where we are now', 'What we need', "What we're doing"].map(c => (
               <span key={c} style={{ ...mono, fontSize: 13, letterSpacing: '0.08em', padding: '6px 12px',
-                borderRadius: 40, border: '1.5px dashed rgba(38,48,42,0.2)', color: 'rgba(38,48,42,0.65)' }}>{c}</span>
+                borderRadius: 40, border: '1.5px dashed rgba(38,36,32,0.2)', color: 'rgba(38,36,32,0.65)' }}>{c}</span>
             ))}
           </div>
-          <div style={{ ...body, fontSize: 15, color: 'rgba(38,48,42,0.72)', lineHeight: 1.6, marginTop: 8 }}>
+          <div style={{ ...body, fontSize: 15, color: 'rgba(38,36,32,0.72)', lineHeight: 1.6, marginTop: 8 }}>
             The feed, sorted by the four framings of the loop — horizon goals, where we are now, what we need, what we're doing.
           </div>
           <Link to="/feed" style={{ ...mono, fontSize: 13, letterSpacing: '0.1em', color: fn.ink, opacity: 0.7,
-            textDecoration: 'none', borderBottom: '1px dashed rgba(38,48,42,0.2)', display: 'inline-block', marginTop: 14 }}>
+            textDecoration: 'none', borderBottom: '1px dashed rgba(38,36,32,0.2)', display: 'inline-block', marginTop: 14 }}>
             open the feed →
           </Link>
         </div>
 
-        <div style={{ ...mono, fontSize: 13, letterSpacing: '0.06em', color: 'rgba(38,48,42,0.4)',
+        <div style={{ ...mono, fontSize: 13, letterSpacing: '0.06em', color: 'rgba(38,36,32,0.4)',
           lineHeight: 1.7, marginTop: 18 }}>
           Preview route · does not replace the live home (/). Reuses your real components and live data,
           arranged as the loop. Behavioural cuts (welcome/feed/route collapse) are deliberately not wired here.

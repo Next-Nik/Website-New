@@ -16,10 +16,10 @@ import { SiteFooter } from '../../components/SiteFooter'
 import { serif, body, sc } from '../../lib/designTokens'
 import { CIV_DOMAINS } from '../components/NextUsWheel'
 
-const gold  = '#26302A'
+const gold  = '#262420'
 const dark  = '#0F1523'
 const parch = '#FAFAF7'
-const hair  = '1.5px solid rgba(110,127,92,0.22)'
+const hair  = '1.5px solid rgba(76,107,69,0.22)'
 
 function Eyebrow({ children }) {
   return <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold,
@@ -35,7 +35,7 @@ function Label({ children }) {
 }
 const fieldStyle = {
   ...body, fontSize: '16px', color: dark, padding: '11px 14px', borderRadius: '8px',
-  border: '1.5px solid rgba(110,127,92,0.4)', background: '#FFFFFF', outline: 'none',
+  border: '1.5px solid rgba(76,107,69,0.4)', background: '#FFFFFF', outline: 'none',
   width: '100%', boxSizing: 'border-box',
 }
 
@@ -202,7 +202,7 @@ export function InviteAuthorPage() {
                         <button key={r.id} type="button" onClick={() => { setChosen(r); setResults([]) }}
                           style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'left',
                             padding: '9px 12px', borderRadius: '8px', cursor: 'pointer',
-                            border: '1px solid rgba(110,127,92,0.2)', background: '#FAFAF7' }}>
+                            border: '1px solid rgba(76,107,69,0.2)', background: '#FAFAF7' }}>
                           <span style={{ ...body, fontSize: '15px', color: dark }}>{r.name}</span>
                           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em',
                             color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>{r.type}</span>
@@ -264,7 +264,7 @@ export function InviteAuthorPage() {
 
             <button onClick={generate} disabled={busy}
               style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', padding: '13px 28px',
-                borderRadius: '40px', background: busy ? 'rgba(110,127,92,0.3)' : gold,
+                borderRadius: '40px', background: busy ? 'rgba(76,107,69,0.3)' : gold,
                 border: 'none', color: '#FBF8F0', cursor: busy ? 'default' : 'pointer' }}>
               {busy ? 'Preparing...' : 'Draft the invitation'}
             </button>
@@ -288,8 +288,8 @@ export function InviteAuthorPage() {
                 </button>
                 <button onClick={() => copy(link, 'link')}
                   style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '10px 22px',
-                    borderRadius: '40px', background: 'rgba(110,127,92,0.06)',
-                    border: '1.5px solid rgba(110,127,92,0.55)', color: gold, cursor: 'pointer' }}>
+                    borderRadius: '40px', background: 'rgba(76,107,69,0.06)',
+                    border: '1.5px solid rgba(76,107,69,0.55)', color: gold, cursor: 'pointer' }}>
                   {copiedLink ? 'Copied' : 'Copy link only'}
                 </button>
               </div>
@@ -313,7 +313,7 @@ export function InviteAuthorPage() {
               <button onClick={() => { setPhase('compose'); setChosen(null); setAddingNew(false); setNewName(''); setQuery('') }}
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px',
                   borderRadius: '40px', background: 'transparent',
-                  border: '1px solid rgba(110,127,92,0.3)', color: 'rgba(15,21,35,0.72)', cursor: 'pointer' }}>
+                  border: '1px solid rgba(76,107,69,0.3)', color: 'rgba(15,21,35,0.72)', cursor: 'pointer' }}>
                 Invite another
               </button>
             </div>

@@ -18,12 +18,12 @@ import { computeChain, dotRow } from '../../lib/challengeChain'
 
 const GOLD    = at.brass       // Atlas accent — chapter labels, coordination-flavoured text
 const CHROME  = at.verdigris   // Atlas accent — progress thread, chapter-done state
-const NIGHT   = '#141B2C'
+const NIGHT   = '#3c5637'
 const CREAM   = '#FBF8F0'
-const AMBER   = '#F2C45A'
-const GOLD_T  = '#D7A24A'
+const AMBER   = '#a9743f'
+const GOLD_T  = '#a9743f'
 const GHOST   = at.ghost
-const FAINT   = 'rgba(217,178,74,0.35)'  // brass-tinted faint border/underline
+const FAINT   = 'rgba(169,116,63,0.35)'  // brass-tinted faint border/underline
 
 const ROOT_SLUG_FALLBACK = 'inaugural-nextus-earth-challenge'
 
@@ -146,7 +146,7 @@ export default function EarthJourney() {
     <div style={{ background: at.ground, minHeight: '100dvh' }}>
       <Nav />
       {/* hero */}
-      <div style={{ background: `radial-gradient(ellipse at 50% 0%, rgba(242,196,90,0.09), transparent 62%), ${NIGHT}`,
+      <div style={{ background: `radial-gradient(ellipse at 50% 0%, rgba(207,154,36,0.09), transparent 62%), ${NIGHT}`,
         color: CREAM, textAlign: 'center', padding: '34px 20px 42px' }}>
         <div style={{ maxWidth: '190px', margin: '0 auto 6px' }}>
           <BeaconFire sparks={Number(tally?.sparks || 0)} />
@@ -188,7 +188,7 @@ export default function EarthJourney() {
         ) : (
         <div style={{ position: 'relative', paddingLeft: '34px' }}>
           <div aria-hidden="true" style={{ position: 'absolute', left: '11px', top: '8px', bottom: '8px', width: '2px',
-            background: `linear-gradient(180deg, ${CHROME}, rgba(88,160,138,0.25))` }} />
+            background: `linear-gradient(180deg, ${CHROME}, rgba(76,107,69,0.25))` }} />
           {CH_META.map((c, i) => {
             const state = ch[i]
             return (
@@ -286,7 +286,7 @@ function Vault({ t, big, sm, dots }) {
         <div style={{ display: 'flex', gap: '5px', marginTop: '10px' }}>
           {dots.map((d, i) => (
             <span key={i} style={{ width: '12px', height: '12px', borderRadius: '50%',
-              background: d === 'on' ? at.verdigris : (d === 'today' ? 'rgba(242,196,90,0.25)' : 'rgba(234,241,237,0.08)'),
+              background: d === 'on' ? at.verdigris : (d === 'today' ? 'rgba(242,196,90,0.25)' : 'rgba(38,36,32,0.08)'),
               border: d === 'grace' ? `2px solid ${at.verdigris}` : (d === 'today' ? '2px dashed #F2C45A' : 'none'),
               boxSizing: 'border-box' }} />
           ))}

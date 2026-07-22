@@ -46,10 +46,10 @@ export default function LineageBlock({ text, forceTraditional = false, className
         margin: 0,
         padding: '12px 18px',
         borderLeft: isTraditional
-          ? '3px solid #26302A'
-          : '2px solid rgba(110,127,92,0.55)',
+          ? '3px solid #262420'
+          : '2px solid rgba(76,107,69,0.55)',
         background: isTraditional
-          ? 'rgba(110,127,92,0.04)'
+          ? 'rgba(76,107,69,0.04)'
           : 'transparent',
         borderRadius: '0 6px 6px 0',
       }}>

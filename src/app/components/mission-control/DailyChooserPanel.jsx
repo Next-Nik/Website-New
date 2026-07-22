@@ -50,7 +50,7 @@ function ToolCard({ name, status, body, meta, locked, onClick }) {
         width: '100%',
         textAlign: 'left',
         background: hover ? GOLD_HOVER : BG_CARD,
-        border: `1px solid ${locked ? 'rgba(110,127,92,0.30)' : GOLD_RULE}`,
+        border: `1px solid ${locked ? 'rgba(76,107,69,0.30)' : GOLD_RULE}`,
         borderStyle: locked ? 'dashed' : 'solid',
         borderRadius: 10,
         padding: '20px 22px',

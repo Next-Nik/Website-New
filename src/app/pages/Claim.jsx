@@ -46,7 +46,7 @@ const gold  = at.brass
 const GOLD_C = at.verdigris
 const dark  = at.text
 const parch = at.ground
-const hair  = '1px solid rgba(217,178,74,0.22)'
+const hair  = '1px solid rgba(169,116,63,0.22)'
 
 function Eyebrow({ children, style = {} }) {
   return <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, textTransform: 'uppercase', marginBottom: '10px', ...style }}>{children}</div>
@@ -65,7 +65,7 @@ function PrimaryBtn({ onClick, disabled, children }) {
   return (
     <button type="button" onClick={onClick} disabled={disabled}
       style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 32px', borderRadius: '40px', border: 'none',
-        background: disabled ? 'rgba(217,178,74,0.30)' : GOLD_C, color: at.object,
+        background: disabled ? 'rgba(169,116,63,0.30)' : GOLD_C, color: at.object,
         cursor: disabled ? 'not-allowed' : 'pointer', transition: 'background 0.2s' }}>
       {children}
     </button>
@@ -163,7 +163,7 @@ function HorizonAlignStep({ actor, userId, onDone }) {
 
   return (
     <div>
-      <div style={{ background: 'rgba(217,178,74,0.04)', border: '1.5px solid rgba(217,178,74,0.22)', borderRadius: '12px', padding: '22px 24px', marginBottom: '28px' }}>
+      <div style={{ background: 'rgba(169,116,63,0.04)', border: '1.5px solid rgba(169,116,63,0.22)', borderRadius: '12px', padding: '22px 24px', marginBottom: '28px' }}>
         <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, marginBottom: '10px' }}>ONE QUESTION BEFORE YOU BEGIN</div>
         <p style={{ ...body, fontSize: '15px', color: at.meta, lineHeight: 1.7, margin: 0 }}>
           Which world is <strong>{actor.name}</strong> building toward?
@@ -182,8 +182,8 @@ function HorizonAlignStep({ actor, userId, onDone }) {
           {DOMAIN_OPTIONS.map(d => (
             <button key={d.slug} type="button" onClick={() => { setSelectedDomain(d.slug); setTowardStatement(''); setReasoning('') }}
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '7px 16px', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.15s',
-                border: `1px solid ${selectedDomain === d.slug ? 'rgba(217,178,74,0.78)' : 'rgba(217,178,74,0.25)'}`,
-                background: selectedDomain === d.slug ? 'rgba(217,178,74,0.08)' : 'transparent',
+                border: `1px solid ${selectedDomain === d.slug ? 'rgba(169,116,63,0.78)' : 'rgba(169,116,63,0.25)'}`,
+                background: selectedDomain === d.slug ? 'rgba(169,116,63,0.08)' : 'transparent',
                 color: selectedDomain === d.slug ? gold : at.ghost }}>
               {d.label}
             </button>
@@ -219,7 +219,7 @@ function HorizonAlignStep({ actor, userId, onDone }) {
 
       {/* The reframe */}
       {towardStatement && !editing && (
-        <div style={{ background: 'rgba(217,178,74,0.04)', border: '1.5px solid rgba(217,178,74,0.30)', borderRadius: '12px', padding: '20px 22px', marginBottom: '18px' }}>
+        <div style={{ background: 'rgba(169,116,63,0.04)', border: '1.5px solid rgba(169,116,63,0.30)', borderRadius: '12px', padding: '20px 22px', marginBottom: '18px' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '10px' }}>THE TOWARD VERSION</div>
           <p style={{ ...body, fontSize: '16px', color: dark, lineHeight: 1.65, margin: '0 0 10px' }}>
             {towardStatement}
@@ -256,7 +256,7 @@ function HorizonAlignStep({ actor, userId, onDone }) {
       )}
 
       {selectedDomain && (
-        <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(217,178,74,0.12)' }}>
+        <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(169,116,63,0.12)' }}>
           <GhostBtn onClick={onDone}>Skip for now — I'll add this from my profile</GhostBtn>
         </div>
       )}
@@ -280,7 +280,7 @@ function ActorCard({ actor }) {
       )}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ ...body, fontSize: '17px', color: dark, marginBottom: '4px' }}>{actor.name}</div>
-        {actor.tagline && <div style={{ ...body, fontSize: '13px', color: 'rgba(234,241,237,0.60)', fontStyle: 'italic', marginBottom: '6px' }}>{actor.tagline}</div>}
+        {actor.tagline && <div style={{ ...body, fontSize: '13px', color: 'rgba(38,36,32,0.60)', fontStyle: 'italic', marginBottom: '6px' }}>{actor.tagline}</div>}
         {actor.website && (
           <a href={actor.website} target="_blank" rel="noopener noreferrer"
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}>
@@ -575,7 +575,7 @@ export function ClaimPage() {
         {/* ── Attest ───────────────────────────────────────────── */}
         {stage === 'attest' && (
           <div>
-            <div style={{ background: 'rgba(217,178,74,0.04)', border: '1.5px solid rgba(217,178,74,0.30)', borderRadius: '12px', padding: '20px 22px', marginBottom: '28px' }}>
+            <div style={{ background: 'rgba(169,116,63,0.04)', border: '1.5px solid rgba(169,116,63,0.30)', borderRadius: '12px', padding: '20px 22px', marginBottom: '28px' }}>
               <label style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', cursor: 'pointer' }}>
                 <input type="checkbox" checked={confirmed} onChange={e => setConfirmed(e.target.checked)} style={{ marginTop: '4px', flexShrink: 0, cursor: 'pointer', accentColor: GOLD_C }} />
                 <span style={{ ...body, fontSize: '14px', color: dark, lineHeight: 1.65 }}>
@@ -601,7 +601,7 @@ export function ClaimPage() {
           <div>
             <CodePath actor={actor} userId={user.id} actorDomain={actorDomain}
               onApproved={() => setStage('align')} />
-            <div style={{ marginTop: '20px', paddingTop: '18px', borderTop: '1px solid rgba(217,178,74,0.15)' }}>
+            <div style={{ marginTop: '20px', paddingTop: '18px', borderTop: '1px solid rgba(169,116,63,0.15)' }}>
               <GhostBtn onClick={() => setStage('request')}>
                 Can't access an org email? Request admin review →
               </GhostBtn>
@@ -615,7 +615,7 @@ export function ClaimPage() {
             <RequestPath actor={actor} userId={user.id} userEmail={user.email}
               onSubmitted={() => setStage('submitted')} />
             {actorDomain && (
-              <div style={{ marginTop: '20px', paddingTop: '18px', borderTop: '1px solid rgba(217,178,74,0.15)' }}>
+              <div style={{ marginTop: '20px', paddingTop: '18px', borderTop: '1px solid rgba(169,116,63,0.15)' }}>
                 <GhostBtn onClick={() => setStage('code')}>
                   ← I can verify with an org email instead
                 </GhostBtn>

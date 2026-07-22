@@ -95,7 +95,7 @@ export default function IndicatorReliabilityPanel({ hours = 24, className }) {
 
       <div style={{ display: 'flex', gap: '20px', marginBottom: '16px', flexWrap: 'wrap' }}>
         <Stat label="Successful" value={totals.ok} colour="#5DBC9D" />
-        <Stat label="Failed" value={totals.failed} colour="#26302A" />
+        <Stat label="Failed" value={totals.failed} colour="#262420" />
         <Stat label="Not yet built" value={totals.not_implemented} colour="rgba(15, 21, 35, 0.45)" />
         {successRate != null && (
           <Stat
@@ -116,7 +116,7 @@ export default function IndicatorReliabilityPanel({ hours = 24, className }) {
               ...sc,
               background: 'transparent',
               border: 'none',
-              color: '#26302A',
+              color: '#262420',
               fontSize: '13px',
               letterSpacing: '0.08em',
               fontWeight: 600,
@@ -148,7 +148,7 @@ function Wrap({ className, children }) {
       className={className}
       style={{
         background: '#FFFFFF',
-        border: '1px solid rgba(110,127,92, 0.20)',
+        border: '1px solid rgba(76,107,69, 0.20)',
         borderRadius: '14px',
         padding: '20px 22px',
       }}
@@ -207,12 +207,12 @@ function Stat({ label, value, colour }) {
 function FailureRow({ failure }) {
   const isPending = failure.status === 'not-implemented'
   const statusLabel = isPending ? 'fetcher pending' : 'failed'
-  const statusColour = isPending ? 'rgba(15, 21, 35, 0.55)' : '#26302A'
+  const statusColour = isPending ? 'rgba(15, 21, 35, 0.55)' : '#262420'
   return (
     <div
       style={{
         padding: '10px 0',
-        borderTop: '1px solid rgba(110,127,92, 0.15)',
+        borderTop: '1px solid rgba(76,107,69, 0.15)',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>

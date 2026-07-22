@@ -89,7 +89,7 @@ function ThreadRow({ thread, onClick, onAction, isActive }) {
       style={{
         padding: '12px 14px', cursor: 'pointer',
         borderRadius: '8px',
-        background: isActive ? 'rgba(110,127,92,0.07)' : 'transparent',
+        background: isActive ? 'rgba(76,107,69,0.07)' : 'transparent',
         border: isActive ? `1px solid ${GOLD_RULE}` : '1px solid transparent',
         marginBottom: '4px',
       }}>
@@ -203,7 +203,7 @@ function MessageDetail({
                 <div style={{
                   maxWidth: '75%',
                   padding: '8px 14px', borderRadius: '12px',
-                  background: isMine ? GOLD : 'rgba(110,127,92,0.08)',
+                  background: isMine ? GOLD : 'rgba(76,107,69,0.08)',
                   color: isMine ? '#FFFFFF' : TEXT_INK,
                   ...body, fontSize: '14px', lineHeight: 1.55,
                   whiteSpace: 'pre-wrap',

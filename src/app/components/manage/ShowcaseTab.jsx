@@ -46,8 +46,8 @@ export function ShowcaseTab({ actor, onSave, toast }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-      <div style={{ background: 'rgba(88,160,138,0.04)',
-        border: '1px solid rgba(88,160,138,0.18)',
+      <div style={{ background: 'rgba(76,107,69,0.04)',
+        border: '1px solid rgba(76,107,69,0.18)',
         borderRadius: '10px', padding: '14px 18px' }}>
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.65)',
           lineHeight: 1.6, margin: 0 }}>
