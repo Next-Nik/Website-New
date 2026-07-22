@@ -36,7 +36,7 @@ import { body, sc } from '../../lib/designTokens'
 
 const heading = { fontFamily: "'Fraunces', Georgia, serif", fontWeight: 300 }
 const gold  = '#262420'
-const goldB = '#6E7F5C'
+const goldB = '#4c6b45'
 const ink   = '#0F1523'
 const bg    = '#FAFAF7'
 

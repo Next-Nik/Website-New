@@ -43,7 +43,7 @@
   text-align: left;
 }
 
-.navItem:hover { color: #26302A; }
+.navItem:hover { color: #262420; }
 
 /* ── DOMAIN NAME ── */
 .domainName {
@@ -74,14 +74,14 @@
   line-height: 1.45;
   margin: 16px 0 20px;
   padding: 18px 0 18px 20px;
-  border-left: 2px solid rgba(110,127,92,0.45);
+  border-left: 2px solid rgba(76,107,69,0.45);
 }
 
 .goalLabel {
   display: block;
   font-style: normal;
   font-weight: 600;
-  color: #26302A;
+  color: #262420;
   font-size: 13px;
   font-family: var(--font-sc);
   letter-spacing: 0.18em;
@@ -113,8 +113,8 @@
   gap: 6px;
   margin-bottom: 24px;
   padding: 10px 14px;
-  background: rgba(110,127,92,0.04);
-  border: 1px solid rgba(110,127,92,0.18);
+  background: rgba(76,107,69,0.04);
+  border: 1px solid rgba(76,107,69,0.18);
   border-radius: 8px;
   flex-wrap: wrap;
 }
@@ -132,7 +132,7 @@
   font-family: var(--font-sc);
   font-size: 13px;
   letter-spacing: 0.10em;
-  color: #26302A;
+  color: #262420;
   font-weight: 600;
 }
 
@@ -170,7 +170,7 @@
 .divider {
   width: 48px;
   height: 1px;
-  background: rgba(110,127,92,0.25);
+  background: rgba(76,107,69,0.25);
   margin: 24px 0;
 }
 
@@ -199,7 +199,7 @@
   letter-spacing: 0.10em;
   color: rgba(15,21,35,0.65);
   background: transparent;
-  border: 1px solid rgba(110,127,92,0.30);
+  border: 1px solid rgba(76,107,69,0.30);
   border-radius: 40px;
   padding: 6px 14px;
   cursor: pointer;
@@ -207,20 +207,20 @@
 }
 
 .approachChip:hover {
-  border-color: rgba(110,127,92,0.70);
-  color: #26302A;
-  background: rgba(110,127,92,0.04);
+  border-color: rgba(76,107,69,0.70);
+  color: #262420;
+  background: rgba(76,107,69,0.04);
 }
 
 .approachChipActive {
-  border-color: #26302A;
-  color: #26302A;
-  background: rgba(110,127,92,0.06);
+  border-color: #262420;
+  color: #262420;
+  background: rgba(76,107,69,0.06);
 }
 
 .approachDetail {
-  background: rgba(110,127,92,0.04);
-  border: 1px solid rgba(110,127,92,0.20);
+  background: rgba(76,107,69,0.04);
+  border: 1px solid rgba(76,107,69,0.20);
   border-radius: 10px;
   padding: 18px 20px;
   animation: fadeIn 0.2s ease;
@@ -236,7 +236,7 @@
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.14em;
-  color: #26302A;
+  color: #262420;
   display: block;
   margin-bottom: 10px;
 }
@@ -265,7 +265,7 @@
   align-items: baseline;
   justify-content: space-between;
   padding: 12px 0;
-  border-bottom: 1px solid rgba(110,127,92,0.10);
+  border-bottom: 1px solid rgba(76,107,69,0.10);
 }
 
 .daSectionLabel {
@@ -303,7 +303,7 @@
 
 .mailingInput {
   flex: 1;
-  border: 1px solid rgba(110,127,92,0.25);
+  border: 1px solid rgba(76,107,69,0.25);
   border-right: none;
   background: #FFFFFF;
   padding: 9px 12px;
@@ -315,11 +315,11 @@
   transition: border-color 0.2s ease;
 }
 
-.mailingInput:focus { border-color: #26302A; }
+.mailingInput:focus { border-color: #262420; }
 .mailingInput::placeholder { color: rgba(15,21,35,0.55); }
 
 .mailingBtn {
-  background: #0F1523;
+  background: #3c5637;
   border: 1px solid #0F1523;
   color: #FFFFFF;
   font-family: var(--font-sc);
@@ -333,10 +333,10 @@
   transition: background 0.2s ease;
 }
 
-.mailingBtn:hover { background: #26302A; border-color: #26302A; }
+.mailingBtn:hover { background: #262420; border-color: #262420; }
 
 @media (max-width: 480px) {
   .mailingForm { flex-direction: column; }
-  .mailingInput { border-right: 1px solid rgba(110,127,92,0.25); border-bottom: none; }
+  .mailingInput { border-right: 1px solid rgba(76,107,69,0.25); border-bottom: none; }
   .mailingBtn { width: 100%; }
 }

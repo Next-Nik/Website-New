@@ -27,7 +27,7 @@ const DOMAIN_LABELS = {
 }
 
 const DOMAIN_COLOURS = {
-  human:    '#26302A',
+  human:    '#262420',
   society:  '#5B8C5A',
   nature:   '#6B8E4E',
   tech:     '#4A6F8A',
@@ -35,8 +35,8 @@ const DOMAIN_COLOURS = {
   legacy:   '#7B5E8E',
   vision:   '#8E5E7B',
   // self side — mirror tones
-  path:     '#26302A',
-  spark:    '#6E7F5C',
+  path:     '#262420',
+  spark:    '#4c6b45',
   body:     '#6B8E4E',
   finances: '#8A6F4A',
   connection: '#5B8C5A',
@@ -85,7 +85,7 @@ export function DomainLanding({ track, onAccept }) {
     }
   }
 
-  const colour = DOMAIN_COLOURS[primaryDomain] || '#26302A'
+  const colour = DOMAIN_COLOURS[primaryDomain] || '#262420'
 
   return (
     <div className="ns-landing">
@@ -166,7 +166,7 @@ export function DomainLanding({ track, onAccept }) {
           color: rgba(15,21,35,0.85);
           padding: 18px 22px;
           background: #FFFFFF;
-          border: 1px solid rgba(38,48,42,0.18);
+          border: 1px solid rgba(38,36,32,0.18);
           border-radius: 14px;
           font-style: italic;
         }
@@ -228,7 +228,7 @@ export function DomainLanding({ track, onAccept }) {
         .ns-landing-not-alone {
           padding: 20px 22px;
           background: #FFFFFF;
-          border: 1px solid rgba(38,48,42,0.18);
+          border: 1px solid rgba(38,36,32,0.18);
           border-radius: 14px;
         }
         .ns-landing-not-alone-eyebrow {
@@ -275,7 +275,7 @@ export function DomainLanding({ track, onAccept }) {
           margin-top: 8px;
         }
         .ns-cta-primary {
-          background: #6E7F5C;
+          background: #4c6b45;
           color: #FFFFFF;
           border: none;
           border-radius: 10px;

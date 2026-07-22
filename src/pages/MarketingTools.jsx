@@ -237,7 +237,7 @@ export function MarketingToolsPage() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '8px',
               padding: '14px 32px', borderRadius: '40px',
-              background: '#6E7F5C',
+              background: '#4c6b45',
               border: `1.5px solid ${goldBdr}`,
               ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.16em',
               color: '#FFFFFF', textDecoration: 'none',
@@ -245,7 +245,7 @@ export function MarketingToolsPage() {
               transition: 'background 0.18s',
             }}
             onMouseEnter={e => { e.currentTarget.style.background = '#262420' }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#6E7F5C' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#4c6b45' }}
           >
             START WITH YOUR MAP →
           </a>
@@ -372,7 +372,7 @@ export function MarketingToolsPage() {
 
       {/* ── Beyond personal growth band ── */}
       <section style={{
-        background: '#0F1523',
+        background: '#3c5637',
         padding: 'clamp(56px,7vw,88px) clamp(20px,5vw,40px)',
         position: 'relative',
         overflow: 'hidden',
@@ -408,7 +408,7 @@ export function MarketingToolsPage() {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
                 padding: '14px 32px', borderRadius: '40px',
-                background: '#6E7F5C',
+                background: '#4c6b45',
                 border: `1.5px solid ${goldBdr}`,
                 ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.16em',
                 color: '#FFFFFF', textDecoration: 'none',
@@ -416,7 +416,7 @@ export function MarketingToolsPage() {
                 transition: 'background 0.18s',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = '#262420' }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#6E7F5C' }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#4c6b45' }}
             >
               EXPLORE THE NEXTUS PLATFORM →
             </a>

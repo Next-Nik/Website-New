@@ -30,7 +30,7 @@ export function CrisisRedirectCard({ message, onExit }) {
       {/* Eyebrow */}
       <span style={{
         ...sc, fontSize: '13px', letterSpacing: '0.20em',
-        color: '#26302A', display: 'block', marginBottom: '16px',
+        color: '#262420', display: 'block', marginBottom: '16px',
         textAlign: 'center',
       }}>
         North Star
@@ -39,7 +39,7 @@ export function CrisisRedirectCard({ message, onExit }) {
       {/* Main message card */}
       <div style={{
         background: '#FFFFFF',
-        border: '1px solid rgba(110,127,92,0.25)',
+        border: '1px solid rgba(76,107,69,0.25)',
         borderRadius: '14px',
         padding: 'clamp(28px, 5vw, 48px)',
         marginBottom: '32px',
@@ -81,7 +81,7 @@ export function CrisisRedirectCard({ message, onExit }) {
 
       {/* Footer with exit + reassurance */}
       <div style={{
-        borderTop: '1px solid rgba(110,127,92,0.20)',
+        borderTop: '1px solid rgba(76,107,69,0.20)',
         paddingTop: '32px',
         display: 'flex',
         flexDirection: 'column',
@@ -93,9 +93,9 @@ export function CrisisRedirectCard({ message, onExit }) {
           style={{
             ...sc, fontSize: '14px', letterSpacing: '0.16em',
             padding: '12px 32px', borderRadius: '40px',
-            border: '1.5px solid rgba(38,48,42,0.78)',
-            background: 'rgba(110,127,92,0.05)',
-            color: '#26302A',
+            border: '1.5px solid rgba(38,36,32,0.78)',
+            background: 'rgba(76,107,69,0.05)',
+            color: '#262420',
             cursor: 'pointer',
             transition: 'all 0.2s',
           }}

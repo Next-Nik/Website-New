@@ -9,7 +9,7 @@ import { Nav } from '../../components/Nav'
 import { SiteFooter } from '../../components/SiteFooter'
 import { serif, body, sc } from '../../lib/designTokens'
 
-const gold  = '#26302A'
+const gold  = '#262420'
 const dark  = '#0F1523'
 const parch = '#FAFAF7'
 

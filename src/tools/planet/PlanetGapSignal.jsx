@@ -79,7 +79,7 @@ export function PlanetGapSignal({ scores, nextusScores }) {
                 fontSize: 13,
                 padding: '2px 8px',
                 borderRadius: 3,
-                background: gap > 0 ? 'rgba(201,112,100,0.12)' : 'rgba(88,160,138,0.12)',
+                background: gap > 0 ? 'rgba(201,112,100,0.12)' : 'rgba(76,107,69,0.12)',
                 color: gap > 0 ? '#C97064' : at.verdigris,
               }}>
                 {gap > 0 ? `Self +${gap}` : `NextUs +${Math.abs(gap)}`}

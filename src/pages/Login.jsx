@@ -74,8 +74,8 @@ function storeConsent(mailingOptIn) {
 function Checkbox({ checked, onChange, children }) {
   return (
     <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer', marginBottom: '14px' }}>
-      <div onClick={onChange} style={{ flexShrink: 0, marginTop: '2px', width: '18px', height: '18px', borderRadius: '4px', border: `1.5px solid ${checked ? '#6E7F5C' : 'rgba(76,107,69,0.45)'}`, background: checked ? 'rgba(76,107,69,0.10)' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s ease', cursor: 'pointer' }}>
-        {checked && <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#6E7F5C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+      <div onClick={onChange} style={{ flexShrink: 0, marginTop: '2px', width: '18px', height: '18px', borderRadius: '4px', border: `1.5px solid ${checked ? '#4c6b45' : 'rgba(76,107,69,0.45)'}`, background: checked ? 'rgba(76,107,69,0.10)' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s ease', cursor: 'pointer' }}>
+        {checked && <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#4c6b45" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>}
       </div>
       <span style={{ ...body, fontSize: '14px', color: 'rgba(38,36,32,0.68)', lineHeight: 1.55 }}>{children}</span>
     </label>
@@ -126,7 +126,7 @@ function NoticeMsg({ children }) {
 function Spinner() {
   return (
     <div style={{ textAlign: 'center', padding: '40px 0' }}>
-      <div style={{ width: '28px', height: '28px', margin: '0 auto', border: '2px solid rgba(76,107,69,0.20)', borderTopColor: '#6E7F5C', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '28px', height: '28px', margin: '0 auto', border: '2px solid rgba(76,107,69,0.20)', borderTopColor: '#4c6b45', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   )
@@ -254,7 +254,7 @@ function SignUpScreen({ onSwitch, onDone }) {
           {' '}and{' '}
           <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#3c5637', textDecoration: 'underline' }}>Privacy Policy</a>
         </Checkbox>
-        {termsErr && <p style={{ ...body, fontSize: '13px', color: '#6E7F5C', margin: '-8px 0 10px 28px' }}>Please accept the terms to continue.</p>}
+        {termsErr && <p style={{ ...body, fontSize: '13px', color: '#4c6b45', margin: '-8px 0 10px 28px' }}>Please accept the terms to continue.</p>}
         <Checkbox checked={mailing} onChange={() => setMailing(v => !v)}>Keep me in the loop · occasional updates from NextUs</Checkbox>
       </div>
       <PrimaryButton onClick={handleSubmit} loading={loading} label="Create account →" />

@@ -28,7 +28,7 @@ function Stars() {
   return (
     <div style={{ display: 'flex', gap: '3px', marginBottom: '14px' }}>
       {[0,1,2,3,4].map(i => (
-        <svg key={i} width="14" height="14" viewBox="0 0 14 14" fill="#6E7F5C" xmlns="http://www.w3.org/2000/svg">
+        <svg key={i} width="14" height="14" viewBox="0 0 14 14" fill="#4c6b45" xmlns="http://www.w3.org/2000/svg">
           <path d="M7 0.5l1.545 4.756H13.5l-4.045 2.938 1.545 4.756L7 10.012l-3.999 2.938 1.545-4.756L0.5 5.256h4.955L7 0.5z"/>
         </svg>
       ))}
@@ -141,7 +141,7 @@ export function WorkWithNikPage() {
               From circling<br /><em style={{ fontStyle: 'normal', color: '#262420' }}>to building.</em>
             </h1>
             <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '40px', maxWidth: '480px' }}>One-on-one work for people who are ready to move {'—'} not just understand.</p>
-            <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#6E7F5C', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Book a discovery call {'→'}</a>
+            <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#4c6b45', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Book a discovery call {'→'}</a>
           </div>
           {/* Photo — drop /nik.png into your /public folder. Graceful fallback until then. */}
           <div style={{ flex: '0 0 auto', width: 'clamp(160px, 28vw, 260px)' }}>
@@ -336,7 +336,7 @@ function EpisodeCard({ ep, isPlaying, onPlay }) {
             height: '36px',
             borderRadius: '50%',
             border: '1.5px solid rgba(76,107,69,0.78)',
-            background: isPlaying ? '#6E7F5C' : 'rgba(76,107,69,0.05)',
+            background: isPlaying ? '#4c6b45' : 'rgba(76,107,69,0.05)',
             color: isPlaying ? '#FFFFFF' : '#262420',
             display: 'flex',
             alignItems: 'center',
@@ -345,7 +345,7 @@ function EpisodeCard({ ep, isPlaying, onPlay }) {
             transition: 'all 0.2s',
             marginTop: '2px',
           }}
-          onMouseEnter={e => { if (!isPlaying) { e.currentTarget.style.background = '#6E7F5C'; e.currentTarget.style.color = '#FFFFFF' } }}
+          onMouseEnter={e => { if (!isPlaying) { e.currentTarget.style.background = '#4c6b45'; e.currentTarget.style.color = '#FFFFFF' } }}
           onMouseLeave={e => { if (!isPlaying) { e.currentTarget.style.background = 'rgba(76,107,69,0.05)'; e.currentTarget.style.color = '#262420' } }}
         >
           {isPlaying ? <PauseIcon /> : <PlayIcon />}
@@ -443,7 +443,7 @@ function StickyPlayer({ episode, onClose }) {
   }
 
   return (
-    <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#0F1523', borderTop: '1px solid rgba(76,107,69,0.30)', padding: '12px 24px', zIndex: 200, display: 'flex', alignItems: 'center', gap: '14px' }}>
+    <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#3c5637', borderTop: '1px solid rgba(76,107,69,0.30)', padding: '12px 24px', zIndex: 200, display: 'flex', alignItems: 'center', gap: '14px' }}>
       <audio ref={audioRef} src={episode.audioUrl} preload="metadata" />
       <button onClick={toggle} style={{ flexShrink: 0, width: '36px', height: '36px', borderRadius: '50%', border: '1.5px solid rgba(76,107,69,0.78)', background: 'rgba(76,107,69,0.15)', color: '#262420', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
         {playing ? <PauseIcon /> : <PlayIcon />}
@@ -451,7 +451,7 @@ function StickyPlayer({ episode, onClose }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ ...sc, fontSize: '13px', color: '#262420', letterSpacing: '0.14em', marginBottom: '5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{episode.title}</div>
         <div onClick={seek} style={{ width: '100%', height: '3px', background: 'rgba(76,107,69,0.20)', borderRadius: '2px', cursor: 'pointer', position: 'relative' }}>
-          <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${progress}%`, background: '#6E7F5C', borderRadius: '2px' }} />
+          <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${progress}%`, background: '#4c6b45', borderRadius: '2px' }} />
         </div>
       </div>
       <span style={{ ...sc, fontSize: '13px', color: 'rgba(255,255,255,0.55)', flexShrink: 0 }}>{fmt(currentTime)} / {fmt(duration)}</span>
@@ -613,14 +613,14 @@ export function PodcastPage() {
         <div style={{ marginBottom: '24px' }}>
           <img src="/logo_nav.png" alt="NextUs" style={{ height: '40px', width: 'auto', display: 'inline-block', opacity: 0.78 }} />
         </div>
-        <div style={{ width: '28px', height: '1px', background: '#6E7F5C', opacity: 0.4, margin: '0 auto 36px' }} />
+        <div style={{ width: '28px', height: '1px', background: '#4c6b45', opacity: 0.4, margin: '0 auto 36px' }} />
         <DarkHeading>Stay up to date.</DarkHeading>
         <DarkBody style={{ maxWidth: '320px', margin: '0 auto 40px' }}>New episodes and updates as the work evolves.</DarkBody>
         <div style={{ maxWidth: '380px', margin: '0 auto' }}>
           <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
           <form action="https://app.kit.com/forms/9215183/subscriptions" className="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
             <input type="email" name="email_address" placeholder="your email" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(76,107,69,0.25)', borderRadius: '40px', fontFamily: "'Newsreader', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
-            <button type="submit" style={{ width: '100%', padding: '16px', background: '#6E7F5C', border: '1px solid rgba(38,36,32,0.8)', borderRadius: '40px', fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Join us →</button>
+            <button type="submit" style={{ width: '100%', padding: '16px', background: '#4c6b45', border: '1px solid rgba(38,36,32,0.8)', borderRadius: '40px', fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Join us →</button>
           </form>
         </div>
       </DarkSection>

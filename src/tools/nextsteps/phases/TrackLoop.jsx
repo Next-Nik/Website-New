@@ -18,7 +18,7 @@ const STATUS_LABELS = {
 const STATUS_COLOURS = {
   planning: 'rgba(15,21,35,0.55)',
   active:   '#5B8C5A',
-  dormant:  '#26302A',
+  dormant:  '#262420',
   complete: 'rgba(15,21,35,0.42)',
 }
 
@@ -114,7 +114,7 @@ export function TrackLoop({ tracks, onOpenTrack, onStartNew }) {
           justify-content: flex-end;
         }
         .ns-cta-primary {
-          background: #6E7F5C;
+          background: #4c6b45;
           color: #FFFFFF;
           border: none;
           border-radius: 10px;
@@ -137,13 +137,13 @@ export function TrackLoop({ tracks, onOpenTrack, onStartNew }) {
         .ns-track-card {
           padding: 20px 22px;
           background: #FFFFFF;
-          border: 1px solid rgba(38,48,42,0.18);
+          border: 1px solid rgba(38,36,32,0.18);
           border-radius: 14px;
           cursor: pointer;
           transition: border-color 0.15s, transform 0.05s;
         }
         .ns-track-card:hover {
-          border-color: #6E7F5C;
+          border-color: #4c6b45;
         }
         .ns-track-card:active {
           transform: scale(0.998);

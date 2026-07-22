@@ -220,7 +220,7 @@ export function NextStepsPage() {
           font-family: 'IBM Plex Mono', Georgia, serif;
           font-size: 0.75rem;
           letter-spacing: 0.18em;
-          color: #26302A;
+          color: #262420;
           text-transform: uppercase;
         }
         .ns-title {
@@ -243,7 +243,7 @@ export function NextStepsPage() {
         .ns-back {
           background: none;
           border: none;
-          color: #26302A;
+          color: #262420;
           font-family: 'IBM Plex Mono', Georgia, serif;
           font-size: 0.78rem;
           letter-spacing: 0.14em;

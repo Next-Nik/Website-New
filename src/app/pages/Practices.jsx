@@ -31,7 +31,7 @@ function PageHeader() {
   return (
     <div style={{ marginBottom: '32px' }}>
       <span style={{
-        ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A',
+        ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#262420',
         textTransform: 'uppercase', display: 'block', marginBottom: '10px',
       }}>
         Practices
@@ -71,7 +71,7 @@ function SectionLabel({ children }) {
   )
 }
 
-function ToggleChip({ label, active, onClick, color = '#26302A' }) {
+function ToggleChip({ label, active, onClick, color = '#262420' }) {
   return (
     <button
       type="button"
@@ -80,13 +80,13 @@ function ToggleChip({ label, active, onClick, color = '#26302A' }) {
       style={{
         ...sc, fontSize: '13px', letterSpacing: '0.04em',
         color: active ? color : 'rgba(15,21,35,0.72)',
-        background: active ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
-        border: active ? `1px solid ${color}` : '1px solid rgba(110,127,92,0.25)',
+        background: active ? 'rgba(76,107,69,0.08)' : '#FFFFFF',
+        border: active ? `1px solid ${color}` : '1px solid rgba(76,107,69,0.25)',
         borderRadius: '40px', padding: '5px 12px',
         cursor: 'pointer', fontWeight: active ? 600 : 400,
         transition: 'background 120ms ease',
       }}
-      onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'rgba(110,127,92,0.04)' }}
+      onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'rgba(76,107,69,0.04)' }}
       onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = '#FFFFFF' }}
     >
       {label}
@@ -118,7 +118,7 @@ function FilterPanel({ filters, onChange, availableLenses }) {
     <div style={{
       padding: '18px 22px',
       background: '#FFFFFF',
-      border: '1px solid rgba(110,127,92,0.18)',
+      border: '1px solid rgba(76,107,69,0.18)',
       borderRadius: '14px',
       marginBottom: '24px',
     }}>
@@ -145,7 +145,7 @@ function FilterPanel({ filters, onChange, availableLenses }) {
             </button>
           )}
           <button type="button" onClick={() => setExpanded(v => !v)}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', background: 'transparent', border: '1px solid rgba(110,127,92,0.30)', borderRadius: '40px', padding: '6px 14px', cursor: 'pointer' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#262420', background: 'transparent', border: '1px solid rgba(76,107,69,0.30)', borderRadius: '40px', padding: '6px 14px', cursor: 'pointer' }}>
             {expanded ? 'Hide filters' : 'More filters'}
           </button>
         </div>
@@ -211,7 +211,7 @@ function FilterPanel({ filters, onChange, availableLenses }) {
                   label={v.label}
                   active={filters.vetting === v.slug}
                   onClick={() => setSingle('vetting', v.slug)}
-                  color={v.color === 'rgba(15,21,35,0.55)' ? '#26302A' : v.color}
+                  color={v.color === 'rgba(15,21,35,0.55)' ? '#262420' : v.color}
                 />
               ))}
             </div>
@@ -230,7 +230,7 @@ function EmptyState({ filtersActive, isSignedIn }) {
       <div style={{
         padding: '40px 28px',
         background: '#FFFFFF',
-        border: '1px dashed rgba(110,127,92,0.30)',
+        border: '1px dashed rgba(76,107,69,0.30)',
         borderRadius: '14px',
         textAlign: 'center',
       }}>
@@ -248,11 +248,11 @@ function EmptyState({ filtersActive, isSignedIn }) {
     <div style={{
       padding: '48px 32px',
       background: '#FFFFFF',
-      border: '1px solid rgba(110,127,92,0.25)',
+      border: '1px solid rgba(76,107,69,0.25)',
       borderRadius: '14px',
       textAlign: 'left',
     }}>
-      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase', display: 'block', marginBottom: '14px' }}>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#262420', textTransform: 'uppercase', display: 'block', marginBottom: '14px' }}>
         Empty by design
       </span>
       <p style={{
@@ -268,12 +268,12 @@ function EmptyState({ filtersActive, isSignedIn }) {
       </p>
       {isSignedIn ? (
         <Link to="/practice/contribute"
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#FFFFFF', background: '#0F1523', padding: '12px 28px', borderRadius: '40px', textDecoration: 'none', display: 'inline-block', fontWeight: 600 }}>
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#FFFFFF', background: '#3c5637', padding: '12px 28px', borderRadius: '40px', textDecoration: 'none', display: 'inline-block', fontWeight: 600 }}>
           Contribute a practice
         </Link>
       ) : (
         <Link to="/login"
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#26302A', background: 'rgba(110,127,92,0.06)', padding: '12px 28px', borderRadius: '40px', textDecoration: 'none', display: 'inline-block', border: '1px solid rgba(110,127,92,0.40)' }}>
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#262420', background: 'rgba(76,107,69,0.06)', padding: '12px 28px', borderRadius: '40px', textDecoration: 'none', display: 'inline-block', border: '1px solid rgba(76,107,69,0.40)' }}>
           Sign in to contribute
         </Link>
       )}
@@ -374,10 +374,10 @@ export default function Practices() {
               to="/practice/contribute"
               style={{
                 ...sc, fontSize: '13px', letterSpacing: '0.16em',
-                color: '#26302A', background: 'rgba(110,127,92,0.06)',
+                color: '#262420', background: 'rgba(76,107,69,0.06)',
                 padding: '10px 22px', borderRadius: '40px',
                 textDecoration: 'none', display: 'inline-block',
-                border: '1px solid rgba(110,127,92,0.40)',
+                border: '1px solid rgba(76,107,69,0.40)',
                 fontWeight: 600,
               }}
             >
@@ -397,7 +397,7 @@ export default function Practices() {
             {[0, 1, 2].map(i => (
               <div key={i} style={{
                 background: '#FFFFFF',
-                border: '1px solid rgba(110,127,92,0.14)',
+                border: '1px solid rgba(76,107,69,0.14)',
                 borderRadius: '14px',
                 padding: '20px 22px',
                 height: '120px',

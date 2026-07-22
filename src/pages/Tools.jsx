@@ -123,7 +123,7 @@ export function ToolsPage() {
           <a href="/nextus-self" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.6)', textDecoration: 'none' }}>
             \u2190 What is the Horizon Suite?
           </a>
-          <a href="/work-with-nik" style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#6E7F5C', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
+          <a href="/work-with-nik" style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#4c6b45', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
             Work with Nik →
           </a>
         </div>

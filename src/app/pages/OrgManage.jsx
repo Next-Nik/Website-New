@@ -47,7 +47,7 @@ function DomainChips({ selected, onChange }) {
         const on = selected.includes(d.value)
         return (
           <button key={d.value} type="button" onClick={() => toggle(d.value)}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', cursor: 'pointer', border: on ? '1.5px solid rgba(217,178,74,0.78)' : '1.5px solid rgba(217,178,74,0.25)', background: on ? 'rgba(217,178,74,0.10)' : 'transparent', color: on ? gold : at.ghost, transition: 'all 0.15s' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', cursor: 'pointer', border: on ? '1.5px solid rgba(169,116,63,0.78)' : '1.5px solid rgba(169,116,63,0.25)', background: on ? 'rgba(169,116,63,0.10)' : 'transparent', color: on ? gold : at.ghost, transition: 'all 0.15s' }}>
             {d.label}
           </button>
         )
@@ -244,13 +244,13 @@ function ProfileTab({ actor, onSave, toast }) {
         <div id="field-photo" style={{ marginBottom: '24px' }}>
           <Label>Photo</Label>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '6px' }}>
-            <div style={{ width: '76px', height: '76px', borderRadius: '10px', border: '1px solid rgba(217,178,74,0.30)', background: at.object, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: '76px', height: '76px', borderRadius: '10px', border: '1px solid rgba(169,116,63,0.30)', background: at.object, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               {imageUrl
                 ? <img src={imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 : <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: at.ghost }}>NONE</span>}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.object, background: uploadingImage ? 'rgba(217,178,74,0.30)' : at.verdigris, borderRadius: '40px', padding: '9px 20px', cursor: uploadingImage ? 'default' : 'pointer', display: 'inline-block' }}>
+              <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.object, background: uploadingImage ? 'rgba(169,116,63,0.30)' : at.verdigris, borderRadius: '40px', padding: '9px 20px', cursor: uploadingImage ? 'default' : 'pointer', display: 'inline-block' }}>
                 {uploadingImage ? 'Uploading…' : (imageUrl ? 'Replace photo' : 'Upload photo')}
                 <input type="file" accept="image/*" onChange={onPickImage} disabled={uploadingImage} style={{ display: 'none' }} />
               </label>
@@ -330,7 +330,7 @@ function ProfileTab({ actor, onSave, toast }) {
 
         {/* ── How you operate ── */}
         <div style={{ marginTop: '36px', marginBottom: '24px',
-          paddingTop: '24px', borderTop: '1px solid rgba(217,178,74,0.18)' }}>
+          paddingTop: '24px', borderTop: '1px solid rgba(169,116,63,0.18)' }}>
           <h3 style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
             color: gold, textTransform: 'uppercase', marginBottom: '6px',
             fontWeight: 500 }}>
@@ -479,7 +479,7 @@ function PersonalDomainChips({ selected = [], onChange }) {
         const on = selected.includes(d.value)
         return (
           <button key={d.value} type="button" onClick={() => toggle(d.value)}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', cursor: 'pointer', border: on ? '1.5px solid rgba(217,178,74,0.78)' : '1.5px solid rgba(217,178,74,0.25)', background: on ? 'rgba(217,178,74,0.10)' : 'transparent', color: on ? gold : at.ghost, transition: 'all 0.15s' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', cursor: 'pointer', border: on ? '1.5px solid rgba(169,116,63,0.78)' : '1.5px solid rgba(169,116,63,0.25)', background: on ? 'rgba(169,116,63,0.10)' : 'transparent', color: on ? gold : at.ghost, transition: 'all 0.15s' }}>
             {d.label}
           </button>
         )
@@ -493,7 +493,7 @@ function OfferingForm({ initial = EMPTY_OFFERING, onSave, onCancel, saving }) {
   function set(field, val) { setForm(f => ({ ...f, [field]: val })) }
 
   return (
-    <div style={{ background: 'rgba(217,178,74,0.03)', border: '1.5px solid rgba(217,178,74,0.30)', borderRadius: '14px', padding: '24px 28px', marginBottom: '20px' }}>
+    <div style={{ background: 'rgba(169,116,63,0.03)', border: '1.5px solid rgba(169,116,63,0.30)', borderRadius: '14px', padding: '24px 28px', marginBottom: '20px' }}>
       <div style={{ marginBottom: '18px' }}>
         <Label required>Title</Label>
         <TextInput value={form.title} onChange={v => set('title', v)} placeholder="e.g. Soil carbon monitoring, Community grants programme" />
@@ -558,16 +558,16 @@ function OfferingCard({ offering, onEdit, onDelete, onToggleFlagship, saving }) 
   const accessLabel = ACCESS_TYPES.find(a => a.value === offering.access_type)?.label || offering.access_type
 
   return (
-    <div style={{ background: offering.is_flagship ? 'rgba(217,178,74,0.05)' : at.object, border: offering.is_flagship ? '1.5px solid rgba(217,178,74,0.78)' : '1.5px solid rgba(217,178,74,0.18)', borderRadius: '14px', padding: '22px 26px', marginBottom: '12px', position: 'relative' }}>
+    <div style={{ background: offering.is_flagship ? 'rgba(169,116,63,0.05)' : at.object, border: offering.is_flagship ? '1.5px solid rgba(169,116,63,0.78)' : '1.5px solid rgba(169,116,63,0.18)', borderRadius: '14px', padding: '22px 26px', marginBottom: '12px', position: 'relative' }}>
       {offering.is_flagship && (
         <span style={{ position: 'absolute', top: '-10px', left: '20px', ...sc, fontSize: '13px', letterSpacing: '0.16em', background: at.verdigris, color: at.object, padding: '3px 12px', borderRadius: '40px' }}>Flagship</span>
       )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, background: 'rgba(217,178,74,0.08)', border: '1px solid rgba(217,178,74,0.25)', borderRadius: '4px', padding: '3px 10px' }}>{typeLabel}</span>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: at.ghost, background: 'rgba(234,241,237,0.06)', border: '1px solid rgba(234,241,237,0.20)', borderRadius: '4px', padding: '3px 10px' }}>{modeLabel}</span>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: at.ghost, background: 'rgba(234,241,237,0.06)', border: '1px solid rgba(234,241,237,0.20)', borderRadius: '4px', padding: '3px 10px' }}>{accessLabel}</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, background: 'rgba(169,116,63,0.08)', border: '1px solid rgba(169,116,63,0.25)', borderRadius: '4px', padding: '3px 10px' }}>{typeLabel}</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: at.ghost, background: 'rgba(38,36,32,0.06)', border: '1px solid rgba(38,36,32,0.20)', borderRadius: '4px', padding: '3px 10px' }}>{modeLabel}</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: at.ghost, background: 'rgba(38,36,32,0.06)', border: '1px solid rgba(38,36,32,0.20)', borderRadius: '4px', padding: '3px 10px' }}>{accessLabel}</span>
           </div>
           <h4 style={{ ...body, fontSize: '18px', fontWeight: 400, color: dark, marginBottom: '6px', lineHeight: 1.3 }}>{offering.title}</h4>
           {offering.description && (
@@ -655,7 +655,7 @@ function OfferingsTab({ actorId, toast }) {
   return (
     <div style={{ maxWidth: '700px' }}>
       {offerings.length === 0 && !adding && (
-        <SectionCard style={{ borderColor: 'rgba(217,178,74,0.35)', background: 'rgba(217,178,74,0.03)' }}>
+        <SectionCard style={{ borderColor: 'rgba(169,116,63,0.35)', background: 'rgba(169,116,63,0.03)' }}>
           <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>Required before needs go live</p>
           <p style={{ ...body, fontSize: '16px', color: at.meta, lineHeight: 1.75, marginBottom: '20px' }}>
             Add at least one offering before your needs become visible to contributors. The platform is built on giving before asking — visitors need to understand what you offer before they can decide whether to give.
@@ -736,7 +736,7 @@ function ContributionsTab({ actorId, actorName, toast }) {
   return (
     <div style={{ maxWidth: '700px' }}>
       {needsOutcome.length > 0 && (
-        <div style={{ background: 'rgba(217,178,74,0.05)', border: '1.5px solid rgba(217,178,74,0.35)', borderRadius: '12px', padding: '20px 24px', marginBottom: '24px' }}>
+        <div style={{ background: 'rgba(169,116,63,0.05)', border: '1.5px solid rgba(169,116,63,0.35)', borderRadius: '12px', padding: '20px 24px', marginBottom: '24px' }}>
           <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, marginBottom: '8px' }}>Action required</p>
           <p style={{ ...body, fontSize: '15px', color: at.meta, lineHeight: 1.65 }}>
             {needsOutcome.length} confirmed contribution{needsOutcome.length !== 1 ? 's' : ''} {needsOutcome.length === 1 ? 'needs' : 'need'} an outcome report. Closing this loop builds trust and keeps your needs visible.
@@ -754,12 +754,12 @@ function ContributionsTab({ actorId, actorName, toast }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, background: 'rgba(217,178,74,0.08)', border: '1px solid rgba(217,178,74,0.25)', borderRadius: '4px', padding: '3px 10px' }}>
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, background: 'rgba(169,116,63,0.08)', border: '1px solid rgba(169,116,63,0.25)', borderRadius: '4px', padding: '3px 10px' }}>
                       {CONTRIBUTION_TYPE_LABEL[c.contribution_type] || c.contribution_type}
                     </span>
                     {c.amount && <span style={{ ...sc, fontSize: '13px', color: at.ghost }}>{c.contribution_type === 'capital' ? `${c.currency} ${c.amount}` : `${c.amount} hrs`}</span>}
                   </div>
-                  {c.description && <p style={{ ...body, fontSize: '15px', color: 'rgba(234,241,237,0.70)', lineHeight: 1.65, marginBottom: '4px' }}>{c.description}</p>}
+                  {c.description && <p style={{ ...body, fontSize: '15px', color: 'rgba(38,36,32,0.70)', lineHeight: 1.65, marginBottom: '4px' }}>{c.description}</p>}
                   <p style={{ ...body, fontSize: '13px', color: at.ghost }}>{new Date(c.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                 </div>
                 <Btn small onClick={() => confirm(c.id)} disabled={saving[c.id]}>{saving[c.id] ? 'Confirming…' : 'Confirm'}</Btn>
@@ -784,16 +784,16 @@ function ContributionsTab({ actorId, actorName, toast }) {
                   {c.amount && <span style={{ ...sc, fontSize: '13px', color: at.ghost }}>{c.contribution_type === 'capital' ? `${c.currency} ${c.amount}` : `${c.amount} hrs`}</span>}
                   {c.outcome_reported && <span style={{ ...sc, fontSize: '13px', color: '#2A6B3A' }}>outcome reported</span>}
                 </div>
-                {c.description && <p style={{ ...body, fontSize: '15px', color: 'rgba(234,241,237,0.70)', lineHeight: 1.65 }}>{c.description}</p>}
+                {c.description && <p style={{ ...body, fontSize: '15px', color: 'rgba(38,36,32,0.70)', lineHeight: 1.65 }}>{c.description}</p>}
                 {c.outcome_report && (
                   <div style={{ marginTop: '10px', borderLeft: '2px solid rgba(42,107,58,0.30)', paddingLeft: '14px' }}>
                     <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#2A6B3A', marginBottom: '4px' }}>Outcome</p>
-                    <p style={{ ...body, fontSize: '14px', color: 'rgba(234,241,237,0.70)', lineHeight: 1.65 }}>{c.outcome_report}</p>
+                    <p style={{ ...body, fontSize: '14px', color: 'rgba(38,36,32,0.70)', lineHeight: 1.65 }}>{c.outcome_report}</p>
                   </div>
                 )}
               </div>
               {!c.outcome_reported && (
-                <div style={{ borderTop: '1px solid rgba(217,178,74,0.12)', paddingTop: '16px' }}>
+                <div style={{ borderTop: '1px solid rgba(169,116,63,0.12)', paddingTop: '16px' }}>
                   <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, marginBottom: '8px' }}>File an outcome report</p>
                   <TextArea value={outcomeText[c.id] || ''} onChange={v => setOutcomeText(o => ({ ...o, [c.id]: v }))} placeholder="What did you do with this contribution? What changed? Even two sentences closes the loop." rows={3} />
                   <div style={{ marginTop: '10px' }}>
@@ -823,12 +823,12 @@ function ContributorMatchCard({ match }) {
   const returnLabel = RETURN_LABEL_M[match.return_type] || match.return_type
 
   return (
-    <div style={{ background: match.adjacent ? at.object : 'rgba(217,178,74,0.04)', border: match.adjacent ? '1.5px solid rgba(217,178,74,0.18)' : '1.5px solid rgba(217,178,74,0.55)', borderRadius: '12px', padding: '18px 20px', marginBottom: '10px' }}>
+    <div style={{ background: match.adjacent ? at.object : 'rgba(169,116,63,0.04)', border: match.adjacent ? '1.5px solid rgba(169,116,63,0.18)' : '1.5px solid rgba(169,116,63,0.55)', borderRadius: '12px', padding: '18px 20px', marginBottom: '10px' }}>
       {match.adjacent && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.ghost, display: 'block', marginBottom: '6px' }}>Adjacent match</span>}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, background: 'rgba(217,178,74,0.08)', border: '1px solid rgba(217,178,74,0.22)', borderRadius: '4px', padding: '2px 8px' }}>{typeLabel}</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, background: 'rgba(169,116,63,0.08)', border: '1px solid rgba(169,116,63,0.22)', borderRadius: '4px', padding: '2px 8px' }}>{typeLabel}</span>
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: at.ghost, background: at.ghost, borderRadius: '4px', padding: '2px 8px' }}>{modeLabel}</span>
             <span style={{ ...sc, fontSize: '13px', color: at.ghost }}>{returnLabel}</span>
             {match.confirmed_contribution_count > 0 && <span style={{ ...sc, fontSize: '13px', color: '#2A6B3A' }}>{match.confirmed_contribution_count} confirmed</span>}
@@ -836,15 +836,15 @@ function ContributorMatchCard({ match }) {
           {match.display_name && (
             <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: dark, marginBottom: '2px' }}>
               {match.display_name}
-              {match.archetype && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(217,178,74,0.70)', marginLeft: '10px' }}>{match.archetype}</span>}
+              {match.archetype && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(169,116,63,0.70)', marginLeft: '10px' }}>{match.archetype}</span>}
             </p>
           )}
-          <p style={{ ...body, fontSize: '15px', fontWeight: 400, color: 'rgba(234,241,237,0.75)', marginBottom: match.description ? '4px' : 0 }}>{match.offer_title}</p>
+          <p style={{ ...body, fontSize: '15px', fontWeight: 400, color: 'rgba(38,36,32,0.75)', marginBottom: match.description ? '4px' : 0 }}>{match.offer_title}</p>
           {match.description && <p style={{ ...body, fontSize: '13px', color: at.ghost, lineHeight: 1.6 }}>{match.description.slice(0, 120)}{match.description.length > 120 ? '…' : ''}</p>}
           {match.best_need && <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: at.ghost, marginTop: '6px' }}>Matches your need: {match.best_need.title}</p>}
           {match.availability && <p style={{ ...sc, fontSize: '13px', color: at.ghost, marginTop: '4px' }}>{match.availability}</p>}
         </div>
-        <a href={`/profile/${match.user_id}`} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '8px 16px', borderRadius: '40px', flexShrink: 0, border: '1.5px solid rgba(217,178,74,0.60)', background: 'rgba(217,178,74,0.04)', color: gold, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+        <a href={`/profile/${match.user_id}`} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '8px 16px', borderRadius: '40px', flexShrink: 0, border: '1.5px solid rgba(169,116,63,0.60)', background: 'rgba(169,116,63,0.04)', color: gold, textDecoration: 'none', whiteSpace: 'nowrap' }}>
           View profile →
         </a>
       </div>
@@ -877,7 +877,7 @@ function MatchesTab({ actorId, toast }) {
 
   return (
     <div style={{ maxWidth: '700px' }}>
-      <div style={{ background: 'rgba(217,178,74,0.03)', border: '1px solid rgba(217,178,74,0.20)', borderRadius: '12px', padding: '18px 22px', marginBottom: '28px' }}>
+      <div style={{ background: 'rgba(169,116,63,0.03)', border: '1px solid rgba(169,116,63,0.20)', borderRadius: '12px', padding: '18px 22px', marginBottom: '28px' }}>
         <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>What this shows</p>
         <p style={{ ...body, fontSize: '15px', color: at.meta, lineHeight: 1.75, margin: 0 }}>
           Contributors whose active offers align with your open needs — matched by domain, offer type, and contribution mode. Direct matches first, then adjacent.
@@ -1044,7 +1044,7 @@ export function OrgManagePage() {
 
         {/* Steward notice — founder editing an unclaimed profile on the org's behalf */}
         {!actor.profile_owner && user && actor.profile_owner !== user.id && (
-          <div style={{ background: 'rgba(217,178,74,0.05)', border: '1.5px solid rgba(217,178,74,0.35)', borderRadius: '12px', padding: '16px 20px', marginBottom: '28px' }}>
+          <div style={{ background: 'rgba(169,116,63,0.05)', border: '1.5px solid rgba(169,116,63,0.35)', borderRadius: '12px', padding: '16px 20px', marginBottom: '28px' }}>
             <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#8A6020', marginBottom: '6px' }}>
               Editing as steward
             </p>
@@ -1095,7 +1095,7 @@ export function OrgManagePage() {
             }, 160)
           }
           return (
-            <div style={{ background: 'rgba(217,178,74,0.05)', border: '1.5px solid rgba(217,178,74,0.30)', borderRadius: '12px', padding: '16px 20px', marginBottom: '28px' }}>
+            <div style={{ background: 'rgba(169,116,63,0.05)', border: '1.5px solid rgba(169,116,63,0.30)', borderRadius: '12px', padding: '16px 20px', marginBottom: '28px' }}>
               <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#8A6020', marginBottom: '4px', textTransform: 'uppercase' }}>
                 Finish your profile · {checklist.length - remaining.length} of {checklist.length}
               </p>
@@ -1105,7 +1105,7 @@ export function OrgManagePage() {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {remaining.map(item => (
                   <button key={item.label} type="button" onClick={() => jumpTo(item.tab, item.anchor)}
-                    style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: at.brass, background: at.object, border: '1px solid rgba(217,178,74,0.40)', borderRadius: '40px', padding: '7px 16px', cursor: 'pointer' }}>
+                    style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: at.brass, background: at.object, border: '1px solid rgba(169,116,63,0.40)', borderRadius: '40px', padding: '7px 16px', cursor: 'pointer' }}>
                     {item.label} →
                   </button>
                 ))}
@@ -1115,7 +1115,7 @@ export function OrgManagePage() {
         })()}
 
         {/* Tab bar */}
-        <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid rgba(217,178,74,0.20)', marginBottom: '36px', overflowX: 'auto' }}>
+        <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid rgba(169,116,63,0.20)', marginBottom: '36px', overflowX: 'auto' }}>
           {TABS.map(tab => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', padding: '12px 20px', background: 'none', border: 'none', cursor: 'pointer', color: activeTab === tab.key ? gold : at.ghost, borderBottom: activeTab === tab.key ? `2px solid ${gold}` : '2px solid transparent', marginBottom: '-1px', whiteSpace: 'nowrap', flexShrink: 0 }}>

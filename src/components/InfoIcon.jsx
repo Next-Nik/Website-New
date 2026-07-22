@@ -44,7 +44,7 @@ export function InfoIcon({ label = 'More info', title, children, align = 'right'
     [align]:      0,
     zIndex:       9999,
     background:   '#FAFAF7',
-    border:       '1.5px solid rgba(110,127,92,0.45)',
+    border:       '1.5px solid rgba(76,107,69,0.45)',
     borderRadius: '12px',
     padding:      '20px 22px',
     width:        'min(360px, 90vw)',
@@ -60,7 +60,7 @@ export function InfoIcon({ label = 'More info', title, children, align = 'right'
         aria-expanded={open}
         style={{
           background:    'none',
-          border:        '1px solid rgba(110,127,92,0.45)',
+          border:        '1px solid rgba(76,107,69,0.45)',
           borderRadius:  '50%',
           width:         '16px',
           height:        '16px',
@@ -74,7 +74,7 @@ export function InfoIcon({ label = 'More info', title, children, align = 'right'
           verticalAlign: 'middle',
         }}
       >
-        <span style={{ ...sc, fontSize: '13px', color: '#26302A', lineHeight: 1 }}>i</span>
+        <span style={{ ...sc, fontSize: '13px', color: '#262420', lineHeight: 1 }}>i</span>
       </button>
 
       {open && (
@@ -84,11 +84,11 @@ export function InfoIcon({ label = 'More info', title, children, align = 'right'
               ...sc,
               fontSize:      '13px',
               letterSpacing: '0.18em',
-              color:         '#26302A',
+              color:         '#262420',
               textTransform: 'uppercase',
               marginBottom:  '12px',
               paddingBottom: '10px',
-              borderBottom:  '1px solid rgba(110,127,92,0.15)',
+              borderBottom:  '1px solid rgba(76,107,69,0.15)',
             }}>
               {title}
             </div>

@@ -66,21 +66,21 @@ function Hint({ children }) {
 function TextInput({ value, onChange, placeholder, type = 'text' }) {
   return (
     <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)', background: at.object, outline: 'none', width: '100%' }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(169,116,63,0.30)', background: at.object, outline: 'none', width: '100%' }} />
   )
 }
 
 function TextArea({ value, onChange, placeholder, rows = 4 }) {
   return (
     <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows}
-      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)', background: at.object, outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(169,116,63,0.30)', background: at.object, outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
   )
 }
 
 function SelectInput({ value, onChange, options }) {
   return (
     <select value={value} onChange={e => onChange(e.target.value)}
-      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)', background: at.object, outline: 'none', width: '100%' }}>
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(169,116,63,0.30)', background: at.object, outline: 'none', width: '100%' }}>
       {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
   )
@@ -247,7 +247,7 @@ export function NominatePage() {
           <h2 style={{ ...serif, fontSize: '30px', fontWeight: 300, color: dark, marginBottom: '14px' }}>
             Nomination received.
           </h2>
-          <p style={{ ...body, fontSize: '16px', color: 'rgba(234,241,237,0.60)', lineHeight: 1.75, maxWidth: '420px', margin: '0 auto 12px' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(38,36,32,0.60)', lineHeight: 1.75, maxWidth: '420px', margin: '0 auto 12px' }}>
             The profile is in the review queue. We will place it on the map once it meets the criteria and be in touch at the email you provided.
           </p>
           {nominatedId && (
@@ -264,11 +264,11 @@ export function NominatePage() {
               </button>
             )}
             <button onClick={() => { setForm(EMPTY); setDone(false); setNominatedId(null) }}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: '1.5px solid rgba(217,178,74,0.78)', background: 'rgba(217,178,74,0.05)', color: gold, cursor: 'pointer' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: '1.5px solid rgba(169,116,63,0.78)', background: 'rgba(169,116,63,0.05)', color: gold, cursor: 'pointer' }}>
               Nominate another
             </button>
             <button onClick={() => navigate('/beta')}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: '1px solid rgba(234,241,237,0.55)', background: 'transparent', color: at.ghost, cursor: 'pointer' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.55)', background: 'transparent', color: at.ghost, cursor: 'pointer' }}>
               Back to NextUs
             </button>
           </div>
@@ -348,8 +348,8 @@ export function NominatePage() {
               <div style={{
                 marginTop: '10px',
                 padding: '12px 14px',
-                background: 'rgba(217,178,74,0.04)',
-                border: '1px solid rgba(217,178,74,0.20)',
+                background: 'rgba(169,116,63,0.04)',
+                border: '1px solid rgba(169,116,63,0.20)',
                 borderRadius: '8px',
               }}>
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.ghost, marginBottom: '4px' }}>
@@ -379,8 +379,8 @@ export function NominatePage() {
                         ...sc, fontSize: '13px', letterSpacing: '0.04em',
                         padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
                         color: isOn ? gold : at.meta,
-                        background: isOn ? 'rgba(217,178,74,0.08)' : at.object,
-                        border: isOn ? '1px solid rgba(217,178,74,0.55)' : '1px solid rgba(217,178,74,0.25)',
+                        background: isOn ? 'rgba(169,116,63,0.08)' : at.object,
+                        border: isOn ? '1px solid rgba(169,116,63,0.55)' : '1px solid rgba(169,116,63,0.25)',
                         fontWeight: isOn ? 600 : 400,
                       }}
                     >
@@ -418,7 +418,7 @@ export function NominatePage() {
           </Field>
 
           {/* Nominator */}
-          <div style={{ paddingTop: '24px', borderTop: '1px solid rgba(217,178,74,0.18)', marginTop: '8px' }}>
+          <div style={{ paddingTop: '24px', borderTop: '1px solid rgba(169,116,63,0.18)', marginTop: '8px' }}>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: at.ghost, textTransform: 'uppercase', marginBottom: '20px' }}>
               Your details
             </div>
@@ -446,7 +446,7 @@ export function NominatePage() {
                 <input type="checkbox" checked={form.nominator_can_name}
                   onChange={e => set('nominator_can_name', e.target.checked)}
                   style={{ marginTop: '4px', accentColor: gold, width: '16px', height: '16px' }} />
-                <span style={{ ...body, fontSize: '14px', color: 'rgba(234,241,237,0.7)', lineHeight: 1.55 }}>
+                <span style={{ ...body, fontSize: '14px', color: 'rgba(38,36,32,0.7)', lineHeight: 1.55 }}>
                   You can tell them I suggested it. Otherwise the note simply says someone in the community did.
                 </span>
               </label>
@@ -465,7 +465,7 @@ export function NominatePage() {
             style={{
               ...sc, fontSize: '14px', letterSpacing: '0.16em',
               padding: '14px 32px', borderRadius: '40px', border: 'none',
-              background: saving ? 'rgba(217,178,74,0.35)' : at.verdigris,
+              background: saving ? 'rgba(169,116,63,0.35)' : at.verdigris,
               color: at.object, cursor: saving ? 'not-allowed' : 'pointer',
               display: 'block', width: '100%', marginTop: '8px',
             }}>

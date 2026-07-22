@@ -159,9 +159,9 @@ const DISCIPLINES = {
 }
 function libFor(key) { return DISCIPLINES[key] || DISCIPLINES._default }
 
-const GOLD_RULE = 'rgba(110,127,92,0.20)'
-const GOLD_TINT = 'rgba(110,127,92,0.05)'
-const GOLD_HOVER = 'rgba(110,127,92,0.08)'
+const GOLD_RULE = 'rgba(76,107,69,0.20)'
+const GOLD_TINT = 'rgba(76,107,69,0.05)'
+const GOLD_HOVER = 'rgba(76,107,69,0.08)'
 
 // ─────────────────────────────────────────────────────────────
 // Slider — a tapered ramp you drag; reads 0–10 in the scale colour.
@@ -197,7 +197,7 @@ function Slider({ label, value, invert, onChange }) {
         onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}
         style={{ position: 'relative', marginTop: '11px', height: '26px', cursor: 'pointer', touchAction: 'none' }}
       >
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(110,127,92,0.12)', clipPath: 'polygon(0 58%, 100% 0, 100% 100%, 0 100%)' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(76,107,69,0.12)', clipPath: 'polygon(0 58%, 100% 0, 100% 100%, 0 100%)' }}>
           <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: pct + '%', background: col }} />
         </div>
         {value != null && (

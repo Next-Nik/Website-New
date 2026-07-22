@@ -237,7 +237,7 @@ export function AboutPage() {
           <h2 style={{ ...serif, fontSize: 'clamp(32px,4.5vw,52px)', fontWeight: 300, ...dark, lineHeight: 1.1, marginBottom: '8px' }}>
             The person behind the work.
           </h2>
-          <div style={{ width: '40px', height: '1px', background: '#6E7F5C', margin: '24px 0 36px' }} />
+          <div style={{ width: '40px', height: '1px', background: '#4c6b45', margin: '24px 0 36px' }} />
 
           <P>
             Nik Wood has been doing this work for almost 30 years. Not building toward it — doing it.
@@ -261,7 +261,7 @@ export function AboutPage() {
                 padding: '14px 32px',
                 borderRadius: '40px',
                 border: '1px solid rgba(38,36,32,0.8)',
-                background: '#6E7F5C',
+                background: '#4c6b45',
                 color: '#FFFFFF',
                 ...sc,
                 fontSize: '15px',

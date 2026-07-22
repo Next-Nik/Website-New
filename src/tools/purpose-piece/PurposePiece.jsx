@@ -59,8 +59,8 @@ import { body, sc } from '../../lib/designTokens'
 
 // ─── Shared styles ──────────────────────────────────────────────────────────
 const ser  = { fontFamily: "'Fraunces', Georgia, serif" }
-const GOLD   = '#26302A'
-const GOLD_L = '#6E7F5C'
+const GOLD   = '#262420'
+const GOLD_L = '#4c6b45'
 const FOREST = '#2D6A4F'
 const SLATE  = '#2D4A6A'
 const INK    = '#0F1523'
@@ -284,14 +284,14 @@ function MirrorPanel({ mirrorText, onRevealed }) {
               letterSpacing: '0.14em',
               padding: '13px 28px',
               border: `1.5px solid ${GOLD_L}`,
-              background: 'rgba(110,127,92,0.05)',
+              background: 'rgba(76,107,69,0.05)',
               color: GOLD,
               borderRadius: '40px',
               cursor: 'pointer',
               transition: 'all 0.18s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.12)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.05)'; e.currentTarget.style.transform = '' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(76,107,69,0.12)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(76,107,69,0.05)'; e.currentTarget.style.transform = '' }}
           >
             Show me →
           </button>
@@ -377,7 +377,7 @@ export function ProfileCard({ profile, civilisationalStatement, horizonGoal }) {
       ))}
 
       {horizonGoal && (
-        <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: `1px solid rgba(110,127,92,0.22)` }}>
+        <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: `1px solid rgba(76,107,69,0.22)` }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', marginBottom: '6px' }}>
             Your domain's horizon
           </div>
@@ -473,7 +473,7 @@ export function PlacementCard({ placement, session, onChooseReadiness }) {
                   textAlign: 'left',
                   padding: '14px 16px',
                   border: isChosen ? `1.5px solid ${GOLD_L}` : '1px solid rgba(15,21,35,0.15)',
-                  background: isChosen ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
+                  background: isChosen ? 'rgba(76,107,69,0.08)' : '#FFFFFF',
                   borderRadius: '12px',
                   cursor: 'pointer',
                   transition: 'all 0.18s',
@@ -525,7 +525,7 @@ export function PlacementCard({ placement, session, onChooseReadiness }) {
 
       {/* Resource guidance */}
       {placement.resource_guidance && (
-        <div style={{ padding: '16px 20px', background: 'rgba(110,127,92,0.04)', borderRadius: '10px', marginBottom: '20px' }}>
+        <div style={{ padding: '16px 20px', background: 'rgba(76,107,69,0.04)', borderRadius: '10px', marginBottom: '20px' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', marginBottom: '6px' }}>
             Reading the territory
           </div>
@@ -582,15 +582,15 @@ export function PlacementCard({ placement, session, onChooseReadiness }) {
             letterSpacing: '0.14em',
             padding: '13px 28px',
             border: `1.5px solid ${GOLD_L}`,
-            background: 'rgba(110,127,92,0.05)',
+            background: 'rgba(76,107,69,0.05)',
             color: GOLD,
             borderRadius: '40px',
             textDecoration: 'none',
             transition: 'all 0.18s',
             display: 'inline-block',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.12)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.05)' }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(76,107,69,0.12)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(76,107,69,0.05)' }}
         >
           See your domain →
         </a>
@@ -608,8 +608,8 @@ function SignInNudge() {
     <div style={{
       marginTop: '24px',
       padding: '20px 24px',
-      background: 'rgba(110,127,92,0.05)',
-      border: '1px solid rgba(110,127,92,0.22)',
+      background: 'rgba(76,107,69,0.05)',
+      border: '1px solid rgba(76,107,69,0.22)',
       borderRadius: '12px',
     }}>
       <p style={{ ...body, fontSize: '15px', lineHeight: 1.75, color: INK, marginBottom: '10px' }}>
@@ -620,7 +620,7 @@ function SignInNudge() {
         style={{
           ...sc, fontSize: '14px', letterSpacing: '0.14em',
           color: GOLD, textDecoration: 'none',
-          borderBottom: '1px solid rgba(110,127,92,0.35)',
+          borderBottom: '1px solid rgba(76,107,69,0.35)',
           paddingBottom: '2px',
         }}
       >
@@ -1350,7 +1350,7 @@ export function PurposePieceDeepPage() {
               ...sc, fontSize: '15px', letterSpacing: '0.14em',
               padding: '13px 28px',
               border: `1.5px solid ${GOLD_L}`,
-              background: 'rgba(110,127,92,0.05)',
+              background: 'rgba(76,107,69,0.05)',
               color: GOLD,
               borderRadius: '40px',
               textDecoration: 'none',

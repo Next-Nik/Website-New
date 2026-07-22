@@ -178,7 +178,7 @@ export function PathView({ track, user, onBackToLoop }) {
           }
           .ns-path-error p { margin: 0 0 18px; }
           .ns-cta-primary {
-            background: #6E7F5C; color: #FFFFFF; border: none;
+            background: #4c6b45; color: #FFFFFF; border: none;
             border-radius: 10px; padding: 12px 24px;
             font-family: 'IBM Plex Mono', Georgia, serif;
             font-size: 0.85rem; letter-spacing: 0.14em;
@@ -270,8 +270,8 @@ export function PathView({ track, user, onBackToLoop }) {
           line-height: 1.6;
           color: rgba(15,21,35,0.78);
           padding: 14px 18px;
-          background: rgba(38,48,42,0.06);
-          border-left: 3px solid #6E7F5C;
+          background: rgba(38,36,32,0.06);
+          border-left: 3px solid #4c6b45;
           border-radius: 4px;
         }
         .ns-path-toward-eyebrow {
@@ -302,24 +302,24 @@ export function PathView({ track, user, onBackToLoop }) {
           gap: 18px;
           padding: 20px;
           background: #FFFFFF;
-          border: 1px solid rgba(38,48,42,0.20);
+          border: 1px solid rgba(38,36,32,0.20);
           border-radius: 14px;
           transition: border-color 0.2s, opacity 0.2s;
         }
         .ns-step-done {
           opacity: 0.7;
-          border-color: rgba(38,48,42,0.55);
+          border-color: rgba(38,36,32,0.55);
         }
         .ns-step-active {
-          border-color: #6E7F5C;
+          border-color: #4c6b45;
         }
         .ns-step-position {
           flex-shrink: 0;
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          background: rgba(38,48,42,0.12);
-          color: #26302A;
+          background: rgba(38,36,32,0.12);
+          color: #262420;
           font-family: 'Fraunces', Georgia, serif;
           font-size: 1.3rem;
           display: flex;
@@ -341,7 +341,7 @@ export function PathView({ track, user, onBackToLoop }) {
           letter-spacing: 0.16em;
           text-transform: uppercase;
         }
-        .ns-step-route { color: #26302A; }
+        .ns-step-route { color: #262420; }
         .ns-step-state { color: rgba(15,21,35,0.55); }
         .ns-step-state-active { color: #5B8C5A; }
         .ns-step-state-done { color: rgba(15,21,35,0.55); }
@@ -367,16 +367,16 @@ export function PathView({ track, user, onBackToLoop }) {
           border: none;
         }
         .ns-step-btn-primary {
-          background: #6E7F5C;
+          background: #4c6b45;
           color: #FFFFFF;
         }
         .ns-step-btn-primary:hover { background: #B0801F; }
         .ns-step-btn-ghost {
           background: transparent;
-          color: #26302A;
-          border: 1px solid rgba(38,48,42,0.40);
+          color: #262420;
+          border: 1px solid rgba(38,36,32,0.40);
         }
-        .ns-step-btn-ghost:hover { background: rgba(38,48,42,0.06); }
+        .ns-step-btn-ghost:hover { background: rgba(38,36,32,0.06); }
         .ns-step-done {
           font-family: 'IBM Plex Mono', Georgia, serif;
           font-size: 0.78rem;
@@ -392,7 +392,7 @@ export function PathView({ track, user, onBackToLoop }) {
         .ns-back-link {
           background: none;
           border: none;
-          color: #26302A;
+          color: #262420;
           font-family: 'IBM Plex Mono', Georgia, serif;
           font-size: 0.78rem;
           letter-spacing: 0.14em;

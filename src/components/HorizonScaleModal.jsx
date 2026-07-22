@@ -51,9 +51,9 @@ export const SCALE_LINK_STYLE = {
   cursor:      'pointer',
   fontFamily:  "'Newsreader', Georgia, serif",
   fontSize:    'inherit',
-  color:       '#26302A',
+  color:       '#262420',
   textDecoration: 'underline',
-  textDecorationColor: 'rgba(38,48,42,0.4)',
+  textDecorationColor: 'rgba(38,36,32,0.4)',
   textUnderlineOffset: '3px',
 }
 
@@ -124,7 +124,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
             width:        'min(560px, 100%)',
             background:   '#FAFAF7',
             borderRadius: '12px',
-            border:       '1.5px solid rgba(110,127,92,0.25)',
+            border:       '1.5px solid rgba(76,107,69,0.25)',
             display:      'flex',
             flexDirection: 'column',
             animation:    'hsModalIn 0.22s ease',
@@ -134,7 +134,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
           {/* Header */}
           <div style={{
             padding:      '28px 28px 20px',
-            borderBottom: '1px solid rgba(110,127,92,0.15)',
+            borderBottom: '1px solid rgba(76,107,69,0.15)',
             display:      'flex',
             alignItems:   'flex-start',
             justifyContent: 'space-between',
@@ -149,7 +149,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                 fontFamily:    "'IBM Plex Mono', Georgia, serif",
                 fontSize:      '13px',
                 letterSpacing: '0.2em',
-                color:         '#26302A',
+                color:         '#262420',
                 display:       'block',
                 marginBottom:  '6px',
               }}>
@@ -221,7 +221,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                 fontFamily:    "'IBM Plex Mono', Georgia, serif",
                 fontSize:      '13px',
                 letterSpacing: '0.18em',
-                color:         '#26302A',
+                color:         '#262420',
                 textTransform: 'uppercase',
                 marginRight:   '8px',
               }}>
@@ -282,16 +282,16 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                       borderRadius: '8px',
                       marginBottom: '2px',
                       background:   isAnchor
-                        ? 'rgba(110,127,92,0.1)'
+                        ? 'rgba(76,107,69,0.1)'
                         : isLine
-                          ? 'rgba(110,127,92,0.07)'
+                          ? 'rgba(76,107,69,0.07)'
                           : i % 2 === 0
                             ? 'rgba(15,21,35,0.02)'
                             : 'transparent',
                       border:       isAnchor
-                        ? '1px solid rgba(110,127,92,0.35)'
+                        ? '1px solid rgba(76,107,69,0.35)'
                         : isLine
-                          ? '1px solid rgba(110,127,92,0.2)'
+                          ? '1px solid rgba(76,107,69,0.2)'
                           : '1px solid transparent',
                       transition:   'background 0.2s',
                     }}
@@ -357,7 +357,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
           {/* Footer */}
           <div style={{
             padding:      '16px 28px 28px',
-            borderTop:    '1px solid rgba(110,127,92,0.12)',
+            borderTop:    '1px solid rgba(76,107,69,0.12)',
             marginTop:    '8px',
           }}>
             <p style={{

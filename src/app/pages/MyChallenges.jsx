@@ -24,7 +24,7 @@ import { recordHorizonAction } from '../lib/horizonActions'
 
 const GOLD_C = at.verdigris
 const hair   = `1px solid ${at.verdigrisEdge}`
-const muted  = { color: 'rgba(234,241,237,0.78)' }
+const muted  = { color: 'rgba(38,36,32,0.78)' }
 
 // ─── Date helpers (UTC, matching the server's date keys) ──────────────────────
 
@@ -231,11 +231,11 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark, horizonLine }) {
                 background: d.filled ? (d.isToday ? at.brass : GOLD_C) : 'transparent',
                 border: d.filled
                   ? `1px solid ${d.isToday ? at.brass : GOLD_C}`
-                  : `1px solid rgba(234,241,237,0.18)`,
+                  : `1px solid rgba(38,36,32,0.18)`,
                 boxShadow: d.isToday
                   ? (d.filled
-                      ? `0 0 6px rgba(217,178,74,0.55), 0 0 0 2px rgba(217,178,74,0.30)`
-                      : `0 0 0 2px rgba(217,178,74,0.30)`)
+                      ? `0 0 6px rgba(169,116,63,0.55), 0 0 0 2px rgba(169,116,63,0.30)`
+                      : `0 0 0 2px rgba(169,116,63,0.30)`)
                   : 'none',
                 opacity: d.future ? 0.55 : 1,
                 transition: 'background 0.3s, box-shadow 0.3s',
@@ -287,7 +287,7 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark, horizonLine }) {
             const cadence = CADENCE_LABEL[s.cadence] || ''
             return (
               <div key={s.id} style={{ padding: '10px 0 16px', borderBottom: hair }}>
-                <div style={{ ...body, fontSize: '1.0625rem', color: done ? at.verdigris : 'rgba(234,241,237,0.85)', lineHeight: 1.5, transition: 'all 0.25s' }}>
+                <div style={{ ...body, fontSize: '1.0625rem', color: done ? at.verdigris : 'rgba(38,36,32,0.85)', lineHeight: 1.5, transition: 'all 0.25s' }}>
                   {s.text}
                   {cadence && (
                     <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: at.ghost, marginLeft: '10px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none' }}>{cadence}</span>
@@ -334,14 +334,14 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark, horizonLine }) {
               </button>
             ) : (
               <div>
-                <div style={{ ...body, fontSize: '14px', color: 'rgba(234,241,237,0.66)', lineHeight: 1.55, marginBottom: '12px' }}>
+                <div style={{ ...body, fontSize: '14px', color: 'rgba(38,36,32,0.66)', lineHeight: 1.55, marginBottom: '12px' }}>
                   This closes the whole challenge, not just today. Today's check-in is the button above.
                 </div>
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: at.ghost, textTransform: 'uppercase', marginBottom: '10px' }}>How did it go?</div>
                 <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginBottom: '10px' }}>
                   <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)}
                     style={{ marginTop: '3px', accentColor: GOLD_C, width: '15px', height: '15px', flexShrink: 0 }} />
-                  <span style={{ ...body, fontSize: '15px', color: 'rgba(234,241,237,0.78)', lineHeight: 1.5 }}>
+                  <span style={{ ...body, fontSize: '15px', color: 'rgba(38,36,32,0.78)', lineHeight: 1.5 }}>
                     Share how it went with {p.author?.name || 'the author'} (optional)
                   </span>
                 </label>

@@ -65,7 +65,7 @@ function ToolCard({ name, desc, monthly, yearly, oneTime, monthlyLink, yearlyLin
       {featured && (
         <div style={{
           position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)',
-          background: '#6E7F5C', color: '#FFFFFF',
+          background: '#4c6b45', color: '#FFFFFF',
           ...sc, fontSize: '13px', letterSpacing: '0.16em',
           padding: '4px 16px', borderRadius: '40px',
           whiteSpace: 'nowrap',
@@ -77,7 +77,7 @@ function ToolCard({ name, desc, monthly, yearly, oneTime, monthlyLink, yearlyLin
       {oneTime && (
         <>
           <PriceTag amount={oneTime} note="one-time per sprint · past sprints always available" />
-          <a href={oneTimeLink} target="_blank" rel="noopener" style={{ display: 'block', marginTop: '16px', padding: '12px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#6E7F5C', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+          <a href={oneTimeLink} target="_blank" rel="noopener" style={{ display: 'block', marginTop: '16px', padding: '12px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#4c6b45', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
             Get access →
           </a>
         </>
@@ -89,7 +89,7 @@ function ToolCard({ name, desc, monthly, yearly, oneTime, monthlyLink, yearlyLin
           {yearly && <PriceTag amount={yearly} period="/ year" note={monthly ? `save $${(monthly * 12 - yearly)} vs monthly` : null} />}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
             {monthlyLink && (
-              <a href={monthlyLink} target="_blank" rel="noopener" style={{ display: 'block', padding: '12px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#6E7F5C', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+              <a href={monthlyLink} target="_blank" rel="noopener" style={{ display: 'block', padding: '12px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#4c6b45', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                 Monthly →
               </a>
             )}
@@ -159,7 +159,7 @@ export function PricingPage() {
                   <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>save $189 vs monthly</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <a href={L.nextus_self_monthly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#6E7F5C', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+                  <a href={L.nextus_self_monthly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#4c6b45', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                     Monthly →
                   </a>
                   <a href={L.nextus_self_yearly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1.5px solid rgba(76,107,69,0.78)', background: 'transparent', color: '#262420', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
@@ -280,7 +280,7 @@ export function PricingPage() {
               <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '20px' }}>
                 Three-month minimum. The Horizon Suite included.
               </div>
-              <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#6E7F5C', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+              <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#4c6b45', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                 Book a discovery call →
               </a>
             </div>

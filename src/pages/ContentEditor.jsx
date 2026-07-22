@@ -26,7 +26,7 @@ function Eyebrow({ children }) {
 function Btn({ onClick, children, variant = 'primary', small, disabled, style = {} }) {
   const styles = {
     primary: { background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', color: gold },
-    solid:   { background: '#6E7F5C', border: '1px solid rgba(38,36,32,0.8)', color: '#FFFFFF' },
+    solid:   { background: '#4c6b45', border: '1px solid rgba(38,36,32,0.8)', color: '#FFFFFF' },
     danger:  { background: 'rgba(180,40,40,0.05)', border: '1.5px solid rgba(180,40,40,0.5)', color: '#8A2020' },
     ghost:   { background: 'transparent', border: '1px solid rgba(76,107,69,0.30)', color: 'rgba(15,21,35,0.72)' },
   }
@@ -54,7 +54,7 @@ function Toast({ message, onClose }) {
   return (
     <div style={{
       position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
-      background: '#0F1523', color: '#FAFAF7',
+      background: '#3c5637', color: '#FAFAF7',
       ...body, fontSize: '17px',
       padding: '12px 20px', borderRadius: '10px',
       boxShadow: '0 8px 28px rgba(15,21,35,0.3)',

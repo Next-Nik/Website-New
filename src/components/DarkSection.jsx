@@ -37,7 +37,7 @@ const H    = 56
 const FLAT = 32
 const RISE = 10
 
-export function ArcEntry({ topColor = '#FAFAF7', bottomColor = '#0F1523' }) {
+export function ArcEntry({ topColor = '#f3f0e9', bottomColor = '#405c3a' }) {
   const peak = FLAT - RISE
   return (
     <div style={{ display: 'block', lineHeight: 0, fontSize: 0, margin: 0, padding: 0 }}>
@@ -46,21 +46,21 @@ export function ArcEntry({ topColor = '#FAFAF7', bottomColor = '#0F1523' }) {
         <path d={`M0,${FLAT} Q${W/2},${peak} ${W},${FLAT} L${W},${H} L0,${H} Z`} fill={bottomColor} />
         {/* Gold stroke — the border of the dark section */}
         <path d={`M0,${FLAT} Q${W/2},${peak} ${W},${FLAT}`}
-          fill="none" stroke="#6E7F5C" strokeWidth="3" opacity="0.85" />
+          fill="none" stroke="#4c6b45" strokeWidth="3" opacity="0.85" />
         {/* Compass mark at apex */}
-        <circle cx={W/2} cy={peak+7} r="4.5" fill="none" stroke="#6E7F5C" strokeWidth="0.9" opacity="0.7" />
-        <circle cx={W/2} cy={peak+7} r="1.8" fill="#6E7F5C" opacity="0.85" />
-        <line x1={W/2} y1={peak} x2={W/2} y2={peak+2} stroke="#6E7F5C" strokeWidth="1" opacity="0.85" />
+        <circle cx={W/2} cy={peak+7} r="4.5" fill="none" stroke="#4c6b45" strokeWidth="0.9" opacity="0.7" />
+        <circle cx={W/2} cy={peak+7} r="1.8" fill="#4c6b45" opacity="0.85" />
+        <line x1={W/2} y1={peak} x2={W/2} y2={peak+2} stroke="#4c6b45" strokeWidth="1" opacity="0.85" />
         <polygon points={`${W/2},${peak} ${W/2+3},${peak+8} ${W/2},${peak+12} ${W/2-3},${peak+8}`}
-          fill="#6E7F5C" opacity="0.75" />
-        <circle cx={W/2-16} cy={peak+10} r="1.4" fill="#6E7F5C" opacity="0.4" />
-        <circle cx={W/2+16} cy={peak+10} r="1.4" fill="#6E7F5C" opacity="0.4" />
+          fill="#4c6b45" opacity="0.75" />
+        <circle cx={W/2-16} cy={peak+10} r="1.4" fill="#4c6b45" opacity="0.4" />
+        <circle cx={W/2+16} cy={peak+10} r="1.4" fill="#4c6b45" opacity="0.4" />
       </svg>
     </div>
   )
 }
 
-export function ArcExit({ topColor = '#0F1523', bottomColor = '#FAFAF7' }) {
+export function ArcExit({ topColor = '#405c3a', bottomColor = '#f3f0e9' }) {
   const nadir = FLAT + RISE
   const start = H - FLAT
   return (
@@ -70,12 +70,12 @@ export function ArcExit({ topColor = '#0F1523', bottomColor = '#FAFAF7' }) {
         <path d={`M0,0 L${W},0 L${W},${start} Q${W/2},${nadir} 0,${start} Z`} fill={topColor} />
         {/* Gold stroke — the border of the dark section */}
         <path d={`M0,${start} Q${W/2},${nadir} ${W},${start}`}
-          fill="none" stroke="#6E7F5C" strokeWidth="3" opacity="0.85" />
+          fill="none" stroke="#4c6b45" strokeWidth="3" opacity="0.85" />
         {/* Compass mark at nadir */}
-        <circle cx={W/2} cy={nadir-6} r="4.5" fill="none" stroke="#6E7F5C" strokeWidth="0.9" opacity="0.7" />
-        <circle cx={W/2} cy={nadir-6} r="1.8" fill="#6E7F5C" opacity="0.85" />
-        <circle cx={W/2-16} cy={nadir-10} r="1.4" fill="#6E7F5C" opacity="0.4" />
-        <circle cx={W/2+16} cy={nadir-10} r="1.4" fill="#6E7F5C" opacity="0.4" />
+        <circle cx={W/2} cy={nadir-6} r="4.5" fill="none" stroke="#4c6b45" strokeWidth="0.9" opacity="0.7" />
+        <circle cx={W/2} cy={nadir-6} r="1.8" fill="#4c6b45" opacity="0.85" />
+        <circle cx={W/2-16} cy={nadir-10} r="1.4" fill="#4c6b45" opacity="0.4" />
+        <circle cx={W/2+16} cy={nadir-10} r="1.4" fill="#4c6b45" opacity="0.4" />
       </svg>
     </div>
   )
@@ -84,9 +84,9 @@ export function ArcExit({ topColor = '#0F1523', bottomColor = '#FAFAF7' }) {
 // Legacy aliases
 export const NeedleEntryDivider = ArcEntry
 export const HorizonExitDivider = ArcExit
-export function NeedleDivider({ direction = 'into-dark', topColor = '#FAFAF7', bottomColor = '#0F1523' }) {
+export function NeedleDivider({ direction = 'into-dark', topColor = '#f3f0e9', bottomColor = '#405c3a' }) {
   if (direction === 'into-dark') return <ArcEntry topColor={topColor} bottomColor={bottomColor} />
-  return <ArcExit topColor="#0F1523" bottomColor={bottomColor} />
+  return <ArcExit topColor="#405c3a" bottomColor={bottomColor} />
 }
 
 // ── Dark Section wrapper ───────────────────────────────────────────────────────
@@ -98,18 +98,18 @@ export function NeedleDivider({ direction = 'into-dark', topColor = '#FAFAF7', b
 // The dark section is in front — its edges bleed shadow onto the background behind.
 //
 // May 2026 update — soft ink ground:
-//   The dark surface is no longer flat #0F1523. It's a warm-cool
-//   gradient (#1A2030 at top → #131826 → #0F1523 at base) plus two
+//   The dark surface is no longer flat #405c3a. It's a warm-cool
+//   gradient (#567a4e at top → #4c6b45 → #405c3a at base) plus two
 //   subtle ambient glows: a gold radial in the upper-left and a
 //   cool blue glow in the lower-right. Same conceptual ink, with
 //   depth — the surface breathes rather than presents as a plate.
 //
-//   The arc-entry/exit dividers continue to flatten to #0F1523 at
+//   The arc-entry/exit dividers continue to flatten to #405c3a at
 //   their edges, so there is no visible seam where the gradient
 //   meets the divider. Read the gradient as "the section
 //   *interior* lifts off the divider" — the arc is the threshold;
 //   the inside is the room.
-export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FAFAF7', style = {} }) {
+export function DarkSection({ children, topColor = '#f3f0e9', bottomColor = '#f3f0e9', style = {} }) {
   const { ref, offset } = useViewportParallax(0.14)
   return (
     <div ref={ref} style={{
@@ -117,21 +117,21 @@ export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FA
       zIndex: 10,
       transform: `translateY(${offset}px)`,
       willChange: 'transform',
-      filter: 'drop-shadow(0px -12px 24px rgba(15,21,35,0.35)) drop-shadow(0px 12px 24px rgba(15,21,35,0.35))',
+      filter: 'drop-shadow(0px -12px 24px rgba(38,36,32,0.16)) drop-shadow(0px 12px 24px rgba(38,36,32,0.16))',
     }}>
-      {topColor !== null && <ArcEntry topColor={topColor} bottomColor="#0F1523" />}
+      {topColor !== null && <ArcEntry topColor={topColor} bottomColor="#405c3a" />}
       <section style={{
         // Layered background:
         //   1. A warm gold radial in the upper-left, very low alpha.
         //   2. A cool blue glow in the lower-right, slightly higher alpha
         //      so the depth note reads on long sections.
-        //   3. The base vertical gradient — soft #1A2030 at the top
-        //      transitioning to flat #0F1523 at the base, where the
+        //   3. The base vertical gradient — soft #567a4e at the top
+        //      transitioning to flat #405c3a at the base, where the
         //      ArcExit divider takes over.
         background: [
-          'radial-gradient(ellipse 60% 40% at 18% 12%, rgba(110,127,92, 0.07) 0%, transparent 65%)',
-          'radial-gradient(ellipse 50% 36% at 82% 88%, rgba(74, 100, 168, 0.16) 0%, transparent 70%)',
-          'linear-gradient(180deg, #1A2030 0%, #131826 55%, #0F1523 100%)',
+          'radial-gradient(ellipse 60% 40% at 18% 12%, rgba(76,107,69, 0.07) 0%, transparent 65%)',
+          'radial-gradient(ellipse 50% 36% at 82% 88%, rgba(207,154,36,0.10) 0%, transparent 70%)',
+          'linear-gradient(180deg, #567a4e 0%, #4c6b45 55%, #405c3a 100%)',
         ].join(', '),
         padding: '96px 40px',
         position: 'relative',
@@ -141,7 +141,7 @@ export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FA
           {children}
         </div>
       </section>
-      {bottomColor !== null && <ArcExit topColor="#0F1523" bottomColor={bottomColor} />}
+      {bottomColor !== null && <ArcExit topColor="#405c3a" bottomColor={bottomColor} />}
     </div>
   )
 }
@@ -151,7 +151,7 @@ export function DarkEyebrow({ children }) {
   return (
     <span style={{
       ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em',
-      color: '#26302A', textTransform: 'uppercase', display: 'block', marginBottom: '14px',
+      color: '#262420', textTransform: 'uppercase', display: 'block', marginBottom: '14px',
     }}>{children}</span>
   )
 }
@@ -182,11 +182,11 @@ export function DarkGhostButton({ href, children }) {
     <a href={href} style={{
       display: 'inline-block', ...sc, fontSize: '15px', fontWeight: 600,
       letterSpacing: '0.16em', padding: '13px 32px', borderRadius: '40px',
-      border: '1.5px solid rgba(110,127,92,0.7)', color: '#26302A',
-      background: 'rgba(110,127,92,0.07)', textDecoration: 'none', transition: 'all 0.2s',
+      border: '1.5px solid rgba(76,107,69,0.7)', color: '#262420',
+      background: 'rgba(76,107,69,0.07)', textDecoration: 'none', transition: 'all 0.2s',
     }}
-      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.14)'; e.currentTarget.style.borderColor = '#6E7F5C' }}
-      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(110,127,92,0.07)'; e.currentTarget.style.borderColor = 'rgba(110,127,92,0.7)' }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(76,107,69,0.14)'; e.currentTarget.style.borderColor = '#4c6b45' }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(76,107,69,0.07)'; e.currentTarget.style.borderColor = 'rgba(76,107,69,0.7)' }}
     >{children}</a>
   )
 }
@@ -197,8 +197,8 @@ export function DarkSolidButton({ href, children, onClick }) {
     <a href={href} onClick={onClick} style={{
       display: 'inline-block', ...sc, fontSize: '15px', fontWeight: 600,
       letterSpacing: '0.16em', padding: '13px 32px', borderRadius: '40px',
-      border: '1px solid rgba(38,48,42,0.8)', color: '#FFFFFF',
-      background: '#6E7F5C', textDecoration: 'none',
+      border: '1px solid rgba(38,36,32,0.8)', color: '#FFFFFF',
+      background: '#4c6b45', textDecoration: 'none',
     }}>{children}</a>
   )
 }
@@ -210,7 +210,7 @@ export function DarkPullQuote({ quote, attribution }) {
       <div style={{
         fontFamily: "'Fraunces', Georgia, serif",
         fontSize: '80px', fontWeight: 300,
-        color: 'rgba(110,127,92,0.45)', lineHeight: 0.8, marginBottom: '28px',
+        color: 'rgba(76,107,69,0.45)', lineHeight: 0.8, marginBottom: '28px',
       }}>"</div>
       <p style={{
         ...body, fontSize: 'clamp(18px,2.4vw,24px)', fontWeight: 400,
@@ -219,7 +219,7 @@ export function DarkPullQuote({ quote, attribution }) {
       {attribution && (
         <span style={{
           ...sc, fontSize: '13px', letterSpacing: '0.18em',
-          color: '#26302A', textTransform: 'uppercase',
+          color: '#262420', textTransform: 'uppercase',
         }}>{attribution}</span>
       )}
     </div>

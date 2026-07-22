@@ -7,7 +7,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import { serif, body, sc } from '../../lib/designTokens'
 
-const gold  = { color: '#26302A' }
+const gold  = { color: '#262420' }
 const meta  = { color: 'rgba(15,21,35,0.78)' }
 
 const OPENING_MESSAGE = `Tell me a little about what's going on. I'll point you somewhere useful.`
@@ -125,11 +125,11 @@ export function NorthStarPage() {
             if (m.role === 'result') {
               const d = m.data
               return (
-                <div key={i} style={{ background: '#FAFAF7', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '12px', padding: '22px', alignSelf: 'flex-start', maxWidth: '92%', marginBottom: '8px' }}>
+                <div key={i} style={{ background: '#FAFAF7', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '12px', padding: '22px', alignSelf: 'flex-start', maxWidth: '92%', marginBottom: '8px' }}>
                   {d.stage && <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, marginBottom: '8px' }}>{d.stage}</div>}
                   <div style={{ ...body, fontSize: '16px', lineHeight: 1.8, color: '#0F1523', marginBottom: '16px' }}>{d.reflection}</div>
                   {(d.recommendations || []).map((r, ri) => (
-                    <div key={ri} style={{ borderTop: '1px solid rgba(110,127,92,0.20)', paddingTop: '14px', marginTop: '14px' }}>
+                    <div key={ri} style={{ borderTop: '1px solid rgba(76,107,69,0.20)', paddingTop: '14px', marginTop: '14px' }}>
                       <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...meta, marginBottom: '4px' }}>{r.category}</div>
                       <div style={{ ...body, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>{r.title}</div>
                       <div style={{ ...body, fontSize: '17px', ...meta, lineHeight: 1.65, marginBottom: '8px' }}>{r.description}</div>
@@ -141,7 +141,7 @@ export function NorthStarPage() {
                     </div>
                   ))}
                   {d.closing && (
-                    <div style={{ ...body, fontSize: '15px', ...meta, marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(110,127,92,0.20)' }}>
+                    <div style={{ ...body, fontSize: '15px', ...meta, marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(76,107,69,0.20)' }}>
                       {d.closing}
                     </div>
                   )}
@@ -163,8 +163,8 @@ export function NorthStarPage() {
           <div style={{
             marginTop: '1.5rem',
             padding: '16px 20px',
-            background: 'rgba(110,127,92,0.05)',
-            border: '1px solid rgba(110,127,92,0.20)',
+            background: 'rgba(76,107,69,0.05)',
+            border: '1px solid rgba(76,107,69,0.20)',
             borderRadius: '12px',
             textAlign: 'center',
           }}>

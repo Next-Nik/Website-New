@@ -50,7 +50,7 @@ export function ProtocolPanel() {
           transform: 'translateY(-50%)',
           zIndex: 1500,
           background: '#FAFAF7',
-          border: '1.5px solid rgba(110,127,92,0.78)',
+          border: '1.5px solid rgba(76,107,69,0.78)',
           width: '44px',
           height: '120px',
           cursor: 'pointer',
@@ -70,7 +70,7 @@ export function ProtocolPanel() {
           fontFamily: "'IBM Plex Mono', Georgia, serif",
           fontSize: '13px',
           letterSpacing: '0.14em',
-          color: '#26302A',
+          color: '#262420',
           textTransform: 'uppercase',
           userSelect: 'none',
         }}>
@@ -96,7 +96,7 @@ export function ProtocolPanel() {
             width: 'min(480px, 92vw)',
             height: '100%',
             background: '#FAFAF7',
-            borderRight: '1.5px solid rgba(110,127,92,0.3)',
+            borderRight: '1.5px solid rgba(76,107,69,0.3)',
             overflowY: 'auto',
             display: 'flex',
             flexDirection: 'column',
@@ -105,7 +105,7 @@ export function ProtocolPanel() {
             {/* Header */}
             <div style={{
               padding: '28px 24px 20px',
-              borderBottom: '1px solid rgba(110,127,92,0.18)',
+              borderBottom: '1px solid rgba(76,107,69,0.18)',
               position: 'sticky',
               top: 0,
               background: '#FAFAF7',
@@ -115,7 +115,7 @@ export function ProtocolPanel() {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#262420', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   Horizon State
                 </span>
                 <h2 style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
@@ -163,14 +163,14 @@ export function ProtocolPanel() {
                       top: '100%',
                       width: '1px',
                       height: '12px',
-                      background: 'rgba(110,127,92,0.35)',
+                      background: 'rgba(76,107,69,0.35)',
                     }} />
                   )}
                   <div style={{
                     padding: '16px 18px',
                     borderRadius: '14px',
-                    background: 'rgba(110,127,92,0.02)',
-                    border: '1.5px solid rgba(110,127,92,0.78)',
+                    background: 'rgba(76,107,69,0.02)',
+                    border: '1.5px solid rgba(76,107,69,0.78)',
                     boxShadow: '0 1px 4px rgba(15,21,35,0.72)',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', marginBottom: '10px' }}>
@@ -178,7 +178,7 @@ export function ProtocolPanel() {
                         fontFamily: "'IBM Plex Mono', Georgia, serif",
                         fontSize: '1.125rem',
                         fontWeight: 600,
-                        color: '#26302A',
+                        color: '#262420',
                         lineHeight: 1,
                         minWidth: '24px',
                         marginTop: '2px',
@@ -187,7 +187,7 @@ export function ProtocolPanel() {
                       </span>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '3px' }}>
-                          <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '1.25rem', color: '#26302A', lineHeight: 1.2 }}>
+                          <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '1.25rem', color: '#262420', lineHeight: 1.2 }}>
                             {phase.name}
                           </span>
                           <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase', flexShrink: 0 }}>
@@ -204,8 +204,8 @@ export function ProtocolPanel() {
                       {phase.description}
                     </p>
 
-                    <div style={{ padding: '9px 12px', background: 'rgba(110,127,92,0.06)', borderLeft: '2px solid rgba(110,127,92,0.45)', borderRadius: '0 6px 6px 0' }}>
-                      <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#26302A', textTransform: 'uppercase', marginBottom: '4px' }}>
+                    <div style={{ padding: '9px 12px', background: 'rgba(76,107,69,0.06)', borderLeft: '2px solid rgba(76,107,69,0.45)', borderRadius: '0 6px 6px 0' }}>
+                      <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#262420', textTransform: 'uppercase', marginBottom: '4px' }}>
                         Why this comes here
                       </div>
                       <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
@@ -218,7 +218,7 @@ export function ProtocolPanel() {
             </div>
 
             {/* Footer */}
-            <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(110,127,92,0.12)', marginTop: 'auto' }}>
+            <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(76,107,69,0.12)', marginTop: 'auto' }}>
               <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 The sequence is the practice. Run it in order, every time. Consistency of sequence matters more than consistency of duration.
               </p>
@@ -236,7 +236,7 @@ export function ProtocolPanel() {
               transform: 'translateY(-50%)',
               zIndex: 2100,
               background: '#FAFAF7',
-              border: '1.5px solid rgba(110,127,92,0.78)',
+              border: '1.5px solid rgba(76,107,69,0.78)',
               borderLeft: 'none',
               width: '44px',
               height: '120px',
@@ -249,7 +249,7 @@ export function ProtocolPanel() {
               borderRadius: '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', color: '#26302A' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', color: '#262420' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

@@ -68,7 +68,7 @@ const TIER = {
 function getTierLabel(n) { return TIER[n] || TIER[Math.round(n * 2) / 2] || '' }
 function getColor(n) {
   if (n >= 8) return '#2A8C4F'
-  if (n >= 6) return '#6E7F5C'
+  if (n >= 6) return '#4c6b45'
   if (n >= 4) return '#E8B92E'
   return '#D63838'
 }
@@ -79,7 +79,7 @@ const gold   = { color: fn.moss }
 const muted  = { color: 'rgba(15,21,35,0.78)' }
 const meta   = { color: 'rgba(15,21,35,0.78)' }
 const GOLD_C = fn.moss
-const hair   = '1px solid rgba(110,127,92,0.16)'
+const hair   = '1px solid rgba(76,107,69,0.16)'
 
 // ─── Small shared pieces ──────────────────────────────────────────────────────
 
@@ -92,21 +92,21 @@ function Eyebrow({ children, style = {} }) {
 }
 
 function Rule({ style = {} }) {
-  return <div style={{ height: '1px', background: 'rgba(110,127,92,0.18)', margin: '16px 0', ...style }} />
+  return <div style={{ height: '1px', background: 'rgba(76,107,69,0.18)', margin: '16px 0', ...style }} />
 }
 
 function Btn({ onClick, disabled, children, style = {}, variant = 'solid' }) {
   const base = {
     ...sc, fontSize: '15px', letterSpacing: '0.14em', padding: '11px 28px',
     borderRadius: '40px', cursor: disabled ? 'not-allowed' : 'pointer',
-    border: '1.5px solid rgba(110,127,92,0.78)', transition: 'all 0.2s',
+    border: '1.5px solid rgba(76,107,69,0.78)', transition: 'all 0.2s',
     opacity: disabled ? 0.6 : 1,
   }
   const styles = variant === 'ghost'
     ? { ...base, background: 'transparent', color: fn.moss }
     : variant === 'dark'
       ? { ...base, background: tokens.dark, color: tokens.bg, border: `1.5px solid ${tokens.dark}` }
-      : { ...base, background: 'rgba(110,127,92,0.08)', color: fn.moss }
+      : { ...base, background: 'rgba(76,107,69,0.08)', color: fn.moss }
   return (
     <button type="button" onClick={onClick} disabled={disabled} style={{ ...styles, ...style }}
       onMouseEnter={e => { if (!disabled) e.currentTarget.style.transform = 'translateY(-1px)' }}
@@ -128,9 +128,9 @@ function SaveAway({ onClick }) {
 function ThinkingDots() {
   return (
     <div className="typing-indicator" style={{ display: 'flex', gap: '5px', padding: '8px 0' }}>
-      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'rgba(110,127,92,0.5)', animation: 'tsBlink 1.2s 0.0s infinite' }} />
-      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'rgba(110,127,92,0.5)', animation: 'tsBlink 1.2s 0.2s infinite' }} />
-      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'rgba(110,127,92,0.5)', animation: 'tsBlink 1.2s 0.4s infinite' }} />
+      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'rgba(76,107,69,0.5)', animation: 'tsBlink 1.2s 0.0s infinite' }} />
+      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'rgba(76,107,69,0.5)', animation: 'tsBlink 1.2s 0.2s infinite' }} />
+      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'rgba(76,107,69,0.5)', animation: 'tsBlink 1.2s 0.4s infinite' }} />
     </div>
   )
 }
@@ -141,13 +141,13 @@ function AuthModal() {
   const r = encodeURIComponent(window.location.href)
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
-      <div style={{ background: tokens.bg, border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '14px', padding: '40px 32px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
+      <div style={{ background: tokens.bg, border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '14px', padding: '40px 32px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
         <Eyebrow style={{ textAlign: 'center', marginBottom: '14px' }}>Target Stretch</Eyebrow>
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: tokens.dark, marginBottom: '10px' }}>Sign in to begin.</h2>
         <p style={{ ...body, fontSize: '1.125rem', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>
           Sign in and your stretch saves — come back to pick up where you left off.
         </p>
-        <a href={`/login?redirect=${r}`} style={{ display: 'block', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(110,127,92,0.78)', background: 'rgba(110,127,92,0.05)', color: fn.moss, ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
+        <a href={`/login?redirect=${r}`} style={{ display: 'block', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(76,107,69,0.78)', background: 'rgba(76,107,69,0.05)', color: fn.moss, ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
           Sign in or create account →
         </a>
       </div>
@@ -228,14 +228,14 @@ export function StretchRings({ domainId, domainData, targetDate, onPlanetClick, 
       {/* Outer track — the planetary arc */}
       {hasPlanet ? (
         <g>
-          <circle cx={cx} cy={cy} r={rOut} fill="none" stroke="rgba(110,127,92,0.14)" strokeWidth="4" />
+          <circle cx={cx} cy={cy} r={rOut} fill="none" stroke="rgba(76,107,69,0.14)" strokeWidth="4" />
           {outerPct >= 1
             ? <circle cx={cx} cy={cy} r={rOut} fill="none" stroke={GOLD_C} strokeWidth="4" strokeLinecap="round" opacity={pTasks.length ? 1 : 0.45} />
             : outerArc && <path d={outerArc} fill="none" stroke={GOLD_C} strokeWidth="4" strokeLinecap="round" />}
         </g>
       ) : (
         <g onClick={onPlanetClick} cursor="pointer">
-          <circle cx={cx} cy={cy} r={rOut} fill="none" stroke="rgba(110,127,92,0.30)" strokeWidth="1.5" strokeDasharray="3 7" />
+          <circle cx={cx} cy={cy} r={rOut} fill="none" stroke="rgba(76,107,69,0.30)" strokeWidth="1.5" strokeDasharray="3 7" />
         </g>
       )}
 
@@ -378,7 +378,7 @@ function SetupStatusBar({ domainId, domainData }) {
         <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase' }}>Stretch Setup</span>
         <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', ...muted }}>{complete} / {STEPS.length}</span>
       </div>
-      <div style={{ height: '3px', background: 'rgba(110,127,92,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+      <div style={{ height: '3px', background: 'rgba(76,107,69,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: GOLD_C, transition: 'width 0.6s ease', borderRadius: '2px' }} />
       </div>
     </div>
@@ -478,7 +478,7 @@ export function AccomplishmentTally({ domains, domainData, onCheck }) {
         <Eyebrow style={{ marginBottom: 0 }}>Stretch Progress</Eyebrow>
         <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: fn.moss }}>{totals.tasksDone}/{totals.tasks} tasks</span>
       </div>
-      <div style={{ height: '4px', background: 'rgba(110,127,92,0.12)', borderRadius: '2px', marginBottom: '20px', overflow: 'hidden' }}>
+      <div style={{ height: '4px', background: 'rgba(76,107,69,0.12)', borderRadius: '2px', marginBottom: '20px', overflow: 'hidden' }}>
         <div style={{ height: '100%', width: pct + '%', background: GOLD_C, borderRadius: '2px', transition: 'width 0.6s ease' }} />
       </div>
 
@@ -576,7 +576,7 @@ function StretchSummaryModal({ domainId, domainData, currentScore, horizonScore,
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{ background: tokens.bg, border: '1.5px solid rgba(110,127,92,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '520px', width: '100%', maxHeight: '80dvh', overflowY: 'auto' }}>
+      <div style={{ background: tokens.bg, border: '1.5px solid rgba(76,107,69,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '520px', width: '100%', maxHeight: '80dvh', overflowY: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <Eyebrow style={{ marginBottom: 0 }}>Your Target Stretch</Eyebrow>
           <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', ...muted, padding: '4px' }}>×</button>
@@ -606,7 +606,7 @@ function StretchSummaryModal({ domainId, domainData, currentScore, horizonScore,
             <div style={{ ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.65 }}>{ps.commitment}</div>
           </div>
         )}
-        <div style={{ marginTop: '28px', paddingTop: '24px', borderTop: '1.5px solid rgba(110,127,92,0.20)', textAlign: 'center' }}>
+        <div style={{ marginTop: '28px', paddingTop: '24px', borderTop: '1.5px solid rgba(76,107,69,0.20)', textAlign: 'center' }}>
           <Btn onClick={onComplete} style={{ width: '100%', justifyContent: 'center', marginBottom: '10px' }}>
             Complete this stretch →
           </Btn>
@@ -667,7 +667,7 @@ function ChatPanel({ mode, domainId, payload, onComplete, placeholder, userId })
     <div>
       <div style={{ maxHeight: '300px', overflowY: 'auto', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {msgs.map((m, i) => (
-          <div key={i} style={{ padding: '12px 16px', borderRadius: '10px', background: m.role === 'user' ? 'rgba(110,127,92,0.07)' : tokens.bgCard, border: '1px solid rgba(110,127,92,0.15)', ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.7 }}>
+          <div key={i} style={{ padding: '12px 16px', borderRadius: '10px', background: m.role === 'user' ? 'rgba(76,107,69,0.07)' : tokens.bgCard, border: '1px solid rgba(76,107,69,0.15)', ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.7 }}>
             {m.content}
           </div>
         ))}
@@ -686,10 +686,10 @@ function ChatPanel({ mode, domainId, payload, onComplete, placeholder, userId })
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
             placeholder={placeholder}
             rows={2}
-            style={{ flex: 1, ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '10px 14px', resize: 'none', outline: 'none', background: tokens.bg }}
+            style={{ flex: 1, ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '10px 14px', resize: 'none', outline: 'none', background: tokens.bg }}
           />
           <button type="button" className="btn-send" onClick={send} disabled={!input.trim() || thinking}
-            style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: fn.moss, background: 'rgba(110,127,92,0.08)', border: '1px solid rgba(110,127,92,0.5)', borderRadius: '8px', padding: '0 18px', cursor: 'pointer', opacity: (!input.trim() || thinking) ? 0.4 : 1 }}>
+            style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: fn.moss, background: 'rgba(76,107,69,0.08)', border: '1px solid rgba(76,107,69,0.5)', borderRadius: '8px', padding: '0 18px', cursor: 'pointer', opacity: (!input.trim() || thinking) ? 0.4 : 1 }}>
             Send
           </button>
         </div>
@@ -726,7 +726,7 @@ function EditableList({ items, onSave, addLabel = '+ Add', itemKey = 'text' }) {
           <textarea
             value={item[itemKey]} rows={2}
             onChange={e => setLocal(l => l.map((x, j) => j === i ? { ...x, [itemKey]: e.target.value } : x))}
-            style={{ flex: 1, ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '6px', padding: '8px 10px', resize: 'vertical', outline: 'none', background: tokens.bg }}
+            style={{ flex: 1, ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '6px', padding: '8px 10px', resize: 'vertical', outline: 'none', background: tokens.bg }}
           />
           <button type="button" onClick={() => setLocal(l => l.filter((_, j) => j !== i))}
             style={{ ...sc, fontSize: '13px', color: tokens.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: '6px', flexShrink: 0 }}>×</button>
@@ -734,7 +734,7 @@ function EditableList({ items, onSave, addLabel = '+ Add', itemKey = 'text' }) {
       ))}
       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '4px' }}>
         <button type="button" onClick={() => setLocal(l => [...l, { [itemKey]: '' }])}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: fn.moss, background: 'none', border: '1px solid rgba(110,127,92,0.4)', borderRadius: '20px', padding: '5px 14px', cursor: 'pointer' }}>
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: fn.moss, background: 'none', border: '1px solid rgba(76,107,69,0.4)', borderRadius: '20px', padding: '5px 14px', cursor: 'pointer' }}>
           {addLabel}
         </button>
         <Btn onClick={() => { onSave(local.filter(x => x[itemKey]?.trim())); setEditing(false) }} style={{ padding: '5px 14px', fontSize: '13px' }}>Save</Btn>
@@ -801,7 +801,7 @@ function StretchCoach({ sprintContext, userId }) {
     <div style={{ marginTop: '16px' }}>
       <div style={{ maxHeight: '340px', overflowY: 'auto', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {msgs.map((m, i) => (
-          <div key={i} style={{ padding: '12px 16px', borderRadius: '10px', background: m.role === 'user' ? 'rgba(110,127,92,0.07)' : tokens.bgCard, border: '1px solid rgba(110,127,92,0.15)', ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.7 }}>
+          <div key={i} style={{ padding: '12px 16px', borderRadius: '10px', background: m.role === 'user' ? 'rgba(76,107,69,0.07)' : tokens.bgCard, border: '1px solid rgba(76,107,69,0.15)', ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.7 }}>
             {m.content}
           </div>
         ))}
@@ -813,10 +813,10 @@ function StretchCoach({ sprintContext, userId }) {
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
           placeholder="Talk to your coach about this stretch…"
           rows={2}
-          style={{ flex: 1, ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '10px 14px', resize: 'none', outline: 'none', background: tokens.bg }}
+          style={{ flex: 1, ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '10px 14px', resize: 'none', outline: 'none', background: tokens.bg }}
         />
         <button type="button" className="btn-send" onClick={send} disabled={!input.trim() || thinking}
-          style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: fn.moss, background: 'rgba(110,127,92,0.08)', border: '1px solid rgba(110,127,92,0.5)', borderRadius: '8px', padding: '0 18px', cursor: 'pointer', opacity: (!input.trim() || thinking) ? 0.4 : 1 }}>
+          style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: fn.moss, background: 'rgba(76,107,69,0.08)', border: '1px solid rgba(76,107,69,0.5)', borderRadius: '8px', padding: '0 18px', cursor: 'pointer', opacity: (!input.trim() || thinking) ? 0.4 : 1 }}>
           Send
         </button>
       </div>
@@ -890,7 +890,7 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
                 {mTasks.map((t, ti) => {
                   const tDate = getTaskDate(t, mi)
                   return (
-                    <div key={ti} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px', padding: '10px 12px', background: tokens.bgCard, border: '1px solid rgba(110,127,92,0.12)', borderRadius: '8px' }}>
+                    <div key={ti} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px', padding: '10px 12px', background: tokens.bgCard, border: '1px solid rgba(76,107,69,0.12)', borderRadius: '8px' }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.55 }}>{t.text}</div>
                         {tDate && (
@@ -1003,7 +1003,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
         {dd.tasks?.length > 0 && (
           <button type="button"
             onClick={() => setViewStep(viewStep === 'coach' ? 'tasks' : 'coach')}
-            style={{ flexShrink: 0, marginLeft: '12px', marginBottom: '22px', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: viewStep === 'coach' ? '#FFFFFF' : fn.moss, background: viewStep === 'coach' ? fn.moss : 'rgba(110,127,92,0.08)', border: '1px solid rgba(110,127,92,0.5)', borderRadius: '20px', padding: '5px 14px', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}>
+            style={{ flexShrink: 0, marginLeft: '12px', marginBottom: '22px', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: viewStep === 'coach' ? '#FFFFFF' : fn.moss, background: viewStep === 'coach' ? fn.moss : 'rgba(76,107,69,0.08)', border: '1px solid rgba(76,107,69,0.5)', borderRadius: '20px', padding: '5px 14px', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}>
             {viewStep === 'coach' ? '← Plan' : 'Coach →'}
           </button>
         )}
@@ -1013,7 +1013,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
           thin. Non-blocking: the stretch works without them, it just lands truer
           with them. This is the seam where the task generator is weakest. */}
       {(!iaStatement || !horizonSelfStatement) && (
-        <div style={{ padding: '12px 16px', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.2)', borderRadius: '8px', margin: '4px 0 16px' }}>
+        <div style={{ padding: '12px 16px', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.2)', borderRadius: '8px', margin: '4px 0 16px' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: fn.moss, textTransform: 'uppercase', marginBottom: '6px' }}>Sharpen this stretch</div>
           <div style={{ ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.65, marginBottom: '10px' }}>
             This stretch is built from your Horizon Self in {d.label} · the version of you the daily actions are drawn from. That work isn&rsquo;t in yet. You can carry on, and the actions land truer once your Map and I Am statements are done.
@@ -1030,7 +1030,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
             Where are you right now in {d.label} — honestly? This is the ground the stretch starts from.
           </p>
           {hasMapData && (mapDomain.realityFinal || mapDomain.realityDraft) && !dd.currentStateSummary && (
-            <div style={{ padding: '12px 16px', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.2)', borderRadius: '8px', marginBottom: '14px' }}>
+            <div style={{ padding: '12px 16px', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.2)', borderRadius: '8px', marginBottom: '14px' }}>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>From your Map</div>
               <div style={{ ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.65, marginBottom: '10px' }}>{mapDomain.realityFinal || mapDomain.realityDraft}</div>
               <Btn onClick={() => update({ currentStateSummary: mapDomain.realityFinal || mapDomain.realityDraft, currentStateFromMap: true })} style={{ padding: '8px 18px', fontSize: '13px' }}>
@@ -1040,7 +1040,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
           )}
           {dd.currentStateSummary ? (
             <div>
-              <div style={{ padding: '14px 16px', background: tokens.bgCard, border: '1px solid rgba(110,127,92,0.2)', borderLeft: `3px solid ${colour}`, borderRadius: '8px', ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
+              <div style={{ padding: '14px 16px', background: tokens.bgCard, border: '1px solid rgba(76,107,69,0.2)', borderLeft: `3px solid ${colour}`, borderRadius: '8px', ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
                 {dd.currentStateSummary}
               </div>
               <EditableList items={[{ text: dd.currentStateSummary }]} onSave={items => update({ currentStateSummary: items[0]?.text || dd.currentStateSummary })} itemKey="text" />
@@ -1064,7 +1064,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
             Where does your Horizon Self live in this area? Not a 90-day target — the honest version of your best life here.
           </p>
           {hasMapData && mapDomain.horizonText && mapDomain.horizonText !== 'See sub-domain horizons' && !dd.horizonText && (
-            <div style={{ padding: '12px 16px', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.2)', borderRadius: '8px', marginBottom: '14px' }}>
+            <div style={{ padding: '12px 16px', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.2)', borderRadius: '8px', marginBottom: '14px' }}>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>From your Map</div>
               <div style={{ ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.65, marginBottom: '10px' }}>{mapDomain.horizonText}</div>
               <Btn onClick={() => update({ horizonText: mapDomain.horizonText, horizonFromMap: true })} style={{ padding: '8px 18px', fontSize: '13px' }}>
@@ -1074,7 +1074,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
           )}
           {dd.horizonText ? (
             <div>
-              <div style={{ padding: '14px 16px', background: tokens.bgCard, border: '1px solid rgba(110,127,92,0.2)', borderLeft: `3px solid ${colour}`, borderRadius: '8px', ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
+              <div style={{ padding: '14px 16px', background: tokens.bgCard, border: '1px solid rgba(76,107,69,0.2)', borderLeft: `3px solid ${colour}`, borderRadius: '8px', ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
                 {dd.horizonText}
               </div>
               <EditableList items={[{ text: dd.horizonText }]} onSave={items => update({ horizonText: items[0]?.text || dd.horizonText })} itemKey="text" />
@@ -1112,7 +1112,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
           />
           {dd.targetGoal ? (
             <div>
-              <div style={{ padding: '14px 16px', background: tokens.bgCard, border: '1px solid rgba(110,127,92,0.2)', borderLeft: `3px solid ${colour}`, borderRadius: '8px', ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
+              <div style={{ padding: '14px 16px', background: tokens.bgCard, border: '1px solid rgba(76,107,69,0.2)', borderLeft: `3px solid ${colour}`, borderRadius: '8px', ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
                 {dd.targetGoal}
               </div>
               <EditableList items={[{ text: dd.targetGoal }]} onSave={items => update({ targetGoal: items[0]?.text || dd.targetGoal })} itemKey="text" />
@@ -1148,7 +1148,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
           {dd.milestones?.length > 0 ? (
             <div>
               {dd.milestones.map((m, i) => (
-                <div key={i} style={{ padding: '12px 16px', background: tokens.bgCard, border: '1px solid rgba(110,127,92,0.18)', borderLeft: `3px solid ${colour}`, borderRadius: '8px', ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.65, marginBottom: '8px' }}>
+                <div key={i} style={{ padding: '12px 16px', background: tokens.bgCard, border: '1px solid rgba(76,107,69,0.18)', borderLeft: `3px solid ${colour}`, borderRadius: '8px', ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.65, marginBottom: '8px' }}>
                   <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: fn.moss, textTransform: 'uppercase', display: 'block', marginBottom: '3px' }}>Month {i + 1}</span>
                   {m.text}
                 </div>
@@ -1245,7 +1245,7 @@ function FeedbackPrompt({ callId, userId, onDone }) {
           </p>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <Btn onClick={() => { setConsent(true); setStep('reflect') }}
-              style={{ background: 'rgba(110,127,92,0.15)', borderColor: 'rgba(110,127,92,0.6)', color: '#D9A94A', fontSize: '13px', padding: '8px 20px' }}>
+              style={{ background: 'rgba(76,107,69,0.15)', borderColor: 'rgba(76,107,69,0.6)', color: '#D9A94A', fontSize: '13px', padding: '8px 20px' }}>
               Yes, I'll share →
             </Btn>
             <button type="button" onClick={() => { setConsent(false); submit() }}
@@ -1265,10 +1265,10 @@ function FeedbackPrompt({ callId, userId, onDone }) {
             value={reflection} onChange={e => setReflection(e.target.value)}
             placeholder="Optional — share as much or as little as feels right."
             rows={4}
-            style={{ width: '100%', ...body, fontSize: '1.0625rem', color: '#FAFAF7', background: 'rgba(250,250,247,0.07)', border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', boxSizing: 'border-box', marginBottom: '14px' }}
+            style={{ width: '100%', ...body, fontSize: '1.0625rem', color: '#FAFAF7', background: 'rgba(250,250,247,0.07)', border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', boxSizing: 'border-box', marginBottom: '14px' }}
           />
           <Btn onClick={() => setStep('attribution')}
-            style={{ background: 'rgba(110,127,92,0.15)', borderColor: 'rgba(110,127,92,0.6)', color: '#D9A94A', fontSize: '13px', padding: '8px 20px' }}>
+            style={{ background: 'rgba(76,107,69,0.15)', borderColor: 'rgba(76,107,69,0.6)', color: '#D9A94A', fontSize: '13px', padding: '8px 20px' }}>
             {reflection.trim() ? 'Continue →' : 'Skip →'}
           </Btn>
         </div>
@@ -1288,8 +1288,8 @@ function FeedbackPrompt({ callId, userId, onDone }) {
             ].map(o => (
               <button key={String(o.v)} type="button" onClick={() => setAttributed(o.v)}
                 style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px 14px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
-                  border: `1px solid ${attributed === o.v ? 'rgba(110,127,92,0.6)' : 'rgba(250,250,247,0.15)'}`,
-                  background: attributed === o.v ? 'rgba(110,127,92,0.12)' : 'transparent' }}>
+                  border: `1px solid ${attributed === o.v ? 'rgba(76,107,69,0.6)' : 'rgba(250,250,247,0.15)'}`,
+                  background: attributed === o.v ? 'rgba(76,107,69,0.12)' : 'transparent' }}>
                 <div style={{ width: '16px', height: '16px', borderRadius: '50%', flexShrink: 0, marginTop: '2px', transition: 'all 0.2s',
                   border: `2px solid ${attributed === o.v ? '#D9A94A' : 'rgba(250,250,247,0.35)'}`,
                   background: attributed === o.v ? '#D9A94A' : 'transparent' }} />
@@ -1301,7 +1301,7 @@ function FeedbackPrompt({ callId, userId, onDone }) {
             ))}
           </div>
           <Btn onClick={submit} disabled={saving}
-            style={{ background: 'rgba(110,127,92,0.15)', borderColor: 'rgba(110,127,92,0.6)', color: '#D9A94A', fontSize: '13px', padding: '8px 20px' }}>
+            style={{ background: 'rgba(76,107,69,0.15)', borderColor: 'rgba(76,107,69,0.6)', color: '#D9A94A', fontSize: '13px', padding: '8px 20px' }}>
             {saving ? 'Saving…' : 'Submit →'}
           </Btn>
         </div>
@@ -1314,7 +1314,7 @@ function FeedbackPrompt({ callId, userId, onDone }) {
               ? 'Your reflection helps the people who come after you.'
               : 'Your completion has been recorded.'}
           </p>
-          <Btn onClick={onDone} style={{ background: 'rgba(110,127,92,0.15)', borderColor: 'rgba(110,127,92,0.6)', color: '#D9A94A', fontSize: '13px', padding: '8px 20px' }}>
+          <Btn onClick={onDone} style={{ background: 'rgba(76,107,69,0.15)', borderColor: 'rgba(76,107,69,0.6)', color: '#D9A94A', fontSize: '13px', padding: '8px 20px' }}>
             Done
           </Btn>
         </div>
@@ -1349,8 +1349,8 @@ function ClockChips({ value, onChange }) {
       {[{ t: 'rolling', l: 'Rolling 90 days' }, { t: 'calendar', l: 'Calendar quarter' }].map(o => (
         <button key={o.t} type="button" onClick={() => onChange(o.t)}
           style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '6px 16px', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.2s',
-            border: `1px solid ${value === o.t ? 'rgba(110,127,92,0.78)' : 'rgba(110,127,92,0.3)'}`,
-            background: value === o.t ? 'rgba(110,127,92,0.08)' : 'transparent',
+            border: `1px solid ${value === o.t ? 'rgba(76,107,69,0.78)' : 'rgba(76,107,69,0.3)'}`,
+            background: value === o.t ? 'rgba(76,107,69,0.08)' : 'transparent',
             color: value === o.t ? fn.moss : tokens.ghost }}>
           {o.l}
         </button>
@@ -1372,10 +1372,10 @@ function planetDaysLeft(targetDate) {
 // now explicit at the moment they're needed.
 function WindowClosedBanner({ onReview, onExtend }) {
   const chip = { ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '7px 16px',
-    borderRadius: '20px', cursor: 'pointer', border: '1px solid rgba(110,127,92,0.45)',
+    borderRadius: '20px', cursor: 'pointer', border: '1px solid rgba(76,107,69,0.45)',
     background: 'transparent', color: fn.moss }
   return (
-    <div style={{ background: 'rgba(110,127,92,0.07)', border: '1.5px solid rgba(110,127,92,0.4)',
+    <div style={{ background: 'rgba(76,107,69,0.07)', border: '1.5px solid rgba(76,107,69,0.4)',
       borderRadius: '14px', padding: '20px 24px', margin: '0 0 22px' }}>
       <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: fn.moss, marginBottom: '8px' }}>
         WINDOW CLOSED
@@ -1442,14 +1442,14 @@ function PlanetSprintPanel({ civ, onCreate, onUpdateData, onComplete, onExtendCl
           value={draftServes}
           onChange={e => setDraftServes(e.target.value)}
           placeholder="Who or what it serves — a person, a community, the planet"
-          style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '10px 14px', outline: 'none', background: tokens.bg, boxSizing: 'border-box', marginBottom: '10px' }}
+          style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '10px 14px', outline: 'none', background: tokens.bg, boxSizing: 'border-box', marginBottom: '10px' }}
         />
         <textarea
           placeholder="The commitment — one concrete contribution"
           rows={3}
           value={draftCommitment}
           onChange={e => setDraftCommitment(e.target.value)}
-          style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box', marginBottom: '12px' }}
+          style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box', marginBottom: '12px' }}
         />
         <ClockChips value={draftClock} onChange={setDraftClock} />
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -1472,7 +1472,7 @@ function PlanetSprintPanel({ civ, onCreate, onUpdateData, onComplete, onExtendCl
         <Eyebrow style={{ marginBottom: '4px' }}>Planet Sprint · The Outer Arc</Eyebrow>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
           {days !== null && days > 0 && (
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: fn.moss, border: '1px solid rgba(110,127,92,0.4)', borderRadius: '20px', padding: '3px 10px', whiteSpace: 'nowrap' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: fn.moss, border: '1px solid rgba(76,107,69,0.4)', borderRadius: '20px', padding: '3px 10px', whiteSpace: 'nowrap' }}>
               {days} days left
             </span>
           )}
@@ -1482,11 +1482,11 @@ function PlanetSprintPanel({ civ, onCreate, onUpdateData, onComplete, onExtendCl
                 Window closed · extend:
               </span>
               <button type="button" onClick={() => onExtendClock(computeClock('rolling'))}
-                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '3px 12px', borderRadius: '20px', cursor: 'pointer', border: '1px solid rgba(110,127,92,0.45)', background: 'transparent', color: fn.moss, whiteSpace: 'nowrap' }}>
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '3px 12px', borderRadius: '20px', cursor: 'pointer', border: '1px solid rgba(76,107,69,0.45)', background: 'transparent', color: fn.moss, whiteSpace: 'nowrap' }}>
                 90 days
               </button>
               <button type="button" onClick={() => onExtendClock(computeClock('calendar'))}
-                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '3px 12px', borderRadius: '20px', cursor: 'pointer', border: '1px solid rgba(110,127,92,0.45)', background: 'transparent', color: fn.moss, whiteSpace: 'nowrap' }}>
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '3px 12px', borderRadius: '20px', cursor: 'pointer', border: '1px solid rgba(76,107,69,0.45)', background: 'transparent', color: fn.moss, whiteSpace: 'nowrap' }}>
                 to quarter end
               </button>
             </>
@@ -1521,11 +1521,11 @@ function PlanetSprintPanel({ civ, onCreate, onUpdateData, onComplete, onExtendCl
           onChange={e => setDraftTask(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && draftTask.trim()) { onUpdateData({ tasks: [...pTasks, { text: draftTask.trim() }] }); setDraftTask('') } }}
           placeholder="Add a concrete move…"
-          style={{ flex: 1, ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '8px 12px', outline: 'none', background: tokens.bg }}
+          style={{ flex: 1, ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '8px 12px', outline: 'none', background: tokens.bg }}
         />
         <button type="button" disabled={!draftTask.trim()}
           onClick={() => { onUpdateData({ tasks: [...pTasks, { text: draftTask.trim() }] }); setDraftTask('') }}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: fn.moss, background: 'rgba(110,127,92,0.08)', border: '1px solid rgba(110,127,92,0.5)', borderRadius: '8px', padding: '0 16px', cursor: 'pointer', opacity: draftTask.trim() ? 1 : 0.4 }}>
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: fn.moss, background: 'rgba(76,107,69,0.08)', border: '1px solid rgba(76,107,69,0.5)', borderRadius: '8px', padding: '0 16px', cursor: 'pointer', opacity: draftTask.trim() ? 1 : 0.4 }}>
           Add
         </button>
       </div>
@@ -1644,7 +1644,7 @@ function PublishPanel({ domainData, domainId, userId, actorId }) {
   ]
 
   return (
-    <div style={{ marginTop: '24px', padding: '20px 22px', background: tokens.bgCard, border: `1.5px solid rgba(110,127,92,0.35)`, borderRadius: '14px' }}>
+    <div style={{ marginTop: '24px', padding: '20px 22px', background: tokens.bgCard, border: `1.5px solid rgba(76,107,69,0.35)`, borderRadius: '14px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
         <Eyebrow style={{ marginBottom: 0 }}>Offer as a challenge</Eyebrow>
         <button type="button" onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1rem', color: tokens.ghost }}>×</button>
@@ -1658,12 +1658,12 @@ function PublishPanel({ domainData, domainId, userId, actorId }) {
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#2A8C4F', marginBottom: '8px' }}>
             {visibility === 'community' ? '✓ Community — listed and browsable' : '✓ Published — anyone with the link'}
           </div>
-          <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, padding: '10px 14px', background: 'rgba(110,127,92,0.05)', border: hair, borderRadius: '8px', marginBottom: '12px', wordBreak: 'break-all' }}>
+          <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, padding: '10px 14px', background: 'rgba(76,107,69,0.05)', border: hair, borderRadius: '8px', marginBottom: '12px', wordBreak: 'break-all' }}>
             {window.location.origin}{publishedUrl}
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button type="button" onClick={() => { navigator.clipboard.writeText(window.location.origin + publishedUrl) }}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: fn.moss, background: 'rgba(110,127,92,0.07)', border: '1px solid rgba(110,127,92,0.4)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: fn.moss, background: 'rgba(76,107,69,0.07)', border: '1px solid rgba(76,107,69,0.4)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
               Copy link
             </button>
             {visibility === 'link_only' && (
@@ -1700,10 +1700,10 @@ function PublishPanel({ domainData, domainId, userId, actorId }) {
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '4px', textTransform: 'uppercase' }}>{l}</div>
               {long ? (
                 <textarea value={form[k]} onChange={e => set(k, e.target.value)} placeholder={ph} rows={2}
-                  style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '10px 12px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
+                  style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '10px 12px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
               ) : (
                 <input type="text" value={form[k]} onChange={e => set(k, e.target.value)} placeholder={ph}
-                  style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '10px 12px', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
+                  style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '10px 12px', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
               )}
             </div>
           ))}
@@ -1712,14 +1712,14 @@ function PublishPanel({ domainData, domainId, userId, actorId }) {
             <div>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '4px', textTransform: 'uppercase' }}>Cadence</div>
               <select value={form.cadence} onChange={e => set('cadence', e.target.value)}
-                style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '10px 12px', outline: 'none', background: tokens.bg }}>
+                style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '10px 12px', outline: 'none', background: tokens.bg }}>
                 {CADENCE_OPTS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
               </select>
             </div>
             <div>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '4px', textTransform: 'uppercase' }}>Scale</div>
               <select value={form.scale} onChange={e => set('scale', e.target.value)}
-                style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '10px 12px', outline: 'none', background: tokens.bg }}>
+                style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '10px 12px', outline: 'none', background: tokens.bg }}>
                 {SCALE_OPTS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
               </select>
             </div>
@@ -1809,7 +1809,7 @@ function CreateAskPanel({ userId, actorId }) {
   )
 
   return (
-    <div style={{ marginTop: '20px', padding: '20px 22px', background: tokens.bgCard, border: `1.5px solid rgba(110,127,92,0.25)`, borderRadius: '14px' }}>
+    <div style={{ marginTop: '20px', padding: '20px 22px', background: tokens.bgCard, border: `1.5px solid rgba(76,107,69,0.25)`, borderRadius: '14px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '14px' }}>
         <Eyebrow style={{ marginBottom: 0 }}>Post an ask</Eyebrow>
         <button type="button" onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1rem', color: tokens.ghost }}>×</button>
@@ -1823,11 +1823,11 @@ function CreateAskPanel({ userId, actorId }) {
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#2A8C4F', marginBottom: '8px' }}>✓ Ask is live</div>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button type="button" onClick={() => navigator.clipboard.writeText(window.location.origin + publishedUrl)}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: fn.moss, background: 'rgba(110,127,92,0.07)', border: '1px solid rgba(110,127,92,0.4)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: fn.moss, background: 'rgba(76,107,69,0.07)', border: '1px solid rgba(76,107,69,0.4)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
               Copy link
             </button>
             <a href={publishedUrl} target="_blank" rel="noopener noreferrer"
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', ...gold, textDecoration: 'none', border: '1px solid rgba(110,127,92,0.4)', borderRadius: '20px', padding: '7px 16px' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', ...gold, textDecoration: 'none', border: '1px solid rgba(76,107,69,0.4)', borderRadius: '20px', padding: '7px 16px' }}>
               View ask →
             </a>
           </div>
@@ -1841,8 +1841,8 @@ function CreateAskPanel({ userId, actorId }) {
               {CIV_DOMAIN_OPTIONS.map(d => (
                 <button key={d.slug} type="button" onClick={() => set('domain', d.slug)}
                   style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '5px 14px', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.15s',
-                    border: `1px solid ${form.domain === d.slug ? 'rgba(110,127,92,0.78)' : 'rgba(110,127,92,0.3)'}`,
-                    background: form.domain === d.slug ? 'rgba(110,127,92,0.08)' : 'transparent',
+                    border: `1px solid ${form.domain === d.slug ? 'rgba(76,107,69,0.78)' : 'rgba(76,107,69,0.3)'}`,
+                    background: form.domain === d.slug ? 'rgba(76,107,69,0.08)' : 'transparent',
                     color: form.domain === d.slug ? fn.moss : tokens.ghost }}>
                   {d.label}
                 </button>
@@ -1859,10 +1859,10 @@ function CreateAskPanel({ userId, actorId }) {
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '3px', textTransform: 'uppercase' }}>{l}</div>
               {long ? (
                 <textarea value={form[k]} onChange={e => set(k, e.target.value)} placeholder={ph} rows={2}
-                  style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '9px 12px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
+                  style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '9px 12px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
               ) : (
                 <input type="text" value={form[k]} onChange={e => set(k, e.target.value)} placeholder={ph}
-                  style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '9px 12px', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
+                  style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '9px 12px', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
               )}
             </div>
           ))}
@@ -1870,12 +1870,12 @@ function CreateAskPanel({ userId, actorId }) {
             <div>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '3px', textTransform: 'uppercase' }}>How many needed</div>
               <input type="number" min="1" value={form.ask_quantity} onChange={e => set('ask_quantity', e.target.value)} placeholder="Leave blank for open"
-                style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '9px 12px', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
+                style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '9px 12px', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
             </div>
             <div>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '3px', textTransform: 'uppercase' }}>Needed by</div>
               <input type="date" value={form.ask_deadline} onChange={e => set('ask_deadline', e.target.value)}
-                style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '9px 12px', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
+                style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '9px 12px', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
             </div>
           </div>
           {errors.length > 0 && (
@@ -1919,7 +1919,7 @@ function PhaseSelect({ hasMapData, scores, horizonScores, iaStatements = {}, sel
       </p>
 
       {recommendation?.soft_observation && (
-        <div style={{ padding: '14px 18px', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.2)', borderRadius: '8px', ...body, fontSize: '1.0625rem', ...meta, marginBottom: '24px', lineHeight: 1.65 }}>
+        <div style={{ padding: '14px 18px', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.2)', borderRadius: '8px', ...body, fontSize: '1.0625rem', ...meta, marginBottom: '24px', lineHeight: 1.65 }}>
           {recommendation.soft_observation}
         </div>
       )}
@@ -1935,7 +1935,7 @@ function PhaseSelect({ hasMapData, scores, horizonScores, iaStatements = {}, sel
           return (
             <div key={d.id}
               onClick={() => setSelectedDomain(sel ? null : d.id)}
-              style={{ padding: '16px', border: `1.5px solid ${sel ? 'rgba(110,127,92,0.78)' : 'rgba(110,127,92,0.2)'}`, borderLeft: sel ? `4px solid ${colour}` : '1.5px solid rgba(110,127,92,0.2)', borderRadius: '10px', background: sel ? 'rgba(110,127,92,0.06)' : tokens.bgCard, cursor: 'pointer', transition: 'all 0.2s' }}
+              style={{ padding: '16px', border: `1.5px solid ${sel ? 'rgba(76,107,69,0.78)' : 'rgba(76,107,69,0.2)'}`, borderLeft: sel ? `4px solid ${colour}` : '1.5px solid rgba(76,107,69,0.2)', borderRadius: '10px', background: sel ? 'rgba(76,107,69,0.06)' : tokens.bgCard, cursor: 'pointer', transition: 'all 0.2s' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,21,35,0.06)' }}
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
               <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.08em', color: sel ? fn.moss : tokens.dark, marginBottom: '4px' }}>
@@ -1946,13 +1946,13 @@ function PhaseSelect({ hasMapData, scores, horizonScores, iaStatements = {}, sel
               </div>
               {s !== undefined && (
                 <>
-                  <div style={{ height: '2px', background: 'rgba(110,127,92,0.1)', borderRadius: '1px', overflow: 'hidden', marginBottom: '4px' }}>
+                  <div style={{ height: '2px', background: 'rgba(76,107,69,0.1)', borderRadius: '1px', overflow: 'hidden', marginBottom: '4px' }}>
                     <div style={{ height: '100%', width: `${s * 10}%`, background: col, borderRadius: '1px' }} />
                   </div>
                   <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '5px' }}>
                     <span style={{ color: col }}>{s}</span>
                     <span style={{ color: tokens.ghost }}>→</span>
-                    <span style={{ color: horizonScores[d.id] != null ? GOLD_C : 'rgba(110,127,92,0.3)' }}>{horizonScores[d.id] != null ? horizonScores[d.id] : '?'}</span>
+                    <span style={{ color: horizonScores[d.id] != null ? GOLD_C : 'rgba(76,107,69,0.3)' }}>{horizonScores[d.id] != null ? horizonScores[d.id] : '?'}</span>
                     <span style={{ color: col, marginLeft: '2px' }}>· {getTierLabel(s)}</span>
                   </div>
                   {iaStatements[d.id] && (
@@ -2008,14 +2008,14 @@ function PhasePlanet({ onCreate, onContinue, onBack }) {
         value={serves}
         onChange={e => setServes(e.target.value)}
         placeholder="Who or what it serves"
-        style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '12px 14px', outline: 'none', background: tokens.bg, boxSizing: 'border-box', marginBottom: '10px' }}
+        style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '12px 14px', outline: 'none', background: tokens.bg, boxSizing: 'border-box', marginBottom: '10px' }}
       />
       <textarea
         placeholder="The commitment — one concrete contribution"
         rows={3}
         value={commitment}
         onChange={e => setCommitment(e.target.value)}
-        style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(110,127,92,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box', marginBottom: '14px' }}
+        style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box', marginBottom: '14px' }}
       />
       <ClockChips value={clock} onChange={setClock} />
 
@@ -2063,7 +2063,7 @@ function PhaseQuarter({ quarterType, setQuarterType, setTargetDate, setEndDateLa
           { type: 'calendar', title: 'Calendar quarter',  date: fmt(qEnd),    desc: `${qL} end — syncs with how the year flows.` },
         ].map(o => (
           <div key={o.type} onClick={() => select(o.type)}
-            style={{ padding: '20px 22px', border: `1.5px solid ${quarterType === o.type ? 'rgba(110,127,92,0.78)' : 'rgba(110,127,92,0.2)'}`, borderRadius: '12px', background: quarterType === o.type ? 'rgba(110,127,92,0.06)' : tokens.bgCard, cursor: 'pointer', transition: 'all 0.2s' }}>
+            style={{ padding: '20px 22px', border: `1.5px solid ${quarterType === o.type ? 'rgba(76,107,69,0.78)' : 'rgba(76,107,69,0.2)'}`, borderRadius: '12px', background: quarterType === o.type ? 'rgba(76,107,69,0.06)' : tokens.bgCard, cursor: 'pointer', transition: 'all 0.2s' }}>
             <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.08em', color: quarterType === o.type ? fn.moss : tokens.dark, marginBottom: '3px' }}>{o.title}</div>
             <div style={{ ...sc, fontSize: '1rem', ...gold, marginBottom: '3px' }}>{o.date}</div>
             <div style={{ ...body, fontSize: '1.0625rem', ...muted }}>{o.desc}</div>
@@ -2477,21 +2477,21 @@ export function TargetSprintPage() {
             What moved? What stayed? What would you do differently? Take a moment before starting the next one.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '420px', margin: '0 auto' }}>
-            <a href="/nextu" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.55)', borderRadius: '10px', textDecoration: 'none' }}>
+            <a href="/nextu" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.55)', borderRadius: '10px', textDecoration: 'none' }}>
               <div>
                 <div style={{ ...sc, fontSize: '1.0625rem', letterSpacing: '0.1em', color: fn.moss, marginBottom: '4px' }}>Your Journey</div>
                 <div style={{ ...body, fontSize: '1rem', color: tokens.ghost }}>See what shifted across your seven domains.</div>
               </div>
               <span style={{ ...sc, fontSize: '1.25rem', color: fn.moss, flexShrink: 0, marginLeft: '16px' }}>→</span>
             </a>
-            <a href="/tools/horizon-practice" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: tokens.bgCard, border: '1px solid rgba(110,127,92,0.25)', borderRadius: '10px', textDecoration: 'none' }}>
+            <a href="/tools/horizon-practice" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: tokens.bgCard, border: '1px solid rgba(76,107,69,0.25)', borderRadius: '10px', textDecoration: 'none' }}>
               <div>
                 <div style={{ ...sc, fontSize: '1.0625rem', letterSpacing: '0.1em', color: tokens.dark, marginBottom: '4px' }}>Daily Practice</div>
                 <div style={{ ...body, fontSize: '1rem', color: tokens.ghost }}>Where the work continues, every morning.</div>
               </div>
               <span style={{ ...sc, fontSize: '1.25rem', color: tokens.ghost, flexShrink: 0, marginLeft: '16px' }}>→</span>
             </a>
-            <a href="/tools/map" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: tokens.bgCard, border: '1px solid rgba(110,127,92,0.25)', borderRadius: '10px', textDecoration: 'none' }}>
+            <a href="/tools/map" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: tokens.bgCard, border: '1px solid rgba(76,107,69,0.25)', borderRadius: '10px', textDecoration: 'none' }}>
               <div>
                 <div style={{ ...sc, fontSize: '1.0625rem', letterSpacing: '0.1em', color: tokens.dark, marginBottom: '4px' }}>Rescore The Map</div>
                 <div style={{ ...body, fontSize: '1rem', color: tokens.ghost }}>See what actually moved in ninety days.</div>
@@ -2499,7 +2499,7 @@ export function TargetSprintPage() {
               <span style={{ ...sc, fontSize: '1.25rem', color: tokens.ghost, flexShrink: 0, marginLeft: '16px' }}>→</span>
             </a>
             <button type="button" onClick={handleStartNewStretch}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: tokens.bgCard, border: '1px solid rgba(110,127,92,0.25)', borderRadius: '10px', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: tokens.bgCard, border: '1px solid rgba(76,107,69,0.25)', borderRadius: '10px', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
               <div>
                 <div style={{ ...sc, fontSize: '1.0625rem', letterSpacing: '0.1em', color: tokens.dark, marginBottom: '4px' }}>Start a new stretch</div>
                 <div style={{ ...body, fontSize: '1rem', color: tokens.ghost }}>Choose your next arena.</div>
@@ -2578,7 +2578,7 @@ export function TargetSprintPage() {
               <div style={{ minWidth: 0 }}>
                 <SetupStatusBar domainId={selectedDomain} domainData={domainData} />
 
-                <div style={{ background: tokens.bg, border: '1.5px solid rgba(110,127,92,0.2)', borderRadius: '14px', padding: '26px 28px' }}>
+                <div style={{ background: tokens.bg, border: '1.5px solid rgba(76,107,69,0.2)', borderRadius: '14px', padding: '26px 28px' }}>
                   <DomainPanel
                     domainId={selectedDomain}
                     domainData={domainData}
@@ -2634,12 +2634,12 @@ export function TargetSprintPage() {
                 )}
 
                 {!hasMapData && (
-                  <div style={{ padding: '18px 20px', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.18)', borderRadius: '12px', marginTop: '24px' }}>
+                  <div style={{ padding: '18px 20px', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '12px', marginTop: '24px' }}>
                     <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>Want the full picture?</div>
                     <p style={{ ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.7, marginBottom: '12px' }}>
                       The Map gives you an honest read across all seven domains — and loads your scores directly into your next stretch.
                     </p>
-                    <a href="/tools/map" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold, textDecoration: 'none', border: '1px solid rgba(110,127,92,0.5)', borderRadius: '30px', padding: '8px 18px', display: 'inline-block' }}>
+                    <a href="/tools/map" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold, textDecoration: 'none', border: '1px solid rgba(76,107,69,0.5)', borderRadius: '30px', padding: '8px 18px', display: 'inline-block' }}>
                       Begin The Map →
                     </a>
                   </div>

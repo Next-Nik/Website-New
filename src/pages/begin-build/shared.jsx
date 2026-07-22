@@ -221,7 +221,7 @@ export function CloserAndSubmit({ saving, error, submitLabel, onSubmit }) {
         style={{
           ...SC, fontSize: '14px', letterSpacing: '0.16em',
           padding: '14px 32px', borderRadius: '40px', border: 'none',
-          background: saving ? 'rgba(76,107,69,0.35)' : '#6E7F5C',
+          background: saving ? 'rgba(76,107,69,0.35)' : '#4c6b45',
           color: '#FFFFFF', cursor: saving ? 'not-allowed' : 'pointer',
           display: 'block', width: '100%', marginTop: '8px',
         }}

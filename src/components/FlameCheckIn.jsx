@@ -24,7 +24,7 @@ const FLAME_SCALE = {
   3.5:  { color: '#AA8A42', glow: 'rgba(170,138,66,0.30)',  scale: 0.77, label: '' },
   4:    { color: '#B8923A', glow: 'rgba(184,146,58,0.33)',  scale: 0.80, label: '' },
   4.5:  { color: '#C09A30', glow: 'rgba(192,154,48,0.36)',  scale: 0.82, label: '' },
-  5:    { color: '#26302A', glow: 'rgba(110,127,92,0.38)',  scale: 0.84, label: 'The Pass/Fail Mark' },
+  5:    { color: '#262420', glow: 'rgba(76,107,69,0.38)',  scale: 0.84, label: 'The Pass/Fail Mark' },
   5.5:  { color: '#C4821A', glow: 'rgba(196,130,26,0.42)',  scale: 0.87, label: '' },
   6:    { color: '#D4821A', glow: 'rgba(212,130,26,0.46)',  scale: 0.89, label: '' },
   6.5:  { color: '#CC7818', glow: 'rgba(204,120,24,0.50)',  scale: 0.91, label: '' },
@@ -32,9 +32,9 @@ const FLAME_SCALE = {
   7.5:  { color: '#C26418', glow: 'rgba(194,100,24,0.58)', scale: 0.95, label: '' },
   8:    { color: '#C05A10', glow: 'rgba(192,90,16,0.62)',   scale: 0.97, label: '' },
   8.5:  { color: '#B85010', glow: 'rgba(184,80,16,0.66)',   scale: 0.99, label: '' },
-  9:    { color: '#26302A', glow: 'rgba(38,48,42,0.70)',  scale: 1.01, label: '' },
-  9.5:  { color: '#6E7F5C', glow: 'rgba(110,127,92,0.76)', scale: 1.04, label: '' },
-  10:   { color: '#6E7F5C', glow: 'rgba(110,127,92,0.82)', scale: 1.08, label: 'Best in the World' },
+  9:    { color: '#262420', glow: 'rgba(38,36,32,0.70)',  scale: 1.01, label: '' },
+  9.5:  { color: '#4c6b45', glow: 'rgba(76,107,69,0.76)', scale: 1.04, label: '' },
+  10:   { color: '#4c6b45', glow: 'rgba(76,107,69,0.82)', scale: 1.08, label: 'Best in the World' },
 }
 
 // Numeric display helper for non-anchor values. Renders integers without a
@@ -145,13 +145,13 @@ export function FlameGlyph({ value = 5, size = 64, ghost = false }) {
           <circle cx="39" cy="12" r="1.5">
             <animate attributeName="opacity" values="0;0.65;0" dur={`${(+dur3*0.9).toFixed(2)}s`} repeatCount="indefinite" begin="0.55s" />
             <animate attributeName="cy" values="12;5;12" dur={`${(+dur3*0.9).toFixed(2)}s`} repeatCount="indefinite" begin="0.55s" />
-            <animate attributeName="fill" values="#FFF4E0;#6E7F5C;#FFF4E0" dur={`${(+dur3*0.9).toFixed(2)}s`} repeatCount="indefinite" begin="0.55s" />
+            <animate attributeName="fill" values="#FFF4E0;#4c6b45;#FFF4E0" dur={`${(+dur3*0.9).toFixed(2)}s`} repeatCount="indefinite" begin="0.55s" />
           </circle>
           {value >= 9 && (
             <circle cx="31" cy="8" r="1.2">
               <animate attributeName="opacity" values="0;0.9;0" dur={`${(+dur3*0.7).toFixed(2)}s`} repeatCount="indefinite" begin="0.35s" />
               <animate attributeName="cy" values="8;1;8" dur={`${(+dur3*0.7).toFixed(2)}s`} repeatCount="indefinite" begin="0.35s" />
-              <animate attributeName="fill" values="#FFF4E0;#6E7F5C;#FFF4E0" dur={`${(+dur3*0.7).toFixed(2)}s`} repeatCount="indefinite" begin="0.35s" />
+              <animate attributeName="fill" values="#FFF4E0;#4c6b45;#FFF4E0" dur={`${(+dur3*0.7).toFixed(2)}s`} repeatCount="indefinite" begin="0.35s" />
             </circle>
           )}
         </>
@@ -283,7 +283,7 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
                     fontFamily: "'IBM Plex Mono', Georgia, serif",
                     fontSize: isActive ? (isMobile ? '0.625rem' : '0.6875rem') : (isMobile ? '0.5rem' : '0.5625rem'),
                     letterSpacing: '0.1em',
-                    color: isActive ? color : isTheLine ? 'rgba(110,127,92,0.7)' : 'rgba(15,21,35,0.55)',
+                    color: isActive ? color : isTheLine ? 'rgba(76,107,69,0.7)' : 'rgba(15,21,35,0.55)',
                     whiteSpace: 'nowrap',
                     fontWeight: isActive ? 600 : 400,
                     transition: 'color 0.2s ease, font-size 0.15s ease',
@@ -298,7 +298,7 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
                   background: isActive
                     ? color
                     : isTheLine
-                      ? 'rgba(110,127,92,0.5)'
+                      ? 'rgba(76,107,69,0.5)'
                       : 'rgba(15,21,35,0.25)',
                   borderRadius: '1px',
                   transition: 'width 0.15s ease, background 0.2s ease',
@@ -327,12 +327,12 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
           <div style={{
             position: 'absolute', left: '50%', transform: 'translateX(-50%)',
             top: 0, bottom: 0, width: '10px', borderRadius: '5px',
-            background: 'rgba(110,127,92,0.08)', overflow: 'hidden',
+            background: 'rgba(76,107,69,0.08)', overflow: 'hidden',
           }}>
             <div style={{
               position: 'absolute', bottom: 0, left: 0, right: 0,
               height: `${(value / 10) * 100}%`,
-              background: 'linear-gradient(to top, #4B5563 0%, #8B7355 22%, #B8923A 42%, #6E7F5C 58%, #C8721A 73%, #26302A 87%, #6E7F5C 100%)',
+              background: 'linear-gradient(to top, #4B5563 0%, #8B7355 22%, #B8923A 42%, #4c6b45 58%, #C8721A 73%, #262420 87%, #4c6b45 100%)',
               borderRadius: '5px',
               transition: 'height 0.1s ease',
             }} />
@@ -501,7 +501,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
       <span style={{
         fontFamily: "'IBM Plex Mono',Georgia,serif",
         fontSize: '0.5625rem', letterSpacing: '0.2em',
-        color: '#26302A', textTransform: 'uppercase',
+        color: '#262420', textTransform: 'uppercase',
         marginBottom: '6px',
       }}>
         {isBefore ? `Before · ${phaseLabel}` : `After · ${phaseLabel}`}
@@ -535,14 +535,14 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
           fontFamily: "'Newsreader', Georgia, serif",
           fontSize: '1.125rem',
           color: 'rgba(15,21,35,0.75)',
-          background: 'rgba(110,127,92,0.025)',
-          border: '1px solid rgba(110,127,92,0.2)',
+          background: 'rgba(76,107,69,0.025)',
+          border: '1px solid rgba(76,107,69,0.2)',
           borderRadius: '8px', outline: 'none',
           resize: 'none', lineHeight: 1.65,
           marginBottom: '16px', transition: 'border-color 0.2s',
         }}
-        onFocus={e => { e.target.style.borderColor = 'rgba(110,127,92,0.5)' }}
-        onBlur={e => { e.target.style.borderColor = 'rgba(110,127,92,0.2)' }}
+        onFocus={e => { e.target.style.borderColor = 'rgba(76,107,69,0.5)' }}
+        onBlur={e => { e.target.style.borderColor = 'rgba(76,107,69,0.2)' }}
       />
 
       <div style={{ display: 'flex', gap: '10px', alignItems: 'center', width: '100%' }}>
@@ -553,9 +553,9 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
             flex: 1, padding: '13px',
             fontFamily: "'IBM Plex Mono',Georgia,serif",
             fontSize: '1.3125rem', letterSpacing: '0.14em',
-            color: locked ? 'rgba(110,127,92,0.35)' : 'rgba(110,127,92,0.9)',
-            background: 'rgba(110,127,92,0.05)',
-            border: '1.5px solid rgba(110,127,92,0.78)',
+            color: locked ? 'rgba(76,107,69,0.35)' : 'rgba(76,107,69,0.9)',
+            background: 'rgba(76,107,69,0.05)',
+            border: '1.5px solid rgba(76,107,69,0.78)',
             borderRadius: '40px',
             cursor: (saving || locked) ? 'default' : 'pointer',
             transition: 'all 0.2s',

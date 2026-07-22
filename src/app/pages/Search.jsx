@@ -62,12 +62,12 @@ function ActorCard({ actor }) {
     <Link to={`/org/${actor.slug || actor.id}`}
       style={{ display: 'block', textDecoration: 'none' }}>
       <div style={{ background: at.object,
-        border: '1px solid rgba(217,178,74,0.20)',
+        border: '1px solid rgba(169,116,63,0.20)',
         borderRadius: '10px', padding: '16px 18px',
         transition: 'all 0.15s ease',
         display: 'flex', gap: '14px', alignItems: 'flex-start' }}
-        onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(217,178,74,0.55)'}
-        onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(217,178,74,0.20)'}>
+        onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(169,116,63,0.55)'}
+        onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(169,116,63,0.20)'}>
 
         {actor.image_url && (
           <img src={actor.image_url} alt={actor.name}
@@ -89,7 +89,7 @@ function ActorCard({ actor }) {
             )}
             {actor.location_name && (
               <>
-                <span style={{ color: 'rgba(217,178,74,0.30)', fontSize: '13px' }}>·</span>
+                <span style={{ color: 'rgba(169,116,63,0.30)', fontSize: '13px' }}>·</span>
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
                   color: at.ghost }}>
                   {actor.location_name}
@@ -99,7 +99,7 @@ function ActorCard({ actor }) {
           </div>
           {actor.tagline && (
             <p style={{ ...body, fontSize: '13px',
-              color: 'rgba(234,241,237,0.60)', fontStyle: 'italic',
+              color: 'rgba(38,36,32,0.60)', fontStyle: 'italic',
               margin: '0 0 6px', lineHeight: 1.4 }}>
               {actor.tagline}
             </p>
@@ -152,7 +152,7 @@ function OfferOrNeedCard({ item, kind }) {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px',
           flexWrap: 'wrap', paddingTop: '6px',
-          borderTop: '1px solid rgba(217,178,74,0.10)' }}>
+          borderTop: '1px solid rgba(169,116,63,0.10)' }}>
           {item.actor_image && (
             <img src={item.actor_image} alt={item.actor_name}
               style={{ width: '20px', height: '20px', objectFit: 'cover',
@@ -172,7 +172,7 @@ function OfferOrNeedCard({ item, kind }) {
           {locationLabel && (
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
               color: at.ghost,
-              border: '1px solid rgba(217,178,74,0.20)',
+              border: '1px solid rgba(169,116,63,0.20)',
               padding: '2px 8px', borderRadius: '40px' }}>
               {locationLabel}
             </span>
@@ -290,7 +290,7 @@ export function SearchPage() {
           The Atlas
         </h1>
         <p style={{ ...body, fontSize: '18px', fontWeight: 400,
-          color: 'rgba(234,241,237,0.78)', lineHeight: 1.5,
+          color: 'rgba(38,36,32,0.78)', lineHeight: 1.5,
           marginBottom: '36px', maxWidth: '560px' }}>
           Find the people, organisations, and projects building the future you want to live in.
         </p>
@@ -306,14 +306,14 @@ export function SearchPage() {
             }
             style={{ ...body, fontSize: '16px', color: dark,
               padding: '14px 18px', borderRadius: '10px',
-              border: '1.5px solid rgba(217,178,74,0.40)',
+              border: '1.5px solid rgba(169,116,63,0.40)',
               background: at.object, outline: 'none', width: '100%',
               boxSizing: 'border-box' }} />
         </div>
 
         {/* Mode toggle */}
         <div style={{ display: 'flex', gap: 0,
-          borderBottom: '1px solid rgba(217,178,74,0.20)',
+          borderBottom: '1px solid rgba(169,116,63,0.20)',
           marginBottom: '8px' }}>
           {MODES.map(m => (
             <button key={m.value} onClick={() => setMode(m.value)}
@@ -341,8 +341,8 @@ export function SearchPage() {
           <select value={domain} onChange={e => setDomain(e.target.value)}
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
               padding: '6px 14px', borderRadius: '40px',
-              border: '1.5px solid rgba(217,178,74,0.30)',
-              background: domain ? 'rgba(217,178,74,0.06)' : at.object,
+              border: '1.5px solid rgba(169,116,63,0.30)',
+              background: domain ? 'rgba(169,116,63,0.06)' : at.object,
               color: domain ? gold : at.ghost,
               cursor: 'pointer', outline: 'none' }}>
             <option value="">Any domain</option>
@@ -356,8 +356,8 @@ export function SearchPage() {
               <select value={actorType} onChange={e => setActorType(e.target.value)}
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
                   padding: '6px 14px', borderRadius: '40px',
-                  border: '1.5px solid rgba(217,178,74,0.30)',
-                  background: actorType ? 'rgba(217,178,74,0.06)' : at.object,
+                  border: '1.5px solid rgba(169,116,63,0.30)',
+                  background: actorType ? 'rgba(169,116,63,0.06)' : at.object,
                   color: actorType ? gold : at.ghost,
                   cursor: 'pointer', outline: 'none' }}>
                 {ACTOR_TYPES.map(t => (
@@ -368,8 +368,8 @@ export function SearchPage() {
               <select value={scale} onChange={e => setScale(e.target.value)}
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
                   padding: '6px 14px', borderRadius: '40px',
-                  border: '1.5px solid rgba(217,178,74,0.30)',
-                  background: scale ? 'rgba(217,178,74,0.06)' : at.object,
+                  border: '1.5px solid rgba(169,116,63,0.30)',
+                  background: scale ? 'rgba(169,116,63,0.06)' : at.object,
                   color: scale ? gold : at.ghost,
                   cursor: 'pointer', outline: 'none' }}>
                 {SCALES.map(s => (

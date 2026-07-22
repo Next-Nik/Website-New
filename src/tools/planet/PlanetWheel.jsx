@@ -91,7 +91,7 @@ export function PlanetWheel({ scores, nextusScores, size = 400 }) {
             key={ring}
             points={ringPoints.map(p => `${p.x},${p.y}`).join(' ')}
             fill="none"
-            stroke={ring === 10 ? at.verdigrisEdge : 'rgba(88,160,138,0.12)'}
+            stroke={ring === 10 ? at.verdigrisEdge : 'rgba(76,107,69,0.12)'}
             strokeWidth={ring === 10 ? 1.5 : 1}
           />
         )
@@ -105,7 +105,7 @@ export function PlanetWheel({ scores, nextusScores, size = 400 }) {
           y1={cy}
           x2={end.x}
           y2={end.y}
-          stroke="rgba(88,160,138,0.18)"
+          stroke="rgba(76,107,69,0.18)"
           strokeWidth={1}
         />
       ))}
@@ -124,7 +124,7 @@ export function PlanetWheel({ scores, nextusScores, size = 400 }) {
       {/* Self assessment polygon */}
       <path
         d={selfPath}
-        fill="rgba(88,160,138,0.12)"
+        fill="rgba(76,107,69,0.12)"
         stroke={at.verdigris}
         strokeWidth={2}
         filter="url(#planet-glow)"

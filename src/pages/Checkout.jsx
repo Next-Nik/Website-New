@@ -50,7 +50,7 @@ function WelcomeCard({ type }) {
         </p>
         <a href={ROUTES.home} style={{
           display: 'block', width: '100%', padding: '14px 0',
-          background: '#6E7F5C', border: 'none', borderRadius: '40px',
+          background: '#4c6b45', border: 'none', borderRadius: '40px',
           ...sc, fontSize: '15px', letterSpacing: '0.16em',
           color: '#FFFFFF', textDecoration: 'none', textAlign: 'center',
         }}>
@@ -86,7 +86,7 @@ function StatusCard({ eyebrow, heading, body: bodyText, action }) {
 function GoldButton({ href, onClick, children, disabled }) {
   const style = {
     display: 'block', width: '100%', padding: '14px 0',
-    background: disabled ? 'rgba(76,107,69,0.35)' : '#6E7F5C',
+    background: disabled ? 'rgba(76,107,69,0.35)' : '#4c6b45',
     border: 'none', borderRadius: '40px',
     ...sc, fontSize: '15px', letterSpacing: '0.16em',
     color: '#FFFFFF', cursor: disabled ? 'default' : 'pointer',

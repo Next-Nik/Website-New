@@ -134,9 +134,9 @@ export default function WelcomeNext() {
 const NEXT_CSS = `
 .welcome-next-root {
   --bg-parchment:  #FAFAF7;
-  --gold:          #6E7F5C;
-  --gold-dk:       #26302A;
-  --gold-rule:     rgba(110,127,92, 0.20);
+  --gold:          #4c6b45;
+  --gold-dk:       #262420;
+  --gold-rule:     rgba(76,107,69, 0.20);
   --text-ink:      #0F1523;
   --text-meta:     rgba(15, 21, 35, 0.65);
   --text-faint:    rgba(15, 21, 35, 0.40);

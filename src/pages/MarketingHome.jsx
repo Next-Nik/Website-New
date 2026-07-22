@@ -555,7 +555,7 @@ export function MarketingHomePage() {
 
       {/* ── Align band ───────────────────────────── */}
       <section style={{
-        background: '#10222B',
+        background: '#3c5637',
         padding: 'clamp(56px,7vw,88px) clamp(20px,5vw,40px)',
         textAlign: 'center',
         position: 'relative',

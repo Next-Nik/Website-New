@@ -85,14 +85,14 @@ export function Nav({ activePath, hideHamburger = false }) {
             >
               {mobileOpen ? (
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <line x1="4" y1="4" x2="16" y2="16" stroke="rgba(38,48,42,0.68)" strokeWidth="1.5" strokeLinecap="round"/>
-                  <line x1="16" y1="4" x2="4" y2="16" stroke="rgba(38,48,42,0.68)" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="4" y1="4" x2="16" y2="16" stroke="rgba(38,36,32,0.68)" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="16" y1="4" x2="4" y2="16" stroke="rgba(38,36,32,0.68)" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
               ) : (
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <line x1="3" y1="6"  x2="17" y2="6"  stroke="rgba(38,48,42,0.68)" strokeWidth="1.5" strokeLinecap="round"/>
-                  <line x1="3" y1="10" x2="17" y2="10" stroke="rgba(38,48,42,0.68)" strokeWidth="1.5" strokeLinecap="round"/>
-                  <line x1="3" y1="14" x2="17" y2="14" stroke="rgba(38,48,42,0.68)" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="3" y1="6"  x2="17" y2="6"  stroke="rgba(38,36,32,0.68)" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="3" y1="10" x2="17" y2="10" stroke="rgba(38,36,32,0.68)" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="3" y1="14" x2="17" y2="14" stroke="rgba(38,36,32,0.68)" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
               )}
             </button>}
@@ -157,7 +157,7 @@ export function Nav({ activePath, hideHamburger = false }) {
           right: 0;
           z-index: 999;
           background: rgba(233,237,228,0.98);
-          border-bottom: 1px solid rgba(38,48,42,0.14);
+          border-bottom: 1px solid rgba(38,36,32,0.14);
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
           flex-direction: column;
@@ -172,7 +172,7 @@ export function Nav({ activePath, hideHamburger = false }) {
           font-family: 'IBM Plex Mono', 'Courier New', monospace;
           font-size: 13px;
           letter-spacing: 0.08em;
-          color: rgba(38,48,42,0.68);
+          color: rgba(38,36,32,0.68);
           text-decoration: none;
           border: none;
           background: none;
@@ -181,9 +181,9 @@ export function Nav({ activePath, hideHamburger = false }) {
           text-align: left;
           transition: color 0.15s;
         }
-        .nav-mobile-link:hover { color: #26302A; }
+        .nav-mobile-link:hover { color: #262420; }
         .nav-mobile-link--cta {
-          color: #56634A;
+          color: #3c5637;
           margin-top: 4px;
         }
         .nav-mobile-link--cta:hover { color: #3F4A37; }

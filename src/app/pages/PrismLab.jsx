@@ -187,7 +187,7 @@ function MirrorWork({ userId }) {
             }}>
               <span style={{ ...fnText.eyebrow, color: 'rgba(233,237,228,0.6)' }}>The Mirror</span>
               <button onClick={startCam} style={btnStyle()}>Open camera</button>
-              {camErr && <p style={{ ...fnText.caption, color: '#E9EDE4', textAlign: 'center' }}>{camErr}</p>}
+              {camErr && <p style={{ ...fnText.caption, color: '#f3f0e9', textAlign: 'center' }}>{camErr}</p>}
             </div>
           )}
           {camOn && (
@@ -200,7 +200,7 @@ function MirrorWork({ userId }) {
                 textAlign: 'center',
               }}>
                 <div style={{
-                  ...display, fontSize: 22, lineHeight: 1.3, color: '#F4F5EF',
+                  ...display, fontSize: 22, lineHeight: 1.3, color: '#f3f0e9',
                   textShadow: '0 1px 8px rgba(0,0,0,0.4)',
                 }}>
                   {statements[idx % statements.length]}
@@ -210,7 +210,7 @@ function MirrorWork({ userId }) {
               <div style={{
                 position: 'absolute', top: space.md, right: space.md,
                 ...mono, fontSize: 13, letterSpacing: '0.14em',
-                color: '#F4F5EF', background: 'rgba(15,21,35,0.45)',
+                color: '#f3f0e9', background: 'rgba(15,21,35,0.45)',
                 padding: '4px 10px', borderRadius: 4,
               }}>
                 {mm}:{ss}
@@ -2248,8 +2248,8 @@ function btnStyle(variant = 'solid') {
     transition: 'all 0.2s',
   }
   if (variant === 'ghost') return { ...base, background: 'transparent', border: `1px solid ${fn.rule}`, color: fn.meta }
-  if (variant === 'clay') return { ...base, background: fn.clay, border: `1px solid ${fn.clay}`, color: '#F4F5EF' }
-  return { ...base, background: fn.moss, border: `1px solid ${fn.moss}`, color: '#F4F5EF' }
+  if (variant === 'clay') return { ...base, background: fn.clay, border: `1px solid ${fn.clay}`, color: '#f3f0e9' }
+  return { ...base, background: fn.moss, border: `1px solid ${fn.moss}`, color: '#f3f0e9' }
 }
 
 // ─────────────────────────────────────────────────────────────

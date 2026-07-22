@@ -132,7 +132,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
               flexDirection: 'column',
               gap: 4,
               padding: '16px 20px',
-              background: actorType === type.key ? 'rgba(88,160,138,0.10)' : at.object,
+              background: actorType === type.key ? 'rgba(76,107,69,0.10)' : at.object,
               border: `1.5px solid ${actorType === type.key ? at.verdigris : at.verdigrisEdge}`,
               borderRadius: 6,
               cursor: 'pointer',

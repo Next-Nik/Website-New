@@ -117,7 +117,7 @@ export function BeginBuildGroupPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <button onClick={() => navigate('/begin/build/practice')}
-                style={{ ...SC, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: 'none', background: '#6E7F5C', color: '#FFFFFF', cursor: 'pointer' }}>
+                style={{ ...SC, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: 'none', background: '#4c6b45', color: '#FFFFFF', cursor: 'pointer' }}>
                 Bring another person  →
               </button>
               <button onClick={() => { setForm(EMPTY); setDone(false) }}
