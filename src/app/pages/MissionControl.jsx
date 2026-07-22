@@ -971,14 +971,16 @@ export default function MissionControl() {
   // Civ placement marker (only meaningful at the top level)
   const civPlacement = levelPath.length === 0 ? civPlacementKey(data.purposeData) : null
 
-  // Stage dark-mode flip
+  // Pole flip — drives the accent swap (moss ↔ clay). Uses data-pole,
+  // NOT data-stage, so the world-map substrate (which inverts on
+  // data-stage="dark") stays in its light form on both poles.
   useEffect(() => {
     const stage = document.getElementById('mc-stage-root')
     if (!stage) return
     if (isCiv) {
-      stage.setAttribute('data-stage', 'dark')
+      stage.setAttribute('data-pole', 'planet')
     } else {
-      stage.removeAttribute('data-stage')
+      stage.removeAttribute('data-pole')
     }
   }, [isCiv])
 
@@ -1105,6 +1107,11 @@ export default function MissionControl() {
       className="mc-stage-root"
     >
       <style>{STAGE_CSS}</style>
+
+      {/* Fuller (Dymaxion) world map + star chart — the fixed substrate
+          that sits under the whole four-beat format. Faint line-art on
+          the bright ground; parallax on scroll. */}
+      <WorldMapSubstrate />
 
       <BeaconStrip userId={data.user?.id} />
 
@@ -1686,9 +1693,8 @@ const STAGE_CSS = `
 }
 
 /* Our Planet: same bright ground, earthy clay accent only.
-   data-stage="dark" is the existing scope flag (set on planet);
-   here it swaps the ACCENT, it does not darken the ground. */
-.mc-stage-root[data-stage="dark"] {
+   data-pole="planet" swaps the ACCENT; it does not darken the ground. */
+.mc-stage-root[data-pole="planet"] {
   --mc-accent:#a9743f;
   --mc-accent-ink:#ffffff;
   --mc-accent-soft:#e6d8bf;
@@ -1696,7 +1702,14 @@ const STAGE_CSS = `
   color: var(--mc-ink);
 }
 
+/* The Dymaxion + star substrate sits UNDER the whole format: above the
+   cream ground, below all content. Higher-specificity override of the
+   component's own z-index:0. */
+.mc-stage-root .mc-substrate { z-index: 0; }
+
 .mc-wrap {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
@@ -2147,6 +2160,8 @@ const STAGE_CSS = `
 .mc-mode-note { font-size: 13px; color: var(--mc-muted); margin-top: 12px; }
 
 .mc-foot {
+  position: relative;
+  z-index: 1;
   border-top: 1px solid var(--mc-line);
   color: var(--mc-muted);
   font-size: 13px;
