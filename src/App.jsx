@@ -211,7 +211,7 @@ function RootRoute() {
     seen = window.localStorage.getItem('nextus.welcomeSeen') === '1'
   } catch {}
 
-  if (!welcomePath || seen) return <MissionControl />
+  if (!welcomePath || seen) return <MissionControl />  // the four-beat loop home (Horizon · Now · Next step · Path)
 
   const path = ['org', 'practitioner', 'self'].includes(welcomePath)
     ? welcomePath
@@ -361,6 +361,7 @@ function AppInner() {
         <Route path="/profile/edit"                 element={<ProfileEdit />} />
         <Route path="/profile/:id"                  element={<MemberPublicPage />} />
         <Route path="/feed"                         element={<FeedPage />} />
+        <Route path="/next"                         element={<Navigate to="/" replace />} />  {/* reshape preview retired · the four-beat loop is now home */}
         <Route path="/contribution"                 element={<ContributionPage />} />
         <Route path="/contribution/legacy"          element={<Contribution />} />
         <Route path="/stretch/c/:slug"              element={<ChallengePage />} />

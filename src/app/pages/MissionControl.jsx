@@ -46,6 +46,8 @@ import FirstLightPrompt   from '../components/FirstLightPrompt'
 import HorizonBanner       from '../components/mission-control/HorizonBanner'
 import WorldMapSubstrate  from '../components/mission-control/WorldMapSubstrate'
 import WheelStage         from '../components/mission-control/WheelStage'
+import NowFeed            from '../components/mission-control/NowFeed'
+import SideRail           from '../components/mission-control/SideRail'
 import Tile               from '../components/mission-control/Tile'
 import Panel              from '../components/mission-control/Panel'
 import CivDomainPanel             from '../components/mission-control/CivDomainPanel'
@@ -76,7 +78,7 @@ import InterestsIcon       from '../components/mission-control/InterestsIcon'
 import MyInterestsPanel    from '../components/mission-control/MyInterestsPanel'
 
 import useMissionControlData from '../components/mission-control/useMissionControlData'
-import { BG_PARCHMENT, BG_INK, GOLD, TEXT_META, TEXT_WHITE_META } from '../components/mission-control/tokens'
+import { BG_PARCHMENT, BG_INK } from '../components/mission-control/tokens'
 
 import { fetchDomains, STATIC_DOMAINS, TOP_LEVEL_GOAL } from '../../components/domain-explorer/data'
 import { CURRENT_STATE } from '../../components/domain-explorer/currentState'
@@ -422,6 +424,9 @@ export default function MissionControl() {
   const DEFAULT_SCOPE = 'planet'
   const [activeScope, setActiveScope] = useState(DEFAULT_SCOPE)
   const [orgOpen, setOrgOpen] = useState(false)
+  // The Now beat holds two states in one surface: a quiet 'glance'
+  // (wheel + live counts) and, when leaned into, the 'feed'.
+  const [nowView, setNowView] = useState('glance')
   const currentWheel = activeScope === 'planet' ? 'civ' : 'personal'
 
   const isCiv = currentWheel === 'civ'
@@ -1035,6 +1040,65 @@ export default function MissionControl() {
   const worldViewState = null
   const planetSprintState = null
 
+  // ─── Now-glance live counts ──────────────────────────────────
+  // Self side reads the person's real Map / streak / to-do / IA
+  // progress. Planet side reads the civ indicator rollup. Every
+  // number here is sourced, never invented; a stat with no real
+  // value is simply not shown.
+  const streakDays = data.foundationData?.streak_days || 0
+  const civPlacedCount = Object.keys(civCurrent).length
+  const civAvgPct = civPlacedCount > 0
+    ? Math.round(
+        (Object.values(civCurrent).reduce((a, b) => a + b, 0) / civPlacedCount) * 10
+      )
+    : null
+
+  const glanceStats = isCiv
+    ? [
+        { big: String(civPlacedCount), small: ' / 7', lbl: 'Domains tracked' },
+        ...(civAvgPct != null ? [{ big: String(civAvgPct), small: '%', lbl: 'Toward the goal' }] : []),
+      ]
+    : [
+        { big: String(mapAudited), small: ' / 7', lbl: 'Domains mapped' },
+        ...(streakDays > 0 ? [{ big: String(streakDays), small: ' day', lbl: 'Streak' }] : []),
+        { big: String(toDoCount), lbl: 'Open next steps' },
+        { big: String(iaCount), small: ' / 7', lbl: 'I am statements' },
+      ]
+
+  // ─── Beat cards ──────────────────────────────────────────────
+  // Each card wraps a real tool: its onClick fires the same handler
+  // the old rail tiles fired. Pole-aware — My Life vs Our Planet.
+  const horizonCards = isCiv
+    ? [
+        { kicker: 'World View', title: 'The world we want', blurb: 'A shared picture of the future worth building.', cta: 'Open World View', img: 'mc-im3', onClick: () => openCivPanel('world-view') },
+        { kicker: 'My Focus', title: 'What you’re here for', blurb: 'The domain of the planet you’re choosing to move.', cta: 'Set your focus', img: 'mc-im2', onClick: () => { setActiveScope('planet'); setActivePanel('focus') } },
+      ]
+    : [
+        { kicker: 'North Star', title: 'Your guiding aim', blurb: 'The one direction the whole loop points towards.', cta: 'Set your star', img: 'mc-im1', onClick: () => navigate('/north-star') },
+        { kicker: 'NextU', title: 'Who you’re becoming', blurb: 'Your seven domains, growing towards the horizon.', cta: 'Open NextU', img: 'mc-im5', onClick: () => navigate('/nextu') },
+      ]
+
+  const nextCards = isCiv
+    ? [
+        { kicker: 'Planet Sprint', title: 'Join a sprint', blurb: 'A focused push on a real-world goal.', cta: 'Find a sprint', img: 'mc-im8', onClick: () => openCivPanel('missions') },
+        { kicker: 'My Org', title: 'Your organisation', blurb: 'Rally a team behind the work.', cta: 'Open My Org', img: 'mc-im4', onClick: () => setOrgOpen(true) },
+        { kicker: 'Add Org', title: 'Start something', blurb: 'Bring a new organisation onto the map.', cta: 'Add an org', img: 'mc-im2', onClick: () => navigate('/add') },
+      ]
+    : [
+        { kicker: 'Get To Do', title: 'Your next step', blurb: 'One clear action, drawn from your horizon.', cta: 'See what’s next', img: 'mc-im6', onClick: () => openPersonalPanel('get-to-do') },
+        { kicker: 'Circles', title: 'Move with people', blurb: 'The people walking the same way as you.', cta: 'Open Circles', img: 'mc-im5', onClick: () => navigate('/circles') },
+      ]
+
+  const pathCards = isCiv
+    ? [
+        { kicker: 'Your Guide', title: 'Find the way', blurb: 'Guidance for the route from here to there.', cta: 'Open your guide', img: 'mc-im3', onClick: () => navigate('/guide') },
+        { kicker: 'Search', title: 'Find anything', blurb: 'People, orgs, missions, moments across the planet.', cta: 'Search', img: 'mc-im4', onClick: () => navigate('/search') },
+      ]
+    : [
+        { kicker: 'Daily', title: 'Your loop, closing', blurb: 'Each step bends the path back to your horizon.', cta: 'Open your day', img: 'mc-im7', onClick: openDaily },
+        { kicker: 'Journal', title: 'The record of becoming', blurb: 'Where the path is written down, day by day.', cta: 'Open Journal', img: 'mc-im5', onClick: () => navigate('/journal') },
+      ]
+
   return (
     <div
       id="mc-stage-root"
@@ -1044,302 +1108,322 @@ export default function MissionControl() {
 
       <BeaconStrip userId={data.user?.id} />
 
-      <WorldMapSubstrate />
-
-      <IdentityStrip
-        userName={userName}
-        placement={displayPlacement}
-        onProfile={() => setActivePanel('profile')}
-        onSettings={() => setActivePanel('settings')}
-        onFindFit={() => {
-          if (!data.user) { navigate('/login'); return }
-          openCivPanel('purpose-piece')
-        }}
-      />
-
-      <PoleHeader
-        active={activeScope}
-        scopes={topScopes}
-        onSelect={handleScopeSelect}
-      />
-
-      <main className="mc-body">
-
-        {/* HORIZON · where you're headed */}
-        <div className="mc-beat">Horizon · where you're headed</div>
-        {/* The declared horizon's home — top of Mission Control (BP-8).
-            Shows the line verbatim once declared, else the declare affordance. */}
-        <HorizonBanner userId={data.user?.id} />
-
-        <FirstLightPrompt style={{ margin: '0 auto 18px', maxWidth: 720 }} />
-
-        {(activeScope === 'self' || activeScope === 'planet') && (
-        <>
-        {/* NOW · where you are — the wheel, and the domain navigator */}
-        <div className="mc-beat">Now · where you are</div>
-        <div className="mc-centre-col">
-            {/* Civ breadcrumb — appears only on planet side. Sits above
-                the wheel; current segment in gold, prior segments are
-                tappable to jump back up the tree. Lifted from the
-                old DomainPanel breadcrumb (IBM Plex Mono, 17px,
-                uppercase, gold separators). */}
-            {isCiv && (
-              <nav className="mc-civ-crumbs" aria-label="Civilisational breadcrumb">
-                {civCrumbs.map((c, i) => {
-                  const isCurrent = i === civCrumbs.length - 1
-                  return (
-                    <span key={`crumb-${i}`}>
-                      {i > 0 && <span className="mc-crumb-sep">›</span>}
-                      {isCurrent ? (
-                        <span className="mc-crumb-current">{c.label}</span>
-                      ) : (
-                        <button
-                          type="button"
-                          className="mc-crumb-seg"
-                          onClick={() => handleCivCrumb(c.depth)}
-                        >
-                          {c.label}
-                        </button>
-                      )}
-                    </span>
-                  )
-                })}
-              </nav>
-            )}
-            {isCiv && (
-              <CivDomainHeader
-                levelPath={levelPath}
-                showOverview={showOverview}
-                parentPanelOpen={parentPanelOpen}
-                parentItem={parentItem}
-                selectedItem={selectedItem}
-              />
-            )}
-            <WheelStage
-              currentWheel={currentWheel}
-              personalProps={{
-                labels:    SELF_LABELS,
-                keys:      SELF_KEYS,
-                horizons:  personalHorizonsSafe,
-                current:   personalCurrentSafe,
-                activeKey: (!actingAsActorNow && selfActiveIndex !== null) ? SELF_KEYS[selfActiveIndex] : null,
-                walkers:   personalWalkers,
-                isEmpty:   personalIsEmpty,
-                offState:  personalOffState,
-                onSelect:  handleSelfSelect,
-                onCentreClick: handleSelfCentreClick,
-              }}
-              civProps={{
-                labels:        wheelLabels,
-                keys:          wheelKeys,
-                domains:       currentList,
-                activeIndex:   activeIndex,
-                centreLabel:   centreLabel,
-                bloom:         bloomCiv,
-                onSelect:      handleCivSelect,
-                onLand:        handleCivLand,
-                onDrillDown:   handleCivDrillDown,
-                onCentreClick: handleCivCentreClick,
-                placementKey:  civPlacement,
-                focusKeys:     civFocusKeys,
-                walkers:       civWalkers,
-                // Polygon — only meaningful at the top level; at sub-
-                // levels wheelKeys are sub-domain ids with no scores.
-                current:       levelPath.length === 0 ? civCurrent : {},
-                horizons:      levelPath.length === 0 ? civHorizons : {},
-              }}
-            />
-          </div>
-
-        {/* where you are, per domain */}
-        {!isCiv && !actingAsActorNow && (
-          <SelfDomainPanel
-            currentList={SELF_DOMAINS}
-            selectedItem={selfActiveIndex !== null ? SELF_DOMAINS[selfActiveIndex] : null}
-            showOverview={selfShowOverview && selfActiveIndex === null}
-            topLevelGoal={SELF_TOP_GOAL}
-            lifeHorizon={lifeHorizon}
-            lifeIa={lifeIa}
-            userScores={selfDomainDetail}
-            activeSprintDomainKey={sprintKey}
-            onSelect={handleSelfSelect}
-            onPrev={handleSelfPrev}
-            onNext={handleSelfNext}
-            onOpenMap={() => openPersonalPanel('map')}
-            onOpenSprint={() => openPersonalPanel('target-sprint')}
-            onOpenPractice={() => navigate('/tools/horizon-practice')}
-            onOpenHorizonState={openDaily}
-          />
-        )}
-        {isCiv && (
-          <CivDomainPanel
-            levelPath={levelPath}
-            currentList={currentList}
-            selectedItem={selectedItem}
-            parentItem={parentItem}
-            parentPanelOpen={parentPanelOpen}
-            showOverview={showOverview && levelPath.length === 0}
-            topLevelGoal={TOP_LEVEL_GOAL}
-            overviewHorizon={OVERVIEW_HORIZON}
-            overviewState={OVERVIEW_STATE}
-            overviewNext={OVERVIEW_NEXT}
-            civScores={civScores}
-            civDetails={civDetails}
-            currentStateData={CURRENT_STATE}
-            panelAnchor={panelAnchor}
-            onAnchorConsumed={() => setPanelAnchor(null)}
-            onSelect={handleCivSelect}
-            onDrillDown={handleCivDrillDown}
-            onBack={handleCivBack}
-            onPrev={handleCivPrev}
-            onNext={handleCivNext}
-            onContribute={handleCivContribute}
-            busy={false}
-          />
-        )}
-
-        {/* YOUR NEXT STEP · one solid move, chosen by state */}
-        <div className="mc-beat">Your next step</div>
-        <div className="mc-loop-cta-wrap">
+      {/* ─── STICKY NAV — gold NextUs wordmark, pole toggle, beats ─── */}
+      <nav className="mc-nav">
+        <div className="mc-nav-inner">
           <button
             type="button"
-            className="mc-next-door"
-            onClick={isCiv
-              ? () => openCivPanel('world-view')
-              : (mapComplete ? openDaily : () => openPersonalPanel('map'))}
+            className="mc-brand"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label="NextUs · home"
           >
-            {isCiv ? 'See the state of the world' : (mapComplete ? 'Step into today' : 'Find where you stand · open The Map')}
-            <span className="mc-next-arrow">→</span>
+            Next<span>Us</span>
           </button>
-        </div>
 
-        {/* YOUR TOOLS · every tool kept, grouped by scale */}
-        <div className="mc-beat">Your tools · reach anything</div>
-        <div className="mc-toolshelf">
-          <div className="mc-tool-group">
-            <div className="mc-tool-group-label">My Life</div>
-            <div className="mc-tool-grid">
-              <Tile
-              glyph={<MapPinGlyph />}
-              label="NextU"
-              state={nextUState}
-              onClick={() => navigate('/nextu')}
-              title="NextU — your personal journey"
-            />
-            <Tile
-              glyph="★"
-              label={<>NORTH<br/>STAR</>}
-              state={null}
-              onClick={() => navigate('/north-star')}
-              title="North Star — the whole-life synthesis, near The Map"
-            />
-            <Tile
-              glyph={<HorizonStateGauge />}
-              label="Daily"
-              state={hsState}
-              onClick={openDaily}
-              title="Daily — arrive, work, embark"
-            />
-            <Tile
-              glyph="✦"
-              label={<>GET TO<br/>DO</>}
-              state={toDoCount > 0 ? `${toDoCount} TO DO` : null}
-              onClick={() => openPersonalPanel('get-to-do')}
-              title="Get To Do — your stretch items and calendar"
-            />
-            <Tile
-              glyph="≡"
-              label="Journal"
-              state={null}
-              onClick={() => navigate('/journal')}
-              title="Journal — your record of becoming"
-            />
-            <Tile
-              glyph="◍"
-              label="Circles"
-              state={null}
-              onClick={() => navigate('/circles')}
-              title="Your circles — small, member-only rooms"
-            />
-            <Tile
-              glyph={<MessagesIcon />}
-              label="Mail"
-              state={null}
-              onClick={() => setActivePanel('messages')}
-              title="Mail — your inboxes"
-            />
-            </div>
+          <div className="mc-pole" role="tablist" aria-label="Scale">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={!isCiv}
+              className={!isCiv ? 'on' : ''}
+              onClick={() => handleScopeSelect('self')}
+            >
+              My Life
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={isCiv}
+              className={isCiv ? 'on' : ''}
+              onClick={() => handleScopeSelect('planet')}
+            >
+              Our Planet
+            </button>
           </div>
-          <div className="mc-tool-group">
-            <div className="mc-tool-group-label">Our Planet</div>
-            <div className="mc-tool-grid">
-              <Tile
-              glyph="◈"
-              label="MY ORG"
-              state={null}
-              onClick={() => setOrgOpen(true)}
-              title="My Org — the org tree you steward"
-            />
-            <Tile
-              glyph="◎"
-              label={<>MY<br/>FOCUS</>}
-              state={null}
-              active={!!hasActiveFocus}
-              onClick={() => setActivePanel('focus')}
-              title="My Focus — places, domains, organisations you're centring on"
-            />
-            <Tile
-              glyph="◯"
-              label={<>WORLD<br/>VIEW</>}
-              state={worldViewState}
-              onClick={() => openCivPanel('world-view')}
-              title="World View — explore the planetary state"
-            />
-            <Tile
-              glyph="⇶"
-              label={<>PLANET<br/>SPRINT</>}
-              state={planetSprintState}
-              onClick={() => openCivPanel('missions')}
-              title="Planet Sprint — quests offered by orgs"
-            />
-            <Tile
-              glyph={<SearchGlyph />}
-              label="SEARCH"
-              state={null}
-              onClick={() => navigate('/search')}
-              title="Search the Atlas"
-            />
-            <Tile
-              glyph="⊞"
-              label={<>YOUR<br/>GUIDE</>}
-              state={null}
-              onClick={() => navigate('/guide')} // label + slug provisional · naming session pending
-              title="Your guide — the organisations you've met"
-            />
-            <Tile
-              glyph="◉"
-              label="TODAY"
-              state={null}
-              onClick={() => navigate('/today')}
-              title="Today — the work being done, in photos and lines"
-            />
-            <Tile
-              glyph="＋"
-              label="ADD ORG"
-              state={null}
-              onClick={() => navigate('/add')}
-              title="Add to the ecosystem"
-            />
-            </div>
+
+          <div className="mc-nav-spacer" />
+
+          <div className="mc-nav-links">
+            <a href="#beat-horizon">Horizon</a>
+            <a href="#beat-now">Now</a>
+            <a href="#beat-next">Next step</a>
+            <a href="#beat-path">Path</a>
           </div>
+
+          <button
+            type="button"
+            className="mc-icon-btn"
+            onClick={() => setActivePanel('messages')}
+            aria-label="Mail"
+            title="Mail"
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="m3 7 9 6 9-6" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="mc-avatar"
+            onClick={() => setActivePanel('profile')}
+            aria-label={userName}
+            title={userName}
+          />
         </div>
-        </>
-        )}
+      </nav>
+
+      <main className="mc-wrap">
+
+
+        {/* ─── BEAT 1 · HORIZON — What we want ─────────────────── */}
+        <section className="mc-beat" id="beat-horizon">
+          <div className="mc-eyebrow"><span className="mc-dot" /> What we want <span className="mc-n">· Horizon</span></div>
+          <h2 className="mc-beat-h">{isCiv ? 'The future we’re reaching for.' : 'The future you’re reaching for.'}</h2>
+          <p className="mc-lede">{isCiv
+            ? 'Name it together, hold it in view, and let the work line up behind it.'
+            : 'Name it, hold it in view, and let everything else line up behind it.'}</p>
+
+          {/* The declared horizon's home (BP-8) — verbatim once declared. */}
+          <HorizonBanner userId={data.user?.id} />
+          <FirstLightPrompt style={{ margin: '18px 0 0', maxWidth: 720 }} />
+
+          <div className="mc-cards">
+            {horizonCards.map((c, i) => (
+              <button key={c.kicker + i} type="button" className="mc-card" onClick={c.onClick}>
+                <span className={`mc-card-img ${c.img}`} />
+                <span className="mc-card-body">
+                  <span className="mc-card-kicker">{c.kicker}</span>
+                  <span className="mc-card-h">{c.title}</span>
+                  <span className="mc-card-p">{c.blurb}</span>
+                  <span className="mc-card-go">{c.cta}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* ─── BEAT 2 · NOW — Where we are (one surface, two states) ─── */}
+        <section className="mc-beat" id="beat-now">
+          <div className="mc-ribbon-head">
+            <div>
+              <div className="mc-eyebrow"><span className="mc-dot" /> Where we are <span className="mc-n">· Now</span></div>
+              <h2 className="mc-beat-h">{isCiv ? 'Where the planet stands.' : 'Right now, at a glance.'}</h2>
+            </div>
+          </div>
+
+          <div className="mc-now-shell">
+            <div className="mc-now-bar">
+              <span className="mc-state-word">{isCiv ? 'Planet state' : 'Your state'}</span>
+              <div className="mc-now-toggle" role="tablist" aria-label="Now view">
+                <button type="button" role="tab" aria-selected={nowView === 'glance'} className={nowView === 'glance' ? 'on' : ''} onClick={() => setNowView('glance')}>Glance</button>
+                <button type="button" role="tab" aria-selected={nowView === 'feed'} className={nowView === 'feed' ? 'on' : ''} onClick={() => setNowView('feed')}>Feed</button>
+              </div>
+            </div>
+
+            {/* COLLAPSED — the wheel (reused as-is) + live counts */}
+            {nowView === 'glance' && (activeScope === 'self' || activeScope === 'planet') && (
+              <div className="mc-now-view">
+                <div className="mc-glance">
+                  <div className="mc-wheel-wrap">
+                    <div className={`mc-instrument${isCiv ? ' mc-instrument--dark' : ''}`} data-stage={isCiv ? 'dark' : undefined}>
+                      {isCiv && (
+                        <nav className="mc-civ-crumbs" aria-label="Civilisational breadcrumb">
+                          {civCrumbs.map((c, i) => {
+                            const isCurrent = i === civCrumbs.length - 1
+                            return (
+                              <span key={`crumb-${i}`}>
+                                {i > 0 && <span className="mc-crumb-sep">›</span>}
+                                {isCurrent ? (
+                                  <span className="mc-crumb-current">{c.label}</span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    className="mc-crumb-seg"
+                                    onClick={() => handleCivCrumb(c.depth)}
+                                  >
+                                    {c.label}
+                                  </button>
+                                )}
+                              </span>
+                            )
+                          })}
+                        </nav>
+                      )}
+                      {isCiv && (
+                        <CivDomainHeader
+                          levelPath={levelPath}
+                          showOverview={showOverview}
+                          parentPanelOpen={parentPanelOpen}
+                          parentItem={parentItem}
+                          selectedItem={selectedItem}
+                        />
+                      )}
+                      <WheelStage
+                        currentWheel={currentWheel}
+                        personalProps={{
+                          labels:    SELF_LABELS,
+                          keys:      SELF_KEYS,
+                          horizons:  personalHorizonsSafe,
+                          current:   personalCurrentSafe,
+                          activeKey: (!actingAsActorNow && selfActiveIndex !== null) ? SELF_KEYS[selfActiveIndex] : null,
+                          walkers:   personalWalkers,
+                          isEmpty:   personalIsEmpty,
+                          offState:  personalOffState,
+                          onSelect:  handleSelfSelect,
+                          onCentreClick: handleSelfCentreClick,
+                        }}
+                        civProps={{
+                          labels:        wheelLabels,
+                          keys:          wheelKeys,
+                          domains:       currentList,
+                          activeIndex:   activeIndex,
+                          centreLabel:   centreLabel,
+                          bloom:         bloomCiv,
+                          onSelect:      handleCivSelect,
+                          onLand:        handleCivLand,
+                          onDrillDown:   handleCivDrillDown,
+                          onCentreClick: handleCivCentreClick,
+                          placementKey:  civPlacement,
+                          focusKeys:     civFocusKeys,
+                          walkers:       civWalkers,
+                          current:       levelPath.length === 0 ? civCurrent : {},
+                          horizons:      levelPath.length === 0 ? civHorizons : {},
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {glanceStats.length > 0 && (
+                    <div className="mc-stats">
+                      {glanceStats.map((s, i) => (
+                        <div key={s.lbl + i} className="mc-stat">
+                          <div className="mc-stat-big">{s.big}{s.small && <small>{s.small}</small>}</div>
+                          <div className="mc-stat-lbl">{s.lbl}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Selecting a spoke opens its detail below the wheel —
+                    the same wiring the old scroll-below carried. */}
+                {!isCiv && !actingAsActorNow && (
+                  <div className="mc-glance-detail">
+                    <SelfDomainPanel
+                      currentList={SELF_DOMAINS}
+                      selectedItem={selfActiveIndex !== null ? SELF_DOMAINS[selfActiveIndex] : null}
+                      showOverview={selfShowOverview && selfActiveIndex === null}
+                      topLevelGoal={SELF_TOP_GOAL}
+                      lifeHorizon={lifeHorizon}
+                      lifeIa={lifeIa}
+                      userScores={selfDomainDetail}
+                      activeSprintDomainKey={sprintKey}
+                      onSelect={handleSelfSelect}
+                      onPrev={handleSelfPrev}
+                      onNext={handleSelfNext}
+                      onOpenMap={() => openPersonalPanel('map')}
+                      onOpenSprint={() => openPersonalPanel('target-sprint')}
+                      onOpenPractice={() => navigate('/tools/horizon-practice')}
+                      onOpenHorizonState={openDaily}
+                    />
+                  </div>
+                )}
+                {isCiv && (
+                  <div className="mc-glance-detail mc-glance-detail--dark" data-stage="dark">
+                    <CivDomainPanel
+                      levelPath={levelPath}
+                      currentList={currentList}
+                      selectedItem={selectedItem}
+                      parentItem={parentItem}
+                      parentPanelOpen={parentPanelOpen}
+                      showOverview={showOverview && levelPath.length === 0}
+                      topLevelGoal={TOP_LEVEL_GOAL}
+                      overviewHorizon={OVERVIEW_HORIZON}
+                      overviewState={OVERVIEW_STATE}
+                      overviewNext={OVERVIEW_NEXT}
+                      civScores={civScores}
+                      civDetails={civDetails}
+                      currentStateData={CURRENT_STATE}
+                      panelAnchor={panelAnchor}
+                      onAnchorConsumed={() => setPanelAnchor(null)}
+                      onSelect={handleCivSelect}
+                      onDrillDown={handleCivDrillDown}
+                      onBack={handleCivBack}
+                      onPrev={handleCivPrev}
+                      onNext={handleCivNext}
+                      onContribute={handleCivContribute}
+                      busy={false}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* EXPANDED — the real moments feed takes over the same space */}
+            {nowView === 'feed' && (
+              <div className="mc-now-view">
+                <NowFeed userId={data.user?.id} onCompose={() => navigate('/add')} />
+              </div>
+            )}
+          </div>
+          <p className="mc-mode-note">Glance is quiet by default. Lean in and the feed takes over the same space.</p>
+        </section>
+
+        {/* ─── BEAT 3 · NEXT STEP — What's next ─────────────────── */}
+        <section className="mc-beat" id="beat-next">
+          <div className="mc-ribbon-head">
+            <div>
+              <div className="mc-eyebrow"><span className="mc-dot" /> What’s next <span className="mc-n">· Next step</span></div>
+              <h2 className="mc-beat-h">{isCiv ? 'The next move together.' : 'The one thing to do next.'}</h2>
+            </div>
+          </div>
+          <div className="mc-cards">
+            {nextCards.map((c, i) => (
+              <button key={c.kicker + i} type="button" className="mc-card" onClick={c.onClick}>
+                <span className={`mc-card-img ${c.img}`} />
+                <span className="mc-card-body">
+                  <span className="mc-card-kicker">{c.kicker}</span>
+                  <span className="mc-card-h">{c.title}</span>
+                  <span className="mc-card-p">{c.blurb}</span>
+                  <span className="mc-card-go">{c.cta}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* ─── BEAT 4 · PATH — How we get there ─────────────────── */}
+        <section className="mc-beat" id="beat-path">
+          <div className="mc-ribbon-head">
+            <div>
+              <div className="mc-eyebrow"><span className="mc-dot" /> How we get there <span className="mc-n">· Path</span></div>
+              <h2 className="mc-beat-h">{isCiv ? 'The route we take together.' : 'The way forward, kept in sight.'}</h2>
+            </div>
+          </div>
+          <div className="mc-cards">
+            {pathCards.map((c, i) => (
+              <button key={c.kicker + i} type="button" className="mc-card" onClick={c.onClick}>
+                <span className={`mc-card-img ${c.img}`} />
+                <span className="mc-card-body">
+                  <span className="mc-card-kicker">{c.kicker}</span>
+                  <span className="mc-card-h">{c.title}</span>
+                  <span className="mc-card-p">{c.blurb}</span>
+                  <span className="mc-card-go">{c.cta}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
 
         {activeScope === 'practice' && (
           <MyPracticeMissionPanel userId={data.user?.id} />
         )}
+
       </main>
+
+      <footer className="mc-foot">
+        <div className="mc-wrap">NextUs · What we want · Where we are · What’s next · How we get there</div>
+      </footer>
 
       {/* ─── MY ORG — opens from the right-rail tile, fades up in place ─ */}
       <OrgRoomOverlay open={orgOpen} onClose={() => setOrgOpen(false)} userId={data.user?.id} />
@@ -1568,130 +1652,365 @@ export default function MissionControl() {
 }
 
 const STAGE_CSS = `
+/* ─────────────────────────────────────────────────────────────
+   NextUs · Mission Control home — the four-beat loop.
+   TED + Omega + Tesla: one bright ground for both poles, the
+   accent alone carries scale. My Life = moss; Our Planet = clay.
+   The gold NextUs wordmark is constant across both.
+   ───────────────────────────────────────────────────────────── */
+
 .mc-stage-root {
+  /* Shared bright ground (Omega-bright) for BOTH poles. */
+  --mc-gold:#cf9a24;
+  --mc-bg:#f3f0e9;
+  --mc-surface:#ffffff;
+  --mc-surface-2:#eae5da;
+  --mc-ink:#262420;
+  --mc-muted:rgba(38,36,32,.58);
+  --mc-line:rgba(38,36,32,.11);
+  --mc-shadow:0 1px 2px rgba(38,36,32,.06), 0 10px 32px rgba(38,36,32,.08);
+  /* My Life accent (moss green) */
+  --mc-accent:#4c6b45;
+  --mc-accent-ink:#ffffff;
+  --mc-accent-soft:#e7ede0;
+
   position: relative;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: ${BG_PARCHMENT};
-  transition: background 0.6s ease;
-  color: #0F1523;
-}
-.mc-stage-root[data-stage="dark"] {
-  background: ${BG_INK};
-  color: #FFFFFF;
+  background: var(--mc-bg);
+  color: var(--mc-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  transition: background .5s ease, color .5s ease;
 }
 
-.mc-body {
+/* Our Planet: same bright ground, earthy clay accent only.
+   data-stage="dark" is the existing scope flag (set on planet);
+   here it swaps the ACCENT, it does not darken the ground. */
+.mc-stage-root[data-stage="dark"] {
+  --mc-accent:#a9743f;
+  --mc-accent-ink:#ffffff;
+  --mc-accent-soft:#e6d8bf;
+  background: var(--mc-bg);
+  color: var(--mc-ink);
+}
+
+.mc-wrap {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* ── sticky nav ─────────────────────────────────────────────── */
+.mc-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--mc-bg) 88%, transparent);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  backdrop-filter: saturate(140%) blur(14px);
+  border-bottom: 1px solid var(--mc-line);
+}
+.mc-nav-inner {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 66px;
+}
+.mc-brand {
+  font-weight: 800;
+  letter-spacing: -.02em;
+  font-size: 19px;
+  color: var(--mc-ink);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+.mc-brand span { color: var(--mc-gold); }
+.mc-nav-spacer { flex: 1; }
+.mc-nav-links { display: flex; gap: 22px; }
+.mc-nav-links a {
+  color: var(--mc-muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+.mc-nav-links a:hover { color: var(--mc-ink); }
+
+.mc-pole {
+  display: inline-flex;
+  background: var(--mc-surface-2);
+  border: 1px solid var(--mc-line);
+  border-radius: 999px;
+  padding: 4px;
+  gap: 2px;
+}
+.mc-pole button {
+  border: 0;
+  background: transparent;
+  color: var(--mc-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  padding: 7px 16px;
+  border-radius: 999px;
+  transition: all .25s ease;
+  white-space: nowrap;
+}
+.mc-pole button.on {
+  background: var(--mc-accent);
+  color: var(--mc-accent-ink);
+  box-shadow: var(--mc-shadow);
+}
+
+.mc-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--mc-line);
+  background: var(--mc-surface);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--mc-ink);
+}
+.mc-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--mc-line);
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--mc-accent), color-mix(in srgb, var(--mc-accent) 55%, #000));
+}
+
+/* ── beat ribbon ────────────────────────────────────────────── */
+.mc-beat { padding: 64px 0 8px; }
+.mc-beat:last-of-type { padding-bottom: 80px; }
+.mc-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mc-accent);
+}
+.mc-eyebrow .mc-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--mc-accent);
+}
+.mc-eyebrow .mc-n {
+  color: var(--mc-muted);
+  font-weight: 700;
+  letter-spacing: .06em;
+}
+.mc-beat-h {
+  font-size: clamp(30px, 4.4vw, 52px);
+  line-height: 1.02;
+  letter-spacing: -.03em;
+  font-weight: 800;
+  margin: 14px 0 6px;
+  max-width: 18ch;
+}
+.mc-lede {
+  color: var(--mc-muted);
+  font-size: 16px;
+  max-width: 52ch;
+  margin-bottom: 26px;
+}
+.mc-ribbon-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 4px;
+}
+
+/* ── tool cards ─────────────────────────────────────────────── */
+.mc-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+}
+.mc-card {
   position: relative;
-  z-index: 2;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--mc-surface);
+  border: 1px solid var(--mc-line);
+  box-shadow: var(--mc-shadow);
+  cursor: pointer;
+  transition: transform .3s ease, box-shadow .3s ease;
+  text-align: left;
+  color: inherit;
+  font-family: inherit;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 230px;
+}
+.mc-card:hover { transform: translateY(-4px); box-shadow: 0 14px 44px rgba(38,36,32,.18); }
+.mc-card-img {
+  height: 150px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: block;
+}
+.mc-card-img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,.28));
+}
+.mc-card-body {
+  padding: 16px 18px 20px;
   flex: 1;
   display: flex;
   flex-direction: column;
 }
-
-/* ── Loop reflow · beat framing + tool shelf (same tools, clearer flow) ── */
-.mc-beat {
-  font-family: 'IBM Plex Mono', Georgia, serif;
+.mc-card-kicker {
   font-size: 13px;
-  letter-spacing: 0.22em;
+  font-weight: 800;
+  letter-spacing: .08em;
   text-transform: uppercase;
-  color: ${GOLD};
-  opacity: 0.85;
-  text-align: center;
-  margin: 26px auto 12px;
+  color: var(--mc-accent);
+  margin-bottom: 6px;
 }
-.mc-stage-root[data-stage="dark"] .mc-beat { color: ${TEXT_WHITE_META}; opacity: 1; }
+.mc-card-h { font-size: 19px; letter-spacing: -.01em; margin-bottom: 5px; font-weight: 700; }
+.mc-card-p { font-size: 13px; color: var(--mc-muted); line-height: 1.45; }
+.mc-card-go { margin-top: auto; padding-top: 12px; font-size: 13px; font-weight: 700; color: var(--mc-ink); }
+.mc-card-go::after { content: " ›"; color: var(--mc-accent); }
 
-.mc-loop-cta-wrap { display: flex; justify-content: center; padding: 0 24px 4px; }
-.mc-next-door {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 18px;
-  border: none;
-  border-radius: 6px;
-  padding: 16px 30px;
-  background: ${GOLD};
-  color: ${BG_PARCHMENT};
-  cursor: pointer;
+/* card gradient palettes (placeholder photography) */
+.mc-im1 { background-image: linear-gradient(135deg,#8fae7e,#4c6b45); }
+.mc-im2 { background-image: linear-gradient(135deg,#e3c68a,#b98b3e); }
+.mc-im3 { background-image: linear-gradient(135deg,#7fa9b0,#3d6b73); }
+.mc-im4 { background-image: linear-gradient(135deg,#c9a27f,#7a5233); }
+.mc-im5 { background-image: linear-gradient(135deg,#a7b98f,#5f7a48); }
+.mc-im6 { background-image: linear-gradient(135deg,#d8b48c,#9c6b3c); }
+.mc-im7 { background-image: linear-gradient(160deg,#6c8f6a,#2f4a30); }
+.mc-im8 { background-image: linear-gradient(160deg,#caa15f,#6e4a22); }
+
+/* ── NOW surface: collapsed <-> feed ────────────────────────── */
+.mc-now-shell {
+  border: 1px solid var(--mc-line);
+  border-radius: 22px;
+  background: var(--mc-surface);
+  box-shadow: var(--mc-shadow);
+  overflow: hidden;
+  margin-top: 22px;
+}
+.mc-now-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--mc-line);
+}
+.mc-state-word { font-size: 13px; color: var(--mc-muted); font-weight: 600; }
+.mc-now-toggle {
+  margin-left: auto;
   display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: 0 6px 16px rgba(15,21,35,0.22);
-  transition: filter 0.2s ease;
-  max-width: 560px;
-  text-align: left;
+  background: var(--mc-surface-2);
+  border: 1px solid var(--mc-line);
+  border-radius: 999px;
+  padding: 3px;
 }
-.mc-next-door:hover { filter: brightness(1.07); }
-.mc-next-arrow { font-family: 'IBM Plex Mono', Georgia, serif; }
-
-.mc-toolshelf {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  justify-content: center;
-  padding: 4px 24px 30px;
-  max-width: 1100px;
-  margin: 0 auto;
-  width: 100%;
-}
-.mc-tool-group { flex: 1 1 340px; min-width: 260px; }
-.mc-tool-group-label {
-  font-family: 'IBM Plex Mono', Georgia, serif;
+.mc-now-toggle button {
+  border: 0;
+  background: transparent;
+  color: var(--mc-muted);
+  font: inherit;
   font-size: 13px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: ${TEXT_META};
-  margin-bottom: 10px;
-  text-align: center;
+  font-weight: 700;
+  padding: 7px 15px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all .2s;
 }
-.mc-stage-root[data-stage="dark"] .mc-tool-group-label { color: ${TEXT_WHITE_META}; }
-.mc-tool-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
-  gap: 8px;
-}
-@media (min-width: 1024px) {
-  .mc-tool-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
-}
+.mc-now-toggle button.on { background: var(--mc-accent); color: var(--mc-accent-ink); }
 
-.mc-grid {
-  position: relative;
-  z-index: 2;
+/* collapsed: wheel + stats */
+.mc-glance {
   display: grid;
-  grid-template-columns: 90px 1fr 90px;
-  gap: 16px;
-  padding: 28px 24px 16px;
-  align-items: start;
-}
-
-.mc-centre-col {
-  display: flex;
+  grid-template-columns: 320px 1fr;
+  gap: 30px;
+  padding: 30px;
   align-items: center;
-  justify-content: center;
-  min-height: 380px;
-  padding: 0 24px;
+}
+.mc-wheel-wrap { display: grid; place-items: center; }
+.mc-instrument {
+  width: 100%;
+  display: flex;
   flex-direction: column;
+  align-items: center;
+  border-radius: 18px;
+  padding: 8px;
+}
+/* Civ wheel + civ header are drawn for a dark stage; give them a
+   contained dark instrument frame so they read on the bright ground. */
+.mc-instrument--dark {
+  background: ${BG_INK};
+  padding: 20px 16px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.mc-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.mc-stat {
+  border: 1px solid var(--mc-line);
+  border-radius: 14px;
+  padding: 16px 18px;
+  background: var(--mc-surface-2);
+}
+.mc-stat-big { font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+.mc-stat-big small { font-size: 14px; font-weight: 700; color: var(--mc-muted); }
+.mc-stat-lbl { font-size: 13px; color: var(--mc-muted); font-weight: 600; margin-top: 2px; }
+
+.mc-glance-detail { padding: 0 30px 30px; }
+.mc-glance-detail--dark {
+  margin: 0 20px 24px;
+  padding: 20px;
+  border-radius: 18px;
+  background: ${BG_INK};
+  color: #ffffff;
 }
 
-/* Civ breadcrumb — sits above the wheel on planet side. Pattern
-   lifted from the legacy DomainPanel: IBM Plex Mono, uppercase,
-   gold separators, current segment in gold. Prior segments are
-   tappable buttons that pop levelPath back to that depth. */
+/* ── civ breadcrumb (reused from the legacy DomainPanel) ─────── */
 .mc-civ-crumbs {
   font-family: 'IBM Plex Mono', Georgia, serif;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 400;
-  letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: .12em;
+  color: rgba(255,255,255,.72);
   text-transform: uppercase;
   display: flex;
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 14px;
-  padding: 4px 12px;
-  min-height: 24px;
+  margin-bottom: 12px;
+  min-height: 22px;
 }
 .mc-crumb-seg {
   background: none;
@@ -1700,100 +2019,153 @@ const STAGE_CSS = `
   margin: 0;
   font: inherit;
   letter-spacing: inherit;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255,255,255,.72);
   text-transform: inherit;
   cursor: pointer;
   transition: color 150ms ease;
 }
-.mc-crumb-seg:hover { color: #FFFFFF; }
-.mc-crumb-sep { color: #D4A744; margin: 0 2px; }
-.mc-crumb-current { color: #D4A744; }
+.mc-crumb-seg:hover { color: #ffffff; }
+.mc-crumb-sep { color: var(--mc-gold); margin: 0 2px; }
+.mc-crumb-current { color: var(--mc-gold); }
 
-@media (max-width: 640px) {
-  .mc-civ-crumbs {
-    font-size: 13px;
-    letter-spacing: 0.16em;
-    margin-bottom: 8px;
-  }
+/* ── expanded: the real moments feed ────────────────────────── */
+.mc-feed { padding: 22px; }
+.mc-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 4px 20px;
+  border-bottom: 1px solid var(--mc-line);
+  margin-bottom: 20px;
 }
-
-@media (min-width: 1024px) {
-  .mc-grid {
-    grid-template-columns: 110px 1fr 110px;
-    gap: 24px;
-    padding: 36px 40px 20px;
-  }
-  .mc-centre-col {
-    min-height: 480px;
-    padding: 0 40px;
-  }
+.mc-composer-ask { font-size: 13px; color: var(--mc-muted); }
+.mc-composer-ask b { color: var(--mc-ink); font-weight: 700; }
+.mc-feed-note { font-size: 14px; color: var(--mc-muted); padding: 20px 4px; }
+.mc-feed-retry {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  color: var(--mc-accent);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
 }
-
-@media (max-width: 640px) {
-  .mc-grid {
-    grid-template-columns: 64px 1fr 64px;
-    gap: 8px;
-    padding: 16px 12px 12px;
-  }
-  .mc-centre-col {
-    min-height: 320px;
-    padding: 0 6px;
-  }
-}
-
-@media (max-width: 380px) {
-  .mc-grid {
-    grid-template-columns: 56px 1fr 56px;
-    gap: 6px;
-    padding: 12px 8px 8px;
-  }
-}
-
-/* ScopePlaceholder — shown when activeScope is 'practice' or 'org'.
-   Calm, generous whitespace, no marketing tone. */
-.mc-scope-placeholder {
+.mc-feed-grid { columns: 3; column-gap: 16px; }
+.mc-post {
+  break-inside: avoid;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--mc-surface-2);
+  border: 1px solid var(--mc-line);
   position: relative;
+}
+.mc-post-media {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  aspect-ratio: 4 / 5;
+}
+.mc-post-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,.42));
+}
+.mc-chip {
+  position: absolute;
+  top: 12px;
+  left: 12px;
   z-index: 2;
-  flex: 1;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: 5px 11px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(0,0,0,.42);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,.55);
+}
+.mc-chip--static {
+  position: static;
+  display: inline-block;
+  color: var(--mc-accent);
+  background: var(--mc-accent-soft);
+  border: 1px solid var(--mc-line);
+  margin-bottom: 10px;
+}
+.mc-cap {
+  position: absolute;
+  z-index: 2;
+  left: 14px;
+  right: 14px;
+  bottom: 12px;
+  color: #fff;
+}
+.mc-cap-txt {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-shadow: 0 1px 8px rgba(0,0,0,.5);
+}
+.mc-cap-who {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 60px 24px;
+  gap: 7px;
+  margin-top: 8px;
+  font-size: 13px;
 }
-.mc-scope-placeholder-inner {
-  max-width: 560px;
-  text-align: left;
+.mc-cap-a, .mc-post-a {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  background: rgba(255,255,255,.22);
+  border: 1px solid rgba(255,255,255,.55);
+  color: #fff;
 }
-.mc-scope-placeholder-eyebrow {
-  font-family: 'IBM Plex Mono', Georgia, serif;
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  color: #26302A;
-  margin: 0 0 10px;
+.mc-post--text { padding: 16px 18px; }
+.mc-post-line { font-size: 15px; line-height: 1.4; color: var(--mc-ink); }
+.mc-post-who {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--mc-muted);
 }
-.mc-scope-placeholder-title {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 32px;
-  font-weight: 500;
-  color: #0F1523;
-  margin: 0 0 14px;
-  letter-spacing: -0.005em;
+.mc-post-a { background: var(--mc-accent); border-color: transparent; }
+
+.mc-mode-note { font-size: 13px; color: var(--mc-muted); margin-top: 12px; }
+
+.mc-foot {
+  border-top: 1px solid var(--mc-line);
+  color: var(--mc-muted);
+  font-size: 13px;
+  padding: 28px 0;
+  margin-top: auto;
 }
-.mc-scope-placeholder-rule {
-  width: 40px;
-  height: 1px;
-  background: #6E7F5C;
-  margin: 14px 0 18px;
-}
-.mc-scope-placeholder-body {
-  font-family: 'Newsreader', Georgia, serif;
-  font-size: 15.5px;
-  line-height: 1.65;
-  color: #555;
-  margin: 0;
+
+/* ── responsive ─────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .mc-glance { grid-template-columns: 1fr; }
+  .mc-feed-grid { columns: 2; }
 }
 @media (max-width: 640px) {
-  .mc-scope-placeholder { padding: 36px 16px; }
-  .mc-scope-placeholder-title { font-size: 26px; }
+  .mc-wrap, .mc-nav-inner { padding: 0 18px; }
+  .mc-nav-links { display: none; }
+  .mc-beat { padding: 44px 0 8px; }
+  .mc-glance { padding: 20px; }
+  .mc-glance-detail { padding: 0 18px 22px; }
+  .mc-feed-grid { columns: 1; }
+  .mc-civ-crumbs { font-size: 13px; letter-spacing: .16em; }
 }
 `
