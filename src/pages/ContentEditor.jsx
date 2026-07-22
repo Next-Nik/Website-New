@@ -10,7 +10,7 @@ function isFounder(user) {
   return user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
 }
 
-const gold  = '#26302A'
+const gold  = '#262420'
 
 // ─── Shared primitives ────────────────────────────────────────
 
@@ -25,10 +25,10 @@ function Eyebrow({ children }) {
 
 function Btn({ onClick, children, variant = 'primary', small, disabled, style = {} }) {
   const styles = {
-    primary: { background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', color: gold },
-    solid:   { background: '#6E7F5C', border: '1px solid rgba(38,48,42,0.8)', color: '#FFFFFF' },
+    primary: { background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', color: gold },
+    solid:   { background: '#6E7F5C', border: '1px solid rgba(38,36,32,0.8)', color: '#FFFFFF' },
     danger:  { background: 'rgba(180,40,40,0.05)', border: '1.5px solid rgba(180,40,40,0.5)', color: '#8A2020' },
-    ghost:   { background: 'transparent', border: '1px solid rgba(110,127,92,0.30)', color: 'rgba(15,21,35,0.72)' },
+    ghost:   { background: 'transparent', border: '1px solid rgba(76,107,69,0.30)', color: 'rgba(15,21,35,0.72)' },
   }
   return (
     <button onClick={onClick} disabled={disabled} style={{
@@ -69,7 +69,7 @@ const TABS = ['Site Text', 'Products', 'Announcements', 'Focus Goals', 'Ask']
 function TabBar({ active, setActive }) {
   return (
     <div style={{ display: 'flex', gap: '4px', marginBottom: '32px',
-      borderBottom: '1px solid rgba(110,127,92,0.20)', paddingBottom: '0' }}>
+      borderBottom: '1px solid rgba(76,107,69,0.20)', paddingBottom: '0' }}>
       {TABS.map(tab => (
         <button key={tab} onClick={() => setActive(tab)} style={{
           ...sc, fontSize: '15px', letterSpacing: '0.12em',
@@ -151,7 +151,7 @@ function ProductsTab({ toast }) {
       </div>
 
       {showForm && (
-        <div style={{ background: 'rgba(110,127,92,0.03)', border: '1.5px solid rgba(110,127,92,0.78)',
+        <div style={{ background: 'rgba(76,107,69,0.03)', border: '1.5px solid rgba(76,107,69,0.78)',
           borderRadius: '14px', padding: '24px', marginBottom: '20px' }}>
           <Eyebrow>{editing ? 'Edit product' : 'New product'}</Eyebrow>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
@@ -162,8 +162,8 @@ function ProductsTab({ toast }) {
                 onChange={e => setForm(f => ({ ...f, key: e.target.value.toLowerCase().replace(/\s/g, '_') }))}
                 placeholder="e.g. map, foundation"
                 style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
-                  borderRadius: '8px', border: '1.5px solid rgba(110,127,92,0.35)',
-                  background: editing ? 'rgba(110,127,92,0.04)' : '#FFFFFF',
+                  borderRadius: '8px', border: '1.5px solid rgba(76,107,69,0.35)',
+                  background: editing ? 'rgba(76,107,69,0.04)' : '#FFFFFF',
                   outline: 'none', width: '100%' }} />
             </div>
             <div>
@@ -173,7 +173,7 @@ function ProductsTab({ toast }) {
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. The Map"
                 style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
-                  borderRadius: '8px', border: '1.5px solid rgba(110,127,92,0.35)',
+                  borderRadius: '8px', border: '1.5px solid rgba(76,107,69,0.35)',
                   background: '#FFFFFF', outline: 'none', width: '100%' }} />
             </div>
           </div>
@@ -184,7 +184,7 @@ function ProductsTab({ toast }) {
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
               placeholder="Optional description"
               style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
-                borderRadius: '8px', border: '1.5px solid rgba(110,127,92,0.35)',
+                borderRadius: '8px', border: '1.5px solid rgba(76,107,69,0.35)',
                 background: '#FFFFFF', outline: 'none', width: '100%' }} />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '18px' }}>
@@ -207,7 +207,7 @@ function ProductsTab({ toast }) {
         ? <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p>
         : products.map(p => (
           <div key={p.key} style={{ background: '#FFFFFF',
-            border: '1.5px solid rgba(110,127,92,0.20)', borderRadius: '14px',
+            border: '1.5px solid rgba(76,107,69,0.20)', borderRadius: '14px',
             padding: '18px 22px', marginBottom: '10px',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
             <div style={{ flex: 1 }}>
@@ -216,8 +216,8 @@ function ProductsTab({ toast }) {
                   {p.name}
                 </span>
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em',
-                  color: 'rgba(15,21,35,0.55)', background: 'rgba(110,127,92,0.06)',
-                  border: '1px solid rgba(110,127,92,0.18)', borderRadius: '40px', padding: '2px 9px' }}>
+                  color: 'rgba(15,21,35,0.55)', background: 'rgba(76,107,69,0.06)',
+                  border: '1px solid rgba(76,107,69,0.18)', borderRadius: '40px', padding: '2px 9px' }}>
                   {p.key}
                 </span>
                 {!p.active && (
@@ -307,7 +307,7 @@ function AnnouncementsTab({ toast }) {
       </div>
 
       {showForm && (
-        <div style={{ background: 'rgba(110,127,92,0.03)', border: '1.5px solid rgba(110,127,92,0.78)',
+        <div style={{ background: 'rgba(76,107,69,0.03)', border: '1.5px solid rgba(76,107,69,0.78)',
           borderRadius: '14px', padding: '24px', marginBottom: '20px' }}>
           <Eyebrow>New announcement</Eyebrow>
           <div style={{ marginBottom: '12px' }}>
@@ -316,7 +316,7 @@ function AnnouncementsTab({ toast }) {
             <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
               placeholder="Short, direct headline"
               style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
-                borderRadius: '8px', border: '1.5px solid rgba(110,127,92,0.35)',
+                borderRadius: '8px', border: '1.5px solid rgba(76,107,69,0.35)',
                 background: '#FFFFFF', outline: 'none', width: '100%' }} />
           </div>
           <div style={{ marginBottom: '12px' }}>
@@ -326,7 +326,7 @@ function AnnouncementsTab({ toast }) {
               placeholder="One to two sentences. Direct and specific."
               rows={3}
               style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
-                borderRadius: '8px', border: '1.5px solid rgba(110,127,92,0.35)',
+                borderRadius: '8px', border: '1.5px solid rgba(76,107,69,0.35)',
                 background: '#FFFFFF', outline: 'none', width: '100%',
                 resize: 'vertical', lineHeight: 1.6 }} />
           </div>
@@ -349,7 +349,7 @@ function AnnouncementsTab({ toast }) {
         ? <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p>
         : announcements.length === 0
         ? (
-          <div style={{ padding: '32px', textAlign: 'center', border: '1px dashed rgba(110,127,92,0.30)',
+          <div style={{ padding: '32px', textAlign: 'center', border: '1px dashed rgba(76,107,69,0.30)',
             borderRadius: '14px' }}>
             <p style={{ ...body, fontSize: '15px',
               color: 'rgba(15,21,35,0.72)', margin: 0 }}>
@@ -359,7 +359,7 @@ function AnnouncementsTab({ toast }) {
         )
         : announcements.map(a => (
           <div key={a.id} style={{ background: '#FFFFFF',
-            border: `1.5px solid ${a.active ? 'rgba(110,127,92,0.78)' : 'rgba(110,127,92,0.20)'}`,
+            border: `1.5px solid ${a.active ? 'rgba(76,107,69,0.78)' : 'rgba(76,107,69,0.20)'}`,
             borderRadius: '14px', padding: '18px 22px', marginBottom: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start',
               justifyContent: 'space-between', gap: '16px' }}>
@@ -492,7 +492,7 @@ function FocusGoalsTab({ toast }) {
   }
 
   const card = {
-    background: '#FFFFFF', border: '1.5px solid rgba(110,127,92,0.18)',
+    background: '#FFFFFF', border: '1.5px solid rgba(76,107,69,0.18)',
     borderRadius: '12px', padding: '22px 24px', marginBottom: '14px',
   }
 
@@ -511,15 +511,15 @@ function FocusGoalsTab({ toast }) {
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="Search — Canada, British Columbia, Vancouver…"
-          style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '17px', color: '#0F1523', padding: '11px 16px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(110,127,92,0.30)', background: '#FAFAF7', outline: 'none' }}
+          style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '17px', color: '#0F1523', padding: '11px 16px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(76,107,69,0.30)', background: '#FAFAF7', outline: 'none' }}
         />
         {searching && <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.55)', marginTop: '8px' }}>Searching…</p>}
         {results.length > 0 && (
-          <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(110,127,92,0.25)', borderRadius: '8px', marginTop: '6px', overflow: 'hidden' }}>
+          <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(76,107,69,0.25)', borderRadius: '8px', marginTop: '6px', overflow: 'hidden' }}>
             {results.map(f => (
               <button key={f.id} onClick={() => { setQuery(''); setResults([]); loadGoals(f) }}
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '10px 16px', background: 'none', border: 'none', borderBottom: '1px solid rgba(110,127,92,0.10)', cursor: 'pointer', textAlign: 'left' }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(110,127,92,0.05)'}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '10px 16px', background: 'none', border: 'none', borderBottom: '1px solid rgba(76,107,69,0.10)', cursor: 'pointer', textAlign: 'left' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(76,107,69,0.05)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'none'}
               >
                 <span style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '17px', color: '#0F1523' }}>{f.name}</span>
@@ -532,7 +532,7 @@ function FocusGoalsTab({ toast }) {
 
       {selectedFocus && (
         <>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid rgba(110,127,92,0.18)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid rgba(76,107,69,0.18)' }}>
             <div>
               <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '4px' }}>{TYPE_LABEL[selectedFocus.type] || selectedFocus.type}</span>
               <span style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '22px', color: '#0F1523' }}>{selectedFocus.name}</span>
@@ -547,7 +547,7 @@ function FocusGoalsTab({ toast }) {
             const isSet    = !!existing
 
             return (
-              <div key={domain.id} style={{ ...card, borderColor: isSet ? 'rgba(110,127,92,0.35)' : 'rgba(110,127,92,0.12)' }}>
+              <div key={domain.id} style={{ ...card, borderColor: isSet ? 'rgba(76,107,69,0.35)' : 'rgba(76,107,69,0.12)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
                   <div>
                     <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '14px', letterSpacing: '0.14em', color: gold }}>{domain.label}</span>
@@ -567,7 +567,7 @@ function FocusGoalsTab({ toast }) {
                   onChange={e => setEditing(ed => ({ ...ed, [domain.id]: e.target.value }))}
                   placeholder={`Local horizon goal for ${selectedFocus.name} — ${domain.label}…`}
                   rows={3}
-                  style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '16px', color: '#0F1523', padding: '10px 14px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(110,127,92,0.25)', background: draft ? '#FFFFFF' : 'rgba(110,127,92,0.02)', outline: 'none', resize: 'vertical', lineHeight: 1.65 }}
+                  style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '16px', color: '#0F1523', padding: '10px 14px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(76,107,69,0.25)', background: draft ? '#FFFFFF' : 'rgba(76,107,69,0.02)', outline: 'none', resize: 'vertical', lineHeight: 1.65 }}
                 />
                 <div style={{ marginTop: '10px', display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <Btn small variant="solid" disabled={!draft.trim() || saving[domain.id]} onClick={() => saveGoal(domain.id)}>
@@ -667,7 +667,7 @@ function AskTab() {
           rows={3}
           style={{ ...body, fontSize: '15px', color: '#0F1523', flex: 1,
             padding: '12px 16px', borderRadius: '10px',
-            border: '1.5px solid rgba(110,127,92,0.35)',
+            border: '1.5px solid rgba(76,107,69,0.35)',
             background: '#FFFFFF', outline: 'none', resize: 'none', lineHeight: 1.6 }}
         />
         <Btn onClick={ask} disabled={!query.trim() || loading} variant="solid"
@@ -680,7 +680,7 @@ function AskTab() {
         <div style={{ display: 'flex', gap: '5px', alignItems: 'center', padding: '8px 0' }}>
           {[0, 0.2, 0.4].map((d, i) => (
             <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%',
-              background: 'rgba(110,127,92,0.55)',
+              background: 'rgba(76,107,69,0.55)',
               animation: `pulse 1.4s ease ${d}s infinite` }} />
           ))}
           <style>{`@keyframes pulse { 0%,80%,100%{transform:scale(0.7);opacity:0.4} 40%{transform:scale(1);opacity:1} }`}</style>
@@ -690,12 +690,12 @@ function AskTab() {
       {error && (
         <div style={{ ...body, fontSize: '15px',
           color: 'rgba(15,21,35,0.72)', padding: '16px',
-          background: 'rgba(110,127,92,0.04)', borderRadius: '10px',
-          border: '1px solid rgba(110,127,92,0.20)' }}>{error}</div>
+          background: 'rgba(76,107,69,0.04)', borderRadius: '10px',
+          border: '1px solid rgba(76,107,69,0.20)' }}>{error}</div>
       )}
 
       {answer && (
-        <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(110,127,92,0.78)',
+        <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(76,107,69,0.78)',
           borderRadius: '14px', padding: '24px' }}>
           <Eyebrow>Next-1</Eyebrow>
           <div style={{ ...body, fontSize: '16px', fontWeight: 400,
@@ -718,7 +718,7 @@ function fieldBase(multiline) {
     ...body, fontSize: '15px', lineHeight: 1.6, color: '#0F1523',
     width: '100%', boxSizing: 'border-box',
     padding: '10px 12px', borderRadius: '8px',
-    border: '1px solid rgba(110,127,92,0.30)', background: '#FFFFFF',
+    border: '1px solid rgba(76,107,69,0.30)', background: '#FFFFFF',
     resize: multiline ? 'vertical' : 'none',
     minHeight: multiline ? '88px' : 'auto',
   }
@@ -726,7 +726,7 @@ function fieldBase(multiline) {
 
 function SiteTextItem({ item, value, dirty, edited, saving, onChange, onSave, onReset }) {
   return (
-    <div style={{ padding: '16px 0', borderBottom: '1px solid rgba(110,127,92,0.12)' }}>
+    <div style={{ padding: '16px 0', borderBottom: '1px solid rgba(76,107,69,0.12)' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '8px' }}>
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: gold,
           textTransform: 'uppercase' }}>{item.label}</span>
@@ -833,11 +833,11 @@ function SiteTextTab({ toast }) {
         const editedCount = group.items.filter(i => isEdited(i.id)).length
         return (
           <div key={group.id} style={{ marginBottom: '14px',
-            border: '1px solid rgba(110,127,92,0.20)', borderRadius: '12px', overflow: 'hidden' }}>
+            border: '1px solid rgba(76,107,69,0.20)', borderRadius: '12px', overflow: 'hidden' }}>
             <button onClick={() => setOpenGroup(open ? null : group.id)}
               style={{ ...sc, fontSize: '17px', letterSpacing: '0.10em',
                 width: '100%', textAlign: 'left', cursor: 'pointer',
-                padding: '16px 20px', background: open ? 'rgba(110,127,92,0.05)' : 'transparent',
+                padding: '16px 20px', background: open ? 'rgba(76,107,69,0.05)' : 'transparent',
                 border: 'none', color: '#0F1523',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>{group.label}</span>

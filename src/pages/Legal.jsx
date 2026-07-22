@@ -12,10 +12,10 @@ function LegalWrap({ title, eyebrow, subtitle, active, children }) {
     <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav activePath={active} />
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '112px 40px 120px' }}>
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '16px' }}>{eyebrow}</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px' }}>{eyebrow}</span>
         <h1 style={{ ...body, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '24px' }} dangerouslySetInnerHTML={{ __html: title }} />
         <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.55)', marginBottom: '48px' }}>{subtitle}</p>
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', marginBottom: '48px' }} />
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', marginBottom: '48px' }} />
         {children}
       </div>
       <SiteFooter />
@@ -57,7 +57,7 @@ export function TermsContent() {
       <P>The platform changes. Tools get added. Features get refined. Occasionally something breaks {'—'} we'll fix it when it does. By using NextUs you're joining something in motion, not arriving at something finished.</P>
       <H2>The leap of faith, named</H2>
       <P>NextUs is not yet a registered company. It's being built in good faith, by a real person, with the intention of becoming a real organisation as it grows. Until that happens, your relationship is with Nik Wood directly.</P>
-      <P>If you have a concern, a complaint, or a dispute, the first step is a conversation. Email <a href="mailto:support@nextus.world" style={{ color: '#26302A', textDecoration: 'none' }}>support@nextus.world</a> and we'll handle it like humans. When NextUs is incorporated, these terms will be updated to reflect proper jurisdiction and corporate structure.</P>
+      <P>If you have a concern, a complaint, or a dispute, the first step is a conversation. Email <a href="mailto:support@nextus.world" style={{ color: '#262420', textDecoration: 'none' }}>support@nextus.world</a> and we'll handle it like humans. When NextUs is incorporated, these terms will be updated to reflect proper jurisdiction and corporate structure.</P>
       <H2>Limitation</H2>
       <P>We provide the platform as-is. We're not liable for decisions you make based on what you find here. The platform is a thinking partner, not a prescriber.</P>
     </>
@@ -83,7 +83,7 @@ export function PrivacyContent() {
       <H2>Third-party services</H2>
       <UL items={['<strong>Supabase</strong> — our database and authentication infrastructure.', '<strong>Vercel</strong> — our hosting infrastructure.', '<strong>Anthropic</strong> — the AI that powers the conversational tools.', '<strong>Kit (formerly ConvertKit)</strong> — our email platform for newsletters.']} />
       <H2>Your data is yours</H2>
-      <P>You can delete your account any time from Mission Control {'→'} Settings. For a copy of your data or any other request, email <a href="mailto:support@nextus.world" style={{ color: '#26302A', textDecoration: 'none' }}>support@nextus.world</a>.</P>
+      <P>You can delete your account any time from Mission Control {'→'} Settings. For a copy of your data or any other request, email <a href="mailto:support@nextus.world" style={{ color: '#262420', textDecoration: 'none' }}>support@nextus.world</a>.</P>
       <H2>Cookies</H2>
       <P>We use cookies only for authentication {'—'} to keep you signed in between visits. We don't use tracking cookies or advertising cookies.</P>
       <H2>Children</H2>
@@ -96,20 +96,20 @@ export function PrivacyContent() {
 
 export function PrivacyPage() {
   return (
-    <LegalWrap eyebrow="Privacy" title="How we handle<br><em style='color:#26302A;'>your information.</em>" subtitle="Last updated April 2026 · NextUs / Nik Wood" active="">
+    <LegalWrap eyebrow="Privacy" title="How we handle<br><em style='color:#262420;'>your information.</em>" subtitle="Last updated April 2026 · NextUs / Nik Wood" active="">
       <PrivacyContent />
-      <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', margin: '48px 0 24px' }} />
-      <P>Questions? <a href="mailto:hello@nextus.world" style={{ color: '#26302A', textDecoration: 'none', borderBottom: '1px solid rgba(110,127,92,0.3)' }}>hello@nextus.world</a></P>
+      <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '48px 0 24px' }} />
+      <P>Questions? <a href="mailto:hello@nextus.world" style={{ color: '#262420', textDecoration: 'none', borderBottom: '1px solid rgba(76,107,69,0.3)' }}>hello@nextus.world</a></P>
     </LegalWrap>
   )
 }
 
 export function TermsPage() {
   return (
-    <LegalWrap eyebrow="Terms of Service" title="Using NextUs<br><em style='color:#26302A;'>in good faith.</em>" subtitle="Last updated April 2026 · NextUs / Nik Wood" active="">
+    <LegalWrap eyebrow="Terms of Service" title="Using NextUs<br><em style='color:#262420;'>in good faith.</em>" subtitle="Last updated April 2026 · NextUs / Nik Wood" active="">
       <TermsContent />
-      <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', margin: '48px 0 24px' }} />
-      <P>Questions? <a href="mailto:hello@nextus.world" style={{ color: '#26302A', textDecoration: 'none', borderBottom: '1px solid rgba(110,127,92,0.3)' }}>hello@nextus.world</a></P>
+      <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '48px 0 24px' }} />
+      <P>Questions? <a href="mailto:hello@nextus.world" style={{ color: '#262420', textDecoration: 'none', borderBottom: '1px solid rgba(76,107,69,0.3)' }}>hello@nextus.world</a></P>
     </LegalWrap>
   )
 }

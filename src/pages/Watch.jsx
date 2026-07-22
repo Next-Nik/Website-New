@@ -87,7 +87,7 @@ export function WatchPage() {
         margin: '0 auto',
         padding: 'clamp(88px, 10vw, 112px) 40px 48px',
       }}>
-        <span style={{ ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '18px' }}>
+        <span style={{ ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '18px' }}>
           Just watching
         </span>
         <h1 style={{
@@ -134,9 +134,9 @@ export function WatchPage() {
         maxWidth: '780px',
         margin: '0 auto',
         padding: '32px 40px 40px',
-        borderTop: '1px solid rgba(110,127,92,0.18)',
+        borderTop: '1px solid rgba(76,107,69,0.18)',
       }}>
-        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '14px' }}>
+        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '14px' }}>
           Territories you could wander into
         </span>
         <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '28px', maxWidth: '560px' }}>
@@ -155,24 +155,24 @@ export function WatchPage() {
               style={{
                 display: 'block',
                 padding: '22px 24px',
-                border: '1px solid rgba(110,127,92,0.22)',
+                border: '1px solid rgba(76,107,69,0.22)',
                 borderRadius: '14px',
-                background: 'rgba(110,127,92,0.03)',
+                background: 'rgba(76,107,69,0.03)',
                 textDecoration: 'none',
                 transition: 'all 0.18s',
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.borderColor = 'rgba(110,127,92,0.78)'
-                e.currentTarget.style.background   = 'rgba(110,127,92,0.07)'
+                e.currentTarget.style.borderColor = 'rgba(76,107,69,0.78)'
+                e.currentTarget.style.background   = 'rgba(76,107,69,0.07)'
                 e.currentTarget.style.transform    = 'translateY(-2px)'
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.borderColor = 'rgba(110,127,92,0.22)'
-                e.currentTarget.style.background   = 'rgba(110,127,92,0.03)'
+                e.currentTarget.style.borderColor = 'rgba(76,107,69,0.22)'
+                e.currentTarget.style.background   = 'rgba(76,107,69,0.03)'
                 e.currentTarget.style.transform    = ''
               }}
             >
-              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(38,48,42,0.72)', textTransform: 'uppercase', marginBottom: '6px' }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(38,36,32,0.72)', textTransform: 'uppercase', marginBottom: '6px' }}>
                 Domain
               </div>
               <div style={{ ...body, fontSize: '19px', fontWeight: 400, color: '#0F1523', marginBottom: '8px', lineHeight: 1.2 }}>
@@ -189,7 +189,7 @@ export function WatchPage() {
         {actorCount !== null && actorCount > 0 && (
           <p style={{ ...body, fontSize: '15px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, marginTop: '24px' }}>
             {actorCount} organisation{actorCount === 1 ? '' : 's'} and practitioner{actorCount === 1 ? '' : 's'} have been placed on the map so far. You can{' '}
-            <Link to="/nextus/actors" style={{ color: '#26302A', fontStyle: 'normal', textDecoration: 'none', borderBottom: '1px solid rgba(110,127,92,0.35)' }}>
+            <Link to="/nextus/actors" style={{ color: '#262420', fontStyle: 'normal', textDecoration: 'none', borderBottom: '1px solid rgba(76,107,69,0.35)' }}>
               browse who's here
             </Link>{' '}
             if you'd like.
@@ -206,9 +206,9 @@ export function WatchPage() {
         maxWidth: '780px',
         margin: '0 auto',
         padding: '32px 40px 40px',
-        borderTop: '1px solid rgba(110,127,92,0.18)',
+        borderTop: '1px solid rgba(76,107,69,0.18)',
       }}>
-        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '14px' }}>
+        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '14px' }}>
           Listen in
         </span>
         {PODCAST_FALLBACK.map(p => (
@@ -221,8 +221,8 @@ export function WatchPage() {
             </p>
             <Link to={p.href} style={{
               ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em',
-              color: '#26302A', textDecoration: 'none',
-              borderBottom: '1px solid rgba(110,127,92,0.35)',
+              color: '#262420', textDecoration: 'none',
+              borderBottom: '1px solid rgba(76,107,69,0.35)',
               paddingBottom: '2px',
             }}>
               Listen →
@@ -243,8 +243,8 @@ export function WatchPage() {
       }}>
         <div style={{
           padding: '28px 32px',
-          background: 'rgba(110,127,92,0.03)',
-          border: '1px solid rgba(110,127,92,0.18)',
+          background: 'rgba(76,107,69,0.03)',
+          border: '1px solid rgba(76,107,69,0.18)',
           borderRadius: '14px',
         }}>
           <p style={{ ...body, fontSize: '17px', fontWeight: 400, color: '#0F1523', lineHeight: 1.7, marginBottom: '14px', maxWidth: '520px' }}>
@@ -252,8 +252,8 @@ export function WatchPage() {
           </p>
           <Link to="/" style={{
             ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em',
-            color: '#26302A', textDecoration: 'none',
-            borderBottom: '1px solid rgba(110,127,92,0.35)',
+            color: '#262420', textDecoration: 'none',
+            borderBottom: '1px solid rgba(76,107,69,0.35)',
             paddingBottom: '2px',
           }}>
             Go to the front door →

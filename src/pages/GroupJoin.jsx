@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 import { Nav } from '../components/Nav'
 import { body, sc } from '../lib/designTokens'
 
-const gold  = '#26302A'
+const gold  = '#262420'
 
 /**
  * GroupJoinPage
@@ -146,7 +146,7 @@ export function GroupJoinPage() {
                   ...sc, fontSize: '18px', letterSpacing: '0.2em',
                   color: '#0F1523', textAlign: 'center',
                   width: '100%', padding: '14px 18px',
-                  border: '1.5px solid rgba(110,127,92,0.78)',
+                  border: '1.5px solid rgba(76,107,69,0.78)',
                   borderRadius: '40px', background: '#FFFFFF',
                   outline: 'none', marginBottom: '12px',
                 }}
@@ -263,7 +263,7 @@ function Card({ children }) {
   return (
     <div style={{
       background: '#FFFFFF',
-      border: '1.5px solid rgba(110,127,92,0.78)',
+      border: '1.5px solid rgba(76,107,69,0.78)',
       borderRadius: '14px', padding: '36px 32px',
       textAlign: 'center',
     }}>
@@ -286,8 +286,8 @@ function Cta({ onClick, children }) {
     <button onClick={onClick} style={{
       display: 'inline-block', padding: '14px 28px',
       borderRadius: '40px',
-      border: '1.5px solid rgba(110,127,92,0.78)',
-      background: 'rgba(110,127,92,0.05)',
+      border: '1.5px solid rgba(76,107,69,0.78)',
+      background: 'rgba(76,107,69,0.05)',
       ...sc, fontSize: '17px', fontWeight: 600,
       letterSpacing: '0.14em', color: gold,
       cursor: 'pointer',

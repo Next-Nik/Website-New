@@ -161,7 +161,7 @@ export function BeginBuildOrgPage() {
             <LinkList value={form.links} onChange={v => set('links', v)} />
           </Field>
 
-          <div style={{ paddingTop: '24px', borderTop: '1px solid rgba(110,127,92,0.18)', marginTop: '8px' }}>
+          <div style={{ paddingTop: '24px', borderTop: '1px solid rgba(76,107,69,0.18)', marginTop: '8px' }}>
             <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>
               Your details
             </div>
