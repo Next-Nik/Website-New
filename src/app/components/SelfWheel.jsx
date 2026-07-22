@@ -318,7 +318,7 @@ export default function SelfWheel({
     <div ref={containerRef} style={{ position: 'relative', display: 'inline-block' }}>
       {/* Eyebrow */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#262420', textTransform: 'uppercase' }}>
           Self
         </span>
         {onToggleVisibility && (
@@ -337,7 +337,7 @@ export default function SelfWheel({
               ...sc,
               fontSize: '13px',
               letterSpacing: '0.1em',
-              color: visible ? '#26302A' : 'rgba(15,21,35,0.72)',
+              color: visible ? '#262420' : 'rgba(15,21,35,0.72)',
               transition: 'color 150ms ease',
             }}
             onMouseEnter={() => setHovered(true)}
@@ -357,7 +357,7 @@ export default function SelfWheel({
             width: 0, height: 0,
             borderLeft: '6px solid transparent',
             borderRight: '6px solid transparent',
-            borderTop: '7px solid #26302A',
+            borderTop: '7px solid #262420',
             margin: '0 auto 4px',
           }} />
           <div style={{
@@ -399,11 +399,11 @@ export default function SelfWheel({
             <radialGradient id="sunCore" cx="50%" cy="50%" r="50%">
               <stop offset="0%"  stopColor="#FFE9B0" stopOpacity="1" />
               <stop offset="60%" stopColor="#E8B547" stopOpacity="1" />
-              <stop offset="100%" stopColor="#26302A" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#262420" stopOpacity="0.9" />
             </radialGradient>
             <radialGradient id="sunGhost" cx="50%" cy="50%" r="50%">
               <stop offset="0%"  stopColor="#D8C8A8" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#26302A" stopOpacity="0.15" />
+              <stop offset="100%" stopColor="#262420" stopOpacity="0.15" />
             </radialGradient>
           </defs>
 
@@ -426,7 +426,7 @@ export default function SelfWheel({
                   key={frac}
                   points={pts}
                   fill="none"
-                  stroke="rgba(110,127,92,0.08)"
+                  stroke="rgba(76,107,69,0.08)"
                   strokeWidth="0.5"
                 />
               )
@@ -454,7 +454,7 @@ export default function SelfWheel({
                     y1={cy}
                     x2={tipX}
                     y2={tipY}
-                    stroke={scored ? 'rgba(110,127,92,0.22)' : 'rgba(15,21,35,0.18)'}
+                    stroke={scored ? 'rgba(76,107,69,0.22)' : 'rgba(15,21,35,0.18)'}
                     strokeWidth={isHovered && offersSprint ? 1.5 : 0.8}
                     strokeDasharray={scored ? 'none' : '3 4'}
                     style={{ transition: 'stroke-width 200ms ease, stroke 200ms ease' }}
@@ -489,8 +489,8 @@ export default function SelfWheel({
             {hasAnyCurrent && (
               <polygon
                 points={currentPolygonPts}
-                fill="rgba(110,127,92,0.10)"
-                stroke="rgba(110,127,92,0.45)"
+                fill="rgba(76,107,69,0.10)"
+                stroke="rgba(76,107,69,0.45)"
                 strokeWidth="1.5"
                 strokeLinejoin="round"
                 style={{ transition: 'all 400ms ease' }}
@@ -632,7 +632,7 @@ export default function SelfWheel({
                 ...sc,
                 fontSize: '13px',
                 letterSpacing: '0.1em',
-                color: '#26302A',
+                color: '#262420',
                 textDecoration: 'none',
                 pointerEvents: 'auto',
               }}
@@ -674,7 +674,7 @@ function PointySun({ cx, cy, r, scored, glowing }) {
       <polygon
         points={ptStr}
         fill={scored ? 'url(#sunCore)' : 'url(#sunGhost)'}
-        stroke={scored ? 'rgba(38,48,42,0.7)' : 'rgba(38,48,42,0.4)'}
+        stroke={scored ? 'rgba(38,36,32,0.7)' : 'rgba(38,36,32,0.4)'}
         strokeWidth="0.6"
         strokeLinejoin="round"
       />
@@ -721,7 +721,7 @@ function Popover({ popover, getPopoverStyle, horizonGoals, currentReflections, a
         <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <a
             href={`/tools/map?domain=${popover.domainKey}`}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textDecoration: 'none' }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#262420', textDecoration: 'none' }}
           >
             {text ? 'Revise' : 'Write it'}
           </a>
@@ -754,7 +754,7 @@ function Popover({ popover, getPopoverStyle, horizonGoals, currentReflections, a
         <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <a
             href={`/tools/map?domain=${popover.domainKey}`}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textDecoration: 'none' }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#262420', textDecoration: 'none' }}
           >
             Update
           </a>
@@ -790,10 +790,10 @@ function Popover({ popover, getPopoverStyle, horizonGoals, currentReflections, a
                 ...sc,
                 fontSize: '13px',
                 letterSpacing: '0.1em',
-                color: '#26302A',
+                color: '#262420',
                 textDecoration: 'none',
                 padding: '8px 10px',
-                border: '1px solid rgba(110,127,92,0.4)',
+                border: '1px solid rgba(76,107,69,0.4)',
                 borderRadius: '3px',
                 textAlign: 'center',
               }}
@@ -808,10 +808,10 @@ function Popover({ popover, getPopoverStyle, horizonGoals, currentReflections, a
               fontSize: '13px',
               letterSpacing: '0.1em',
               color: hasSprint ? '#0F1523' : '#FAFAF7',
-              background: hasSprint ? 'transparent' : '#26302A',
+              background: hasSprint ? 'transparent' : '#262420',
               textDecoration: 'none',
               padding: '8px 10px',
-              border: hasSprint ? '1px solid rgba(15,21,35,0.2)' : '1px solid #26302A',
+              border: hasSprint ? '1px solid rgba(15,21,35,0.2)' : '1px solid #262420',
               borderRadius: '3px',
               textAlign: 'center',
             }}

@@ -127,7 +127,7 @@ export function Hint({ children }) {
 
 export function SectionCard({ children, style }) {
   return (
-    <div style={{ background: at.object, border: '1.5px solid rgba(217,178,74,0.18)', borderRadius: '14px', padding: '28px 32px', marginBottom: '24px', ...style }}>
+    <div style={{ background: at.object, border: '1.5px solid rgba(169,116,63,0.18)', borderRadius: '14px', padding: '28px 32px', marginBottom: '24px', ...style }}>
       {children}
     </div>
   )
@@ -137,8 +137,8 @@ export function SectionCard({ children, style }) {
 
 export function Btn({ onClick, children, variant = 'primary', disabled, small }) {
   const styles = {
-    primary: { background: 'rgba(217,178,74,0.05)', border: '1.5px solid rgba(217,178,74,0.78)', color: gold },
-    solid:   { background: at.verdigris, border: '1.5px solid rgba(217,178,74,0.8)', color: at.object },
+    primary: { background: 'rgba(169,116,63,0.05)', border: '1.5px solid rgba(169,116,63,0.78)', color: gold },
+    solid:   { background: at.verdigris, border: '1.5px solid rgba(169,116,63,0.8)', color: at.object },
     ghost:   { background: 'transparent', border: `1px solid ${at.ghost}`, color: at.ghost },
     danger:  { background: 'rgba(138,48,48,0.05)', border: '1.5px solid rgba(138,48,48,0.40)', color: '#8A3030' },
   }
@@ -157,21 +157,21 @@ export function Btn({ onClick, children, variant = 'primary', disabled, small })
 export function TextInput({ value, onChange, placeholder, type = 'text', disabled }) {
   return (
     <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} disabled={disabled}
-      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)', background: disabled ? 'rgba(217,178,74,0.03)' : at.object, outline: 'none', width: '100%' }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(169,116,63,0.30)', background: disabled ? 'rgba(169,116,63,0.03)' : at.object, outline: 'none', width: '100%' }} />
   )
 }
 
 export function TextArea({ value, onChange, placeholder, rows = 4 }) {
   return (
     <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows}
-      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)', background: at.object, outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(169,116,63,0.30)', background: at.object, outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
   )
 }
 
 export function SelectInput({ value, onChange, options, disabled }) {
   return (
     <select value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
-      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)', background: at.object, outline: 'none', width: '100%' }}>
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(169,116,63,0.30)', background: at.object, outline: 'none', width: '100%' }}>
       {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
   )
@@ -184,8 +184,8 @@ export function ModeSelector({ value, onChange }) {
         const on = value === m.value
         return (
           <button key={m.value} type="button" onClick={() => onChange(m.value)}
-            style={{ textAlign: 'left', padding: '12px 14px', borderRadius: '10px', cursor: 'pointer', border: on ? '1.5px solid rgba(217,178,74,0.78)' : '1.5px solid rgba(217,178,74,0.20)', background: on ? 'rgba(217,178,74,0.07)' : at.object, transition: 'all 0.15s' }}>
-            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: on ? gold : 'rgba(234,241,237,0.70)', marginBottom: '3px' }}>{m.label}</div>
+            style={{ textAlign: 'left', padding: '12px 14px', borderRadius: '10px', cursor: 'pointer', border: on ? '1.5px solid rgba(169,116,63,0.78)' : '1.5px solid rgba(169,116,63,0.20)', background: on ? 'rgba(169,116,63,0.07)' : at.object, transition: 'all 0.15s' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: on ? gold : 'rgba(38,36,32,0.70)', marginBottom: '3px' }}>{m.label}</div>
             <div style={{ ...body, fontSize: '13px', color: at.ghost, lineHeight: 1.4 }}>{m.desc}</div>
           </button>
         )
@@ -203,5 +203,5 @@ export function Eyebrow({ children, style = {} }) {
 }
 
 export function Rule() {
-  return <div style={{ height: '1px', background: 'rgba(217,178,74,0.10)', margin: '40px 0' }} />
+  return <div style={{ height: '1px', background: 'rgba(169,116,63,0.10)', margin: '40px 0' }} />
 }

@@ -123,7 +123,7 @@ export function InstallPrompt() {
         background: fn.object,
         border: `1px solid ${fn.rule}`,
         borderRadius: 14,
-        boxShadow: '0 8px 28px rgba(38,48,42,0.18)',
+        boxShadow: '0 8px 28px rgba(38,36,32,0.18)',
         padding: '14px 14px 12px',
         display: 'flex',
         gap: 12,

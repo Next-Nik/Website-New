@@ -25,7 +25,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { body, serif, sc, gold, dark, parch } from './OrgShared'
 
-const hair = 'rgba(110,127,92,0.22)'
+const hair = 'rgba(76,107,69,0.22)'
 
 function PlayGlyph() {
   return (
@@ -163,7 +163,7 @@ export function PodcastPlayer({
         width: '86px', height: '86px', flexShrink: 0, borderRadius: '8px',
         border: `2px solid ${gold}`, background: parch,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: `0 0 0 2px ${parch}, 0 0 0 3px rgba(110,127,92,0.3)`,
+        boxShadow: `0 0 0 2px ${parch}, 0 0 0 3px rgba(76,107,69,0.3)`,
         overflow: 'hidden',
       }}>
         {show?.image
@@ -184,7 +184,7 @@ export function PodcastPlayer({
             {subscribeLinks.map((l, i) => (
               <a key={i} href={l.url} target="_blank" rel="noopener noreferrer"
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: gold,
-                  textDecoration: 'none', border: '1px solid rgba(110,127,92,0.5)',
+                  textDecoration: 'none', border: '1px solid rgba(76,107,69,0.5)',
                   borderRadius: '30px', padding: '3px 13px' }}>
                 {l.label}
               </a>
@@ -198,10 +198,10 @@ export function PodcastPlayer({
   const NowPlaying = active && (
     <div style={{ display: 'flex', alignItems: 'center', gap: '14px',
       marginTop: '20px', padding: '13px 16px', borderRadius: '10px',
-      background: 'rgba(110,127,92,0.06)', border: `1px solid ${hair}` }}>
+      background: 'rgba(76,107,69,0.06)', border: `1px solid ${hair}` }}>
       <button onClick={toggleActive} aria-label={playing ? 'Pause' : 'Play'}
         style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '50%',
-          border: `1.5px solid rgba(110,127,92,0.6)`, background: parch,
+          border: `1.5px solid rgba(76,107,69,0.6)`, background: parch,
           display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
         {playing ? <PauseGlyph /> : <PlayGlyph />}
       </button>
@@ -214,7 +214,7 @@ export function PodcastPlayer({
           <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
             fontVariantNumeric: 'tabular-nums', minWidth: '34px' }}>{fmtTime(currentTime)}</span>
           <div onClick={seek} style={{ flex: 1, height: '4px', borderRadius: '4px',
-            background: 'rgba(110,127,92,0.2)', cursor: 'pointer', position: 'relative' }}>
+            background: 'rgba(76,107,69,0.2)', cursor: 'pointer', position: 'relative' }}>
             <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0,
               width: `${progress}%`, background: gold, borderRadius: '4px' }} />
           </div>
@@ -231,12 +231,12 @@ export function PodcastPlayer({
         const isActive = ep.guid === activeGuid
         const isOpen = expanded === ep.guid
         return (
-          <div key={ep.guid} style={{ borderBottom: `1px solid rgba(110,127,92,0.15)` }}>
+          <div key={ep.guid} style={{ borderBottom: `1px solid rgba(76,107,69,0.15)` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '15px 0' }}>
               <button onClick={() => playEpisode(ep)} aria-label={isActive && playing ? 'Pause' : 'Play'}
                 style={{ flexShrink: 0, width: '36px', height: '36px', borderRadius: '50%',
-                  border: `1px solid ${isActive ? 'rgba(110,127,92,0.78)' : 'rgba(110,127,92,0.45)'}`,
-                  background: isActive ? 'rgba(110,127,92,0.12)' : parch,
+                  border: `1px solid ${isActive ? 'rgba(76,107,69,0.78)' : 'rgba(76,107,69,0.45)'}`,
+                  background: isActive ? 'rgba(76,107,69,0.12)' : parch,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                 {isActive && playing ? <PauseGlyph /> : <PlayGlyph />}
               </button>

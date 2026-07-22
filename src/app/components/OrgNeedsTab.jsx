@@ -24,7 +24,7 @@ function NeedCard({ need, onUpdateStatus }) {
               {need.need_type} · {need.size}
             </span>
             {need.medium === 'in_person' && (
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: gold, background: 'rgba(88,160,138,0.07)', border: '1px solid rgba(88,160,138,0.25)', borderRadius: '4px', padding: '2px 8px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: gold, background: 'rgba(76,107,69,0.07)', border: '1px solid rgba(76,107,69,0.25)', borderRadius: '4px', padding: '2px 8px' }}>
                 In person
               </span>
             )}
@@ -94,7 +94,7 @@ export function OrgNeedsTab({ actorId, navigate, toast }) {
 
   if (hasOfferings === false) {
     return (
-      <SectionCard style={{ borderColor: 'rgba(88,160,138,0.35)', background: 'rgba(88,160,138,0.03)' }}>
+      <SectionCard style={{ borderColor: 'rgba(76,107,69,0.35)', background: 'rgba(76,107,69,0.03)' }}>
         <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>
           Add an offering first
         </p>
@@ -114,7 +114,7 @@ export function OrgNeedsTab({ actorId, navigate, toast }) {
 
   return (
     <div style={{ maxWidth: '700px' }}>
-      <div style={{ background: 'rgba(88,160,138,0.04)', border: '1px solid rgba(88,160,138,0.18)', borderRadius: '10px', padding: '14px 18px', marginBottom: '24px' }}>
+      <div style={{ background: 'rgba(76,107,69,0.04)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '10px', padding: '14px 18px', marginBottom: '24px' }}>
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6, margin: 0 }}>
           These are open asks that broadcast to the network · they surface on the map and in the feed for others to answer. Distinct from the offers and needs on your profile.
         </p>

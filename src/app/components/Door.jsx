@@ -68,7 +68,7 @@ function palette(tone) {
     solidBg:    at.verdigris,
     solidInk:   '#0F1A15',
     ghostInk:   at.text,
-    ghostEdge:  'rgba(234,241,237,0.40)',
+    ghostEdge:  'rgba(38,36,32,0.40)',
   } : {
     card:       fn.object,
     edge:       fn.mossEdge,

@@ -105,7 +105,7 @@ export function EventsSection({ actor, isOwner = false }) {
               ...sc, fontSize: '13px', letterSpacing: '0.14em',
               color: gold, textDecoration: 'none',
               padding: '6px 14px', borderRadius: '40px',
-              border: '1.5px solid rgba(88,160,138,0.40)',
+              border: '1.5px solid rgba(76,107,69,0.40)',
               textTransform: 'uppercase',
             }}
           >

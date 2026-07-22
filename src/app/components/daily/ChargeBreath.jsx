@@ -27,9 +27,9 @@ import { useState, useEffect, useRef } from 'react'
 
 const T = {
   dark: '#0F1523',
-  gold: '#26302A', goldChrome: '#6E7F5C',
-  goldFaint: 'rgba(110,127,92,0.20)', goldTint: 'rgba(110,127,92,0.05)',
-  goldStrong: 'rgba(110,127,92,0.35)',
+  gold: '#262420', goldChrome: '#4c6b45',
+  goldFaint: 'rgba(76,107,69,0.20)', goldTint: 'rgba(76,107,69,0.05)',
+  goldStrong: 'rgba(76,107,69,0.35)',
   ghost: 'rgba(15,21,35,0.55)', whisper: 'rgba(15,21,35,0.30)',
 }
 const SC    = { fontFamily: "'IBM Plex Mono', Georgia, serif" }

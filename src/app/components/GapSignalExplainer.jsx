@@ -104,7 +104,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
               gap: '12px',
               alignItems: 'baseline',
               padding: '12px 0',
-              borderBottom: '1px solid rgba(88,160,138,0.10)',
+              borderBottom: '1px solid rgba(76,107,69,0.10)',
             }}>
               <div>
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: dark, marginBottom: '2px' }}>
@@ -141,8 +141,8 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
         {/* Tier 3 transparency — only shown when relevant */}
         {payload.contributor_density > 0 && (
           <div style={{
-            background: 'rgba(234,241,237,0.04)',
-            border: '1px solid rgba(234,241,237,0.10)',
+            background: 'rgba(38,36,32,0.04)',
+            border: '1px solid rgba(38,36,32,0.10)',
             borderRadius: '8px',
             padding: '12px 14px',
             marginBottom: '20px',

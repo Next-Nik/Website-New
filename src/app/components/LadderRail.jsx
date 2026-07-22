@@ -25,7 +25,7 @@ import { WatchButton } from './WatchButton'
 
 const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
 const body = { fontFamily: "'Newsreader', Georgia, serif" }
-const GOLD = '#26302A'
+const GOLD = '#262420'
 const INK  = '#0F1523'
 
 // ── FacesRow ─────────────────────────────────────────────────
@@ -73,7 +73,7 @@ export function FacesRow({ level = 'domains', slug, limit = 8, onCount, dark = f
             style={{
               display: 'flex', alignItems: 'center', gap: '8px',
               padding: '6px 12px 6px 6px',
-              border: `1px solid ${dark ? 'rgba(110,127,92,0.45)' : 'rgba(110,127,92,0.25)'}`,
+              border: `1px solid ${dark ? 'rgba(76,107,69,0.45)' : 'rgba(76,107,69,0.25)'}`,
               borderRadius: '40px', background: 'transparent',
               cursor: 'pointer', maxWidth: '230px',
             }}
@@ -87,7 +87,7 @@ export function FacesRow({ level = 'domains', slug, limit = 8, onCount, dark = f
             ) : (
               <span style={{
                 width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0,
-                background: 'rgba(110,127,92,0.18)', display: 'inline-flex',
+                background: 'rgba(76,107,69,0.18)', display: 'inline-flex',
                 alignItems: 'center', justifyContent: 'center',
                 ...sc, fontSize: '13px', color: GOLD,
               }}>
@@ -122,7 +122,7 @@ export function LadderRail({ watchEntity, exploreHref, dark = false }) {
       onClick={onClick}
       style={{
         ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
-        color: dark ? '#6E7F5C' : GOLD, background: 'none', border: 'none',
+        color: dark ? '#4c6b45' : GOLD, background: 'none', border: 'none',
         cursor: 'pointer', padding: 0,
       }}
     >
@@ -131,7 +131,7 @@ export function LadderRail({ watchEntity, exploreHref, dark = false }) {
   )
 
   const sep = (
-    <span aria-hidden="true" style={{ ...sc, fontSize: '13px', color: 'rgba(110,127,92,0.45)' }}>·</span>
+    <span aria-hidden="true" style={{ ...sc, fontSize: '13px', color: 'rgba(76,107,69,0.45)' }}>·</span>
   )
 
   return (
@@ -140,7 +140,7 @@ export function LadderRail({ watchEntity, exploreHref, dark = false }) {
       style={{
         display: 'flex', alignItems: 'center', flexWrap: 'wrap',
         gap: '12px', marginTop: '18px', paddingTop: '14px',
-        borderTop: '1px solid rgba(110,127,92,0.14)',
+        borderTop: '1px solid rgba(76,107,69,0.14)',
       }}
     >
       {watchEntity?.id && (

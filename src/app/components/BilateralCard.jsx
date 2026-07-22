@@ -9,7 +9,7 @@ import { ARTEFACT_TYPE_LABEL, revoke, republish } from '../hooks/useBilateral'
 
 const body = { fontFamily: "'Newsreader', Georgia, serif" }
 const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const gold = '#26302A'
+const gold = '#262420'
 const dark = '#0F1523'
 
 // ── Payload renderers per type ───────────────────────────────
@@ -43,8 +43,8 @@ function SprintBuddyDisplay({ payload }) {
           {payload.shared_domains.map(d => (
             <span key={d} style={{
               ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
-              background: 'rgba(110,127,92,0.07)',
-              border: '1px solid rgba(110,127,92,0.22)',
+              background: 'rgba(76,107,69,0.07)',
+              border: '1px solid rgba(76,107,69,0.22)',
               borderRadius: '4px', padding: '2px 8px',
             }}>
               {SELF_DOMAIN_LABEL[d] || d}
@@ -204,7 +204,7 @@ export function BilateralCard({
       background: isRevoked ? 'rgba(15,21,35,0.02)' : '#FFFFFF',
       border: isRevoked
         ? '1px solid rgba(15,21,35,0.10)'
-        : '1px solid rgba(110,127,92,0.18)',
+        : '1px solid rgba(76,107,69,0.18)',
       borderRadius: '12px',
       opacity: isRevoked ? 0.65 : 1,
     }}>
@@ -286,8 +286,8 @@ export function BilateralCard({
               style={{
                 ...sc, fontSize: '13px', letterSpacing: '0.12em',
                 padding: '7px 16px', borderRadius: '40px', cursor: 'pointer',
-                background: 'rgba(110,127,92,0.05)',
-                border: '1px solid rgba(110,127,92,0.40)',
+                background: 'rgba(76,107,69,0.05)',
+                border: '1px solid rgba(76,107,69,0.40)',
                 color: gold, opacity: acting ? 0.5 : 1,
               }}
             >

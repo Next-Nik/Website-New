@@ -33,16 +33,16 @@ import BreathPacer from './BreathPacer'
 import WinTheDay   from './WinTheDay'
 
 // ─── Design tokens ────────────────────────────────────────────
-const GOLD    = '#6E7F5C'
-const GOLD_DK = '#26302A'
+const GOLD    = '#4c6b45'
+const GOLD_DK = '#262420'
 const INK     = '#0F1523'
 const SC      = "'IBM Plex Mono', Georgia, serif"
 const BODY    = "'Newsreader', Georgia, serif"
 const DISP    = "'Fraunces', Georgia, serif"
 const META    = 'rgba(15,21,35,0.72)'
 const FAINT   = 'rgba(15,21,35,0.55)'
-const RULE    = 'rgba(110,127,92,0.20)'
-const CARD_BG = 'rgba(110,127,92,0.04)'
+const RULE    = 'rgba(76,107,69,0.20)'
+const CARD_BG = 'rgba(76,107,69,0.04)'
 
 // ─── Audio ────────────────────────────────────────────────────
 const BUCKET = 'nextus-audio'
@@ -75,7 +75,7 @@ function PrimaryBtn({ children, onClick, disabled }) {
       width: '100%', padding: '11px',
       fontFamily: SC, fontSize: '13px', letterSpacing: '0.14em',
       color: GOLD_DK, background: CARD_BG,
-      border: `1.5px solid ${disabled ? RULE : 'rgba(110,127,92,0.78)'}`,
+      border: `1.5px solid ${disabled ? RULE : 'rgba(76,107,69,0.78)'}`,
       borderRadius: '40px', cursor: disabled ? 'default' : 'pointer',
       opacity: disabled ? 0.55 : 1, transition: 'all 0.2s',
     }}>{children}</button>
@@ -87,12 +87,12 @@ function NoteField({ value, onChange, placeholder, rows = 3 }) {
     <textarea value={value} onChange={e => onChange(e.target.value)}
       placeholder={placeholder} rows={rows} style={{
         width: '100%', padding: '10px 14px', fontFamily: BODY, fontSize: '0.9375rem',
-        color: META, background: 'rgba(110,127,92,0.05)',
-        border: '1px solid rgba(110,127,92,0.18)', borderRadius: '8px',
+        color: META, background: 'rgba(76,107,69,0.05)',
+        border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px',
         outline: 'none', resize: 'none', lineHeight: 1.6, boxSizing: 'border-box',
       }}
-      onFocus={e => { e.target.style.borderColor = 'rgba(110,127,92,0.45)' }}
-      onBlur={e =>  { e.target.style.borderColor = 'rgba(110,127,92,0.18)' }}
+      onFocus={e => { e.target.style.borderColor = 'rgba(76,107,69,0.45)' }}
+      onBlur={e =>  { e.target.style.borderColor = 'rgba(76,107,69,0.18)' }}
     />
   )
 }
@@ -134,10 +134,10 @@ function ToolCard({ name, sub, meta, locked, active, onClick }) {
         display: 'block', width: '100%', textAlign: 'left',
         padding: '13px 16px', marginBottom: '8px',
         border: locked
-          ? `1px dashed rgba(110,127,92,0.28)`
+          ? `1px dashed rgba(76,107,69,0.28)`
           : `1px solid ${active || hover ? GOLD : RULE}`,
         borderRadius: '10px',
-        background: active ? 'rgba(110,127,92,0.07)' : hover ? CARD_BG : 'none',
+        background: active ? 'rgba(76,107,69,0.07)' : hover ? CARD_BG : 'none',
         cursor: 'pointer', transition: 'all 0.15s ease',
       }}
     >
@@ -215,7 +215,7 @@ function AudioPlayer({ currentPhase, showBreath = false }) {
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 width: '100%', textAlign: 'left', padding: '10px 14px',
                 border: locked ? `1px dashed ${RULE}` : `1px solid ${isSel ? GOLD : RULE}`,
-                borderRadius: '8px', background: isSel ? 'rgba(110,127,92,0.06)' : 'none',
+                borderRadius: '8px', background: isSel ? 'rgba(76,107,69,0.06)' : 'none',
                 cursor: locked ? 'default' : 'pointer', transition: 'border-color 0.15s',
               }}
             >
@@ -237,8 +237,8 @@ function AudioPlayer({ currentPhase, showBreath = false }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
                   <button onClick={toggle} aria-label={playing ? 'Pause' : 'Play'} style={{
                     width: '44px', height: '44px', borderRadius: '50%', flexShrink: 0,
-                    background: playing ? 'rgba(110,127,92,0.10)' : CARD_BG,
-                    border: '1.5px solid rgba(110,127,92,0.78)',
+                    background: playing ? 'rgba(76,107,69,0.10)' : CARD_BG,
+                    border: '1.5px solid rgba(76,107,69,0.78)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     cursor: 'pointer', color: GOLD_DK, fontSize: '15px',
                   }}>
@@ -251,7 +251,7 @@ function AudioPlayer({ currentPhase, showBreath = false }) {
                         const r = e.currentTarget.getBoundingClientRect()
                         a.currentTime = ((e.clientX - r.left) / r.width) * duration
                       }}
-                      style={{ width: '100%', height: '4px', background: 'rgba(110,127,92,0.15)', borderRadius: '2px', cursor: 'pointer' }}
+                      style={{ width: '100%', height: '4px', background: 'rgba(76,107,69,0.15)', borderRadius: '2px', cursor: 'pointer' }}
                     >
                       <div style={{ height: '100%', width: `${pct}%`, background: GOLD, borderRadius: '2px', transition: 'width 0.4s linear' }} />
                     </div>
@@ -386,7 +386,7 @@ function HorizonStateProtocol({ user, currentPhase, sessions, lifeIaStatement, r
           <FlameSlider value={beforeValue} onChange={setBefore} ghostValue={null} />
         </div>
         <div style={{ flex: 1, marginTop: '24px',
-          border: '1px dashed rgba(110,127,92,0.35)', borderRadius: '10px',
+          border: '1px dashed rgba(76,107,69,0.35)', borderRadius: '10px',
           padding: '14px 10px', textAlign: 'center' }}>
           <div style={{ opacity: 0.35, display: 'flex', justifyContent: 'center' }}>
             <FlameGlyph value={5} size={28} ghost />
@@ -477,7 +477,7 @@ function HorizonStateProtocol({ user, currentPhase, sessions, lifeIaStatement, r
       </p>
       {lifeIaStatement && (
         <div style={{ margin: '0 auto 16px', maxWidth: '360px', padding: '12px 16px',
-          border: '1px solid rgba(110,127,92,0.25)', borderRadius: '10px', background: CARD_BG }}>
+          border: '1px solid rgba(76,107,69,0.25)', borderRadius: '10px', background: CARD_BG }}>
           <p style={{ fontFamily: BODY, fontSize: '1rem', fontStyle: 'italic', color: GOLD_DK, lineHeight: 1.7, margin: 0 }}>
             {lifeIaStatement}
           </p>

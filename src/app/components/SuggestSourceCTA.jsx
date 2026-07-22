@@ -109,7 +109,7 @@ export default function SuggestSourceCTA({
           cursor: 'pointer',
           padding: isBlock ? '8px 0' : '4px 0',
           textDecoration: 'underline',
-          textDecorationColor: 'rgba(217,178,74, 0.4)',
+          textDecorationColor: 'rgba(169,116,63, 0.4)',
           textUnderlineOffset: '3px',
         }}
       >
@@ -125,7 +125,7 @@ export default function SuggestSourceCTA({
         marginTop: isBlock ? '12px' : '8px',
         padding: '14px 16px',
         background: at.object,
-        border: '1px solid rgba(88,160,138, 0.30)',
+        border: '1px solid rgba(76,107,69, 0.30)',
         borderRadius: '12px',
       }}
     >
@@ -297,7 +297,7 @@ const inputStyle = {
   fontSize: '14px',
   width: '100%',
   padding: '8px 10px',
-  border: '1px solid rgba(88,160,138, 0.30)',
+  border: '1px solid rgba(76,107,69, 0.30)',
   borderRadius: '8px',
   background: at.ground,
   color: at.text,

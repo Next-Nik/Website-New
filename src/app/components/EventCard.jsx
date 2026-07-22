@@ -72,16 +72,16 @@ export function EventCard({ event, venue, linkTo, showActor = false, compact = f
         color: 'inherit',
         padding: compact ? '14px 16px' : '18px 20px',
         background: '#FFFFFF',
-        border: '1px solid rgba(88,160,138,0.22)',
+        border: '1px solid rgba(76,107,69,0.22)',
         borderRadius: '10px',
         transition: 'all 0.15s',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.borderColor = 'rgba(88,160,138,0.50)'
+        e.currentTarget.style.borderColor = 'rgba(76,107,69,0.50)'
         e.currentTarget.style.boxShadow = '0 2px 8px rgba(43,74,66,0.08)'
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.borderColor = 'rgba(88,160,138,0.22)'
+        e.currentTarget.style.borderColor = 'rgba(76,107,69,0.22)'
         e.currentTarget.style.boxShadow = 'none'
       }}
     >

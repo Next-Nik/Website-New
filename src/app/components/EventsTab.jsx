@@ -124,8 +124,8 @@ export function EventsTab({ actorId, actorName, toast }) {
               style={{
                 ...sc, fontSize: '13px', letterSpacing: '0.14em',
                 padding: '6px 14px', borderRadius: '40px', cursor: 'pointer',
-                border: on ? '1.5px solid rgba(88,160,138,0.78)' : '1.5px solid rgba(88,160,138,0.25)',
-                background: on ? 'rgba(88,160,138,0.10)' : 'transparent',
+                border: on ? '1.5px solid rgba(76,107,69,0.78)' : '1.5px solid rgba(76,107,69,0.25)',
+                background: on ? 'rgba(76,107,69,0.10)' : 'transparent',
                 color: on ? gold : 'rgba(15,21,35,0.55)',
                 textTransform: 'uppercase',
               }}
@@ -143,7 +143,7 @@ export function EventsTab({ actorId, actorName, toast }) {
       {!loading && shown.length === 0 && (
         <div style={{
           padding: '32px', textAlign: 'center',
-          border: '1.5px dashed rgba(88,160,138,0.30)', borderRadius: '10px',
+          border: '1.5px dashed rgba(76,107,69,0.30)', borderRadius: '10px',
           color: 'rgba(15,21,35,0.55)', fontSize: '14px',
         }}>
           {filter === 'upcoming' && 'No upcoming Events. Add one to get started.'}

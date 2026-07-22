@@ -90,7 +90,7 @@ export default function ContributorSignalsList({
             style={{
               color: at.brass,
               textDecoration: 'underline',
-              textDecorationColor: 'rgba(88,160,138, 0.45)',
+              textDecorationColor: 'rgba(76,107,69, 0.45)',
               textUnderlineOffset: '3px',
             }}
           >
@@ -201,7 +201,7 @@ function SignalRow({ signal }) {
     <li
       style={{
         background: at.object,
-        border: '1px solid rgba(88,160,138, 0.20)',
+        border: '1px solid rgba(76,107,69, 0.20)',
         borderRadius: '14px',
         padding: '14px 16px',
       }}

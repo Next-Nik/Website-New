@@ -25,7 +25,7 @@ const REST_OPACITY = { new: 0.9, awake: 1, dim: 0.6, rest: 0.42 }
 
 function Plant({ stage, live }) {
   const green = live               // living systems colour
-  const soil  = 'rgba(234,241,237,0.28)'
+  const soil  = 'rgba(38,36,32,0.28)'
 
   const stemTopY = 56 - stage * 9  // taller with each stage
   const els = []
@@ -75,7 +75,7 @@ export default function TendedThing({
 }) {
   const rest    = restStateFromLast(lastTendedAt)
   const opacity = REST_OPACITY[rest] ?? 1
-  const live    = tone === 'light' ? '#6E7F5C' : at.verdigris
+  const live    = tone === 'light' ? '#4c6b45' : at.verdigris
   const px      = size === 'sm' ? 34 : size === 'lg' ? 72 : 52
 
   return (
@@ -85,7 +85,7 @@ export default function TendedThing({
       </div>
       {caption && (
         <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.06em',
-          color: tone === 'light' ? 'rgba(38,48,42,0.68)' : at.ghost, textAlign: 'center' }}>
+          color: tone === 'light' ? 'rgba(38,36,32,0.68)' : at.ghost, textAlign: 'center' }}>
           {rest === 'rest' ? `Resting · ${STAGE_WORD[stage]}`
             : rest === 'dim' ? `Waiting · ${STAGE_WORD[stage]}`
             : STAGE_WORD[stage]}

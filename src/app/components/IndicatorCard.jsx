@@ -87,7 +87,7 @@ export default function IndicatorCard({ indicator, focusName, className }) {
       className={className}
       style={{
         background: at.object,
-        border: '1px solid rgba(88,160,138, 0.20)',
+        border: '1px solid rgba(76,107,69, 0.20)',
         borderRadius: '14px',
         padding: '20px 22px',
         display: 'flex',

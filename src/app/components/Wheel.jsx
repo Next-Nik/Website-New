@@ -34,8 +34,8 @@ function pickScale(map, v) {
   return map[Math.round(v)]
 }
 
-const GOLD     = '#6E7F5C'   // chrome / borders
-const GOLD_DK  = '#26302A'   // gold text
+const GOLD     = '#4c6b45'   // chrome / borders
+const GOLD_DK  = '#262420'   // gold text
 const INK      = '#0F1523'
 const LORA     = "'Newsreader', Georgia, serif"
 const SC       = "'IBM Plex Mono', Georgia, serif"
@@ -160,12 +160,12 @@ export default function Wheel({
   const nowIsHero = !hasHeaded
 
   const labelFill = dark ? 'rgba(250,250,247,0.85)' : 'rgba(15,21,35,0.72)'
-  const spokeCol  = dark ? 'rgba(110,127,92,0.50)'  : 'rgba(110,127,92,0.30)'
-  const rimCol    = dark ? 'rgba(110,127,92,0.40)'  : 'rgba(110,127,92,0.32)'
-  const ringCol   = dark ? 'rgba(110,127,92,0.16)'  : 'rgba(110,127,92,0.14)'
-  const passCol   = dark ? 'rgba(110,127,92,0.42)'  : 'rgba(110,127,92,0.38)'
-  const nowHeroStroke = dark ? 'rgba(110,127,92,0.9)' : 'rgba(110,127,92,0.85)'
-  const nowHeroFill   = dark ? 'rgba(110,127,92,0.18)' : 'rgba(110,127,92,0.15)'
+  const spokeCol  = dark ? 'rgba(76,107,69,0.50)'  : 'rgba(76,107,69,0.30)'
+  const rimCol    = dark ? 'rgba(76,107,69,0.40)'  : 'rgba(76,107,69,0.32)'
+  const ringCol   = dark ? 'rgba(76,107,69,0.16)'  : 'rgba(76,107,69,0.14)'
+  const passCol   = dark ? 'rgba(76,107,69,0.42)'  : 'rgba(76,107,69,0.38)'
+  const nowHeroStroke = dark ? 'rgba(76,107,69,0.9)' : 'rgba(76,107,69,0.85)'
+  const nowHeroFill   = dark ? 'rgba(76,107,69,0.18)' : 'rgba(76,107,69,0.15)'
   const nowBaseStroke = dark ? 'rgba(250,250,247,0.42)' : 'rgba(15,21,35,0.42)'
   const nowBaseFill   = dark ? 'rgba(250,250,247,0.05)' : 'rgba(15,21,35,0.05)'
 
@@ -241,7 +241,7 @@ export default function Wheel({
         <>
           <polygon
             points={headedWeb.pts}
-            fill="rgba(110,127,92,0.10)"
+            fill="rgba(76,107,69,0.10)"
             stroke={GOLD}
             strokeWidth="2.6"
             strokeLinejoin="round"

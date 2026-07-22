@@ -13,7 +13,7 @@
 
 const body  = { fontFamily: "'Newsreader', Georgia, serif" }
 const sc    = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const gold  = '#26302A'
+const gold  = '#262420'
 const dark  = '#0F1523'
 
 // Colour interpolation across the extractive-to-regenerative spectrum.
