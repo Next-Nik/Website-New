@@ -17,8 +17,8 @@ import {
 import { BilateralCard } from './BilateralCard'
 import { BilateralCardEditor } from './BilateralCardEditor'
 
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold = '#262420'
 const dark = '#0F1523'
 

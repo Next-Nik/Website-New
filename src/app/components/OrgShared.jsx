@@ -4,9 +4,9 @@
 // Atlas rail — actor profile pages per Master Spec §1.
 import { at } from '../../lib/designTokens'
 
-export const body  = { fontFamily: "'Newsreader', Georgia, serif" }
-export const serif = { fontFamily: "'Fraunces', Georgia, serif" }
-export const sc    = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+export const body  = { fontFamily: "'Lora', Georgia, serif" }
+export const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+export const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 export const gold = at.brass
 export const dark = at.text
 export const parch = at.ground

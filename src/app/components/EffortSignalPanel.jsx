@@ -15,9 +15,9 @@
 
 import { useEffortSignal } from '../hooks/useEffortSignal'
 
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const serif = { fontFamily: "'Fraunces', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 const MIN_SLICE_COVERAGE = 10  // Lock 3 from Section 5.8
 

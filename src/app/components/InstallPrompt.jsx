@@ -140,7 +140,7 @@ export function InstallPrompt() {
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          fontFamily: 'Fraunces, serif',
+          fontFamily: 'Cormorant Garamond, serif',
           fontSize: 15,
           fontWeight: 600,
           color: fn.ink,
@@ -152,7 +152,7 @@ export function InstallPrompt() {
         {mode === 'native' ? (
           <>
             <div style={{
-              fontFamily: 'Newsreader, serif',
+              fontFamily: 'Lora, serif',
               fontSize: 13,
               color: fn.meta,
               lineHeight: 1.45,
@@ -164,7 +164,7 @@ export function InstallPrompt() {
               <button
                 onClick={install}
                 style={{
-                  fontFamily: 'IBM Plex Mono, monospace',
+                  fontFamily: 'Cormorant SC, monospace',
                   fontSize: 13,
                   padding: '8px 16px',
                   borderRadius: 999,
@@ -179,7 +179,7 @@ export function InstallPrompt() {
               <button
                 onClick={dismiss}
                 style={{
-                  fontFamily: 'IBM Plex Mono, monospace',
+                  fontFamily: 'Cormorant SC, monospace',
                   fontSize: 13,
                   padding: '8px 12px',
                   borderRadius: 999,
@@ -196,7 +196,7 @@ export function InstallPrompt() {
         ) : (
           <>
             <div style={{
-              fontFamily: 'Newsreader, serif',
+              fontFamily: 'Lora, serif',
               fontSize: 13,
               color: fn.meta,
               lineHeight: 1.45,
@@ -208,7 +208,7 @@ export function InstallPrompt() {
               <button
                 onClick={dismiss}
                 style={{
-                  fontFamily: 'IBM Plex Mono, monospace',
+                  fontFamily: 'Cormorant SC, monospace',
                   fontSize: 13,
                   padding: '8px 12px',
                   borderRadius: 999,

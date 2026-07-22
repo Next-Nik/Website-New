@@ -33,9 +33,9 @@ const T = {
   goldFaint: 'rgba(76,107,69,0.20)', goldFill: 'rgba(76,107,69,0.10)',
   ghost: 'rgba(15,21,35,0.55)', whisper: 'rgba(15,21,35,0.30)',
 }
-const SC    = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const BODY  = { fontFamily: "'Newsreader', Georgia, serif" }
-const SERIF = { fontFamily: "'Fraunces', Georgia, serif" }
+const SC    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const BODY  = { fontFamily: "'Lora', Georgia, serif" }
+const SERIF = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 function makeBeep(freq, dur = 0.12, gain = 0.18) {
   try {

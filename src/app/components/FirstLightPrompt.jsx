@@ -20,9 +20,9 @@ const BG   = '#FAFAF7'
 const INK  = '#0F1523'
 const GOLD = '#262420'
 const GC   = '#4c6b45'
-const SERIF = "'Fraunces', Georgia, serif"
-const SC    = "'IBM Plex Mono', Georgia, serif"
-const LORA  = "'Newsreader', Georgia, serif"
+const SERIF = "'Cormorant Garamond', Georgia, serif"
+const SC    = "'Cormorant SC', Georgia, serif"
+const LORA  = "'Lora', Georgia, serif"
 
 const DISMISS_KEY = 'nextus.flPromptDismissed'
 

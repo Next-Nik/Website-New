@@ -14,9 +14,9 @@ import { fn, space } from '../../lib/designTokens'
 import { getNorthStar, saveNorthStar, getBalance, getLedger } from '../lib/horizonActions'
 import { getMyHorizonDeclaration } from '../lib/horizonDeclaration'
 
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const mono    = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const mono    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 export default function NorthStarPage() {
   const { user } = useAuth()

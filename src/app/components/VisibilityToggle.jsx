@@ -17,7 +17,7 @@ import { useState } from 'react'
 //   compact       — optional, tightens for inline use
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 export default function VisibilityToggle({
   value = 'private',

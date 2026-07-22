@@ -160,7 +160,7 @@ export function DomainLanding({ track, onAccept }) {
           margin-top: 24px;
         }
         .ns-landing-reframe {
-          font-family: 'Newsreader', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 1.06rem;
           line-height: 1.7;
           color: rgba(15,21,35,0.85);
@@ -178,7 +178,7 @@ export function DomainLanding({ track, onAccept }) {
           box-shadow: 0 1px 0 rgba(15,21,35,0.04);
         }
         .ns-landing-toward-eyebrow {
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.72rem;
           letter-spacing: 0.18em;
           color: rgba(15,21,35,0.55);
@@ -186,7 +186,7 @@ export function DomainLanding({ track, onAccept }) {
           margin-bottom: 8px;
         }
         .ns-landing-toward-text {
-          font-family: 'Fraunces', Georgia, serif;
+          font-family: 'Cormorant Garamond', Georgia, serif;
           font-size: 1.6rem;
           font-weight: 400;
           color: #0F1523;
@@ -200,7 +200,7 @@ export function DomainLanding({ track, onAccept }) {
         .ns-landing-domain-badge {
           display: inline-block;
           align-self: flex-start;
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.82rem;
           letter-spacing: 0.16em;
           padding: 6px 14px;
@@ -212,7 +212,7 @@ export function DomainLanding({ track, onAccept }) {
           padding: 16px 0 0;
         }
         .ns-landing-horizon-eyebrow {
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.7rem;
           letter-spacing: 0.18em;
           color: rgba(15,21,35,0.55);
@@ -220,7 +220,7 @@ export function DomainLanding({ track, onAccept }) {
           margin-bottom: 6px;
         }
         .ns-landing-horizon-text {
-          font-family: 'Newsreader', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 1rem;
           line-height: 1.65;
           color: rgba(15,21,35,0.82);
@@ -232,7 +232,7 @@ export function DomainLanding({ track, onAccept }) {
           border-radius: 14px;
         }
         .ns-landing-not-alone-eyebrow {
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.72rem;
           letter-spacing: 0.18em;
           color: rgba(15,21,35,0.55);
@@ -248,24 +248,24 @@ export function DomainLanding({ track, onAccept }) {
           gap: 10px;
         }
         .ns-landing-actor-name {
-          font-family: 'Fraunces', Georgia, serif;
+          font-family: 'Cormorant Garamond', Georgia, serif;
           font-size: 1.15rem;
           color: #0F1523;
         }
         .ns-landing-actor-tagline {
-          font-family: 'Newsreader', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 0.94rem;
           color: rgba(15,21,35,0.65);
           line-height: 1.5;
         }
         .ns-landing-actors-loading,
         .ns-landing-actors-empty {
-          font-family: 'Newsreader', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           color: rgba(15,21,35,0.65);
           font-style: italic;
         }
         .ns-landing-closing {
-          font-family: 'Fraunces', Georgia, serif;
+          font-family: 'Cormorant Garamond', Georgia, serif;
           font-size: 1.3rem;
           line-height: 1.5;
           color: #0F1523;
@@ -280,7 +280,7 @@ export function DomainLanding({ track, onAccept }) {
           border: none;
           border-radius: 10px;
           padding: 14px 28px;
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.88rem;
           letter-spacing: 0.16em;
           text-transform: uppercase;

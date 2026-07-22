@@ -11,8 +11,8 @@
 //   onClick   — () => void; toggles selection
 //   showDescription — when true, renders description below the label
 
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 
 export default function TierChip({
   slug,

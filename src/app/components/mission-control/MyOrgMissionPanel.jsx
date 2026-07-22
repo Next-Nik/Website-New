@@ -1904,7 +1904,7 @@ const PANEL_CSS = `
 }
 @media (max-width: 680px) { .mo-spine { position: static; } }
 .mo-spine-eyebrow {
-  font-family: 'IBM Plex Mono', Georgia, serif;
+  font-family: 'Cormorant SC', Georgia, serif;
   font-size: 14px;
   letter-spacing: 0.12em;
   text-transform: uppercase;

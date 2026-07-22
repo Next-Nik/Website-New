@@ -49,9 +49,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { selfColor, SELF_KEYS_ORDERED } from '../../constants/domainColors'
 
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const head = { fontFamily: "'Fraunces', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const head = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 const SELF_LABELS = ['Path', 'Spark', 'Body', 'Finances', 'Connection', 'Inner Game', 'Signal']
 const SELF_KEYS   = SELF_KEYS_ORDERED // ['path', 'spark', 'body', 'finances', 'connection', 'inner_game', 'signal']
@@ -584,7 +584,7 @@ export default function SelfWheel({
                   y={ly}
                   textAnchor={anchor}
                   dominantBaseline="middle"
-                  fontFamily="'IBM Plex Mono', Georgia, serif"
+                  fontFamily="'Cormorant SC', Georgia, serif"
                   fontSize="13"
                   fontWeight="600"
                   letterSpacing="2.2"
@@ -684,9 +684,9 @@ function PointySun({ cx, cy, r, scored, glowing }) {
 
 // --- Popover ------------------------------------------------------------
 function Popover({ popover, getPopoverStyle, horizonGoals, currentReflections, activeSprintDomains, onClose }) {
-  const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-  const head = { fontFamily: "'Fraunces', Georgia, serif" }
-  const body = { fontFamily: "'Newsreader', Georgia, serif" }
+  const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const head = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const body = { fontFamily: "'Lora', Georgia, serif" }
 
   const labelMap = {
     path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances',

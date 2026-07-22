@@ -14,8 +14,8 @@ import { useWatch } from '../hooks/useWatch'
 import { supabase } from '../../hooks/useSupabase'
 import { InfoButton } from './InfoButton'
 
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const gold = '#262420'
 const dark = '#0F1523'
 

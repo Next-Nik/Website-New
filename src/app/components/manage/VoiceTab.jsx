@@ -45,7 +45,7 @@ export function VoiceTab({ actor, onSave, toast }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
       {!actor.profile_owner && (
         <div style={{ background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.30)', borderRadius: '10px', padding: '14px 18px' }}>
-          <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: 0 }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: 0 }}>
             This profile isn't claimed yet. Voice fields here · mission and what you're building · publish once the org claims it. Until then, the description and story carry the public profile, so put the essentials there.
           </p>
         </div>

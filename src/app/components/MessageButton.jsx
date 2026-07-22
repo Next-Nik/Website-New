@@ -24,7 +24,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { useAuth } from '../../hooks/useAuth'
 import { ComposeMessage } from './mission-control/ComposeMessage'
 
-const sc = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 export function MessageButton({ actor }) {
   const { user } = useAuth()

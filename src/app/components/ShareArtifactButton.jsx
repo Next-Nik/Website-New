@@ -12,7 +12,7 @@ import { useState } from 'react'
 import { shareArtifact } from '../lib/shareArtifact'
 import { at, fn } from '../../lib/designTokens'
 
-const mono = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
+const mono = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 export default function ShareArtifactButton({
   artifact,

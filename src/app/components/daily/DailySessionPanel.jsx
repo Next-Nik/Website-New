@@ -36,9 +36,9 @@ import WinTheDay   from './WinTheDay'
 const GOLD    = '#4c6b45'
 const GOLD_DK = '#262420'
 const INK     = '#0F1523'
-const SC      = "'IBM Plex Mono', Georgia, serif"
-const BODY    = "'Newsreader', Georgia, serif"
-const DISP    = "'Fraunces', Georgia, serif"
+const SC      = "'Cormorant SC', Georgia, serif"
+const BODY    = "'Lora', Georgia, serif"
+const DISP    = "'Cormorant Garamond', Georgia, serif"
 const META    = 'rgba(15,21,35,0.72)'
 const FAINT   = 'rgba(15,21,35,0.55)'
 const RULE    = 'rgba(76,107,69,0.20)'

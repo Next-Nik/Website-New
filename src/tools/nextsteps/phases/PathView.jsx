@@ -152,7 +152,7 @@ export function PathView({ track, user, onBackToLoop }) {
           .ns-path-loading {
             text-align: center;
             padding: 60px 0;
-            font-family: 'Newsreader', Georgia, serif;
+            font-family: 'Lora', Georgia, serif;
             color: rgba(15,21,35,0.72);
             font-size: 1.05rem;
             font-style: italic;
@@ -173,14 +173,14 @@ export function PathView({ track, user, onBackToLoop }) {
           .ns-path-error {
             padding: 40px 24px;
             text-align: center;
-            font-family: 'Newsreader', Georgia, serif;
+            font-family: 'Lora', Georgia, serif;
             color: rgba(15,21,35,0.78);
           }
           .ns-path-error p { margin: 0 0 18px; }
           .ns-cta-primary {
             background: #4c6b45; color: #FFFFFF; border: none;
             border-radius: 10px; padding: 12px 24px;
-            font-family: 'IBM Plex Mono', Georgia, serif;
+            font-family: 'Cormorant SC', Georgia, serif;
             font-size: 0.85rem; letter-spacing: 0.14em;
             text-transform: uppercase; cursor: pointer;
           }
@@ -265,7 +265,7 @@ export function PathView({ track, user, onBackToLoop }) {
           gap: 24px;
         }
         .ns-path-toward {
-          font-family: 'Newsreader', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 0.98rem;
           line-height: 1.6;
           color: rgba(15,21,35,0.78);
@@ -275,7 +275,7 @@ export function PathView({ track, user, onBackToLoop }) {
           border-radius: 4px;
         }
         .ns-path-toward-eyebrow {
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.74rem;
           letter-spacing: 0.18em;
           color: rgba(15,21,35,0.55);
@@ -283,7 +283,7 @@ export function PathView({ track, user, onBackToLoop }) {
           margin-right: 6px;
         }
         .ns-path-note {
-          font-family: 'Fraunces', Georgia, serif;
+          font-family: 'Cormorant Garamond', Georgia, serif;
           font-size: 1.35rem;
           line-height: 1.45;
           color: #0F1523;
@@ -320,7 +320,7 @@ export function PathView({ track, user, onBackToLoop }) {
           border-radius: 50%;
           background: rgba(38,36,32,0.12);
           color: #262420;
-          font-family: 'Fraunces', Georgia, serif;
+          font-family: 'Cormorant Garamond', Georgia, serif;
           font-size: 1.3rem;
           display: flex;
           align-items: center;
@@ -336,7 +336,7 @@ export function PathView({ track, user, onBackToLoop }) {
           display: flex;
           gap: 12px;
           align-items: center;
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.7rem;
           letter-spacing: 0.16em;
           text-transform: uppercase;
@@ -346,7 +346,7 @@ export function PathView({ track, user, onBackToLoop }) {
         .ns-step-state-active { color: #5B8C5A; }
         .ns-step-state-done { color: rgba(15,21,35,0.55); }
         .ns-step-description {
-          font-family: 'Newsreader', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 1.04rem;
           line-height: 1.6;
           color: #0F1523;
@@ -359,7 +359,7 @@ export function PathView({ track, user, onBackToLoop }) {
         .ns-step-btn {
           padding: 8px 16px;
           border-radius: 8px;
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.76rem;
           letter-spacing: 0.14em;
           text-transform: uppercase;
@@ -378,7 +378,7 @@ export function PathView({ track, user, onBackToLoop }) {
         }
         .ns-step-btn-ghost:hover { background: rgba(38,36,32,0.06); }
         .ns-step-done {
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.78rem;
           letter-spacing: 0.14em;
           color: #5B8C5A;
@@ -393,7 +393,7 @@ export function PathView({ track, user, onBackToLoop }) {
           background: none;
           border: none;
           color: #262420;
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.78rem;
           letter-spacing: 0.14em;
           text-transform: uppercase;

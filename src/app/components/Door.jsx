@@ -24,9 +24,9 @@
 import { Link } from 'react-router-dom'
 import { fn, at, space } from '../../lib/designTokens'
 
-const serif = { fontFamily: "'Fraunces', Georgia, serif" }
-const body  = { fontFamily: "'Newsreader', Georgia, serif" }
-const mono  = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
+const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
+const mono  = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 // ── Target logic — the one place claim state decides the door ──────────
 export function computeDoors({ isClaimed, actorName, calls = [], domainSlug, domainLabel }) {

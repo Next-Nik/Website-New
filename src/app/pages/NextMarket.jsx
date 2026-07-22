@@ -34,7 +34,7 @@ import {
 import { CIV_DOMAINS } from '../constants/domains'
 import { body, sc } from '../../lib/designTokens'
 
-const heading = { fontFamily: "'Fraunces', Georgia, serif", fontWeight: 300 }
+const heading = { fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300 }
 const gold  = '#262420'
 const goldB = '#4c6b45'
 const ink   = '#0F1523'

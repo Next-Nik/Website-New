@@ -1,8 +1,8 @@
 import { at } from '../../lib/designTokens'
 // Design tokens
-const serif = { fontFamily: "'Fraunces', Georgia, serif" }
-const body  = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc    = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
+const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const dark     = at.text
 const goldDark = at.brass
 const success  = '#2A6B3A'

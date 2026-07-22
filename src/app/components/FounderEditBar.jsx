@@ -23,7 +23,7 @@ export default function FounderEditBar() {
           position: 'fixed', right: '18px', bottom: '18px', zIndex: 4000,
           display: 'flex', alignItems: 'center', gap: '8px',
           padding: '11px 18px', borderRadius: '999px', cursor: 'pointer',
-          fontFamily: "'IBM Plex Mono', 'Courier New', monospace",
+          fontFamily: "'Cormorant SC', Georgia, serif",
           fontSize: '13px', fontWeight: 700, letterSpacing: '0.1em',
           color: editing ? '#ffffff' : '#262420',
           background: editing ? '#4c6b45' : '#ffffff',

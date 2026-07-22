@@ -33,7 +33,7 @@ import WorldMapSubstrate from '../components/mission-control/WorldMapSubstrate'
 import BreathPacer from '../components/daily/BreathPacer'
 import { body, sc } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const tokens = {
   bg:        '#FAFAF7',
   ink:       '#0F1523',
@@ -759,4 +759,4 @@ function DomainPill({ label }) {
 // Inline copy of body font tokens so StreamItem doesn't reach
 // outside its scope. (Avoids the shadowed `body` variable
 // problem that would otherwise creep in.)
-const inlineBody = { fontFamily: "'Newsreader', Georgia, serif" }
+const inlineBody = { fontFamily: "'Lora', Georgia, serif" }

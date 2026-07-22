@@ -20,8 +20,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import PrincipleStrip from '../PrincipleStrip'
 
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 
 const URGENCY_STYLES = {
   high:   { color: '#8A3030', label: 'High urgency' },

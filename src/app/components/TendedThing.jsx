@@ -16,7 +16,7 @@
 import { at } from '../../lib/designTokens'
 import { restStateFromLast } from '../lib/tendedThing'
 
-const mono = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
+const mono = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const STAGE_WORD = ['a seed', 'taking root', 'a sprout', 'in leaf', 'thriving']
 

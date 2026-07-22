@@ -11,8 +11,8 @@
 // Greenwashing flag: position > 70 AND (trajectory === "stationary" || trajectory === "declining")
 // Links to /beta/domain/technology?lens=transition-accountability
 
-const body  = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc    = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
+const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = '#262420'
 const dark  = '#0F1523'
 

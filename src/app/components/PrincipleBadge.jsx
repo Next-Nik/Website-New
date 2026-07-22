@@ -6,8 +6,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { PRINCIPLE_BY_SLUG } from '../constants/principles'
 
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 // Visual weight differentiation comes from border + background only.
 // Text opacity is governed by the three-level rule (full / 0.72 / 0.55) and is

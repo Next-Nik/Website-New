@@ -99,13 +99,13 @@ export default function EditableText({
       />
       <span style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
         <button type="button" onClick={save} disabled={busy}
-          style={{ font: '600 13px/1 "IBM Plex Mono", monospace', letterSpacing: '0.08em',
+          style={{ font: '600 13px/1 "Cormorant SC", monospace', letterSpacing: '0.08em',
             padding: '7px 14px', borderRadius: '8px', border: 'none', cursor: 'pointer',
             color: '#fff', background: 'var(--mc-accent, #4c6b45)' }}>
           {busy ? 'Saving…' : 'Save'}
         </button>
         <button type="button" onClick={() => setActive(false)} disabled={busy}
-          style={{ font: '600 13px/1 "IBM Plex Mono", monospace', letterSpacing: '0.08em',
+          style={{ font: '600 13px/1 "Cormorant SC", monospace', letterSpacing: '0.08em',
             padding: '7px 14px', borderRadius: '8px', border: '1px solid rgba(38,36,32,0.2)',
             cursor: 'pointer', color: 'inherit', background: 'transparent' }}>
           Cancel

@@ -25,7 +25,7 @@ import { FeedItem } from '../components/feed/FeedItem'
 import { body, sc, gold, parch } from '../components/feed/feedShared'
 import { InfoButton } from '../components/InfoButton'
 
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 export default function WatchedFeed() {
   const { data: viewerCtx, loading: ctxLoading } = useViewerContext()

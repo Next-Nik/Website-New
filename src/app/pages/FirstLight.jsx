@@ -22,7 +22,7 @@ import { SELF_DOMAINS } from '../components/WheelSVG'
 
 const BG='#FAFAF7', CARD='#FFFFFF', INK='#0F1523', GOLD='#262420', CHROME='#4c6b45', RED='#8A3030'
 const META='rgba(15,21,35,0.72)', GHOST='rgba(15,21,35,0.55)', RULE='rgba(76,107,69,0.20)'
-const SERIF="'Fraunces',Georgia,serif", SC="'IBM Plex Mono',Georgia,serif", LORA="'Newsreader',Georgia,serif"
+const SERIF="'Cormorant Garamond',Georgia,serif", SC="'Cormorant SC',Georgia,serif", LORA="'Lora',Georgia,serif"
 
 const LABELS={10:'the best there is',9:'really good',8:'solid',7:'getting there',6:'getting by',5:'the line',4:'trying but not moving',3:'pretty rough',2:'barely holding on',1:'really struggling',0:'zero'}
 const lab=v=>LABELS[Math.round(v)]

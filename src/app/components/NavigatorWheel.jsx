@@ -25,8 +25,8 @@
 
 import { useMemo } from 'react'
 
-const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 const GOLD = '#262420'
 const GOLD_LIGHT = '#4c6b45'

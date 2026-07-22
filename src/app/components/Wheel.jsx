@@ -37,8 +37,8 @@ function pickScale(map, v) {
 const GOLD     = '#4c6b45'   // chrome / borders
 const GOLD_DK  = '#262420'   // gold text
 const INK      = '#0F1523'
-const LORA     = "'Newsreader', Georgia, serif"
-const SC       = "'IBM Plex Mono', Georgia, serif"
+const LORA     = "'Lora', Georgia, serif"
+const SC       = "'Cormorant SC', Georgia, serif"
 
 // Graded reference rings. The Pass/Fail Mark at 5 (ratio 0.5) is the
 // load-bearing line — everything above tends to compound, everything

@@ -34,9 +34,9 @@ import { fetchEntitiesEngagingPrinciple } from '../hooks/useTaggedPrinciples'
 //   maxPerType — number of entities to fetch per type (default 50)
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 const TYPE_LABELS = {
   actor:        'Actors',

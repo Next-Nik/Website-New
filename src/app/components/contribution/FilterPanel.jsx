@@ -29,8 +29,8 @@ import { useState } from 'react'
 import { PRINCIPLES_ORDERED } from '../../constants/principles'
 import TierChip from './TierChip'
 
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 
 const MEDIUM_OPTIONS = [
   { value: 'any',       label: 'Any medium' },

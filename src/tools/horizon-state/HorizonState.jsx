@@ -1398,7 +1398,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
                 placeholder={'A note about where you\'re starting…'}
                 rows={3}
                 disabled={beforeDone}
-                style={{ width: '100%', padding: '10px 14px', fontFamily: "'Newsreader',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, transition: 'border-color 0.2s', boxSizing: 'border-box', opacity: beforeDone ? 0.5 : 1 }}
+                style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, transition: 'border-color 0.2s', boxSizing: 'border-box', opacity: beforeDone ? 0.5 : 1 }}
                 onFocus={e => { e.target.style.borderColor = 'rgba(76,107,69,0.45)' }}
                 onBlur={e => { e.target.style.borderColor = 'rgba(76,107,69,0.18)' }}
               />
@@ -1415,7 +1415,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
                 onChange={e => setAfterNote(e.target.value)}
                 placeholder={"A note about how you\'re leaving…"}
                 rows={3}
-                style={{ width: '100%', padding: '10px 14px', fontFamily: "'Newsreader',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, transition: 'border-color 0.2s', boxSizing: 'border-box' }}
                 onFocus={e => { e.target.style.borderColor = 'rgba(76,107,69,0.45)' }}
                 onBlur={e => { e.target.style.borderColor = 'rgba(76,107,69,0.18)' }}
               />
@@ -1464,7 +1464,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
           </div>
           <textarea value={beforeNote} onChange={e => setBeforeNote(e.target.value)}
             placeholder={'A note about where you\'re starting…'} rows={2} disabled={beforeDone}
-            style={{ width: '100%', padding: '10px 14px', fontFamily: "'Newsreader',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+            style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
             onFocus={e => { e.target.style.borderColor = 'rgba(76,107,69,0.45)' }}
             onBlur={e => { e.target.style.borderColor = 'rgba(76,107,69,0.18)' }}
           />
@@ -1498,7 +1498,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
           </div>
           <textarea value={afterNote} onChange={e => setAfterNote(e.target.value)}
             placeholder={"A note about how you\'re leaving…"} rows={2}
-            style={{ width: '100%', padding: '10px 14px', fontFamily: "'Newsreader',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+            style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
             onFocus={e => { e.target.style.borderColor = 'rgba(76,107,69,0.45)' }}
             onBlur={e => { e.target.style.borderColor = 'rgba(76,107,69,0.18)' }}
           />

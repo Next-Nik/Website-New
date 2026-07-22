@@ -340,9 +340,9 @@ const WELCOME_CSS = `
   --text-meta:     rgba(15, 21, 35, 0.72);
   --text-faint:    rgba(15, 21, 35, 0.40);
   --text-white:    #FFFFFF;
-  --font-display:  'Fraunces', Georgia, serif;
-  --font-sc:       'IBM Plex Mono', Georgia, serif;
-  --font-body:     'Newsreader', Georgia, serif;
+  --font-display:  'Cormorant Garamond', Georgia, serif;
+  --font-sc:       'Cormorant SC', Georgia, serif;
+  --font-body:     'Lora', Georgia, serif;
 
   position: fixed;
   inset: 0;

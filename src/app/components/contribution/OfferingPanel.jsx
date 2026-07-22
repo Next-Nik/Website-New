@@ -24,8 +24,8 @@ import { PRINCIPLES_ORDERED, PRINCIPLE_WEIGHTS } from '../../constants/principle
 import PrincipleBadge from '../PrincipleBadge'
 import TierChip from './TierChip'
 
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 
 function Eyebrow({ children, style = {} }) {
   return (

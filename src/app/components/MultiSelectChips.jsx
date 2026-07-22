@@ -23,8 +23,8 @@ import { useEffect, useState } from 'react'
 //   className          — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 
 function arraysEqual(a = [], b = []) {
   if (a.length !== b.length) return false

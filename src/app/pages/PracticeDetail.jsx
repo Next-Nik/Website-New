@@ -2,7 +2,7 @@
 //
 // /beta/practice/:slug — single practice detail.
 //
-// Renders title (Fraunces, large), kind badge, placement
+// Renders title (Cormorant Garamond, large), kind badge, placement
 // breadcrumb, lens chips, PrincipleStrip, description as flowing prose,
 // LineageBlock with dignity, evidence summary if Best for All,
 // attestation list, outcome reports list, and CTAs for both attest and
@@ -30,7 +30,7 @@ import {
 } from '../constants/practices'
 import { body, sc } from '../../lib/designTokens'
 
-const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
+const garamond = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 // ─── Helpers ───────────────────────────────────────────────
 

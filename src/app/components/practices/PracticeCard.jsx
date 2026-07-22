@@ -17,9 +17,9 @@ import PrincipleStrip from '../PrincipleStrip'
 import { PRACTICE_KIND_BY_SLUG, VETTING_BY_SLUG } from '../../constants/practices'
 import { CIV_DOMAIN_BY_SLUG } from '../../constants/domains'
 
-const sc       = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body     = { fontFamily: "'Newsreader', Georgia, serif" }
-const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
+const sc       = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body     = { fontFamily: "'Lora', Georgia, serif" }
+const garamond = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 function previewText(text, max = 180) {
   if (!text) return ''

@@ -37,7 +37,7 @@ import { CIV_DOMAINS, SUBDOMAIN_MAP_BETA, LENSES_PER_DOMAIN, SHOW_LENSES_PUBLIC 
 import { PRINCIPLES_ORDERED } from '../constants/principles'
 import { body, sc } from '../../lib/designTokens'
 
-const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
+const garamond = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 // ─── Form primitives ───────────────────────────────────────
 

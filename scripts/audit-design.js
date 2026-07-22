@@ -28,9 +28,10 @@
 //              / The Atlas retheme (see NextUs_Retheme_Master_Spec_v1.md
 //              §4). Gold is legal ONLY in logo assets, beacon
 //              components, and ≤3 explicitly approved moments.
-//   legacyfont any Cormorant Garamond / Cormorant SC / Lora font-family
-//              string — the retired type system. Fraunces / Newsreader
-//              / IBM Plex Mono replace them everywhere.
+//   legacyfont any Fraunces / Newsreader / IBM Plex Mono font-family
+//              string — the retired type system. Cormorant Garamond /
+//              Lora / Cormorant SC replace them everywhere (restored
+//              July 2026 per NextUs_Design_System_v3).
 //   orphantoken  a dot-access on a shared token object (tokens/fn/at/
 //              gold/space/shadow/fnText/atText, imported from
 //              designTokens.js, or a same-named local const in the
@@ -130,7 +131,7 @@ const GOLD_WHITELIST = [
 
 const GOLD_HEX_RE = /#C8922A|#A8721A|#c8922a|#a8721a/g
 const GOLD_RGBA_RE = /rgba\(\s*200,\s*146,\s*42|rgba\(\s*168,\s*114,\s*26/g
-const LEGACYFONT_RE = /Cormorant(?:\s|\+)?Garamond|Cormorant(?:\s|\+)?SC|(?<![a-zA-Z-])Lora(?!x)/g
+const LEGACYFONT_RE = /Fraunces|Newsreader|IBM(?:\s|\+)?Plex(?:\s|\+)?Mono/g
 
 // ── orphantoken: canonical keys from the single source of truth ──
 // Regex-parsed (this script has no ESM/TS loader) — one level deep,
@@ -257,7 +258,7 @@ for (const f of files) {
 
   // ── legacyfont: retired Cormorant/Lora family strings ─────
   for (const m of src.matchAll(LEGACYFONT_RE)) {
-    violations.legacyfont.push(`${r}:${lineOf(src, m.index)}  retired font "${m[0]}" — use Fraunces/Newsreader/IBM Plex Mono (designTokens.js: display/bodyFont/mono)`)
+    violations.legacyfont.push(`${r}:${lineOf(src, m.index)}  retired font "${m[0]}" — use Cormorant Garamond/Lora/Cormorant SC (designTokens.js: display/bodyFont/mono)`)
   }
 
   // ── orphantoken: dot-access on a shared token object whose key ─
@@ -298,7 +299,7 @@ const LAW_TITLES = {
   svg:        'style= ON <svg> OPEN TAG (Chrome 148)',
   vh:         '100vh (use 100dvh)',
   gold:       'HERITAGE GOLD OUTSIDE WHITELIST (no-backslide law — see Master Spec §4)',
-  legacyfont: 'RETIRED FONT (Cormorant/Lora — use Fraunces/Newsreader/IBM Plex Mono)',
+  legacyfont: 'RETIRED FONT (Fraunces/Newsreader/IBM Plex Mono — use Cormorant Garamond/Lora/Cormorant SC)',
   orphantoken: 'ORPHAN TOKEN KEY (no-backslide law — undefined resolves silently, not an error)',
 }
 

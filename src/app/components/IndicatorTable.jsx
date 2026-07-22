@@ -31,8 +31,8 @@ import { at } from '../../lib/designTokens'
 //   className  — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
 
 const TIER_LABEL  = { api: 'Live', scrape: 'Pending', contributor: 'Contributor' }
 const TIER_COLOUR = {
@@ -166,7 +166,7 @@ function Table({ rows }) {
           style={{
             width: '100%',
             borderCollapse: 'collapse',
-            fontFamily: "'Newsreader', Georgia, serif",
+            fontFamily: "'Lora', Georgia, serif",
             fontSize: '14px',
           }}
         >

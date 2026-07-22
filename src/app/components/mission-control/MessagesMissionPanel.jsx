@@ -70,7 +70,7 @@ function InboxTabs({ inboxes, active, onSelect, threadsByInbox }) {
               <span style={{
                 background: GOLD, color: '#FFFFFF', fontSize: '13px',
                 padding: '1px 7px', borderRadius: '40px',
-                fontFamily: "'IBM Plex Mono', Georgia, serif",
+                fontFamily: "'Cormorant SC', Georgia, serif",
               }}>{unread}</span>
             )}
           </button>

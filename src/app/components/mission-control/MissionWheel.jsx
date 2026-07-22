@@ -1072,7 +1072,7 @@ function CivWheel({
   const centreRadius = useMemo(() => {
     if (!centreLabelLines.length) return 22
     const longest = Math.max(...centreLabelLines.map(l => l.length))
-    // IBM Plex Mono at 12px with 0.18em letter-spacing ≈ 9.4px per char
+    // Cormorant SC at 12px with 0.18em letter-spacing ≈ 9.4px per char
     const halfW = (longest * 9.4) / 2 + 10
     const halfH = (centreLabelLines.length * centreFontSize * centreLineHeight) / 2 + 10
     const raw = Math.max(halfW, halfH)

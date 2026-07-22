@@ -35,8 +35,8 @@ import { tagPrinciple, untagPrinciple } from '../hooks/useTaggedPrinciples'
 //   className         — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 
 const WEIGHT_LABEL = {
   primary: 'Primary',

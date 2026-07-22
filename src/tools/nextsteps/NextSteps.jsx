@@ -217,14 +217,14 @@ export function NextStepsPage() {
           padding: 56px 24px 0;
         }
         .ns-eyebrow {
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.75rem;
           letter-spacing: 0.18em;
           color: #262420;
           text-transform: uppercase;
         }
         .ns-title {
-          font-family: 'Fraunces', Georgia, serif;
+          font-family: 'Cormorant Garamond', Georgia, serif;
           font-size: 2.75rem;
           font-weight: 400;
           color: #0F1523;
@@ -232,7 +232,7 @@ export function NextStepsPage() {
           letter-spacing: -0.01em;
         }
         .ns-subtitle {
-          font-family: 'Newsreader', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 1.05rem;
           font-weight: 300;
           color: rgba(15,21,35,0.78);
@@ -244,7 +244,7 @@ export function NextStepsPage() {
           background: none;
           border: none;
           color: #262420;
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.78rem;
           letter-spacing: 0.14em;
           text-transform: uppercase;

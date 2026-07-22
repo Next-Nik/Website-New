@@ -30,8 +30,8 @@ import { useMemo, useState } from 'react'
 const GOLD_DK   = '#262420'
 const GOLD      = '#4c6b45'
 const GOLD_FILL = 'rgba(76,107,69,0.10)'
-const SC   = "'IBM Plex Mono', Georgia, serif"
-const BODY = "'Newsreader', Georgia, serif"
+const SC   = "'Cormorant SC', Georgia, serif"
+const BODY = "'Lora', Georgia, serif"
 
 let pacerInstance = 0
 

@@ -22,9 +22,9 @@ import { useState } from 'react'
 //   className     — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 export default function WheelsToggleSection({
   selfSlot,

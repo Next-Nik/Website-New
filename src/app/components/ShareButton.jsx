@@ -19,7 +19,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 
-const sc = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 function ShareGlyph({ size = 16 }) {
   return (

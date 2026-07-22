@@ -23,8 +23,8 @@ import { at } from '../../lib/designTokens'
 //   className         — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 
 const TYPE_LABEL = {
   observation: 'Observation',

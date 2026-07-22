@@ -4,8 +4,8 @@ import { GapSignalExplainer } from './GapSignalExplainer'
 import { at } from '../../lib/designTokens'
 
 // Design tokens
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const goldDark = at.brass
 
 // ─────────────────────────────────────────────────────────────

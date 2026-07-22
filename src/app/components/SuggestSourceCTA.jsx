@@ -19,9 +19,9 @@ import { at } from '../../lib/designTokens'
 //   className    — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
 
 export default function SuggestSourceCTA({
   indicatorId,
@@ -293,7 +293,7 @@ function Field({ label, required, children }) {
 }
 
 const inputStyle = {
-  fontFamily: "'Newsreader', Georgia, serif",
+  fontFamily: "'Lora', Georgia, serif",
   fontSize: '14px',
   width: '100%',
   padding: '8px 10px',

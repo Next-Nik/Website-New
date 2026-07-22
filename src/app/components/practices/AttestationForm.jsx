@@ -14,9 +14,9 @@
 import { useState } from 'react'
 import { CONTRIBUTOR_ROLES } from '../../constants/practices'
 
-const sc       = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body     = { fontFamily: "'Newsreader', Georgia, serif" }
-const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
+const sc       = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body     = { fontFamily: "'Lora', Georgia, serif" }
+const garamond = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 export default function AttestationForm({ practice, supabase, user, onClose, onAttested }) {
   const [roles, setRoles]         = useState([])

@@ -20,8 +20,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 
 export function InfoButton({ title, children, size = 'sm', ariaLabel, tone = 'light' }) {
   const darkTone = tone === 'dark'
@@ -74,7 +74,7 @@ export function InfoButton({ title, children, size = 'sm', ariaLabel, tone = 'li
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontFamily: "'Fraunces', Georgia, serif",
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
           fontSize,
           lineHeight: 1,
           transition: 'background 120ms ease',

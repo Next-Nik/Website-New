@@ -19,11 +19,11 @@ class ErrorBoundary extends Component {
       return (
         <div style={{ minHeight: '100dvh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
           <div style={{ textAlign: 'center', maxWidth: '400px' }}>
-            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '17px', letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px' }}>Something went wrong</span>
-            <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '18px', color: 'rgba(15,21,35,0.55)', marginBottom: '24px', lineHeight: 1.7 }}>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '17px', letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px' }}>Something went wrong</span>
+            <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '18px', color: 'rgba(15,21,35,0.55)', marginBottom: '24px', lineHeight: 1.7 }}>
               We hit an unexpected error. Please refresh the page — your progress is saved.
             </p>
-            <button onClick={() => window.location.reload()} style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#262420', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '40px', padding: '12px 28px', cursor: 'pointer' }}>
+            <button onClick={() => window.location.reload()} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#262420', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '40px', padding: '12px 28px', cursor: 'pointer' }}>
               Refresh
             </button>
           </div>
@@ -160,7 +160,7 @@ function ScrollToTop() {
 }
 
 function ComingSoon({ name }) {
-  const sc = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+  const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
   return (
     <div style={{ minHeight: '100dvh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
       <div style={{ textAlign: 'center' }}>

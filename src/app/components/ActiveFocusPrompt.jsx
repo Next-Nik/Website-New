@@ -20,9 +20,9 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../../hooks/useSupabase'
 import { useActiveFocus } from '../hooks/useActiveFocus'
 
-const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 const GOLD = '#262420'
 const GOLD_LIGHT = '#4c6b45'

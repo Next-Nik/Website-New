@@ -12,8 +12,8 @@
 //   visibility        — { [session_id]: 'private' | 'public' | 'sprint_buddies' | 'friends' }
 //   onToggleVisibility — (sessionId, currentVisibility) => void
 
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const SLOTS = [
   { index: 0, label: 'Personal',       hint: 'A sprint pointed inward.' },

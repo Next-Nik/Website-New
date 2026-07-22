@@ -58,7 +58,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { body, sc } from '../../lib/designTokens'
 
 // ─── Shared styles ──────────────────────────────────────────────────────────
-const ser  = { fontFamily: "'Fraunces', Georgia, serif" }
+const ser  = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const GOLD   = '#262420'
 const GOLD_L = '#4c6b45'
 const FOREST = '#2D6A4F'

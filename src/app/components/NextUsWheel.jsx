@@ -14,8 +14,8 @@
 
 import { useState } from 'react'
 
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 export const CIV_DOMAINS = [
   { slug: 'human-being',     label: 'Human Being',     shortLabel: 'Human',   color: '#2A6B9E' },
@@ -180,7 +180,7 @@ export default function NextUsWheel({
                 y={ly}
                 textAnchor={anchor}
                 dominantBaseline="middle"
-                fontFamily="'IBM Plex Mono', Georgia, serif"
+                fontFamily="'Cormorant SC', Georgia, serif"
                 fontSize="11"
                 letterSpacing="0.5"
                 fill={isActive ? d.color : 'rgba(15,21,35,0.55)'}

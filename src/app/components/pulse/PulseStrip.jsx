@@ -28,9 +28,9 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../../hooks/useSupabase'
 
-const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const GOLD    = '#262420'
 const INK     = '#0F1523'
 

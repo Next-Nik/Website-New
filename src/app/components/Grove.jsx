@@ -13,9 +13,9 @@ import { at } from '../../lib/designTokens'
 import { getGroveCounts } from '../lib/tendedThing'
 import TendedThing from './TendedThing'
 
-const serif = { fontFamily: "'Fraunces', Georgia, serif" }
-const mono  = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
-const body  = { fontFamily: "'Newsreader', Georgia, serif" }
+const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const mono  = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 const CAP = 48  // most glyphs drawn; the rest are summed into a "+N more"
 

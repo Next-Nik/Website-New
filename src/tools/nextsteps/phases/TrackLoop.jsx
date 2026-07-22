@@ -119,7 +119,7 @@ export function TrackLoop({ tracks, onOpenTrack, onStartNew }) {
           border: none;
           border-radius: 10px;
           padding: 12px 22px;
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.82rem;
           letter-spacing: 0.14em;
           text-transform: uppercase;
@@ -155,18 +155,18 @@ export function TrackLoop({ tracks, onOpenTrack, onStartNew }) {
           margin-bottom: 10px;
         }
         .ns-track-status {
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.72rem;
           letter-spacing: 0.18em;
           text-transform: uppercase;
         }
         .ns-track-time {
-          font-family: 'Newsreader', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 0.82rem;
           color: rgba(15,21,35,0.55);
         }
         .ns-track-toward {
-          font-family: 'Fraunces', Georgia, serif;
+          font-family: 'Cormorant Garamond', Georgia, serif;
           font-size: 1.3rem;
           font-weight: 400;
           line-height: 1.45;
@@ -180,7 +180,7 @@ export function TrackLoop({ tracks, onOpenTrack, onStartNew }) {
           display: flex;
           gap: 16px;
           flex-wrap: wrap;
-          font-family: 'Newsreader', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 0.88rem;
           color: rgba(15,21,35,0.65);
         }
