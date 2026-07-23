@@ -175,7 +175,7 @@ export function WorkWithNikPage() {
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>What this is.</h2>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>One-on-one work built around where you actually are and what you're trying to build. Not a fixed programme. A real conversation and real support {'—'} determined by the work, not a curriculum.</p>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>The work draws on the full ecosystem {'—'} the Horizon Suite, Purpose Piece, Horizon Leap {'—'} but what it draws on in any engagement is determined by what's actually needed.</p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '40px', maxWidth: '600px' }}>One call per week, with focused work in between. We begin with The Map {'—'} an honest picture of where you are across all seven domains {'—'} then follow wherever the work needs to go from there.</p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '40px', maxWidth: '600px' }}>One call per week, with focused work in between. We begin with The Map {'—'} a clear picture of where you are across all seven domains {'—'} then follow wherever the work needs to go from there.</p>
 
         <Card label="This is for you if" body="You're high-functioning and you know functioning well isn't the same as living from what you're built for · You've done the work — something still isn't closing · You have a real horizon and a felt gap between where you are and what it requires · You're ready to be seen clearly" />
         <Card label="This is not for you if" body="You're in active crisis or need stabilisation · You want a programme to follow · You're not ready to move" />
@@ -193,7 +193,7 @@ export function WorkWithNikPage() {
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '40px 0' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>How it works.</h2>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Start with a discovery call. No commitment, no obligation {'—'} just an honest conversation about where you are and whether this is the right container for the work.</p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Start with a discovery call. No commitment, no obligation {'—'} just a real conversation about where you are and whether this is the right container for the work.</p>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '32px', maxWidth: '600px' }}>Engagements begin at $3,500/month with a three-month commitment. The Horizon Suite included for the duration. If that's in range, let's talk.</p>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '20px' }}>Book a time</span>
 

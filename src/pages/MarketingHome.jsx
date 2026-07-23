@@ -324,7 +324,7 @@ function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dar
 // requestAnimationFrame on a passive listener; prefers-reduced-motion stills
 // it to a static, centred layer. The parent section must be position:relative
 // with overflow:hidden.
-function ParallaxSubstrate({ src, opacity = 0.1, depth = 0.15 }) {
+function ParallaxSubstrate({ src, opacity = 0.1, depth = 0.35 }) {
   const ref = useRef(null)
   useEffect(() => {
     const el = ref.current
@@ -343,7 +343,7 @@ function ParallaxSubstrate({ src, opacity = 0.1, depth = 0.15 }) {
       // 0 as the band's top meets the viewport bottom, 1 once it has fully
       // scrolled past the top. Clamped to the visible window.
       const p = Math.min(1, Math.max(0, (vh - rect.top) / (vh + h)))
-      // Symmetric drift bounded to depth*h (< the 20% overscan).
+      // Symmetric drift bounded to depth*h (< the 45% overscan).
       const shift = (0.5 - p) * 2 * depth * h
       el.style.transform = `translate3d(0, ${shift.toFixed(1)}px, 0)`
     }
@@ -359,7 +359,7 @@ function ParallaxSubstrate({ src, opacity = 0.1, depth = 0.15 }) {
   }, [depth])
   return (
     <div ref={ref} aria-hidden="true" style={{
-      position: 'absolute', left: 0, right: 0, top: '-20%', height: '140%',
+      position: 'absolute', left: 0, right: 0, top: '-45%', height: '190%',
       backgroundImage: `url(${src})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',

@@ -120,7 +120,7 @@ export function WatchPage() {
           lineHeight: 1.75,
           maxWidth: '580px',
         }}>
-          A small, honest selection of what's happening — so you can get a feel for the place at your own pace. Come back when something pulls.
+          A small, curated selection of what's happening — so you can get a feel for the place at your own pace. Come back when something pulls.
         </p>
       </div>
 

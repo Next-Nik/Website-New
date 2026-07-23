@@ -192,7 +192,7 @@ export function PricingPage() {
           />
           <ToolCard
             name="The Map"
-            desc="Seven domains. One honest picture of where you are and where you want to be. The most powerful tool in the suite."
+            desc="Seven domains. One clear picture of where you are and where you want to be. The most powerful tool in the suite."
             oneTime={59}
             oneTimeLink={L.map}
           />
@@ -224,7 +224,7 @@ export function PricingPage() {
           <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <div style={{ flex: '1 1 320px' }}>
               <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: '#0F1523', lineHeight: 1.8, marginBottom: '12px' }}>
-                A 12-week cohort for people ready to do real work in the company of others doing the same. Six to eight people. A defined arc — from honest mapping through to purpose, horizon, and a 90-day sprint forward. Facilitated by Nik. Small enough that everyone is genuinely seen.
+                A 12-week cohort for people ready to do real work in the company of others doing the same. Six to eight people. A defined arc — from clear-eyed mapping through to purpose, horizon, and a 90-day sprint forward. Facilitated by Nik. Small enough that everyone is genuinely seen.
               </p>
               <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
                 The Horizon Suite included for the duration. The Map and Purpose Piece completed before the cohort begins.
@@ -301,7 +301,7 @@ export function PricingPage() {
             },
             {
               q: "What's Group Horizon?",
-              a: 'A 12-week cohort of six to eight people, facilitated by Nik. A defined arc from honest mapping through to purpose, horizon, and a 90-day sprint forward. The Horizon Suite included. The Map and Purpose Piece are completed before the cohort begins — so you start at depth, not from scratch.',
+              a: 'A 12-week cohort of six to eight people, facilitated by Nik. A defined arc from clear-eyed mapping through to purpose, horizon, and a 90-day sprint forward. The Horizon Suite included. The Map and Purpose Piece are completed before the cohort begins — so you start at depth, not from scratch.',
             },
             {
               q: 'Is there a free trial?',
