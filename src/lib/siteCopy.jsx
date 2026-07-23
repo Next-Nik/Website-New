@@ -37,7 +37,9 @@ export const COPY_GROUPS = [
     items: [
       // Hero
       { id: 'home.hero.eyebrow',  label: 'Hero · eyebrow',  default: 'A LIFE WORTH LIVING. A FUTURE WORTH BUILDING.' },
-      { id: 'home.hero.title',    label: 'Hero · title',    default: "NextUs builds the future. The world's future and yours, built in unison." },
+      { id: 'home.hero.title',    label: 'Hero · title',    default: 'NextUs builds the future.' },
+      { id: 'home.hero.title2',   label: 'Hero · title line 2 (smaller)', default: "The world's future and yours, built in unison." },
+      { id: 'home.hero.cta',      label: 'Hero · button',   default: 'Start' },
       { id: 'home.hero.subtitle', label: 'Hero · subtitle', multiline: true,
         default: "Both have to be built at the same time, or the structure collapses. The world runs the way a person does when they have no clear goals and are carrying old unprocessed pain. That's because the world is made up of roughly 8 billion people in roughly that state." },
       { id: 'home.hero.whatis', label: 'Hero · what NextUs is', multiline: true,

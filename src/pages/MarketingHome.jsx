@@ -390,13 +390,13 @@ export function MarketingHomePage() {
           className="mh-hero-title"
           style={{
             ...serif,
-            fontSize: 'clamp(36px,5vw,58px)',
+            fontSize: 'clamp(34px,4.8vw,56px)',
             fontWeight: 400,
             color: ink,
-            lineHeight: 1.1,
+            lineHeight: 1.08,
             letterSpacing: '-0.01em',
-            marginBottom: 'clamp(20px,2.4vw,28px)',
-            maxWidth: '880px',
+            marginBottom: 'clamp(8px,1.1vw,14px)',
+            maxWidth: '900px',
             marginLeft: 'auto',
             marginRight: 'auto',
           }}
@@ -404,33 +404,45 @@ export function MarketingHomePage() {
           <Copy id="home.hero.title" />
         </h1>
         <p
-          className="mh-hero-subtitle"
+          className="mh-hero-title2"
           style={{
-            ...body,
-            fontSize: 'clamp(15px,1.4vw,17px)',
+            ...serif,
+            fontSize: 'clamp(19px,2.2vw,28px)',
             fontWeight: 400,
-            lineHeight: 1.7,
             color: inkFaint,
+            lineHeight: 1.3,
+            letterSpacing: '-0.005em',
             maxWidth: '660px',
             margin: '0 auto',
           }}
         >
-          <Copy id="home.hero.subtitle" />
+          <Copy id="home.hero.title2" />
         </p>
-        <p
-          className="mh-hero-whatis"
-          style={{
-            ...body,
-            fontSize: 'clamp(15px,1.4vw,17px)',
-            fontWeight: 400,
-            lineHeight: 1.7,
-            color: inkFaint,
-            maxWidth: '660px',
-            margin: 'clamp(12px,1.4vw,16px) auto 0',
-          }}
-        >
-          <Copy id="home.hero.whatis" />
+
+        {/* Visual up front — the fractal wheels open the page */}
+        <FractalWheels />
+        <p style={{ ...serif, fontSize: 'clamp(18px,2vw,24px)', fontWeight: 400, color: ink, lineHeight: 1.3, maxWidth: '560px', margin: 'clamp(18px,2.2vw,28px) auto 0' }}>
+          <Copy id="home.hero.domains" />
         </p>
+
+        {/* Argument — two columns so it reads wide, not tall */}
+        <div className="mh-hero-2col">
+          <p style={{ ...body, fontSize: 'clamp(15px,1.35vw,16px)', fontWeight: 400, lineHeight: 1.65, color: inkFaint, margin: 0 }}>
+            <Copy id="home.hero.subtitle" />
+          </p>
+          <p style={{ ...body, fontSize: 'clamp(15px,1.35vw,16px)', fontWeight: 400, lineHeight: 1.65, color: inkFaint, margin: 0 }}>
+            <Copy id="home.hero.whatis" />
+          </p>
+        </div>
+        <div className="mh-hero-2col">
+          <p style={{ ...body, fontSize: 'clamp(15px,1.35vw,16px)', fontWeight: 400, lineHeight: 1.65, color: inkFaint, margin: 0 }}>
+            <Copy id="home.hero.builton" />
+          </p>
+          <p style={{ ...body, fontSize: 'clamp(15px,1.35vw,16px)', fontWeight: 400, lineHeight: 1.65, color: inkFaint, margin: 0 }}>
+            <Copy id="home.hero.twosides" />
+          </p>
+        </div>
+
         <p
           className="mh-hero-closer"
           style={{
@@ -440,22 +452,15 @@ export function MarketingHomePage() {
             lineHeight: 1.4,
             color: ink,
             maxWidth: '640px',
-            margin: 'clamp(24px,3vw,34px) auto 0',
+            margin: 'clamp(22px,2.6vw,30px) auto clamp(22px,2.4vw,28px)',
           }}
         >
           <Copy id="home.hero.closer" />
         </p>
-        <FractalWheels />
-        <div style={{ maxWidth: '680px', margin: 'clamp(28px,3.4vw,44px) auto 0', textAlign: 'center' }}>
-          <p style={{ ...serif, fontSize: 'clamp(20px,2.4vw,28px)', fontWeight: 400, color: ink, lineHeight: 1.3, margin: '0 auto clamp(16px,2vw,22px)', maxWidth: '560px' }}>
-            <Copy id="home.hero.domains" />
-          </p>
-          <p style={{ ...body, fontSize: 'clamp(15px,1.4vw,17px)', fontWeight: 400, lineHeight: 1.7, color: inkFaint, maxWidth: '660px', margin: '0 auto' }}>
-            <Copy id="home.hero.builton" />
-          </p>
-          <p style={{ ...body, fontSize: 'clamp(15px,1.4vw,17px)', fontWeight: 400, lineHeight: 1.7, color: inkFaint, maxWidth: '660px', margin: 'clamp(12px,1.4vw,16px) auto 0' }}>
-            <Copy id="home.hero.twosides" />
-          </p>
+
+        {/* One button */}
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <PillButton href="/tools"><Copy id="home.hero.cta" /></PillButton>
         </div>
       </section>
 
@@ -707,6 +712,23 @@ export function MarketingHomePage() {
       <SiteFooter />
 
       <style>{`
+        /* ── Hero argument · two columns (wide, not tall) ── */
+        .mh-hero-2col {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: clamp(24px,4vw,52px);
+          max-width: 940px;
+          margin: clamp(18px,2.2vw,28px) auto 0;
+          text-align: left;
+        }
+        @media (max-width: 680px) {
+          .mh-hero-2col {
+            grid-template-columns: 1fr;
+            gap: 16px;
+            text-align: center;
+          }
+        }
+
         /* ── Fractal hero wheels ─────────────────── */
         .fractal-wheels {
           display: flex;
