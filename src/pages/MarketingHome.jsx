@@ -498,37 +498,15 @@ export function MarketingHomePage() {
         </div>
       </section>
 
-      {/* ── Two doors ────────────────────────────── */}
+      {/* ── Start ─────────────────────────────────── */}
       <section style={{
         maxWidth: '1200px',
         margin: '0 auto',
-        padding: '0 clamp(20px,5vw,40px)',
+        padding: 'clamp(4px,1.5vw,16px) clamp(20px,5vw,40px) clamp(24px,4vw,44px)',
+        display: 'flex',
+        justifyContent: 'center',
       }}>
-        <div style={{ textAlign: 'center', marginBottom: 'clamp(20px,2.4vw,28px)' }}>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#4c6b45' }}>
-            <Copy id="home.doors.eyebrow" />
-          </span>
-        </div>
-        <div className="mh-cards">
-          <PathCard
-            heading={<Copy id="home.door.life.heading" />}
-            bodyText={<Copy id="home.door.life.body" />}
-            cta={<Copy id="home.door.life.cta" />}
-            href="/login?path=self"
-            image="/hero-personal.jpg"
-            imageSide="left"
-            dark={false}
-          />
-          <PathCard
-            heading={<Copy id="home.door.world.heading" />}
-            bodyText={<Copy id="home.door.world.body" />}
-            cta={<Copy id="home.door.world.cta" />}
-            href="/explore"
-            image="/hero-civ.jpg"
-            imageSide="right"
-            dark={true}
-          />
-        </div>
+        <PillButton href="/tools" light><Copy id="home.hero.cta" /></PillButton>
       </section>
 
       {/* ── How it works ─────────────────────────── */}
