@@ -61,7 +61,7 @@ function TestimonialCarousel() {
   const duration = TESTIMONIALS.length * 12 // seconds per full loop
 
   return (
-    <div style={{ overflow: 'hidden', margin: '0 -40px' }}>
+    <div className="wap-carousel" style={{ overflow: 'hidden', margin: '0 -40px' }}>
       <style>{`
         @keyframes scrollLeft {
           0% { transform: translateX(0); }
@@ -84,6 +84,9 @@ function TestimonialCarousel() {
         .carousel-track-left:hover,
         .carousel-track-right:hover {
           animation-play-state: paused;
+        }
+        @media (max-width: 640px) {
+          .wap-carousel { margin-left: -24px !important; margin-right: -24px !important; }
         }
       `}</style>
 

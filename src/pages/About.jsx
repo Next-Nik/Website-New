@@ -280,7 +280,7 @@ export function AboutPage() {
       <DarkSection style={{ textAlign: 'center' }}>
         <DarkEyebrow>The mission</DarkEyebrow>
         <DarkHeading>To live into a world where everyone is fully on their path and actively levelling up towards their full-yes life.</DarkHeading>
-        <DarkBody style={{ color: '#262420', marginBottom: '40px' }}>To awaken and amplify the Godspark of humanity.</DarkBody>
+        <DarkBody style={{ marginBottom: '40px' }}>To awaken and amplify the Godspark of humanity.</DarkBody>
         <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', justifyContent: 'center' }}>
           <DarkSolidButton href="/work-with-nik">Work directly with Nik →</DarkSolidButton>
           <DarkGhostButton href="/podcast">Listen to the podcast →</DarkGhostButton>

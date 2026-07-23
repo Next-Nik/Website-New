@@ -134,14 +134,10 @@ const FAQS = [
     ],
   },
   {
-    section: 'Beta programme',
+    section: 'Feedback and support',
     items: [
       {
-        q: 'I\'m a beta tester. What does that mean?',
-        a: 'You have full access to the Horizon Suite during the beta period. In exchange, your feedback shapes what gets built next. If something is confusing, broken, or missing — we want to know. Use the Support link on your Dashboard to reach us directly.',
-      },
-      {
-        q: 'How do I give feedback?',
+        q: 'How do I give feedback or get help?',
         a: 'From your Dashboard, scroll to the bottom of the rail and click Support. You can ask a question, report something broken, or tell us what\'s landing. Someone from the team will get back to you.',
       },
     ],
