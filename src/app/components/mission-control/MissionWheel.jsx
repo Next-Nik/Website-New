@@ -1143,6 +1143,7 @@ function CivWheel({
         return (
           <polygon
             key={`civ-gring-${fr}`}
+            className="mw-hl-refring"
             points={pts.join(' ')}
             fill="none"
             stroke={isPass
@@ -1155,8 +1156,11 @@ function CivWheel({
         )
       })}
 
-      {/* Outer dashed ring — rotates with spokes so tips stay at corners */}
+      {/* Outer dashed ring — rotates with spokes so tips stay at corners.
+          .mw-hl-horizon lets the reading key beside the wheel light this
+          ring up on hover ("the outer edge is the horizon goal"). */}
       <polygon
+        className="mw-hl-horizon"
         points={ringPts}
         fill="none"
         stroke={ringStroke}
@@ -1211,6 +1215,7 @@ function CivWheel({
         const polyPoints = civVerts.map(v => `${v.x.toFixed(1)},${v.y.toFixed(1)}`).join(' ')
 
         return (
+          <g className="mw-hl-shape">
           <g style={{ opacity: bloomed ? 1 : bloomT }}>
             {/* Polygon — richer fill and stroke for visual presence */}
             <polygon
@@ -1284,6 +1289,7 @@ function CivWheel({
               )
             })()}
           </g>
+          </g>
         )
       })()}
 
@@ -1317,7 +1323,7 @@ function CivWheel({
           : spokeStroke
         const lineWidth = isFocusSpoke ? 1.4 : 1
         return (
-          <g key={`spoke-${i}`}>
+          <g key={`spoke-${i}`} className="mw-hl-spoke">
             <line
               x1={CX} y1={CY}
               x2={sx} y2={sy}
@@ -1412,6 +1418,7 @@ function CivWheel({
         return (
           <g
             key={`node-${i}`}
+            className="mw-hl-node"
             transform={groupTransform}
             opacity={groupOpacity}
             onPointerDown={e => { e.stopPropagation(); handleNodeClick(i) }}

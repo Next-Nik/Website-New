@@ -445,6 +445,13 @@ export default function MissionControl() {
   // The Now beat holds two states in one surface: a quiet 'glance'
   // (wheel + live counts) and, when leaned into, the 'feed'.
   const [nowView, setNowView] = useState('glance')
+  // "The full picture" expander under the planet reading key — holds the
+  // long-form orientation copy without crowding the glance.
+  const [keyMoreOpen, setKeyMoreOpen] = useState(false)
+  // Reading-key ↔ wheel dialogue: hovering a key line highlights the
+  // wheel part it describes ('domains' → spokes + labels, 'state' →
+  // horizon ring + today-shape). null = no highlight.
+  const [keyHl, setKeyHl] = useState(null)
   const currentWheel = activeScope === 'planet' ? 'civ' : 'personal'
 
   const isCiv = currentWheel === 'civ'
@@ -1068,10 +1075,10 @@ export default function MissionControl() {
   // value is simply not shown.
   const streakDays = data.foundationData?.streak_days || 0
   const civPlacedCount = Object.keys(civCurrent).length
-  const civAvgPct = civPlacedCount > 0
-    ? Math.round(
-        (Object.values(civCurrent).reduce((a, b) => a + b, 0) / civPlacedCount) * 10
-      )
+  // Report-card register: 4.7 / 10 reads as the grade it is, where
+  // "47% toward the goal" read as progress-bar optimism.
+  const civAvgTen = civPlacedCount > 0
+    ? (Object.values(civCurrent).reduce((a, b) => a + b, 0) / civPlacedCount).toFixed(1)
     : null
 
   // ─── The signal domain beside momentum. Godspark framing: anchor
@@ -1093,14 +1100,6 @@ export default function MissionControl() {
     return best ? { label: best.label, lbl: 'Where you’re most alive' } : null
   })()
   const signalSelf = focusSelf || strongSelf
-  const edgeCiv = (() => {
-    let best = null
-    CIV_KEYS.forEach((k, i) => {
-      const v = civCurrent?.[k]
-      if (v != null && (best === null || v < best.v)) best = { v, label: CIV_LABELS[i] }
-    })
-    return best
-  })()
 
   // ─── The next step — ALWAYS one real move. Walks the journey and
   //     never resolves to "nothing to do". ───
@@ -1114,23 +1113,27 @@ export default function MissionControl() {
           : !hasHorizonSelfMeta
             ? { label: 'Name your Horizon Self', onClick: () => navigate('/nextu/horizon-self') }
             : { label: 'Set a 90-day Target Sprint', onClick: () => openPersonalPanel('target-sprint') }
-  const civNextStep =
-    // Only the Earth Challenge is live right now, so it IS the planet's
-    // next step. When more Planet Sprints go live, restore the missions
-    // panel branch below.
-    { label: 'Join the Earth Challenge', onClick: () => navigate('/earth') }
-  const nowNextStep = isCiv ? civNextStep : selfNextStep
+  // The planet's live action in the Now beat is the reading key's last
+  // line: go look at a domain. It opens the top-level overview below the
+  // wheel — the "‹ SELECT A DOMAIN ›" stepper — from which every domain
+  // panel (gap signal, actor faces, "How can I contribute?") is one tap
+  // away. The Earth Challenge campaign lives in Beat 3 (Next step).
+  const openCivDomains = () => {
+    setLevelPath([])
+    setActiveIndex(null)
+    setParentPanelOpen(false)
+    setShowOverview(true)
+  }
+  const nowNextStep = { eye: 'Your next step', ...selfNextStep }
 
   // Two quiet signal tiles beside the next step: momentum + the edge.
-  const glanceStats = isCiv
-    ? [
-        ...(civAvgPct != null ? [{ big: String(civAvgPct), small: '%', lbl: 'Toward the goal' }] : []),
-        ...(edgeCiv ? [{ word: edgeCiv.label, lbl: 'Where the work is thin' }] : []),
-      ]
-    : [
-        ...(streakDays > 0 ? [{ big: String(streakDays), small: ' day', lbl: 'Momentum' }] : []),
-        ...(signalSelf ? [{ word: signalSelf.label, lbl: signalSelf.lbl }] : []),
-      ]
+  // Self side only — the planet side's glance column is the reading key,
+  // where the state number (civAvgTen) lives inside the sentence that
+  // explains the wheel's shape.
+  const glanceStats = [
+    ...(streakDays > 0 ? [{ big: String(streakDays), small: ' day', lbl: 'Momentum' }] : []),
+    ...(signalSelf ? [{ word: signalSelf.label, lbl: signalSelf.lbl }] : []),
+  ]
 
   // ─── Beat cards ──────────────────────────────────────────────
   // Each card wraps a real tool: its onClick fires the same handler
@@ -1345,7 +1348,7 @@ export default function MissionControl() {
               <div className="mc-now-view">
                 <div className="mc-glance">
                   <div className="mc-wheel-wrap">
-                    <div className={`mc-instrument${isCiv ? ' mc-instrument--dark' : ''}`} data-stage={isCiv ? 'light' : undefined}>
+                    <div className={`mc-instrument${isCiv ? ' mc-instrument--dark' : ''}`} data-stage={isCiv ? 'light' : undefined} data-key-hl={isCiv && keyHl ? keyHl : undefined}>
                       {isCiv && (
                         <nav className="mc-civ-crumbs" aria-label="Civilisational breadcrumb">
                           {civCrumbs.map((c, i) => {
@@ -1414,24 +1417,123 @@ export default function MissionControl() {
                   </div>
 
                   <div className="mc-glance-side">
-                    {/* The next step — always one real move, never a dead zero. */}
-                    <button type="button" className="mc-nextstep" onClick={nowNextStep.onClick}>
-                      <EditableText as="span" className="mc-nextstep-eye">{isCiv ? 'Our next step' : 'Your next step'}</EditableText>
-                      <span className="mc-nextstep-label">{nowNextStep.label}</span>
-                      <span className="mc-nextstep-go" aria-hidden="true">→</span>
-                    </button>
+                    {isCiv ? (
+                      /* ── The reading key — each line explains one part of
+                         the wheel, the state number lives in its sentence,
+                         and the instruction line IS the door. ── */
+                      <div className="mc-key">
+                        <EditableText as="div" className="mc-key-eye"
+                          id="mc.now.key.eye" defaultText="How to read this wheel" />
 
-                    {glanceStats.length > 0 && (
-                      <div className="mc-stats">
-                        {glanceStats.map((s, i) => (
-                          <div key={s.lbl + i} className="mc-stat">
-                            {s.word
-                              ? <div className="mc-stat-word">{s.word}</div>
-                              : <div className="mc-stat-big">{s.big}{s.small && <small>{s.small}</small>}</div>}
-                            <div className="mc-stat-lbl">{s.lbl}</div>
+                        <div className="mc-key-row"
+                          onMouseEnter={() => setKeyHl('domains')}
+                          onMouseLeave={() => setKeyHl(null)}>
+                          <span className="mc-key-glyph" aria-hidden="true">
+                            <svg width="36" height="36" viewBox="0 0 36 36">
+                              <g stroke="currentColor" strokeWidth="1.4" opacity=".9">
+                                <line x1="18" y1="18" x2="18" y2="3" /><line x1="18" y1="18" x2="31" y2="10" />
+                                <line x1="18" y1="18" x2="33" y2="21" /><line x1="18" y1="18" x2="26" y2="32" />
+                                <line x1="18" y1="18" x2="10" y2="32" /><line x1="18" y1="18" x2="3" y2="21" />
+                                <line x1="18" y1="18" x2="5" y2="10" />
+                              </g>
+                              <circle cx="18" cy="18" r="4" fill="currentColor" stroke="none" />
+                            </svg>
+                          </span>
+                          <span className="mc-key-text">
+                            <EditableText as="b" id="mc.now.key.1a" defaultText="Each spoke is a domain" />
+                            {' — '}
+                            <EditableText id="mc.now.key.1b" multiline
+                              defaultText="seven make the whole planet, and each opens into sub-domains, just as the parts of your life form a whole." />
+                          </span>
+                        </div>
+
+                        <div className="mc-key-row"
+                          onMouseEnter={() => setKeyHl('state')}
+                          onMouseLeave={() => setKeyHl(null)}>
+                          <span className="mc-key-glyph" aria-hidden="true">
+                            <svg width="36" height="36" viewBox="0 0 36 36">
+                              <polygon points="18,2 31,9 34,23 26,34 10,34 2,23 5,9" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                              <polygon points="18,9 26,13 28,22 23,28 13,28 8,22 10,13" fill="currentColor" fillOpacity=".22" stroke="currentColor" strokeWidth="1" />
+                            </svg>
+                          </span>
+                          <span className="mc-key-text">
+                            <EditableText as="b" id="mc.now.key.2a" defaultText="The outer edge is the horizon goal." />
+                            {' '}
+                            <EditableText id="mc.now.key.2b" defaultText="The shape inside is where we are today:" />
+                            {civAvgTen != null && <>{' '}<span className="mc-key-num">{civAvgTen}<small> / 10</small></span></>}
+                            {' '}
+                            <EditableText id="mc.now.key.2c" defaultText="across all domains." />
+                          </span>
+                        </div>
+
+                        <button type="button" className="mc-key-door" onClick={openCivDomains}
+                          onMouseEnter={() => setKeyHl('domains')}
+                          onMouseLeave={() => setKeyHl(null)}
+                          onFocus={() => setKeyHl('domains')}
+                          onBlur={() => setKeyHl(null)}>
+                          <span className="mc-key-glyph" aria-hidden="true">
+                            <svg width="36" height="36" viewBox="0 0 36 36">
+                              <circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                              <path d="M4 30c0-5 3.6-8 8-8s8 3 8 8" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                              <circle cx="25" cy="14" r="4" fill="none" stroke="currentColor" strokeWidth="1.4" opacity=".7" />
+                              <path d="M20 29c.6-4 2.8-6.4 6-6.4 3 0 5.4 2.2 6 6" fill="none" stroke="currentColor" strokeWidth="1.4" opacity=".7" />
+                            </svg>
+                          </span>
+                          <span className="mc-key-text">
+                            <EditableText as="b" id="mc.now.key.3a" defaultText="Tap a domain" />
+                            {' '}
+                            <EditableText id="mc.now.key.3b" multiline
+                              defaultText="to see what’s needed there — and who’s already working on it." />
+                          </span>
+                          <span className="mc-key-go" aria-hidden="true">→</span>
+                        </button>
+
+                        {/* The full picture — the long-form orientation copy,
+                            one tap away instead of crowding the glance. */}
+                        <button type="button" className="mc-key-more"
+                          onClick={() => setKeyMoreOpen(o => !o)} aria-expanded={keyMoreOpen}>
+                          {keyMoreOpen ? 'Close the full picture' : 'The full picture'}
+                          <span className="mc-key-more-chev" aria-hidden="true">{keyMoreOpen ? '↑' : '↓'}</span>
+                        </button>
+                        {keyMoreOpen && (
+                          <div className="mc-glance-intro">
+                            <EditableText as="p" className="mc-glance-intro-p" multiline
+                              id="mc.now.planet.intro.1"
+                              defaultText="The planet as a whole can be broken down into 7 domains, and from there, sub domains and so on." />
+                            <EditableText as="p" className="mc-glance-intro-p" multiline
+                              id="mc.now.planet.intro.2"
+                              defaultText="There is a horizon goal for the planet and there is a horizon goal for each domain and sub domains." />
+                            <EditableText as="p" className="mc-glance-intro-p" multiline
+                              id="mc.now.planet.intro.3"
+                              defaultText="They all link together just as the different parts of your life all form a whole." />
+                            <EditableText as="p" className="mc-glance-intro-p" multiline
+                              id="mc.now.planet.intro.4"
+                              defaultText="Look to see how each domain is doing now, and who is currently working towards the horizon goals and what they could use from you." />
                           </div>
-                        ))}
+                        )}
                       </div>
+                    ) : (
+                      <>
+                        {/* The next step — always one real move, never a dead zero. */}
+                        <button type="button" className="mc-nextstep" onClick={nowNextStep.onClick}>
+                          <EditableText as="span" className="mc-nextstep-eye">{nowNextStep.eye}</EditableText>
+                          <span className="mc-nextstep-label">{nowNextStep.label}</span>
+                          <span className="mc-nextstep-go" aria-hidden="true">→</span>
+                        </button>
+
+                        {glanceStats.length > 0 && (
+                          <div className="mc-stats">
+                            {glanceStats.map((s, i) => (
+                              <div key={s.lbl + i} className="mc-stat">
+                                {s.word
+                                  ? <div className="mc-stat-word">{s.word}</div>
+                                  : <div className="mc-stat-big">{s.big}{s.small && <small>{s.small}</small>}</div>}
+                                <div className="mc-stat-lbl">{s.lbl}</div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
@@ -2186,6 +2288,7 @@ const STAGE_CSS = `
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
+.mc-stats .mc-stat:only-child { grid-column: 1 / -1; }
 .mc-stat {
   border: 1px solid var(--mc-line);
   border-radius: 14px;
@@ -2199,6 +2302,118 @@ const STAGE_CSS = `
 
 /* The next-step call — the one live move, leading the glance side. */
 .mc-glance-side { display: flex; flex-direction: column; gap: 16px; }
+
+/* ── The reading key beside the planet wheel ─────────────────
+   Three lines, each explaining one part of the instrument; the
+   glyphs echo the wheel's geometry, the state number lives in
+   its sentence, and the last line is the door. */
+.mc-key { display: flex; flex-direction: column; }
+.mc-key-eye {
+  font-family: var(--mc-mono);
+  font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--mc-muted);
+  margin-bottom: 10px;
+}
+.mc-key-row {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 2px;
+}
+.mc-key-row + .mc-key-row { border-top: 1px solid var(--mc-line); }
+.mc-key-glyph {
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  color: var(--mc-accent);
+}
+.mc-key-text { font-size: 15.5px; line-height: 1.45; color: var(--mc-muted); }
+.mc-key-text b { font-family: var(--mc-display); font-weight: 600; color: var(--mc-ink); }
+.mc-key-num { font-family: var(--mc-display); font-size: 19px; font-weight: 600; color: var(--mc-ink); }
+.mc-key-num small { font-size: 13px; color: var(--mc-muted); font-weight: 700; }
+.mc-key-door {
+  display: grid;
+  grid-template-columns: 44px 1fr 28px;
+  gap: 14px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  border: 1px solid var(--mc-accent);
+  background: var(--mc-accent-soft);
+  border-radius: 16px;
+  padding: 14px 16px 14px 12px;
+  margin-top: 14px;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.mc-key-door:hover { transform: translateY(-2px); box-shadow: var(--mc-shadow); }
+.mc-key-door .mc-key-text { font-family: var(--mc-display); font-size: 17.5px; line-height: 1.35; }
+.mc-key-go { font-size: 20px; font-weight: 700; color: var(--mc-accent); }
+.mc-key-more {
+  align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 12px;
+  padding: 0 2px;
+  border: 0; background: none; cursor: pointer;
+  font-family: var(--mc-mono);
+  font-size: 13px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--mc-muted);
+}
+.mc-key-more:hover { color: var(--mc-ink); }
+.mc-key-more-chev { color: var(--mc-accent); }
+
+/* ── Reading-key ↔ wheel dialogue ────────────────────────────
+   Hovering a key line highlights the wheel part it describes.
+   'domains' → spokes + tip nodes/labels lift, rings + shape dim.
+   'state'   → horizon ring glows solid + today-shape holds,
+               spokes/labels/reference rings recede. */
+.mc-instrument .mw-hl-spoke,
+.mc-instrument .mw-hl-node,
+.mc-instrument .mw-hl-refring,
+.mc-instrument .mw-hl-shape {
+  transition: opacity .35s ease;
+}
+.mc-instrument .mw-hl-horizon {
+  transition: opacity .35s ease, stroke .35s ease, stroke-width .35s ease;
+}
+.mc-instrument[data-key-hl="domains"] :is(.mw-hl-horizon, .mw-hl-refring, .mw-hl-shape) {
+  opacity: .22;
+}
+.mc-instrument[data-key-hl="domains"] .mw-hl-spoke line {
+  stroke: var(--mc-accent);
+}
+.mc-instrument[data-key-hl="state"] :is(.mw-hl-spoke, .mw-hl-node, .mw-hl-refring) {
+  opacity: .25;
+}
+.mc-instrument[data-key-hl="state"] .mw-hl-horizon {
+  stroke: var(--mc-accent);
+  stroke-width: 2;
+  stroke-dasharray: none;
+  opacity: 1;
+  filter: drop-shadow(0 0 3px rgba(169,116,63,.5));
+}
+@media (prefers-reduced-motion: reduce) {
+  .mc-instrument .mw-hl-spoke,
+  .mc-instrument .mw-hl-node,
+  .mc-instrument .mw-hl-refring,
+  .mc-instrument .mw-hl-shape,
+  .mc-instrument .mw-hl-horizon { transition: none; }
+}
+
+/* The full picture — long-form orientation copy in the expander. */
+.mc-glance-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 10px 2px 2px;
+}
+.mc-glance-intro-p {
+  margin: 0;
+  font-family: var(--mc-body);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--mc-muted);
+}
 .mc-nextstep {
   position: relative;
   display: flex;
