@@ -472,12 +472,25 @@ export function MarketingHomePage() {
       <section style={{
         background: 'radial-gradient(ellipse at 50% 0%, rgba(76,107,69,0.09), transparent 62%), #141B2C',
         padding: 'clamp(40px,5vw,56px) clamp(20px,5vw,40px)',
+        position: 'relative',
+        overflow: 'hidden',
       }}>
+        {/* world-map substrate — same treatment as the Align band, lifted a
+            touch because the section navy matches the image's own navy */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          backgroundImage: 'url(/hero-civ.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.16,
+          pointerEvents: 'none',
+        }} />
         <div className="mh-earth" style={{
           maxWidth: '880px', margin: '0 auto',
+          position: 'relative', zIndex: 1,
           display: 'flex', gap: 'clamp(24px,4vw,40px)', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center',
         }}>
-          <img src="/beacon/mark.png?v=2" alt="" loading="lazy"
+          <img src="/logo_hero.png" alt="" loading="lazy"
             style={{ width: 'clamp(150px,18vw,210px)', flex: 'none' }} />
           <div style={{ flex: '1 1 340px', minWidth: '280px', maxWidth: '520px' }}>
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#4c6b45', display: 'block' }}>
