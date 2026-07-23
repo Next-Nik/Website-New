@@ -1256,6 +1256,21 @@ export default function MissionControl() {
             <a href="#beat-path"><EditableText>Path</EditableText></a>
           </div>
 
+          {/* Straight to the daily tools — one tap to practice, from the top. */}
+          <button
+            type="button"
+            className="mc-practice-btn"
+            onClick={openDaily}
+            title="Open your daily tools"
+            aria-label="Open your daily tools"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3.4" />
+              <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M18.8 5.2l-2.1 2.1M7.3 16.7l-2.1 2.1" />
+            </svg>
+            <span>Daily Tools</span>
+          </button>
+
           <button
             type="button"
             className="mc-icon-btn"
@@ -1861,6 +1876,29 @@ const STAGE_CSS = `
 }
 .mc-nav-links a:hover { color: var(--mc-ink); }
 
+/* Practice — the always-visible way straight into the daily tools. */
+.mc-practice-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--mc-accent);
+  color: var(--mc-accent-ink);
+  font-family: var(--mc-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: filter .2s ease, transform .2s ease;
+}
+.mc-practice-btn:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.mc-practice-btn svg { display: block; }
+
 .mc-pole {
   display: inline-flex;
   background: var(--mc-surface-2);
@@ -2364,6 +2402,9 @@ const STAGE_CSS = `
 @media (max-width: 640px) {
   .mc-wrap, .mc-nav-inner { padding: 0 18px; }
   .mc-nav-links { display: none; }
+  /* Collapse Practice to an icon on phones so the top bar never crowds. */
+  .mc-practice-btn { padding: 0; width: 38px; justify-content: center; gap: 0; }
+  .mc-practice-btn span { display: none; }
   .mc-beat { padding: 44px 0 8px; }
   .mc-glance { padding: 20px; }
   .mc-glance-detail { padding: 0 18px 22px; }

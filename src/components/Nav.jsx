@@ -59,8 +59,17 @@ export function Nav({ activePath, hideHamburger = false }) {
             )}
           </div>
 
-          {/* Right — search + profile dot / sign in + hamburger */}
+          {/* Right — practice + search + profile dot / sign in + hamburger */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {user && (
+              <Link to="/daily" className="nav-practice" title="Your daily tools" onClick={closeMobile}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="3.4" />
+                  <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M18.8 5.2l-2.1 2.1M7.3 16.7l-2.1 2.1" />
+                </svg>
+                <span>Daily Tools</span>
+              </Link>
+            )}
             {user && (
               <Link to="/search" className="nav-search-icon" title="Search the Atlas" onClick={closeMobile}>
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
@@ -136,6 +145,30 @@ export function Nav({ activePath, hideHamburger = false }) {
           white-space: nowrap;
         }
         .nav-sign-in:hover { background: rgba(76,107,69,0.10); }
+
+        /* ── Practice — straight to the daily tools (logged-in only) ── */
+        .nav-practice {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          padding: 9px 18px;
+          border-radius: 40px;
+          background: #4c6b45;
+          color: #FFFFFF;
+          font-family: 'Cormorant SC', Georgia, serif;
+          font-size: 13px;
+          font-weight: 500;
+          letter-spacing: 0.14em;
+          text-decoration: none;
+          white-space: nowrap;
+          transition: background 0.18s, transform 0.18s;
+        }
+        .nav-practice:hover { background: #3f5b39; transform: translateY(-1px); }
+        .nav-practice svg { display: block; }
+        @media (max-width: 640px) {
+          .nav-practice span { display: none; }
+          .nav-practice { padding: 9px; }
+        }
 
         /* ── Hamburger (mobile only) ── */
         .nav-hamburger {
