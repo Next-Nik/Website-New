@@ -347,22 +347,26 @@ function HiwStep({ n, title, body: stepBody }) {
   )
 }
 
-function HiwTrack({ label, heading, steps, closing, ctaLabel, ctaHref }) {
+function HiwTrack({ label, heading, lede, steps, ctaLabel, ctaHref }) {
   return (
     <div className="hiw-track">
       <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.24em', color: gold, display: 'block', marginBottom: '8px' }}>
         {label}
       </span>
-      <h3 style={{ ...serif, fontSize: 'clamp(24px,2.4vw,30px)', fontWeight: 400, color: ink, lineHeight: 1.15, margin: '0 0 24px' }}>
+      <h3 style={{ ...serif, fontSize: 'clamp(24px,2.4vw,30px)', fontWeight: 400, color: ink, lineHeight: 1.15, margin: '0 0 14px' }}>
         {heading}
       </h3>
+      {lede && (
+        <p style={{ ...body, fontSize: '16px', lineHeight: 1.7, color: ink, fontStyle: 'italic', margin: '0 0 26px' }}>
+          {lede}
+        </p>
+      )}
       <div className="hiw-steps">
         {steps.map(s => <HiwStep key={s.n} {...s} />)}
       </div>
-      <p style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: ink, fontWeight: 500, margin: '26px 0 22px' }}>
-        {closing}
-      </p>
-      <PillButton href={ctaHref} light>{ctaLabel}</PillButton>
+      <div style={{ marginTop: '28px' }}>
+        <PillButton href={ctaHref} light>{ctaLabel}</PillButton>
+      </div>
     </div>
   )
 }
@@ -528,20 +532,24 @@ export function MarketingHomePage() {
           <HiwTrack
             label={<Copy id="home.hiw.life.label" />}
             heading={<Copy id="home.hiw.life.heading" />}
+            lede={<Copy id="home.hiw.life.lede" />}
             steps={PERSONAL_STEPS}
-            closing={<Copy id="home.hiw.life.closing" />}
             ctaLabel={<Copy id="home.hiw.life.cta" />}
             ctaHref="/login?path=self"
           />
           <HiwTrack
             label={<Copy id="home.hiw.world.label" />}
             heading={<Copy id="home.hiw.world.heading" />}
+            lede={<Copy id="home.hiw.world.lede" />}
             steps={PLANET_STEPS}
-            closing={<Copy id="home.hiw.world.closing" />}
             ctaLabel={<Copy id="home.hiw.world.cta" />}
             ctaHref="/explore"
           />
         </div>
+
+        <p style={{ ...serif, fontSize: 'clamp(17px,1.9vw,20px)', fontWeight: 300, fontStyle: 'italic', color: ink, lineHeight: 1.5, textAlign: 'center', maxWidth: '620px', margin: 'clamp(32px,4vw,44px) auto 0' }}>
+          <Copy id="home.hiw.bridge" />
+        </p>
 
         <div style={{ textAlign: 'center', marginTop: 'clamp(36px,4vw,48px)' }}>
           <a
