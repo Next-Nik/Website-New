@@ -46,7 +46,7 @@ export function TermsContent() {
       <P>Anything you write in the tools belongs to you. We don't claim ownership over it. We store it so you can come back to it.</P>
       <P>You can close your account any time from Mission Control {'→'} Settings. Deletion is immediate and removes your data from our active systems.</P>
       <H2>What this is for {'—'} and what it isn't</H2>
-      <P>NextUs is a developmental tool for honest self-knowledge and civilisational orientation. It's structured reflection, planning, and the work of figuring out where you're going.</P>
+      <P>NextUs is a developmental tool for clear self-knowledge and civilisational orientation. It's structured reflection, planning, and the work of figuring out where you're going.</P>
       <P>It is not therapy. Not crisis support. Not a substitute for medical, psychiatric, or psychological care. If you're in active crisis or serious distress, please reach out to a trained professional or a crisis service first. The platform will be here when you're ready.</P>
       <P>If you're working with a therapist or doctor on something significant, consider bringing the work you do here into that relationship rather than letting it stand alone.</P>
       <H2>What we ask you not to do</H2>
@@ -67,7 +67,7 @@ export function TermsContent() {
 export function PrivacyContent() {
   return (
     <>
-      <P>NextUs is built on the premise that honest self-knowledge is valuable {'—'} and that what you discover about yourself belongs to you. This policy explains what we collect, why, and what we do and don't do with it.</P>
+      <P>NextUs is built on the premise that clear self-knowledge is valuable {'—'} and that what you discover about yourself belongs to you. This policy explains what we collect, why, and what we do and don't do with it.</P>
       <P>The short version: we collect what we need to make the tools work and remember your progress. We don't sell your data. We don't share it with advertisers. We don't use it to build profiles for anyone other than you.</P>
       <H2>What we collect</H2>
       <P>When you create an account, we store your email address and a secure identifier. That's the minimum needed to keep your work attached to you across sessions.</P>

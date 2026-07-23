@@ -9,7 +9,7 @@ const FAQS = [
     items: [
       {
         q: 'Where do I begin?',
-        a: 'If you\'re not sure, start with North Star — a short conversation that reads where you are and points you toward the right tool. If you\'d rather just dive in, The Map is a good first move: seven domains, an honest picture of where things actually stand. It\'s deliberate work — give a first pass an honest hour.',
+        a: 'If you\'re not sure, start with North Star — a short conversation that reads where you are and points you toward the right tool. If you\'d rather just dive in, The Map is a good first move: seven domains, a clear picture of where things actually stand. It\'s deliberate work — give a first pass a full hour.',
       },
       {
         q: 'Do I need to use all the tools?',

@@ -66,14 +66,14 @@ export function AboutPage() {
 
             <P>
               Most personal development tools get applied without a map. Someone finds a methodology,
-              a practice, a coach — and brings it to bear on their life without any honest picture of
+              a practice, a coach — and brings it to bear on their life without any clear picture of
               where they actually are or what stage they're in. A tool applied at the wrong stage
               doesn't just miss. It can actively cause harm.
             </P>
             <P>NextUs Self is built on a different premise.</P>
             <P>
               There are stages to healing and development. The Horizon Suite is a series of tools
-              designed to meet you at yours. They are diagnostic first — drawing out an honest picture
+              designed to meet you at yours. They are diagnostic first — drawing out a clear picture
               of where you are and where you want to go. They are agnostic about what comes next.
               They don't prescribe a path. They illuminate the terrain and aim you toward the life
               your healthiest, most aligned self would actually thrive in.
@@ -132,7 +132,7 @@ export function AboutPage() {
             </P>
             <P>
               NextUs is a coordination platform designed to make that map visible, and those
-              connections real. It is diagnostic first — drawing an honest picture of where each
+              connections real. It is diagnostic first — drawing a clear picture of where each
               domain actually is, and what the horizon goal for that domain looks like at every scale.
               It is agnostic about how we get there. It doesn't prescribe ideology or method. It
               illuminates the terrain and connects the people already doing the work.
