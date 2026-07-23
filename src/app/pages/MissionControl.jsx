@@ -1115,9 +1115,10 @@ export default function MissionControl() {
             ? { label: 'Name your Horizon Self', onClick: () => navigate('/nextu/horizon-self') }
             : { label: 'Set a 90-day Target Sprint', onClick: () => openPersonalPanel('target-sprint') }
   const civNextStep =
-    civPlacedCount === 0
-      ? { label: 'Open the world view', onClick: () => openCivPanel('world-view') }
-      : { label: 'Join a Planet Sprint', onClick: () => openCivPanel('missions') }
+    // Only the Earth Challenge is live right now, so it IS the planet's
+    // next step. When more Planet Sprints go live, restore the missions
+    // panel branch below.
+    { label: 'Join the Earth Challenge', onClick: () => navigate('/earth') }
   const nowNextStep = isCiv ? civNextStep : selfNextStep
 
   // Two quiet signal tiles beside the next step: momentum + the edge.
@@ -1344,7 +1345,7 @@ export default function MissionControl() {
               <div className="mc-now-view">
                 <div className="mc-glance">
                   <div className="mc-wheel-wrap">
-                    <div className={`mc-instrument${isCiv ? ' mc-instrument--dark' : ''}`} data-stage={isCiv ? 'dark' : undefined}>
+                    <div className={`mc-instrument${isCiv ? ' mc-instrument--dark' : ''}`} data-stage={isCiv ? 'light' : undefined}>
                       {isCiv && (
                         <nav className="mc-civ-crumbs" aria-label="Civilisational breadcrumb">
                           {civCrumbs.map((c, i) => {

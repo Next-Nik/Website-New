@@ -51,7 +51,7 @@ export default function WheelStage({
 
       <div className={`mc-wheel-frame ${isCiv ? 'mc-active' : ''}`}>
         <div className="mc-wheel-svg">
-          <MissionWheel kind="civ" dark={true} {...civProps} />
+          <MissionWheel kind="civ" dark={false} {...civProps} />
         </div>
       </div>
     </div>
