@@ -22,7 +22,7 @@ function PracticeCard({ p, accent }) {
   const tiers = p.tiers || []
   const actors = p.actors || []
   return (
-    <div style={{ border: '1px solid rgba(88,160,138,0.20)', borderLeft: `3px solid ${accent}`,
+    <div style={{ border: '1px solid rgba(76,107,69,0.20)', borderLeft: `3px solid ${accent}`,
       borderRadius: '12px', padding: '20px 22px', marginBottom: '16px', background: '#FFFFFF' }}>
       <div style={{ ...serif, fontSize: '22px', color: dark, marginBottom: p.statement ? '6px' : '10px' }}>{p.name}</div>
       {p.statement && (
@@ -130,7 +130,7 @@ function RuledOutCard({ p }) {
             <textarea value={basis} onChange={e => setBasis(e.target.value)}
               placeholder="What specifically changed about this approach?"
               style={{ ...body, width: '100%', minHeight: '70px', fontSize: '14px', padding: '10px 12px',
-                border: '1px solid rgba(88,160,138,0.3)', borderRadius: '8px', marginBottom: '8px', resize: 'vertical' }} />
+                border: '1px solid rgba(76,107,69,0.3)', borderRadius: '8px', marginBottom: '8px', resize: 'vertical' }} />
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               <button onClick={submit} disabled={state === 'sending' || basis.trim().length < 40}
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase',

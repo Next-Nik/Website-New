@@ -20,8 +20,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import PrincipleStrip from '../PrincipleStrip'
 
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 
 const URGENCY_STYLES = {
   high:   { color: '#8A3030', label: 'High urgency' },
@@ -109,7 +109,7 @@ export default function NeedCard({
     <div style={{
       padding: '20px 22px',
       background: '#FFFFFF',
-      border: '1px solid rgba(110,127,92,0.20)',
+      border: '1px solid rgba(76,107,69,0.20)',
       borderRadius: '14px',
       display: 'flex',
       flexDirection: 'column',
@@ -160,9 +160,9 @@ export default function NeedCard({
             fontSize: '13px',
             letterSpacing: '0.14em',
             textTransform: 'uppercase',
-            color: '#26302A',
-            background: 'rgba(110,127,92,0.08)',
-            border: '1px solid rgba(110,127,92,0.35)',
+            color: '#262420',
+            background: 'rgba(76,107,69,0.08)',
+            border: '1px solid rgba(76,107,69,0.35)',
             borderRadius: '40px',
             padding: '2px 10px',
           }}>
@@ -177,7 +177,7 @@ export default function NeedCard({
               fontSize: '13px',
               letterSpacing: '0.1em',
               color: 'rgba(15,21,35,0.55)',
-              border: '1px solid rgba(110,127,92,0.18)',
+              border: '1px solid rgba(76,107,69,0.18)',
               borderRadius: '40px',
               padding: '2px 8px',
               display: 'inline-flex',
@@ -210,8 +210,8 @@ export default function NeedCard({
             fontSize: '13px',
             letterSpacing: '0.1em',
             color: 'rgba(15,21,35,0.55)',
-            background: 'rgba(110,127,92,0.04)',
-            border: '1px solid rgba(110,127,92,0.18)',
+            background: 'rgba(76,107,69,0.04)',
+            border: '1px solid rgba(76,107,69,0.18)',
             borderRadius: '40px',
             padding: '2px 10px',
           }}>
@@ -259,7 +259,7 @@ export default function NeedCard({
       <div style={{
         marginTop: '4px',
         paddingTop: '12px',
-        borderTop: '1px solid rgba(110,127,92,0.10)',
+        borderTop: '1px solid rgba(76,107,69,0.10)',
       }}>
         {alreadyInterested ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -268,7 +268,7 @@ export default function NeedCard({
               Interest expressed
             </span>
             {userInterest.status === 'accepted' && (
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#262420' }}>
                 · Org accepted
               </span>
             )}
@@ -287,7 +287,7 @@ export default function NeedCard({
                 width: '100%',
                 padding: '10px 12px',
                 borderRadius: '8px',
-                border: '1px solid rgba(110,127,92,0.30)',
+                border: '1px solid rgba(76,107,69,0.30)',
                 background: '#FAFAF7',
                 outline: 'none',
                 resize: 'vertical',
@@ -306,7 +306,7 @@ export default function NeedCard({
                   fontSize: '13px',
                   letterSpacing: '0.14em',
                   color: '#FFFFFF',
-                  background: submitting ? 'rgba(110,127,92,0.5)' : '#6E7F5C',
+                  background: submitting ? 'rgba(76,107,69,0.5)' : '#4c6b45',
                   border: 'none',
                   borderRadius: '40px',
                   padding: '8px 18px',
@@ -351,15 +351,15 @@ export default function NeedCard({
               ...sc,
               fontSize: '13px',
               letterSpacing: '0.14em',
-              color: '#26302A',
-              background: 'rgba(110,127,92,0.06)',
-              border: '1px solid rgba(110,127,92,0.30)',
+              color: '#262420',
+              background: 'rgba(76,107,69,0.06)',
+              border: '1px solid rgba(76,107,69,0.30)',
               borderRadius: '40px',
               padding: '8px 18px',
               cursor: 'pointer',
             }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(110,127,92,0.12)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(110,127,92,0.06)'}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(76,107,69,0.12)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(76,107,69,0.06)'}
           >
             Express interest
           </button>

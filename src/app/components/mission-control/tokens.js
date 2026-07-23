@@ -40,24 +40,26 @@ export const BG_CARD_EMPTY = 'rgba(244,245,239,0.5)'
 // Atlas sea ink: at.ground (#10222B) leans blue-green and read as a residue of
 // the olive cast on the planet side. Local to Mission Control; if the design
 // system later formalises a navy ground, source it from designTokens.js.
-const MC_DARK_GROUND = '#111B2E'
+// July 2026 · full retheme: the civ side joins the bright system too — there
+// are no dark stages left. This was the deep-navy instrument ground; it now
+// resolves to the bright warm ground so the civ wheel/panel frames render
+// bright like everything else.
+const MC_DARK_GROUND = fn.ground   // '#f3f0e9' — retired dark ground, now bright
 
-export const BG_INK        = MC_DARK_GROUND   // dark-stage ground, bars, panels.
-// June 2026: was fn.ink (#26302A), the Field Notes graphite — a green-biased
-// TEXT colour. Used as the planet-side page/bar/panel background it cast the
-// whole dark stage olive. fn.ink remains TEXT_INK below — text only, never a
-// surface.
+export const BG_INK        = MC_DARK_GROUND   // (name retained) bright stage ground
 export const BG_WARM       = fn.ground
 
 export const TEXT_INK         = fn.ink
 export const TEXT_META        = fn.meta
 export const TEXT_FAINT       = fn.ghost
 
-// Colour — Civ stage (The Atlas)
-export const BG_INK_SOFT      = at.object
-export const TEXT_WHITE       = at.text
-export const TEXT_WHITE_META  = at.meta
-export const TEXT_WHITE_FAINT = at.ghost
+// Colour — Civ stage. Formerly white-on-dark; now dark-on-bright since the
+// civ instrument frames are bright. The TEXT_WHITE* names are retained (many
+// call sites) but now resolve to the bright system's ink/surfaces.
+export const BG_INK_SOFT      = fn.surface2   // '#eae5da' — recessed civ surface
+export const TEXT_WHITE       = fn.ink         // '#262420'
+export const TEXT_WHITE_META  = fn.meta        // 'rgba(38,36,32,0.68)'
+export const TEXT_WHITE_FAINT = fn.ghost       // 'rgba(38,36,32,0.58)'
 
 // Heritage gold — only for the ≤3 explicitly approved moments
 // (FOUNDER chip, North Star mark, Stretch completion seal) and

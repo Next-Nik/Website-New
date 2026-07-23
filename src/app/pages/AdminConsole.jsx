@@ -42,6 +42,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { useAuth } from '../../hooks/useAuth'
 import { Nav } from '../../components/Nav'
 import HorizonFloorAdmissionCheck from '../components/HorizonFloorAdmissionCheck'
+import MomentsReviewQueue from '../components/MomentsReviewQueue'
 import SeedTab from '../components/admin/SeedTab'
 import PrincipleStrip from '../components/PrincipleStrip'
 
@@ -118,15 +119,15 @@ const TIER_FROM_SCORE = s => s <= 4.5 ? 'pattern_instance' : s <= 6.5 ? 'contest
 
 const TIER_CFG = {
   pattern_instance: { label: 'Pattern instance', color: '#8A3030', bg: 'rgba(138,48,48,0.08)', border: 'rgba(138,48,48,0.25)' },
-  contested:        { label: 'Contested',         color: '#8A6020', bg: 'rgba(110,127,92,0.08)', border: 'rgba(110,127,92,0.30)' },
-  qualified:        { label: 'Qualified',          color: '#26302A', bg: 'rgba(38,48,42,0.08)', border: 'rgba(38,48,42,0.30)' },
+  contested:        { label: 'Contested',         color: '#8A6020', bg: 'rgba(76,107,69,0.08)', border: 'rgba(76,107,69,0.30)' },
+  qualified:        { label: 'Qualified',          color: '#262420', bg: 'rgba(38,36,32,0.08)', border: 'rgba(38,36,32,0.30)' },
   exemplar:         { label: 'Exemplar',            color: '#6A4A10', bg: 'rgba(106,74,16,0.10)', border: 'rgba(106,74,16,0.35)' },
 }
 
 const LABEL_COLORS = {
   Planet:       { color: '#2A4A8A', bg: 'rgba(42,74,138,0.08)',  border: 'rgba(42,74,138,0.25)' },
   Self:         { color: '#2A6B3A', bg: 'rgba(42,107,58,0.08)', border: 'rgba(42,107,58,0.25)' },
-  Practitioner: { color: '#26302A', bg: 'rgba(38,48,42,0.08)', border: 'rgba(38,48,42,0.25)' },
+  Practitioner: { color: '#262420', bg: 'rgba(38,36,32,0.08)', border: 'rgba(38,36,32,0.25)' },
 }
 
 // ── Shared UI primitives (identical to original) ──────────────
@@ -142,9 +143,9 @@ function Eyebrow({ children }) {
 
 function Btn({ onClick, children, variant = 'primary', small, disabled }) {
   const styles = {
-    primary: { background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', color: gold },
+    primary: { background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', color: gold },
     danger:  { background: 'rgba(180,40,40,0.05)',  border: '1.5px solid rgba(180,40,40,0.5)',   color: '#8A2020' },
-    ghost:   { background: 'transparent',           border: '1px solid rgba(110,127,92,0.30)',    color: 'rgba(15,21,35,0.72)' },
+    ghost:   { background: 'transparent',           border: '1px solid rgba(76,107,69,0.30)',    color: 'rgba(15,21,35,0.72)' },
   }
   return (
     <button onClick={onClick} disabled={disabled} style={{
@@ -166,7 +167,7 @@ function Input({ value, onChange, placeholder, type = 'text', style, onKeyDown, 
       style={{
         ...body, fontSize: '15px', color: '#0F1523',
         padding: '9px 14px', borderRadius: '8px',
-        border: '1.5px solid rgba(110,127,92,0.35)',
+        border: '1.5px solid rgba(76,107,69,0.35)',
         background: '#FFFFFF', outline: 'none', width: '100%',
         ...style,
       }}
@@ -180,7 +181,7 @@ function Select({ value, onChange, options, style }) {
       style={{
         ...body, fontSize: '15px', color: '#0F1523',
         padding: '9px 14px', borderRadius: '8px',
-        border: '1.5px solid rgba(110,127,92,0.35)',
+        border: '1.5px solid rgba(76,107,69,0.35)',
         background: '#FFFFFF', outline: 'none', ...style,
       }}>
       {options.map(o => (
@@ -193,7 +194,7 @@ function Select({ value, onChange, options, style }) {
 function Card({ children, style, onClick }) {
   return (
     <div onClick={onClick} style={{
-      background: '#FFFFFF', border: '1.5px solid rgba(110,127,92,0.20)',
+      background: '#FFFFFF', border: '1.5px solid rgba(76,107,69,0.20)',
       borderRadius: '14px', padding: '20px 22px', marginBottom: '10px',
       ...(onClick ? { cursor: 'pointer' } : null),
       ...style,
@@ -224,7 +225,7 @@ function Toast({ message, onClose }) {
   return (
     <div style={{
       position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
-      background: '#0F1523', color: '#FAFAF7',
+      background: '#3c5637', color: '#FAFAF7',
       ...body, fontSize: '17px',
       padding: '12px 20px', borderRadius: '10px',
       boxShadow: '0 8px 28px rgba(15,21,35,0.3)',
@@ -251,7 +252,7 @@ function HorizonFloorModal({ domainSlug, contextLabel, onResolve, onCancel }) {
     >
       <div style={{
         background: '#FAFAF7', borderRadius: '14px',
-        border: '1px solid rgba(110,127,92,0.25)',
+        border: '1px solid rgba(76,107,69,0.25)',
         width: 'min(560px, 100%)', maxHeight: '82vh',
         overflowY: 'auto', padding: '32px',
         boxShadow: '0 24px 64px rgba(15,21,35,0.28)',
@@ -302,13 +303,13 @@ function PrismTab() {
 
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Seed', 'Place', 'Flags', 'Chains', 'Practices', 'Prism', 'Floor', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Seed', 'Place', 'Flags', 'Moments', 'Chains', 'Practices', 'Prism', 'Floor', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
     <div style={{
       display: 'flex', gap: '4px', marginBottom: '32px',
-      borderBottom: '1px solid rgba(110,127,92,0.20)', paddingBottom: '0',
+      borderBottom: '1px solid rgba(76,107,69,0.20)', paddingBottom: '0',
       overflowX: 'auto',
     }}>
       {TABS.map(tab => (
@@ -484,7 +485,7 @@ function PlatformTab({ onNavigate }) {
           return (
             <Card key={d.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '14px 20px', flexWrap: 'wrap' }}>
               <div style={{ ...body, fontSize: '16px', color: '#0F1523', width: '160px', flexShrink: 0 }}>{d.name}</div>
-              <div style={{ flex: 1, height: '6px', background: 'rgba(110,127,92,0.12)', borderRadius: '3px', overflow: 'hidden', minWidth: '80px' }}>
+              <div style={{ flex: 1, height: '6px', background: 'rgba(76,107,69,0.12)', borderRadius: '3px', overflow: 'hidden', minWidth: '80px' }}>
                 {showScore && (
                   <div style={{ height: '100%', width: `${(d.gap_score / 10) * 100}%`,
                     background: d.gap_score < 4 ? '#8A3030' : d.gap_score < 6 ? '#8A7030' : '#2A6B3A',
@@ -526,7 +527,7 @@ function PlatformTab({ onNavigate }) {
         })}
       </div>
       {stats.pendingClaims > 0 && (
-        <Card style={{ borderColor: 'rgba(110,127,92,0.60)', background: 'rgba(110,127,92,0.04)' }}>
+        <Card style={{ borderColor: 'rgba(76,107,69,0.60)', background: 'rgba(76,107,69,0.04)' }}>
           <span style={{ ...body, fontSize: '16px', color: '#0F1523' }}>{stats.pendingClaims} claim{stats.pendingClaims !== 1 ? 's' : ''} awaiting review</span>
         </Card>
       )}
@@ -896,7 +897,7 @@ function ActorsTab({ toast }) {
                     <span style={{ ...body, fontSize: '17px', color: '#0F1523', fontWeight: 400 }}>{a.name}</span>
                     <Badge label={a.type || 'org'} />
                     {a.winning && <Badge label="winning" color="#2A6B3A" />}
-                    {a.is_platform_founder && <Badge label="founder" color="#26302A" />}
+                    {a.is_platform_founder && <Badge label="founder" color="#262420" />}
                     {a.horizon_floor_status === 'flagged_for_review' && (
                       <Badge label="floor review" color="#8A3030" />
                     )}
@@ -907,8 +908,8 @@ function ActorsTab({ toast }) {
                       <span key={d} style={{
                         ...sc, fontSize: '13px', letterSpacing: '0.08em',
                         color: i === 0 ? gold : 'rgba(15,21,35,0.55)',
-                        background: i === 0 ? 'rgba(110,127,92,0.08)' : 'rgba(15,21,35,0.04)',
-                        border: `1px solid ${i === 0 ? 'rgba(110,127,92,0.35)' : 'rgba(15,21,35,0.15)'}`,
+                        background: i === 0 ? 'rgba(76,107,69,0.08)' : 'rgba(15,21,35,0.04)',
+                        border: `1px solid ${i === 0 ? 'rgba(76,107,69,0.35)' : 'rgba(15,21,35,0.15)'}`,
                         borderRadius: '40px', padding: '1px 8px',
                       }}>
                         {domainLabel(d)}{i === 0 ? ' (primary)' : ''}
@@ -998,8 +999,8 @@ function ActorsTab({ toast }) {
                         ...sc, fontSize: '13px', letterSpacing: '0.06em',
                         padding: '4px 10px', borderRadius: '40px', cursor: 'pointer',
                         color: isOn ? gold : 'rgba(15,21,35,0.72)',
-                        background: isOn ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
-                        border: isOn ? '1px solid rgba(110,127,92,0.55)' : '1px solid rgba(110,127,92,0.25)',
+                        background: isOn ? 'rgba(76,107,69,0.08)' : '#FFFFFF',
+                        border: isOn ? '1px solid rgba(76,107,69,0.55)' : '1px solid rgba(76,107,69,0.25)',
                       }}>
                       {d.label}
                     </button>
@@ -1024,8 +1025,8 @@ function ActorsTab({ toast }) {
                         ...sc, fontSize: '13px', letterSpacing: '0.06em',
                         padding: '4px 10px', borderRadius: '40px', cursor: 'pointer',
                         color: isOn ? gold : 'rgba(15,21,35,0.72)',
-                        background: isOn ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
-                        border: isOn ? '1px solid rgba(110,127,92,0.55)' : '1px solid rgba(110,127,92,0.25)',
+                        background: isOn ? 'rgba(76,107,69,0.08)' : '#FFFFFF',
+                        border: isOn ? '1px solid rgba(76,107,69,0.55)' : '1px solid rgba(76,107,69,0.25)',
                       }}>
                       {p.label}
                     </button>
@@ -1054,14 +1055,14 @@ function ActorsTab({ toast }) {
               <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Description</label>
               <textarea value={form.description} onChange={e => setFormField('description', e.target.value)} rows={3}
                 style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px', borderRadius: '8px',
-                  border: '1.5px solid rgba(110,127,92,0.35)', background: '#FFFFFF', outline: 'none',
+                  border: '1.5px solid rgba(76,107,69,0.35)', background: '#FFFFFF', outline: 'none',
                   width: '100%', resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box' }} />
             </div>
 
             <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
               <input type="checkbox" checked={!!form.is_platform_founder}
                 onChange={e => setFormField('is_platform_founder', e.target.checked)}
-                style={{ width: '17px', height: '17px', accentColor: '#6E7F5C', cursor: 'pointer' }} />
+                style={{ width: '17px', height: '17px', accentColor: '#4c6b45', cursor: 'pointer' }} />
               <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.78)' }}>
                 Founder of NextUs badge
               </span>
@@ -1096,7 +1097,7 @@ function ActorsTab({ toast }) {
 function ExTierBadge({ tier }) {
   const c = TIER_CFG[tier]; if (!c) return null
   return (
-    <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.12em',
+    <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.12em',
       padding:'3px 10px', borderRadius:'40px', border:`1px solid ${c.border}`, color:c.color, background:c.bg }}>
       {c.label}
     </span>
@@ -1106,7 +1107,7 @@ function ExTierBadge({ tier }) {
 function ExLabelBadge({ label }) {
   const c = LABEL_COLORS[label] || LABEL_COLORS.Planet
   return (
-    <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.14em',
+    <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.14em',
       padding:'4px 12px', borderRadius:'40px', border:`1px solid ${c.border}`, color:c.color, background:c.bg }}>
       {label}
     </span>
@@ -1116,12 +1117,12 @@ function ExLabelBadge({ label }) {
 function ExPill({ label, variant = 'green' }) {
   const cols = {
     green: { color:'#2A6B3A', bg:'rgba(42,107,58,0.08)', border:'rgba(42,107,58,0.25)' },
-    amber: { color:'#8A6020', bg:'rgba(110,127,92,0.08)', border:'rgba(110,127,92,0.20)' },
+    amber: { color:'#8A6020', bg:'rgba(76,107,69,0.08)', border:'rgba(76,107,69,0.20)' },
     blue:  { color:'#2A4A8A', bg:'rgba(42,74,138,0.08)', border:'rgba(42,74,138,0.25)' },
   }
   const c = cols[variant] || cols.green
   return (
-    <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.10em',
+    <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.10em',
       padding:'2px 9px', borderRadius:'40px', border:`1px solid ${c.border}`,
       color:c.color, background:c.bg, display:'inline-block', margin:'2px' }}>
       {label}
@@ -1134,13 +1135,13 @@ function DimPills({ label, values = [], color = gold }) {
   if (!values || values.length === 0) return null
   return (
     <div style={{ marginBottom: '6px' }}>
-      <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.16em',
+      <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.16em',
         color: 'rgba(15,21,35,0.55)', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>
         {label}
       </span>
       <div>
         {values.map((v, i) => (
-          <span key={v} style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.08em',
+          <span key={v} style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.08em',
             padding:'2px 8px', borderRadius:'40px', margin:'2px', display:'inline-block',
             color: i === 0 ? color : 'rgba(15,21,35,0.55)',
             background: i === 0 ? `${color}14` : 'rgba(15,21,35,0.04)',
@@ -1187,7 +1188,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
   return (
     <div style={{
       background: checked ? '#FFFFFF' : 'rgba(15,21,35,0.03)',
-      border: checked ? '1.5px solid rgba(110,127,92,0.40)' : '1.5px solid rgba(15,21,35,0.12)',
+      border: checked ? '1.5px solid rgba(76,107,69,0.40)' : '1.5px solid rgba(15,21,35,0.12)',
       borderRadius: '14px', marginBottom: '16px',
       opacity: checked ? 1 : 0.6,
       transition: 'all 0.15s',
@@ -1196,21 +1197,21 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
       {/* Card header */}
       <div style={{ padding: '18px 20px', display:'flex', alignItems:'flex-start', gap:'14px' }}>
         <input type="checkbox" checked={checked} onChange={() => onToggle(index)}
-          style={{ width:'18px', height:'18px', accentColor:'#6E7F5C', marginTop:'3px', flexShrink:0, cursor:'pointer' }} />
+          style={{ width:'18px', height:'18px', accentColor:'#4c6b45', marginTop:'3px', flexShrink:0, cursor:'pointer' }} />
 
         <div style={{ flex:1, minWidth:0 }}>
           <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'8px', flexWrap:'wrap' }}>
             <ExLabelBadge label={proposal.label} />
             <ExTierBadge tier={proposal.placement_tier} />
             {proposal._duplicate && (
-              <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.10em', textTransform:'uppercase', color:'#8A6020',
-                background:'rgba(110,127,92,0.10)', border:'1px solid rgba(110,127,92,0.40)',
+                background:'rgba(76,107,69,0.10)', border:'1px solid rgba(76,107,69,0.40)',
                 borderRadius:'40px', padding:'2px 10px' }}>
                 Already on the map
               </span>
             )}
-            <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.10em', color:'rgba(15,21,35,0.55)' }}>
               {proposal.confidence}% confidence
             </span>
@@ -1218,29 +1219,29 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           <div style={{ display:'flex', alignItems:'flex-start', gap:'12px', marginBottom:'8px' }}>
             {/* Logo / image being placed — so it's reviewable, not approved blind */}
             <div style={{ flexShrink:0, width:'56px', height:'56px', borderRadius:'8px',
-              border:'1px solid rgba(110,127,92,0.30)', background:'#FFFFFF',
+              border:'1px solid rgba(76,107,69,0.30)', background:'#FFFFFF',
               overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center' }}>
               {proposal.image_url
                 ? <img src={proposal.image_url} alt=""
                     style={{ width:'100%', height:'100%', objectFit:'contain' }}
                     onError={e => { e.currentTarget.style.display = 'none'
                       e.currentTarget.parentNode.dataset.broken = '1' }} />
-                : <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+                : <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                     letterSpacing:'0.10em', color:'rgba(15,21,35,0.55)', textAlign:'center' }}>NO IMAGE</span>}
             </div>
             <div style={{ flex:1, minWidth:0 }}>
-              <div style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'19px', fontWeight: 400,
+              <div style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'19px', fontWeight: 400,
                 color:'#0F1523' }}>
                 {proposal.name}
               </div>
               {proposal.tagline && (
-                <div style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'14px',
+                <div style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'14px',
                   color:'rgba(15,21,35,0.70)', lineHeight:1.4, marginTop:'3px' }}>
                   {proposal.tagline}
                 </div>
               )}
               {proposal.floor_check?.has_favicon_fallback && (
-                <div style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+                <div style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                   letterSpacing:'0.10em', color:'#8A6020', marginTop:'4px' }}>
                   FAVICON FALLBACK · NO LOGO FOUND
                 </div>
@@ -1248,11 +1249,11 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
             </div>
           </div>
           <div style={{ display:'flex', alignItems:'baseline', gap:'6px', marginBottom:'8px' }}>
-            <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'40px',
+            <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'40px',
               fontWeight:700, color:'#0F1523', lineHeight:1 }}>
               {proposal.alignment_score}
             </span>
-            <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'14px',
+            <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'14px',
               color:'rgba(15,21,35,0.55)' }}>/10</span>
           </div>
 
@@ -1260,12 +1261,12 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
              that should read like the actor's own site, not a review. */}
           {proposal.description && (
             <div style={{ marginBottom:'12px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px',
                 textTransform:'uppercase' }}>
                 Profile
               </p>
-              <p style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'15px',
+              <p style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'15px',
                 color:'#0F1523', lineHeight:1.65, margin:0 }}>
                 {proposal.description}
               </p>
@@ -1275,13 +1276,13 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           {/* Story — the longer narrative, shown so it's reviewable before placing */}
           {proposal.story && (
             <div style={{ marginBottom:'12px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px',
                 textTransform:'uppercase' }}>
                 Story
               </p>
               {proposal.story.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean).map((para, i) => (
-                <p key={i} style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'14px',
+                <p key={i} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'14px',
                   color:'rgba(15,21,35,0.72)', lineHeight:1.65, margin:'0 0 8px' }}>
                   {para}
                 </p>
@@ -1291,12 +1292,12 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           {proposal.score_reasoning && (
             <div style={{ borderLeft:'2px solid rgba(15,21,35,0.14)', paddingLeft:'12px', marginBottom:'12px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'4px',
                 textTransform:'uppercase' }}>
                 Why this score · internal
               </p>
-              <p style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'13px',
                 color:'rgba(15,21,35,0.55)', lineHeight:1.6, margin:0 }}>
                 {proposal.score_reasoning}
               </p>
@@ -1311,12 +1312,12 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
             {lenses.length > 0 && <DimPills label="Lenses"  values={lenses}    color="#6B2A9E" />}
             {problems.length > 0 && (
               <div style={{ marginBottom: '6px' }}>
-                <span style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.16em',
+                <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.16em',
                   color: 'rgba(15,21,35,0.55)', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>
                   Problem chains
                 </span>
                 {problems.map((p, i) => (
-                  <div key={i} style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'13px',
+                  <div key={i} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'13px',
                     color: i === 0 ? '#0F1523' : 'rgba(15,21,35,0.55)',
                     lineHeight: 1.5, marginBottom: '3px' }}>
                     {i === 0 ? '' : '+ '}{p}
@@ -1334,7 +1335,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           {/* HAL signals (preserved — canonical structural-integrity surface) */}
           {proposal.hal_signals?.length > 0 && (
             <div style={{ marginBottom:'8px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'#2A6B3A', marginBottom:'5px' }}>
                 HAL conditions
               </p>
@@ -1344,7 +1345,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           {/* SFP patterns (preserved — canonical structural-integrity surface) */}
           {proposal.sfp_patterns?.length > 0 && (
             <div style={{ marginBottom:'8px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'#8A6020', marginBottom:'5px' }}>
                 SFP patterns
               </p>
@@ -1356,13 +1357,13 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
              before placement. Written on save by linkRelationships(). */}
           {proposal.relationships?.length > 0 && (
             <div style={{ marginBottom:'8px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px' }}>
                 Linked to
               </p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:'5px' }}>
                 {proposal.relationships.map((r, i) => (
-                  <span key={i} style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'13px',
+                  <span key={i} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'13px',
                     color:'rgba(15,21,35,0.72)', background:'rgba(15,21,35,0.04)',
                     border:'1px solid rgba(15,21,35,0.10)', borderRadius:'40px', padding:'3px 10px' }}>
                     {r.to_name}
@@ -1376,17 +1377,17 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
              socials, contact). Shown so they're reviewable before placing. */}
           {proposal.links?.length > 0 && (
             <div style={{ marginBottom:'8px' }}>
-              <p style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px' }}>
                 Channels · {proposal.links.length}
               </p>
               <div style={{ display:'flex', flexWrap:'wrap', gap:'5px' }}>
                 {proposal.links.map((l, i) => (
                   <a key={i} href={l.url} target="_blank" rel="noreferrer"
-                    style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+                    style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                       letterSpacing:'0.08em', textTransform:'uppercase', textDecoration:'none',
-                      color:gold, background:'rgba(110,127,92,0.06)',
-                      border:'1px solid rgba(110,127,92,0.30)', borderRadius:'40px', padding:'3px 10px' }}>
+                      color:gold, background:'rgba(76,107,69,0.06)',
+                      border:'1px solid rgba(76,107,69,0.30)', borderRadius:'40px', padding:'3px 10px' }}>
                     {(l.link_type || 'link').replace(/_/g, ' ')}
                   </a>
                 ))}
@@ -1396,7 +1397,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
         </div>
 
         <button onClick={() => setExpanded(e => !e)}
-          style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+          style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
             letterSpacing:'0.12em', color:'rgba(15,21,35,0.55)',
             background:'none', border:'none', cursor:'pointer', flexShrink:0, paddingTop:'4px' }}>
           {expanded ? 'Done' : 'Edit'}
@@ -1405,28 +1406,28 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
       {/* Editable fields */}
       {expanded && (
-        <div style={{ borderTop:'1px solid rgba(110,127,92,0.15)', padding:'18px 20px 20px', display:'grid', gap:'14px' }}>
+        <div style={{ borderTop:'1px solid rgba(76,107,69,0.15)', padding:'18px 20px 20px', display:'grid', gap:'14px' }}>
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Name</label>
             <Input value={proposal.name} onChange={v => set('name', v)} placeholder="Name" />
           </div>
 
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'10px' }}>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Type</label>
               <Select value={proposal.type} onChange={v => set('type', v)}
                 options={TYPES_EX.map(t => ({ value:t, label:t }))} />
             </div>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Track</label>
               <Select value={proposal.track} onChange={v => { set('track', v); set('domain_id','') }}
                 options={[{ value:'planet', label:'Planet' }, { value:'self', label:'Self' }]} />
             </div>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Scale</label>
               <Select value={proposal.scale || ''} onChange={v => set('scale', v)}
                 options={[{ value:'', label:'-- Select --' }, ...SCALES_EX.map(s => ({ value:s, label:s }))]} />
@@ -1434,7 +1435,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           </div>
 
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Primary domain *</label>
             <Select value={domains[0] || ''} onChange={v => {
               set('domain_id', v)
@@ -1445,7 +1446,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           {/* Secondary domains */}
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'6px' }}>Secondary domains</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
               {PLANET_DOMAINS_EX.filter(d => d.value !== domains[0]).map(d => {
@@ -1458,11 +1459,11 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
                       set('domains', [domains[0], ...next].filter(Boolean))
                     }}
                     style={{
-                      fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.06em',
+                      fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.06em',
                       padding:'3px 9px', borderRadius:'40px', cursor:'pointer',
                       color: isOn ? gold : 'rgba(15,21,35,0.72)',
-                      background: isOn ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
-                      border: isOn ? '1px solid rgba(110,127,92,0.55)' : '1px solid rgba(110,127,92,0.25)',
+                      background: isOn ? 'rgba(76,107,69,0.08)' : '#FFFFFF',
+                      border: isOn ? '1px solid rgba(76,107,69,0.55)' : '1px solid rgba(76,107,69,0.25)',
                     }}>
                     {d.label}
                   </button>
@@ -1473,7 +1474,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           {/* Platform principles */}
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'6px' }}>Platform principles</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
               {PRINCIPLES_ORDERED.map(p => {
@@ -1484,11 +1485,11 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
                       set('platform_principles', isOn ? principles.filter(x => x !== p.slug) : [...principles, p.slug])
                     }}
                     style={{
-                      fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px', letterSpacing:'0.06em',
+                      fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.06em',
                       padding:'3px 9px', borderRadius:'40px', cursor:'pointer',
                       color: isOn ? gold : 'rgba(15,21,35,0.72)',
-                      background: isOn ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
-                      border: isOn ? '1px solid rgba(110,127,92,0.55)' : '1px solid rgba(110,127,92,0.25)',
+                      background: isOn ? 'rgba(76,107,69,0.08)' : '#FFFFFF',
+                      border: isOn ? '1px solid rgba(76,107,69,0.55)' : '1px solid rgba(76,107,69,0.25)',
                     }}>
                     {p.label}
                   </button>
@@ -1499,24 +1500,24 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Location</label>
               <Input value={proposal.location_name || ''} onChange={v => set('location_name', v)}
                 placeholder="e.g. Mexico City, Mexico" />
             </div>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Website</label>
               <Input value={proposal.website || ''} onChange={v => set('website', v)} placeholder="https://..." />
             </div>
           </div>
 
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Description</label>
             <textarea value={proposal.description || ''} onChange={e => set('description', e.target.value)}
-              rows={3} style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'15px', color:'#0F1523',
-                padding:'9px 14px', borderRadius:'8px', border:'1.5px solid rgba(110,127,92,0.35)',
+              rows={3} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'15px', color:'#0F1523',
+                padding:'9px 14px', borderRadius:'8px', border:'1.5px solid rgba(76,107,69,0.35)',
                 background:'#FFFFFF', outline:'none', width:'100%', resize:'vertical',
                 lineHeight:1.6, boxSizing:'border-box' }} />
           </div>
@@ -1524,37 +1525,37 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           {/* Source — provenance for seeding (optional, free-text).
               Format suggestion: "podcast | Episode 47 — Guest Name | https://..." */}
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Source (optional)</label>
             <input type="text" value={proposal.data_source || ''}
               onChange={e => set('data_source', e.target.value)}
               placeholder="e.g. podcast | Episode 47 — Guest Name | https://..."
-              style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'14px', color:'#0F1523',
+              style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'14px', color:'#0F1523',
                 padding:'9px 14px', borderRadius:'8px',
-                border:'1.5px solid rgba(110,127,92,0.35)', background:'#FFFFFF',
+                border:'1.5px solid rgba(76,107,69,0.35)', background:'#FFFFFF',
                 outline:'none', width:'100%', boxSizing:'border-box' }} />
           </div>
 
           <div>
-            <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Impact summary</label>
             <textarea value={proposal.impact_summary || ''} onChange={e => set('impact_summary', e.target.value)}
-              rows={2} style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'15px', color:'#0F1523',
-                padding:'9px 14px', borderRadius:'8px', border:'1.5px solid rgba(110,127,92,0.35)',
+              rows={2} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'15px', color:'#0F1523',
+                padding:'9px 14px', borderRadius:'8px', border:'1.5px solid rgba(76,107,69,0.35)',
                 background:'#FFFFFF', outline:'none', width:'100%', resize:'vertical',
                 lineHeight:1.6, boxSizing:'border-box' }} />
           </div>
 
           <div style={{ display:'grid', gridTemplateColumns:'120px 1fr', gap:'12px', alignItems:'end' }}>
             <div>
-              <label style={{ fontFamily:"'IBM Plex Mono',Georgia,serif", fontSize:'13px',
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
                 letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Score (0–10)</label>
               <Input value={proposal.alignment_score ?? ''} onChange={handleScoreChange}
                 type="number" step="0.5" placeholder="0–10" />
             </div>
             <div style={{ paddingBottom:'2px' }}>
               {!isNaN(score) && <ExTierBadge tier={TIER_FROM_SCORE(score)} />}
-              <span style={{ fontFamily:"'Newsreader',Georgia,serif", fontSize:'13px',
+              <span style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'13px',
                 color:'rgba(15,21,35,0.55)', marginLeft:'10px' }}>
                 Adjust if your read differs from the AI draft.
               </span>
@@ -1943,7 +1944,7 @@ function AddTab({ toast }) {
             <textarea value={input} onChange={e => setInput(e.target.value)} rows={5}
               placeholder="Paste a URL, a description, or raw HTML source..."
               style={{ ...body, fontSize:'15px', color:'#0F1523', padding:'12px 16px',
-                borderRadius:'8px', border:'1.5px solid rgba(110,127,92,0.30)',
+                borderRadius:'8px', border:'1.5px solid rgba(76,107,69,0.30)',
                 background:'#FFFFFF', outline:'none', width:'100%', resize:'vertical',
                 lineHeight:1.65, boxSizing:'border-box' }} />
           </div>
@@ -1959,7 +1960,7 @@ function AddTab({ toast }) {
             <button onClick={readSite} disabled={adding || !input.trim()}
               style={{ ...sc, fontSize:'14px', letterSpacing:'0.16em',
                 padding:'12px 30px', borderRadius:'40px', border:'none',
-                background: adding || !input.trim() ? 'rgba(110,127,92,0.30)' : '#6E7F5C',
+                background: adding || !input.trim() ? 'rgba(76,107,69,0.30)' : '#4c6b45',
                 color:'#FFFFFF', cursor: adding || !input.trim() ? 'not-allowed' : 'pointer' }}>
               {adding ? 'Reading...' : 'Read site'}
             </button>
@@ -1984,10 +1985,10 @@ function AddTab({ toast }) {
                 return (
                   <div key={i}>
                     {!floor.passes && (
-                      <div style={{ background:'rgba(38,48,42,0.06)',
-                        border:'1px solid rgba(110,127,92,0.40)', borderBottom:'none',
+                      <div style={{ background:'rgba(38,36,32,0.06)',
+                        border:'1px solid rgba(76,107,69,0.40)', borderBottom:'none',
                         borderRadius:'10px 10px 0 0', padding:'8px 14px' }}>
-                        <span style={{ ...sc, fontSize:'13px', letterSpacing:'0.14em', color:'#26302A' }}>
+                        <span style={{ ...sc, fontSize:'13px', letterSpacing:'0.14em', color:'#262420' }}>
                           Below the Floor
                         </span>
                         <span style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.72)', marginLeft:'10px' }}>
@@ -2006,19 +2007,19 @@ function AddTab({ toast }) {
                 )
               })}
 
-              <div style={{ paddingTop:'8px', borderTop:'1px solid rgba(110,127,92,0.15)',
+              <div style={{ paddingTop:'8px', borderTop:'1px solid rgba(76,107,69,0.15)',
                 display:'flex', alignItems:'center', gap:'16px', flexWrap:'wrap' }}>
                 <button onClick={saveSelected} disabled={saving || selectedCount === 0}
                   style={{ ...sc, fontSize:'14px', letterSpacing:'0.16em',
                     padding:'13px 32px', borderRadius:'40px', border:'none',
-                    background: saving || selectedCount === 0 ? 'rgba(110,127,92,0.30)' : '#6E7F5C',
+                    background: saving || selectedCount === 0 ? 'rgba(76,107,69,0.30)' : '#4c6b45',
                     color:'#FFFFFF', cursor: saving || selectedCount === 0 ? 'not-allowed' : 'pointer' }}>
                   {saving ? 'Saving...' : `Place ${selectedCount} selected`}
                 </button>
                 <label style={{ display:'flex', alignItems:'center', gap:'7px', cursor:'pointer' }}>
                   <input type="checkbox" checked={skipFloor}
                     onChange={e => toggleSkipFloor(e.target.checked)}
-                    style={{ width:'16px', height:'16px', accentColor:'#6E7F5C', cursor:'pointer' }} />
+                    style={{ width:'16px', height:'16px', accentColor:'#4c6b45', cursor:'pointer' }} />
                   <span style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.55)' }}>
                     Skip Floor confirmation
                   </span>
@@ -2141,7 +2142,7 @@ function PlaceTab({ toast }) {
         const domains = a.domains?.length ? a.domains : (a.domain_id ? [a.domain_id] : [])
 
         return (
-          <Card key={a.id} style={{ borderLeft: `3px solid ${a.placement_tier === 'exemplar' ? '#2A6B3A' : a.placement_tier === 'contested' ? '#8A3030' : 'rgba(110,127,92,0.35)'}` }}>
+          <Card key={a.id} style={{ borderLeft: `3px solid ${a.placement_tier === 'exemplar' ? '#2A6B3A' : a.placement_tier === 'contested' ? '#8A3030' : 'rgba(76,107,69,0.35)'}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', flexWrap: 'wrap' }}>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
@@ -2156,8 +2157,8 @@ function PlaceTab({ toast }) {
                     <span key={d} style={{
                       ...sc, fontSize: '13px', letterSpacing: '0.08em',
                       color: i === 0 ? gold : 'rgba(15,21,35,0.55)',
-                      background: i === 0 ? 'rgba(110,127,92,0.08)' : 'rgba(15,21,35,0.04)',
-                      border: `1px solid ${i === 0 ? 'rgba(110,127,92,0.35)' : 'rgba(15,21,35,0.15)'}`,
+                      background: i === 0 ? 'rgba(76,107,69,0.08)' : 'rgba(15,21,35,0.04)',
+                      border: `1px solid ${i === 0 ? 'rgba(76,107,69,0.35)' : 'rgba(15,21,35,0.15)'}`,
                       borderRadius: '40px', padding: '1px 8px',
                     }}>
                       {domainLabel(d)}{i === 0 ? ' (primary)' : ''}
@@ -2196,7 +2197,7 @@ function PlaceTab({ toast }) {
                     onChange={e => setScoreEdits(prev => ({ ...prev, [a.id]: e.target.value }))}
                     style={{ ...body, fontSize: '15px', color: '#0F1523', width: '80px',
                       padding: '6px 10px', borderRadius: '6px',
-                      border: '1.5px solid rgba(110,127,92,0.35)', background: '#FFFFFF', outline: 'none' }} />
+                      border: '1.5px solid rgba(76,107,69,0.35)', background: '#FFFFFF', outline: 'none' }} />
                   {tierDisplay && <ExTierBadge tier={tierDisplay} />}
                 </div>
               </div>
@@ -2231,8 +2232,8 @@ function PlaceTab({ toast }) {
 
 const FLAG_CFG = {
   1: { label: 'Spam',       color: '#8A3030', bg: 'rgba(138,48,48,0.06)',  border: 'rgba(138,48,48,0.20)',  urgent: false },
-  2: { label: 'Misplaced',  color: '#8A6020', bg: 'rgba(110,127,92,0.06)', border: 'rgba(110,127,92,0.25)', urgent: false },
-  3: { label: 'Misleading', color: '#8A6020', bg: 'rgba(110,127,92,0.06)', border: 'rgba(110,127,92,0.25)', urgent: false },
+  2: { label: 'Misplaced',  color: '#8A6020', bg: 'rgba(76,107,69,0.06)', border: 'rgba(76,107,69,0.25)', urgent: false },
+  3: { label: 'Misleading', color: '#8A6020', bg: 'rgba(76,107,69,0.06)', border: 'rgba(76,107,69,0.25)', urgent: false },
   4: { label: 'Harmful',    color: '#8A3030', bg: 'rgba(138,48,48,0.08)',  border: 'rgba(138,48,48,0.30)',  urgent: true  },
 }
 
@@ -2348,7 +2349,7 @@ function CallFlagsSection({ toast }) {
         const isLive = call?.visibility === 'community' || call?.visibility === 'link_only'
 
         return (
-          <Card key={flag.id} style={{ borderLeft: '3px solid rgba(110,127,92,0.30)' }}>
+          <Card key={flag.id} style={{ borderLeft: '3px solid rgba(76,107,69,0.30)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between',
               alignItems: 'flex-start', gap: '16px' }}>
               <div style={{ flex: 1 }}>
@@ -2375,7 +2376,7 @@ function CallFlagsSection({ toast }) {
                   </div>
                 )}
                 {flag.reason && (
-                  <div style={{ background: 'rgba(110,127,92,0.04)', border: '1px solid rgba(110,127,92,0.18)',
+                  <div style={{ background: 'rgba(76,107,69,0.04)', border: '1px solid rgba(76,107,69,0.18)',
                     borderRadius: '8px', padding: '10px 12px', marginBottom: '8px' }}>
                     <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Reason</p>
                     <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
@@ -2486,7 +2487,7 @@ function ClaimRequestsSection({ toast }) {
       {requests.map(req => {
         const a = req.actor
         return (
-          <Card key={req.id} style={{ borderLeft: '3px solid rgba(110,127,92,0.30)' }}>
+          <Card key={req.id} style={{ borderLeft: '3px solid rgba(76,107,69,0.30)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
@@ -2505,7 +2506,7 @@ function ClaimRequestsSection({ toast }) {
                   </div>
                 )}
                 {req.note && (
-                  <div style={{ background: 'rgba(110,127,92,0.04)', border: '1px solid rgba(110,127,92,0.18)', borderRadius: '8px', padding: '10px 12px', marginBottom: '8px' }}>
+                  <div style={{ background: 'rgba(76,107,69,0.04)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px', padding: '10px 12px', marginBottom: '8px' }}>
                     <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Their connection</p>
                     <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>{req.note}</p>
                   </div>
@@ -2630,7 +2631,7 @@ function ChainsTab({ toast }) {
   return (
     <div>
       <div style={{ display: 'flex', gap: '0', marginBottom: '22px',
-        borderBottom: '1px solid rgba(110,127,92,0.15)' }}>
+        borderBottom: '1px solid rgba(76,107,69,0.15)' }}>
         {[['proposals','Proposals'], ['supply','Supply & Demand']].map(([val, label]) => (
           <button key={val} type="button" onClick={() => setSubTab(val)}
             style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
@@ -2678,7 +2679,7 @@ function ChainsTab({ toast }) {
           <Card key={p.id} style={{
             borderLeft: isDemand
               ? '3px solid rgba(42,106,58,0.45)'
-              : '3px solid rgba(110,127,92,0.30)',
+              : '3px solid rgba(76,107,69,0.30)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px',
               marginBottom: '10px', flexWrap: 'wrap' }}>
@@ -2784,7 +2785,7 @@ function SupplyDemandSection({ toast }) {
         const noSupply = Number(r.actor_count) === 0
         return (
           <Card key={r.slug} style={{
-            borderLeft: noSupply ? '3px solid rgba(138,48,48,0.50)' : '3px solid rgba(110,127,92,0.30)',
+            borderLeft: noSupply ? '3px solid rgba(138,48,48,0.50)' : '3px solid rgba(76,107,69,0.30)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <span style={{ ...body, fontSize: '17px', color: '#0F1523' }}>{r.label}</span>
@@ -2954,14 +2955,14 @@ function PracticesTab({ toast }) {
               placeholder="Rationale — why this standing. Back it up."
               onChange={e => setDraft(s => ({ ...s, [p.id]: { ...s[p.id], rationale: e.target.value } }))}
               style={{ ...body, width: '100%', minHeight: '54px', fontSize: '13px', padding: '8px 10px',
-                border: '1px solid rgba(110,127,92,0.25)', borderRadius: '8px', marginBottom: '8px', resize: 'vertical' }}
+                border: '1px solid rgba(76,107,69,0.25)', borderRadius: '8px', marginBottom: '8px', resize: 'vertical' }}
             />
             <input
               defaultValue={(p.standing_sources || []).join(', ')}
               placeholder="Sources (comma-separated URLs or citations)"
               onChange={e => setDraft(s => ({ ...s, [p.id]: { ...s[p.id], sources: e.target.value } }))}
               style={{ ...body, width: '100%', fontSize: '13px', padding: '8px 10px',
-                border: '1px solid rgba(110,127,92,0.25)', borderRadius: '8px', marginBottom: '10px' }}
+                border: '1px solid rgba(76,107,69,0.25)', borderRadius: '8px', marginBottom: '10px' }}
             />
 
             <label style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
@@ -3040,7 +3041,7 @@ function FlagsTab({ toast }) {
     <div>
       {/* Sub-tab switcher: Actors | Calls | Claims */}
       <div style={{ display: 'flex', gap: '0', marginBottom: '22px',
-        borderBottom: '1px solid rgba(110,127,92,0.15)' }}>
+        borderBottom: '1px solid rgba(76,107,69,0.15)' }}>
         {[['actors', 'Actor Flags'], ['calls', 'Call Flags'], ['claims', 'Claim Requests']].map(([val, label]) => (
           <button key={val} type="button" onClick={() => setSubTab(val)}
             style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
@@ -3088,7 +3089,7 @@ function FlagsTab({ toast }) {
           <Card key={flag.id} style={{
             borderLeft: isHarmful
               ? '3px solid rgba(138,48,48,0.50)'
-              : '3px solid rgba(110,127,92,0.30)',
+              : '3px solid rgba(76,107,69,0.30)',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between',
               alignItems: 'flex-start', gap: '16px' }}>
@@ -3117,7 +3118,7 @@ function FlagsTab({ toast }) {
                   </div>
                 )}
                 {flag.reason && (
-                  <div style={{ background: 'rgba(110,127,92,0.04)', border: '1px solid rgba(110,127,92,0.18)',
+                  <div style={{ background: 'rgba(76,107,69,0.04)', border: '1px solid rgba(76,107,69,0.18)',
                     borderRadius: '8px', padding: '10px 12px', marginBottom: '8px' }}>
                     <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Reason</p>
                     <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
@@ -3267,7 +3268,7 @@ function FloorTab({ toast }) {
       {outreachModal && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
           onClick={e => { if (e.target === e.currentTarget) setOutreachModal(null) }}>
-          <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(110,127,92,0.3)', borderRadius: '12px', padding: '28px 24px', maxWidth: '440px', width: '100%' }}>
+          <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(76,107,69,0.3)', borderRadius: '12px', padding: '28px 24px', maxWidth: '440px', width: '100%' }}>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: gold, marginBottom: '10px' }}>SEND OUTREACH — {outreachModal.name}</div>
             <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, marginBottom: '16px' }}>
               Rate-limited to once per 7 days per actor.
@@ -3287,7 +3288,7 @@ function FloorTab({ toast }) {
         ))}
         <span style={{ flex: 1 }} />
         <select value={sort} onChange={e => setSort(e.target.value)}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', border: '1px solid rgba(110,127,92,0.3)', borderRadius: '4px', padding: '4px 8px', background: 'transparent', color: gold, cursor: 'pointer' }}>
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', border: '1px solid rgba(76,107,69,0.3)', borderRadius: '4px', padding: '4px 8px', background: 'transparent', color: gold, cursor: 'pointer' }}>
           <option value="gaps">Sort by gap count</option>
           <option value="name">Sort by name</option>
           <option value="created">Sort by date</option>
@@ -3314,7 +3315,7 @@ function FloorTab({ toast }) {
       )}
 
       {actors.map(a => (
-        <Card key={a.id} style={{ borderLeft: (a.gaps.includes('image') || a.gaps.includes('domain')) ? '3px solid rgba(138,48,48,0.50)' : '3px solid rgba(110,127,92,0.30)' }}>
+        <Card key={a.id} style={{ borderLeft: (a.gaps.includes('image') || a.gaps.includes('domain')) ? '3px solid rgba(138,48,48,0.50)' : '3px solid rgba(76,107,69,0.30)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
@@ -3325,8 +3326,8 @@ function FloorTab({ toast }) {
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '6px' }}>
                 {a.gaps.map(g => (
                   <span key={g} style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '2px 8px', borderRadius: '20px',
-                    background: ['image','domain','description'].includes(g) ? 'rgba(138,48,48,0.08)' : 'rgba(110,127,92,0.08)',
-                    border: ['image','domain','description'].includes(g) ? '1px solid rgba(138,48,48,0.25)' : '1px solid rgba(110,127,92,0.25)',
+                    background: ['image','domain','description'].includes(g) ? 'rgba(138,48,48,0.08)' : 'rgba(76,107,69,0.08)',
+                    border: ['image','domain','description'].includes(g) ? '1px solid rgba(138,48,48,0.25)' : '1px solid rgba(76,107,69,0.25)',
                     color: ['image','domain','description'].includes(g) ? '#8A3030' : '#8A6020' }}>
                     missing {g}
                   </span>
@@ -3430,7 +3431,7 @@ function DomainDataTab({ toast }) {
                 <div style={{ display: 'grid', gap: '10px', marginTop: '10px' }}>
                   <div><label style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, display: 'block', marginBottom: '4px' }}>Horizon goal</label>
                     <textarea value={form.horizon_goal || ''} onChange={e => setForm(f => ({ ...f, horizon_goal: e.target.value }))} rows={2}
-                      style={{ ...body, fontSize: '14px', color: '#0F1523', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(110,127,92,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.55, boxSizing: 'border-box' }} />
+                      style={{ ...body, fontSize: '14px', color: '#0F1523', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(76,107,69,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.55, boxSizing: 'border-box' }} />
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <Btn small onClick={save}>Save</Btn>
@@ -3486,7 +3487,7 @@ function IndicatorsTab({ toast }) {
         display: 'flex',
         gap: '4px',
         marginBottom: '20px',
-        borderBottom: '1px solid rgba(110,127,92,0.20)',
+        borderBottom: '1px solid rgba(76,107,69,0.20)',
         paddingBottom: '8px',
       }}>
         {[
@@ -3732,7 +3733,7 @@ function IndicatorCatalogView({ toast }) {
                 {valueCounts[row.id] || 0} VALUE ROWS COLLECTED
               </div>
               {editing === row.id && (
-                <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid rgba(110,127,92,0.20)' }}>
+                <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid rgba(76,107,69,0.20)' }}>
                   <IndicatorForm form={form} setForm={setForm} />
                   <div style={{ display: 'flex', gap: '8px', marginTop: '14px' }}>
                     <Btn small onClick={save}>Save</Btn>
@@ -3764,7 +3765,7 @@ function IndicatorCatalogView({ toast }) {
 function IndicatorForm({ form, setForm }) {
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
   const fieldLabel = { ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, display: 'block', marginBottom: '4px', fontWeight: 600 }
-  const fieldInput = { ...body, fontSize: '13px', color: '#0F1523', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(110,127,92,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', boxSizing: 'border-box' }
+  const fieldInput = { ...body, fontSize: '13px', color: '#0F1523', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(76,107,69,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', boxSizing: 'border-box' }
   return (
     <div style={{ display: 'grid', gap: '12px' }}>
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px' }}>
@@ -3859,7 +3860,7 @@ function IndicatorForm({ form, setForm }) {
         <textarea value={form.methodology_note || ''} onChange={e => set('methodology_note', e.target.value)} rows={2} style={{ ...fieldInput, resize: 'vertical', lineHeight: 1.55 }} />
       </div>
 
-      <div style={{ paddingTop: '8px', borderTop: '1px dashed rgba(110,127,92,0.20)' }}>
+      <div style={{ paddingTop: '8px', borderTop: '1px dashed rgba(76,107,69,0.20)' }}>
         <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, fontWeight: 600, marginBottom: '10px' }}>
           ROLLUP &amp; STATUS
         </div>
@@ -3992,8 +3993,8 @@ function IndicatorValuesView({ toast }) {
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginBottom: '10px', fontWeight: 600 }}>
             {rows.length} VALUE ROW{rows.length === 1 ? '' : 'S'} · MOST RECENT 50
           </div>
-          <div style={{ background: '#FFFFFF', border: '1px solid rgba(110,127,92,0.20)', borderRadius: '14px', overflow: 'hidden' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr 140px 140px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.20)', background: 'rgba(110,127,92,0.04)', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, fontWeight: 600 }}>
+          <div style={{ background: '#FFFFFF', border: '1px solid rgba(76,107,69,0.20)', borderRadius: '14px', overflow: 'hidden' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr 140px 140px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(76,107,69,0.20)', background: 'rgba(76,107,69,0.04)', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, fontWeight: 600 }}>
               <div>OBSERVED</div>
               <div>VALUE</div>
               <div>FETCHED</div>
@@ -4001,7 +4002,7 @@ function IndicatorValuesView({ toast }) {
               <div>CURRENT</div>
             </div>
             {rows.map(r => (
-              <div key={r.id} style={{ display: 'grid', gridTemplateColumns: '140px 1fr 140px 140px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.10)', ...body, fontSize: '13px', color: '#0F1523' }}>
+              <div key={r.id} style={{ display: 'grid', gridTemplateColumns: '140px 1fr 140px 140px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(76,107,69,0.10)', ...body, fontSize: '13px', color: '#0F1523' }}>
                 <div style={{ color: 'rgba(15,21,35,0.72)' }}>{formatTimestamp(r.observed_at)}</div>
                 <div>{r.value_numeric != null ? `${r.value_numeric}${selected?.unit ? ' ' + selected.unit : ''}` : (r.value_text || '—')}</div>
                 <div style={{ color: 'rgba(15,21,35,0.55)', fontSize: '13px' }}>{formatTimestamp(r.fetched_at)}</div>
@@ -4052,7 +4053,7 @@ function IndicatorCronLogView({ toast }) {
     'ok':              'rgba(42, 107, 94, 0.85)',
     'skipped':         'rgba(15,21,35,0.55)',
     'failed':          'rgba(138, 48, 48, 0.85)',
-    'not-implemented': 'rgba(38, 48, 42, 0.85)',
+    'not-implemented': 'rgba(38,36,32, 0.85)',
   }
 
   return (
@@ -4081,8 +4082,8 @@ function IndicatorCronLogView({ toast }) {
       )}
 
       {!loading && rows.length > 0 && (
-        <div style={{ background: '#FFFFFF', border: '1px solid rgba(110,127,92,0.20)', borderRadius: '14px', overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '160px 100px 1fr 80px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.20)', background: 'rgba(110,127,92,0.04)', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, fontWeight: 600 }}>
+        <div style={{ background: '#FFFFFF', border: '1px solid rgba(76,107,69,0.20)', borderRadius: '14px', overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '160px 100px 1fr 80px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(76,107,69,0.20)', background: 'rgba(76,107,69,0.04)', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, fontWeight: 600 }}>
             <div>RUN AT</div>
             <div>STATUS</div>
             <div>INDICATOR / MESSAGE</div>
@@ -4092,7 +4093,7 @@ function IndicatorCronLogView({ toast }) {
           {rows.map(r => {
             const ind = r.indicator_id ? indicatorMap[r.indicator_id] : null
             return (
-              <div key={r.id} style={{ display: 'grid', gridTemplateColumns: '160px 100px 1fr 80px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(110,127,92,0.10)', ...body, fontSize: '13px', color: '#0F1523' }}>
+              <div key={r.id} style={{ display: 'grid', gridTemplateColumns: '160px 100px 1fr 80px 80px', padding: '10px 14px', borderBottom: '1px solid rgba(76,107,69,0.10)', ...body, fontSize: '13px', color: '#0F1523' }}>
                 <div style={{ color: 'rgba(15,21,35,0.72)', fontSize: '13px' }}>{formatTimestamp(r.run_at)}</div>
                 <div>
                   <Badge label={r.status.toUpperCase()} color={statusColour[r.status] || gold} />
@@ -4189,7 +4190,7 @@ function IndicatorSignalsView({ toast }) {
                   color={
                     r.vetting_status === 'reviewed' ? 'rgba(42, 107, 94, 0.85)' :
                     r.vetting_status === 'flagged'  ? 'rgba(138, 48, 48, 0.85)' :
-                    'rgba(38, 48, 42, 0.85)'
+                    'rgba(38,36,32, 0.85)'
                   }
                 />
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
@@ -4671,6 +4672,7 @@ export function AdminConsolePage() {
         {tab === 'Seed'          && <SeedTab         toast={showToast} />}
         {tab === 'Place'         && <PlaceTab        toast={showToast} />}
         {tab === 'Flags'         && <FlagsTab        toast={showToast} />}
+        {tab === 'Moments'       && <MomentsReviewQueue toast={showToast} />}
         {tab === 'Chains'        && <ChainsTab       toast={showToast} />}
         {tab === 'Practices'     && <PracticesTab    toast={showToast} />}
         {tab === 'Prism'         && <PrismTab />}

@@ -18,13 +18,13 @@ const STATUS_LABELS = {
 const STATUS_COLOURS = {
   planning: 'rgba(15,21,35,0.55)',
   active:   '#5B8C5A',
-  dormant:  '#26302A',
+  dormant:  '#262420',
   complete: 'rgba(15,21,35,0.42)',
 }
 
 const DOMAIN_LABELS = {
   human: 'Human Being', society: 'Society', nature: 'Nature',
-  tech: 'Technology', finance: 'Finance & Economy', legacy: 'Legacy',
+  tech: 'Technology', finance: 'Economy', legacy: 'Legacy',
   vision: 'Vision',
   path: 'Path', spark: 'Spark', body: 'Body',
   finances: 'Finances', connection: 'Connection',
@@ -114,12 +114,12 @@ export function TrackLoop({ tracks, onOpenTrack, onStartNew }) {
           justify-content: flex-end;
         }
         .ns-cta-primary {
-          background: #6E7F5C;
+          background: #4c6b45;
           color: #FFFFFF;
           border: none;
           border-radius: 10px;
           padding: 12px 22px;
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.82rem;
           letter-spacing: 0.14em;
           text-transform: uppercase;
@@ -137,13 +137,13 @@ export function TrackLoop({ tracks, onOpenTrack, onStartNew }) {
         .ns-track-card {
           padding: 20px 22px;
           background: #FFFFFF;
-          border: 1px solid rgba(38,48,42,0.18);
+          border: 1px solid rgba(38,36,32,0.18);
           border-radius: 14px;
           cursor: pointer;
           transition: border-color 0.15s, transform 0.05s;
         }
         .ns-track-card:hover {
-          border-color: #6E7F5C;
+          border-color: #4c6b45;
         }
         .ns-track-card:active {
           transform: scale(0.998);
@@ -155,18 +155,18 @@ export function TrackLoop({ tracks, onOpenTrack, onStartNew }) {
           margin-bottom: 10px;
         }
         .ns-track-status {
-          font-family: 'IBM Plex Mono', Georgia, serif;
+          font-family: 'Cormorant SC', Georgia, serif;
           font-size: 0.72rem;
           letter-spacing: 0.18em;
           text-transform: uppercase;
         }
         .ns-track-time {
-          font-family: 'Newsreader', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 0.82rem;
           color: rgba(15,21,35,0.55);
         }
         .ns-track-toward {
-          font-family: 'Fraunces', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 1.3rem;
           font-weight: 400;
           line-height: 1.45;
@@ -180,7 +180,7 @@ export function TrackLoop({ tracks, onOpenTrack, onStartNew }) {
           display: flex;
           gap: 16px;
           flex-wrap: wrap;
-          font-family: 'Newsreader', Georgia, serif;
+          font-family: 'Lora', Georgia, serif;
           font-size: 0.88rem;
           color: rgba(15,21,35,0.65);
         }

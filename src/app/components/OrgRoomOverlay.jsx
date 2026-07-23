@@ -51,7 +51,7 @@ export default function OrgRoomOverlay({ open, onClose, userId }) {
         width: 'min(1080px, 96vw)',
         maxHeight: '92dvh',
         background: '#FAFAF7',
-        border: '1.5px solid rgba(110,127,92,0.30)',
+        border: '1.5px solid rgba(76,107,69,0.30)',
         borderRadius: '16px',
         overflowY: 'auto',
         boxShadow: '0 18px 60px rgba(15,21,35,0.28)',

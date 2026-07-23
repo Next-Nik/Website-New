@@ -37,6 +37,8 @@ import {
 import { at } from '../../lib/designTokens'
 import { DOMAIN_COLORS } from '../constants/domains'
 import { ShareButton } from '../components/ShareButton'
+import { Door } from '../components/Door'
+import { loadGuideState } from '../lib/guideTiers'
 import { WatchButton } from '../components/WatchButton'
 import { MessageButton } from '../components/MessageButton'
 import { EventsSection } from '../components/EventsSection'
@@ -56,7 +58,7 @@ function Eyebrow({ children, style = {} }) {
 
 function Rule() {
   return <div style={{ height: '1px',
-    background: 'rgba(217,178,74,0.10)', margin: '52px 0' }} />
+    background: 'rgba(169,116,63,0.10)', margin: '52px 0' }} />
 }
 
 function NotFound() {
@@ -141,7 +143,7 @@ const LINK_PRIORITY = {
 
 const ACCEPTING_STATUS_LABEL = {
   yes:      { label: 'Accepting clients',     color: '#2A6B3A', bg: 'rgba(42,107,58,0.08)',  border: 'rgba(42,107,58,0.25)' },
-  waitlist: { label: 'Waitlist',              color: at.brass, bg: 'rgba(217,178,74,0.08)', border: 'rgba(217,178,74,0.25)' },
+  waitlist: { label: 'Waitlist',              color: at.brass, bg: 'rgba(169,116,63,0.08)', border: 'rgba(169,116,63,0.25)' },
   not_now:  { label: 'Not accepting now',     color: at.ghost, bg: at.ghost, border: at.ghost },
 }
 
@@ -157,16 +159,16 @@ const MEMBERSHIP_STATUS_LABEL = {
 // or when the mode doesn't change order materially. 'practice' foregrounds
 // offerings (programmes / retreats) earlier in the page.
 const MODE_PROFILE_ORDER = {
-  practice:   ['identity', 'mission', 'story', 'description', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
-  enterprise: ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'needs', 'credentials', 'testimonials', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
-  platform:   ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'credentials', 'testimonials', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
-  collective: ['identity', 'mission', 'description', 'story', 'placement', 'working_on', 'needs', 'offers', 'testimonials', 'credentials', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
-  mixed:      ['identity', 'mission', 'description', 'story', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
+  practice:   ['identity', 'mission', 'story', 'how_we_work', 'track_record', 'description', 'placement', 'offers', 'testimonials', 'credentials', 'best_practices', 'working_on', 'direction', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'main_challenges', 'calls', 'relationships', 'provenance'],
+  enterprise: ['identity', 'mission', 'description', 'story', 'how_we_work', 'track_record', 'working_on', 'direction', 'placement', 'offers', 'needs', 'credentials', 'best_practices', 'testimonials', 'events', 'listen', 'contact', 'links', 'press', 'main_challenges', 'calls', 'relationships', 'provenance'],
+  platform:   ['identity', 'mission', 'description', 'story', 'how_we_work', 'track_record', 'working_on', 'direction', 'placement', 'offers', 'credentials', 'best_practices', 'testimonials', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'main_challenges', 'calls', 'relationships', 'provenance'],
+  collective: ['identity', 'mission', 'description', 'story', 'how_we_work', 'track_record', 'placement', 'working_on', 'direction', 'needs', 'offers', 'testimonials', 'credentials', 'best_practices', 'events', 'listen', 'contact', 'links', 'press', 'main_challenges', 'calls', 'relationships', 'provenance'],
+  mixed:      ['identity', 'mission', 'description', 'story', 'how_we_work', 'track_record', 'placement', 'offers', 'testimonials', 'credentials', 'best_practices', 'working_on', 'direction', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'main_challenges', 'calls', 'relationships', 'provenance'],
   // default (NULL mode) — story sits directly after description, matching the
   // named modes. Every unclaimed seeded actor lands here, and the old order
   // buried story below placement/offers/needs — so a freshly seeded profile
   // with a good story read as nearly empty at the top of the page.
-  default:    ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'needs', 'testimonials', 'credentials', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
+  default:    ['identity', 'mission', 'description', 'story', 'how_we_work', 'track_record', 'working_on', 'direction', 'placement', 'offers', 'needs', 'testimonials', 'credentials', 'best_practices', 'events', 'listen', 'contact', 'links', 'press', 'main_challenges', 'calls', 'relationships', 'provenance'],
 }
 
 function getSectionOrder(actorMode) {
@@ -196,11 +198,11 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
               <div className="org-identity-photo-frame" style={{
                 width: '160px', height: '160px',
                 borderRadius: '4px', overflow: 'hidden',
-                border: '1.5px solid rgba(217,178,74,0.70)',
-                outline: '1px solid rgba(217,178,74,0.35)',
+                border: '1.5px solid rgba(169,116,63,0.70)',
+                outline: '1px solid rgba(169,116,63,0.35)',
                 outlineOffset: '5px',
                 background: isPortrait
-                  ? 'rgba(217,178,74,0.05)'
+                  ? 'rgba(169,116,63,0.05)'
                   : '#FDFCF8',
                 display: 'flex',
                 alignItems: 'center',
@@ -236,7 +238,7 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
               </span>
               {actor.scale && (
                 <>
-                  <span style={{ color: 'rgba(217,178,74,0.45)', fontSize: '13px' }}>·</span>
+                  <span style={{ color: 'rgba(169,116,63,0.45)', fontSize: '13px' }}>·</span>
                   <span style={{ ...sc, fontSize: '13px', fontWeight: 600,
                     letterSpacing: '0.16em',
                     color: at.meta, textTransform: 'uppercase' }}>
@@ -246,7 +248,7 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
               )}
               {actor.type && (
                 <>
-                  <span style={{ color: 'rgba(217,178,74,0.45)', fontSize: '13px' }}>·</span>
+                  <span style={{ color: 'rgba(169,116,63,0.45)', fontSize: '13px' }}>·</span>
                   <span style={{ ...sc, fontSize: '13px', fontWeight: 600,
                     letterSpacing: '0.16em',
                     color: at.meta, textTransform: 'uppercase' }}>
@@ -267,7 +269,7 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
           {/* Tagline */}
           {actor.tagline && (
             <p style={{ ...body, fontSize: '20px', fontWeight: 400,
-              color: 'rgba(234,241,237,0.82)',
+              color: 'rgba(38,36,32,0.82)',
               lineHeight: 1.45, margin: '0 0 22px' }}>
               {actor.tagline}
             </p>
@@ -279,7 +281,7 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
               below. Skipped when a story exists (Story carries the narrative). */}
           {actor.description && !actor.story && (
             <p style={{ ...body, fontSize: '17px', fontWeight: 400,
-              color: 'rgba(234,241,237,0.78)',
+              color: 'rgba(38,36,32,0.78)',
               lineHeight: 1.55, margin: '0 0 22px', maxWidth: '620px',
               whiteSpace: 'pre-wrap' }}>
               {actor.description}
@@ -377,8 +379,8 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
                   color: at.ghost, textDecoration: 'none',
                   padding: '6px 14px', borderRadius: '40px',
-                  border: '1px solid rgba(217,178,74,0.30)',
-                  background: 'rgba(217,178,74,0.04)' }}>
+                  border: '1px solid rgba(169,116,63,0.30)',
+                  background: 'rgba(169,116,63,0.04)' }}>
                 Manage profile
               </Link>
             </div>
@@ -434,14 +436,14 @@ function DisputeModal({ actor, user, onClose }) {
   }
 
   const gold = at.brass, dark = at.text, parch = at.ground
-  const hair = '1px solid rgba(217,178,74,0.22)'
-  const sc_style = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-  const body_style = { fontFamily: "'Newsreader', Georgia, serif" }
+  const hair = '1px solid rgba(169,116,63,0.22)'
+  const sc_style = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const body_style = { fontFamily: "'Lora', Georgia, serif" }
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: at.ghost, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{ background: parch, border: '1.5px solid rgba(217,178,74,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
+      <div style={{ background: parch, border: '1.5px solid rgba(169,116,63,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
           <div style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.22em', color: gold, textTransform: 'uppercase' }}>Dispute this entry</div>
           <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc_style, fontSize: '1.1rem', color: at.ghost }}>×</button>
@@ -462,7 +464,7 @@ function DisputeModal({ actor, user, onClose }) {
               Received. The NextUs team will review this entry and be in touch.
             </p>
             <button type="button" onClick={onClose}
-              style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.14em', color: gold, background: 'none', border: '1px solid rgba(217,178,74,0.5)', borderRadius: '30px', padding: '8px 20px', cursor: 'pointer' }}>
+              style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.14em', color: gold, background: 'none', border: '1px solid rgba(169,116,63,0.5)', borderRadius: '30px', padding: '8px 20px', cursor: 'pointer' }}>
               Close
             </button>
           </div>
@@ -483,7 +485,7 @@ function DisputeModal({ actor, user, onClose }) {
                 style={{ width: '100%', ...body_style, fontSize: '15px', color: dark, border: hair, borderRadius: '8px', padding: '10px 14px', outline: 'none', background: at.object, boxSizing: 'border-box' }} />
             </div>
             <button type="button" onClick={submit} disabled={!reason.trim() || loading}
-              style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 28px', borderRadius: '40px', border: 'none', background: !reason.trim() || loading ? 'rgba(217,178,74,0.30)' : at.verdigris, color: at.object, cursor: !reason.trim() || loading ? 'not-allowed' : 'pointer' }}>
+              style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 28px', borderRadius: '40px', border: 'none', background: !reason.trim() || loading ? 'rgba(169,116,63,0.30)' : at.verdigris, color: at.object, cursor: !reason.trim() || loading ? 'not-allowed' : 'pointer' }}>
               {loading ? 'Sending…' : 'Submit dispute →'}
             </button>
           </div>
@@ -508,8 +510,8 @@ function ClaimBanner({ actor, user }) {
   return (
     <>
       {showDispute && <DisputeModal actor={actor} user={user} onClose={() => setShowDispute(false)} />}
-      <div style={{ background: 'rgba(217,178,74,0.06)',
-        border: '1.5px solid rgba(217,178,74,0.35)',
+      <div style={{ background: 'rgba(169,116,63,0.06)',
+        border: '1.5px solid rgba(169,116,63,0.35)',
         borderRadius: '12px', padding: '20px 24px', marginBottom: '40px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px',
           flexWrap: 'wrap' }}>
@@ -550,7 +552,7 @@ function ClaimBanner({ actor, user }) {
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
                 color: at.ghost, background: 'none', border: 'none',
                 cursor: 'pointer', padding: '2px 0', textDecoration: 'underline',
-                textDecorationColor: 'rgba(234,241,237,0.15)', textUnderlineOffset: '2px' }}>
+                textDecorationColor: 'rgba(38,36,32,0.15)', textUnderlineOffset: '2px' }}>
               Something is wrong — dispute this entry
             </button>
           </div>
@@ -582,11 +584,52 @@ function WorkingOnNow({ actor }) {
   return (
     <div>
       <Eyebrow>Working on now</Eyebrow>
-      <p style={{ ...body, fontSize: '16px', color: 'rgba(234,241,237,0.78)',
+      <p style={{ ...body, fontSize: '16px', color: 'rgba(38,36,32,0.78)',
         lineHeight: 1.65, margin: 0 }}>
         {actor.working_on_now}
       </p>
     </div>
+  )
+}
+
+// ── Showcase layer — five owner-authored narrative sections ──
+//
+// track_record, how_we_work, best_practices, direction, main_challenges.
+// All owner-only fields (never seeded) — they render only on claimed
+// profiles, same law as mission_statement and working_on_now.
+
+function ShowcaseSection({ eyebrow, text, children }) {
+  if (!text) return null
+  const paragraphs = text.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean)
+  return (
+    <div>
+      <Eyebrow>{eyebrow}</Eyebrow>
+      {paragraphs.map((para, i) => (
+        <p key={i} style={{ ...body, fontSize: '16px',
+          color: 'rgba(38,36,32,0.78)', lineHeight: 1.65,
+          margin: i === paragraphs.length - 1 ? 0 : '0 0 18px',
+          maxWidth: '620px' }}>
+          {para}
+        </p>
+      ))}
+      {children}
+    </div>
+  )
+}
+
+function MainChallenges({ actor, isOwner }) {
+  return (
+    <ShowcaseSection eyebrow="Main challenges" text={actor.main_challenges}>
+      {isOwner && (
+        <div style={{ marginTop: '16px' }}>
+          <Link to="/challenges/new"
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
+              color: gold, textDecoration: 'none' }}>
+            Turn one into an open challenge →
+          </Link>
+        </div>
+      )}
+    </ShowcaseSection>
   )
 }
 
@@ -616,8 +659,8 @@ function Placement({ domains, subdomains }) {
         marginBottom: subdomains?.length ? '14px' : 0 }}>
         {domains.map(slug => (
           <span key={slug} style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em',
-            color: gold, background: 'rgba(217,178,74,0.06)',
-            border: '1px solid rgba(217,178,74,0.30)',
+            color: gold, background: 'rgba(169,116,63,0.06)',
+            border: '1px solid rgba(169,116,63,0.30)',
             padding: '4px 11px', borderRadius: '40px' }}>
             {DOMAIN_LABEL[slug] || slug}
           </span>
@@ -629,7 +672,7 @@ function Placement({ domains, subdomains }) {
             <span key={s} style={{ ...body, fontSize: '13px',
               color: at.ghost,
               background: 'transparent',
-              border: '1px solid rgba(217,178,74,0.18)',
+              border: '1px solid rgba(169,116,63,0.18)',
               padding: '3px 9px', borderRadius: '40px' }}>
               {s}
             </span>
@@ -660,15 +703,15 @@ function LinksRow({ links }) {
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
               color: at.meta, textDecoration: 'none',
               padding: '7px 14px', borderRadius: '40px',
-              border: '1px solid rgba(217,178,74,0.25)',
+              border: '1px solid rgba(169,116,63,0.25)',
               background: at.object,
               transition: 'all 0.15s ease' }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'rgba(217,178,74,0.55)'
+              e.currentTarget.style.borderColor = 'rgba(169,116,63,0.55)'
               e.currentTarget.style.color = gold
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'rgba(217,178,74,0.25)'
+              e.currentTarget.style.borderColor = 'rgba(169,116,63,0.25)'
               e.currentTarget.style.color = at.meta
             }}>
             {link.label || LINK_LABELS[link.link_type] || link.link_type}
@@ -746,13 +789,13 @@ function PressStrip({ press }) {
             {p.url ? (
               <a href={p.url} target="_blank" rel="noopener noreferrer"
                 style={{ color: at.meta, textDecoration: 'none',
-                  borderBottom: '1px dotted rgba(217,178,74,0.45)' }}>
+                  borderBottom: '1px dotted rgba(169,116,63,0.45)' }}>
                 {p.publication}
               </a>
             ) : (
               <span>{p.publication}</span>
             )}
-            {idx < press.length - 1 && <span style={{ color: 'rgba(217,178,74,0.30)' }}> · </span>}
+            {idx < press.length - 1 && <span style={{ color: 'rgba(169,116,63,0.30)' }}> · </span>}
           </span>
         ))}
       </p>
@@ -839,7 +882,7 @@ function CallCard({ call, isOwner }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '7px' }}>
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
           textTransform: 'uppercase', color: gold,
-          border: '1px solid rgba(217,178,74,0.40)', borderRadius: '40px',
+          border: '1px solid rgba(169,116,63,0.40)', borderRadius: '40px',
           padding: '3px 10px' }}>
           {badge}
         </span>
@@ -854,7 +897,7 @@ function CallCard({ call, isOwner }) {
         {call.title || 'Untitled'}
       </div>
       {line && (
-        <div style={{ ...body, fontSize: '14px', color: 'rgba(234,241,237,0.70)',
+        <div style={{ ...body, fontSize: '14px', color: 'rgba(38,36,32,0.70)',
           marginTop: '5px', lineHeight: 1.5 }}>
           {line}
         </div>
@@ -870,7 +913,7 @@ function CallCard({ call, isOwner }) {
 
   const cardStyle = {
     display: 'block', textDecoration: 'none',
-    background: at.object, border: '1px solid rgba(217,178,74,0.25)',
+    background: at.object, border: '1px solid rgba(169,116,63,0.25)',
     borderRadius: '10px', padding: '16px 18px',
   }
 
@@ -889,18 +932,18 @@ function CallsSection({ calls, isOwner, actorName }) {
     // The space still exists for the owner when empty — a quiet invitation.
     if (!isOwner) return null
     return (
-      <div>
+      <div id="asks">
         <Eyebrow>Challenges &amp; asks</Eyebrow>
-        <div style={{ background: at.object, border: '1px dashed rgba(217,178,74,0.35)',
+        <div style={{ background: at.object, border: '1px dashed rgba(169,116,63,0.35)',
           borderRadius: '10px', padding: '18px 20px' }}>
-          <div style={{ ...body, fontSize: '15px', color: 'rgba(234,241,237,0.70)',
+          <div style={{ ...body, fontSize: '15px', color: 'rgba(38,36,32,0.70)',
             lineHeight: 1.5, marginBottom: '12px' }}>
             Invite others into the work · share a challenge to take on together, or an ask for what you need.
           </div>
           <Link to="/challenges/new"
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
               textTransform: 'uppercase', color: gold, textDecoration: 'none',
-              border: '1px solid rgba(217,178,74,0.50)', borderRadius: '40px',
+              border: '1px solid rgba(169,116,63,0.50)', borderRadius: '40px',
               padding: '8px 18px', display: 'inline-block' }}>
             Create one
           </Link>
@@ -910,7 +953,7 @@ function CallsSection({ calls, isOwner, actorName }) {
   }
 
   return (
-    <div>
+    <div id="asks">
       <Eyebrow>Challenges &amp; asks</Eyebrow>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
         {CALL_TYPES.map(({ type, groupLabel }) => {
@@ -1072,8 +1115,8 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
         </span>
         {scaleLabel && (
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
-            color: at.meta, background: 'rgba(217,178,74,0.05)',
-            border: '1px solid rgba(217,178,74,0.25)',
+            color: at.meta, background: 'rgba(169,116,63,0.05)',
+            border: '1px solid rgba(169,116,63,0.25)',
             padding: '2px 9px', borderRadius: '40px' }}>
             Scale: {scaleLabel}
           </span>
@@ -1081,7 +1124,7 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
         {locationLabel && !scaleLabel && (
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
             color: at.ghost,
-            border: '1px solid rgba(217,178,74,0.20)',
+            border: '1px solid rgba(169,116,63,0.20)',
             padding: '2px 9px', borderRadius: '40px' }}>
             {locationLabel}
           </span>
@@ -1089,7 +1132,7 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
         {timingLabel && (
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
             color: at.ghost,
-            border: '1px solid rgba(217,178,74,0.20)',
+            border: '1px solid rgba(169,116,63,0.20)',
             padding: '2px 9px', borderRadius: '40px' }}>
             {timingLabel}
           </span>
@@ -1105,7 +1148,7 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
         {formatLabel && (
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
             color: at.ghost,
-            border: '1px solid rgba(217,178,74,0.20)',
+            border: '1px solid rgba(169,116,63,0.20)',
             padding: '2px 9px', borderRadius: '40px' }}>
             {formatLabel}
           </span>
@@ -1113,7 +1156,7 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
         {urgencyLabel && (
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
             color: item.urgency === 'high' ? '#8A3030' : at.brass,
-            background: item.urgency === 'high' ? 'rgba(138,48,48,0.05)' : 'rgba(217,178,74,0.06)',
+            background: item.urgency === 'high' ? 'rgba(138,48,48,0.05)' : 'rgba(169,116,63,0.06)',
             border: item.urgency === 'high' ? '1px solid rgba(138,48,48,0.30)' : `1px solid ${accentBorder}`,
             padding: '2px 9px', borderRadius: '40px',
             textTransform: 'uppercase' }}>
@@ -1124,7 +1167,7 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
 
       {/* Action row — Interested + Reach out */}
       <div style={{ display: 'flex', gap: '10px', alignItems: 'center',
-        paddingTop: '10px', borderTop: '1px solid rgba(217,178,74,0.10)' }}>
+        paddingTop: '10px', borderTop: '1px solid rgba(169,116,63,0.10)' }}>
         <button
           onClick={togglePull}
           disabled={interestLoading}
@@ -1132,7 +1175,7 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
           style={{
             ...sc, fontSize: '13px', letterSpacing: '0.10em',
             padding: '7px 14px', borderRadius: '40px',
-            border: imInterested ? `1.5px solid ${accent}` : '1.5px solid rgba(217,178,74,0.25)',
+            border: imInterested ? `1.5px solid ${accent}` : '1.5px solid rgba(169,116,63,0.25)',
             background: imInterested ? `${accent}10` : 'transparent',
             color: imInterested ? accent : at.meta,
             cursor: interestLoading ? 'wait' : 'pointer',
@@ -1163,7 +1206,7 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
             ...sc, fontSize: '13px', letterSpacing: '0.10em',
             padding: '7px 14px', borderRadius: '40px',
             border: 'none',
-            background: !actor?.profile_owner ? 'rgba(217,178,74,0.20)' : accent,
+            background: !actor?.profile_owner ? 'rgba(169,116,63,0.20)' : accent,
             color: at.object,
             cursor: !actor?.profile_owner ? 'not-allowed' : 'pointer',
           }}>
@@ -1251,7 +1294,7 @@ function OfferNeedCompose({ item, kind, actor, currentUser, onClose }) {
       }} onClick={e => e.stopPropagation()}>
 
         <div style={{ padding: '18px 22px',
-          borderBottom: '1px solid rgba(217,178,74,0.20)',
+          borderBottom: '1px solid rgba(169,116,63,0.20)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
@@ -1279,7 +1322,7 @@ function OfferNeedCompose({ item, kind, actor, currentUser, onClose }) {
               <select value={senderInboxId}
                 onChange={e => setSenderInboxId(e.target.value)}
                 style={{ ...body, width: '100%', padding: '10px 14px',
-                  border: '1.5px solid rgba(217,178,74,0.20)',
+                  border: '1.5px solid rgba(169,116,63,0.20)',
                   borderRadius: '8px', background: at.object,
                   fontSize: '14px', color: dark, outline: 'none', cursor: 'pointer' }}>
                 {inboxes.map(ibx => (
@@ -1295,7 +1338,7 @@ function OfferNeedCompose({ item, kind, actor, currentUser, onClose }) {
             rows={8}
             placeholder="Tell them why you're reaching out..."
             style={{ ...body, width: '100%', padding: '12px 14px',
-              border: '1.5px solid rgba(217,178,74,0.20)',
+              border: '1.5px solid rgba(169,116,63,0.20)',
               borderRadius: '8px', background: at.object,
               fontSize: '14px', color: dark, outline: 'none',
               resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.55 }}
@@ -1313,12 +1356,12 @@ function OfferNeedCompose({ item, kind, actor, currentUser, onClose }) {
         </div>
 
         <div style={{ padding: '14px 22px',
-          borderTop: '1px solid rgba(217,178,74,0.20)',
+          borderTop: '1px solid rgba(169,116,63,0.20)',
           display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
           <button onClick={onClose}
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
               padding: '10px 18px', borderRadius: '40px',
-              background: 'none', border: '1px solid rgba(217,178,74,0.20)',
+              background: 'none', border: '1px solid rgba(169,116,63,0.20)',
               color: at.ghost, cursor: 'pointer' }}>
             Cancel
           </button>
@@ -1326,7 +1369,7 @@ function OfferNeedCompose({ item, kind, actor, currentUser, onClose }) {
             disabled={!body_text.trim() || sending}
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
               padding: '10px 20px', borderRadius: '40px', border: 'none',
-              background: !body_text.trim() || sending ? 'rgba(217,178,74,0.30)' : at.verdigris,
+              background: !body_text.trim() || sending ? 'rgba(169,116,63,0.30)' : at.verdigris,
               color: at.object,
               cursor: !body_text.trim() || sending ? 'not-allowed' : 'pointer' }}>
             {sending ? 'Sending...' : 'Send'}
@@ -1353,7 +1396,7 @@ function RelationshipsSection({ parent, children, partners, constellation }) {
           </div>
           <Link to={`/org/${parent.slug || parent.id}`}
             style={{ ...body, fontSize: '15px', color: dark,
-              textDecoration: 'none', borderBottom: '1px dotted rgba(217,178,74,0.45)' }}>
+              textDecoration: 'none', borderBottom: '1px dotted rgba(169,116,63,0.45)' }}>
             {parent.name}
           </Link>
         </div>
@@ -1371,7 +1414,7 @@ function RelationshipsSection({ parent, children, partners, constellation }) {
                 style={{ ...body, fontSize: '14px', color: dark,
                   textDecoration: 'none', padding: '5px 12px',
                   borderRadius: '40px',
-                  border: '1px solid rgba(217,178,74,0.25)',
+                  border: '1px solid rgba(169,116,63,0.25)',
                   background: at.object }}>
                 {c.name}
               </Link>
@@ -1392,7 +1435,7 @@ function RelationshipsSection({ parent, children, partners, constellation }) {
                 style={{ ...body, fontSize: '14px', color: dark,
                   textDecoration: 'none', padding: '5px 12px',
                   borderRadius: '40px',
-                  border: '1px solid rgba(217,178,74,0.25)',
+                  border: '1px solid rgba(169,116,63,0.25)',
                   background: at.object }}>
                 {p.name}
               </Link>
@@ -1414,10 +1457,10 @@ function RelationshipsSection({ parent, children, partners, constellation }) {
             {constellation.map(m => (
               <Link key={m.id} to={`/org/${m.slug || m.id}`}
                 style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '7px 12px',
-                  background: at.object, border: '1.5px solid rgba(217,178,74,0.30)',
+                  background: at.object, border: '1.5px solid rgba(169,116,63,0.30)',
                   borderRadius: '40px', textDecoration: 'none', transition: 'all 0.15s' }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(217,178,74,0.65)'}
-                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(217,178,74,0.30)'}>
+                onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(169,116,63,0.65)'}
+                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(169,116,63,0.30)'}>
                 {m.image_url && <img src={m.image_url} alt={m.name} style={{ width: '20px', height: '20px', borderRadius: '3px', objectFit: 'cover' }} />}
                 <span style={{ ...body, fontSize: '14px', color: dark }}>{m.name}</span>
               </Link>
@@ -1459,9 +1502,9 @@ function ProvenanceBadge({ actor }) {
         color: at.ghost, textTransform: 'uppercase' }}>
         {label}
       </span>
-      <span style={{ color: 'rgba(217,178,74,0.40)', fontSize: '13px' }}>·</span>
+      <span style={{ color: 'rgba(169,116,63,0.40)', fontSize: '13px' }}>·</span>
       <span style={{ ...body, fontSize: '14px', fontWeight: 400,
-        color: 'rgba(234,241,237,0.62)', lineHeight: 1.5 }}>
+        color: 'rgba(38,36,32,0.62)', lineHeight: 1.5 }}>
         {hint}
       </span>
     </div>
@@ -1528,14 +1571,14 @@ function CredentialsSection({ credentials }) {
           <div style={{ display: 'grid', gap: '14px' }}>
             {grouped[kind].map(c => (
               <div key={c.id} style={{
-                borderLeft: '2px solid rgba(217,178,74,0.20)',
+                borderLeft: '2px solid rgba(169,116,63,0.20)',
                 paddingLeft: '18px' }}>
                 <div style={{ ...body, fontSize: '16px',
                   color: dark, lineHeight: 1.4, marginBottom: '3px' }}>
                   {c.url ? (
                     <a href={c.url} target="_blank" rel="noopener"
                        style={{ color: dark, textDecoration: 'none',
-                         borderBottom: '1px solid rgba(217,178,74,0.30)' }}>
+                         borderBottom: '1px solid rgba(169,116,63,0.30)' }}>
                       {c.title}
                     </a>
                   ) : c.title}
@@ -1580,7 +1623,7 @@ function TestimonialsSection({ testimonials, actorMode }) {
       <Eyebrow>{heading}</Eyebrow>
       {sorted.map(t => (
         <div key={t.id} style={{
-          borderLeft: '2px solid rgba(217,178,74,0.20)',
+          borderLeft: '2px solid rgba(169,116,63,0.20)',
           paddingLeft: '24px',
           marginBottom: '32px',
           maxWidth: '620px' }}>
@@ -1624,6 +1667,70 @@ function TestimonialsSection({ testimonials, actorMode }) {
 // removed from OrgManage.
 
 // ── Main page ────────────────────────────────────────────────
+
+// ── Guide tier chip — the viewer's own standing with this actor ──────
+// Private to the viewer (BP-12): where they sit on the connection ladder
+// (known · following · allied · companion), derived, never a count. Not
+// shown to the owner about their own actor, nor to signed-out visitors.
+function GuideTierChip({ actorId, userId, isOwner }) {
+  const [tier, setTier] = useState(null)
+  useEffect(() => {
+    let live = true
+    if (!userId || isOwner || !actorId) return
+    loadGuideState(supabase, userId).then(state => {
+      if (!live) return
+      const t = state.get(actorId)?.tier
+      if (t && t !== 'found') setTier(t)
+    })
+    return () => { live = false }
+  }, [userId, actorId, isOwner])
+  if (!tier) return null
+  const label = { known: 'Known', following: 'Following', allied: 'Allied', companion: 'Companion' }[tier] || tier
+  const high = tier === 'allied' || tier === 'companion'
+  return (
+    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase',
+      color: high ? at.brass : at.verdigris, marginBottom: '18px',
+      display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+      <span style={{ width: '9px', height: '9px', borderRadius: '50%',
+        background: high ? at.brass : at.verdigris, display: 'inline-block' }} />
+      In your guide · {label}
+    </div>
+  )
+}
+
+// ── Scale, framed as invitation not rank ─────────────────────────
+// Operating scale stated honestly (local → regional → wider). Never a
+// score, never a league position — a descriptive band and a question.
+// Under-supported is framed as under-supported, never as weak. The
+// answer to the question is the doors beneath it.
+function ScaleInvitation({ actor }) {
+  const bandLabel = actor.scale ? (SCALE_LABEL?.[actor.scale] || actor.scale) : null
+  return (
+    <div>
+      <Eyebrow>Scale</Eyebrow>
+      <div style={{
+        background: at.object,
+        border: `1px solid ${at.verdigrisEdge}`,
+        borderRadius: '12px',
+        padding: '22px 24px',
+      }}>
+        {bandLabel && (
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
+            textTransform: 'uppercase', color: at.verdigris, marginBottom: '10px' }}>
+            Working at {bandLabel} scale
+          </div>
+        )}
+        <p style={{ ...serif, fontSize: '19px', lineHeight: 1.4, color: at.text,
+          margin: '0 0 8px' }}>
+          One river, done well.
+        </p>
+        <p style={{ ...body, fontSize: '16px', lineHeight: 1.55, color: at.meta, margin: 0 }}>
+          What would it take for this to reach more rivers?
+        </p>
+      </div>
+    </div>
+  )
+}
 
 export function OrgPublicPage() {
   // Route is /org/:slug (App.jsx line 230). Accept both `slug` (canonical) and
@@ -1797,6 +1904,33 @@ export function OrgPublicPage() {
     working_on: () => (
       isClaimed && actor.working_on_now ? <WorkingOnNow actor={actor} /> : null
     ),
+    how_we_work: () => (
+      isClaimed && actor.how_we_work
+        ? <ShowcaseSection
+            eyebrow={actor.actor_mode === 'practice' ? 'How I work' : 'How we work'}
+            text={actor.how_we_work} />
+        : null
+    ),
+    track_record: () => (
+      isClaimed && actor.track_record
+        ? <ShowcaseSection eyebrow="Track record" text={actor.track_record} />
+        : null
+    ),
+    best_practices: () => (
+      isClaimed && actor.best_practices
+        ? <ShowcaseSection eyebrow="Best practices" text={actor.best_practices} />
+        : null
+    ),
+    direction: () => (
+      isClaimed && actor.direction
+        ? <ShowcaseSection eyebrow="Where this is heading" text={actor.direction} />
+        : null
+    ),
+    main_challenges: () => (
+      isClaimed && actor.main_challenges
+        ? <MainChallenges actor={actor} isOwner={isOwner} />
+        : null
+    ),
     placement: () => (
       allDomains.length > 0
         ? <Placement domains={allDomains} subdomains={actor.subdomains || []} />
@@ -1917,6 +2051,9 @@ export function OrgPublicPage() {
         {/* Claim banner — only on unclaimed wards */}
         <ClaimBanner actor={actor} user={user} />
 
+        {/* The viewer's own tier with this actor — private, derived (BP-12) */}
+        {user && !isOwner && <GuideTierChip actorId={actor.id} userId={user.id} isOwner={isOwner} />}
+
         {/* Render sections in mode-determined order. Skip nulls. Each section
             is followed by a Rule (visual divider) except for the sections in
             SECTIONS_WITHOUT_TRAILING_RULE. This matches the original page's
@@ -1936,6 +2073,20 @@ export function OrgPublicPage() {
           }
           return rendered
         })()}
+
+        {/* Scale as invitation, then the door — every story ends in one.
+            Placed once, after the mode-ordered sections. The door picks
+            its target by claim state (BP-4). */}
+        <ScaleInvitation actor={actor} />
+        <Rule />
+        <Door
+          isClaimed={isClaimed}
+          actorName={actor.name}
+          calls={calls}
+          domainSlug={primaryDomain}
+          domainLabel={primaryDomain ? (DOMAIN_LABEL?.[primaryDomain] || primaryDomain) : null}
+          tone="dark"
+        />
 
       </div>
 

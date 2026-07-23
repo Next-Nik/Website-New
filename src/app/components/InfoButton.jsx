@@ -20,8 +20,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 
 export function InfoButton({ title, children, size = 'sm', ariaLabel, tone = 'light' }) {
   const darkTone = tone === 'dark'
@@ -64,17 +64,17 @@ export function InfoButton({ title, children, size = 'sm', ariaLabel, tone = 'li
           width: `${dim}px`,
           height: `${dim}px`,
           borderRadius: '50%',
-          border: darkTone ? '1.2px solid rgba(234,241,237,0.45)' : '1.2px solid rgba(110,127,92,0.55)',
+          border: darkTone ? '1.2px solid rgba(234,241,237,0.45)' : '1.2px solid rgba(76,107,69,0.55)',
           background: darkTone
             ? (open ? 'rgba(234,241,237,0.12)' : 'rgba(234,241,237,0.05)')
-            : (open ? 'rgba(110,127,92,0.10)' : 'rgba(110,127,92,0.04)'),
-          color: darkTone ? '#EAF1ED' : '#26302A',
+            : (open ? 'rgba(76,107,69,0.10)' : 'rgba(76,107,69,0.04)'),
+          color: darkTone ? '#EAF1ED' : '#262420',
           cursor: 'pointer',
           padding: 0,
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontFamily: "'Fraunces', Georgia, serif",
+          fontFamily: "'Lora', Georgia, serif",
           fontSize,
           lineHeight: 1,
           transition: 'background 120ms ease',
@@ -96,7 +96,7 @@ export function InfoButton({ title, children, size = 'sm', ariaLabel, tone = 'li
             zIndex: 250,
             width: 'min(340px, 80vw)',
             background: '#FFFFFF',
-            border: '1.5px solid rgba(110,127,92,0.30)',
+            border: '1.5px solid rgba(76,107,69,0.30)',
             borderRadius: '10px',
             boxShadow: '0 12px 32px rgba(15,21,35,0.12)',
             padding: '18px 20px 16px',
@@ -107,7 +107,7 @@ export function InfoButton({ title, children, size = 'sm', ariaLabel, tone = 'li
               ...sc,
               fontSize: '13px',
               letterSpacing: '0.18em',
-              color: '#26302A',
+              color: '#262420',
               marginBottom: '10px',
               textTransform: 'uppercase',
             }}>

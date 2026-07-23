@@ -15,9 +15,9 @@
 
 import { useEffortSignal } from '../hooks/useEffortSignal'
 
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const serif = { fontFamily: "'Fraunces', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const serif = { fontFamily: "'Lora', Georgia, serif" }
 
 const MIN_SLICE_COVERAGE = 10  // Lock 3 from Section 5.8
 
@@ -29,7 +29,7 @@ const DOMAIN_META = {
   'society':         { label: 'Society',         color: '#8E7BB5' },
   'nature':          { label: 'Nature',          color: '#5C8A5C' },
   'technology':      { label: 'Technology',      color: '#5B8DB8' },
-  'finance-economy': { label: 'Economy',         color: '#6E7F5C' },
+  'finance-economy': { label: 'Economy',         color: '#4c6b45' },
   'legacy':          { label: 'Legacy',          color: '#A07850' },
   'vision':          { label: 'Vision',          color: '#9E7B9E' },
 }
@@ -58,7 +58,7 @@ function formatDate(dateStr) {
 }
 
 function DomainRow({ domainId, row }) {
-  const meta = DOMAIN_META[domainId] || { label: domainId, color: '#26302A' }
+  const meta = DOMAIN_META[domainId] || { label: domainId, color: '#262420' }
   const hasMass = row.active_actors >= MIN_SLICE_COVERAGE
 
   return (
@@ -66,7 +66,7 @@ function DomainRow({ domainId, row }) {
       display: 'flex', alignItems: 'center', gap: '20px',
       padding: '18px 22px',
       background: '#FFFFFF',
-      border: '1px solid rgba(110,127,92,0.18)',
+      border: '1px solid rgba(76,107,69,0.18)',
       borderRadius: '8px',
     }}>
       {/* Domain color spine */}
@@ -144,8 +144,8 @@ export function EffortSignalPanel({ variant = 'full' }) {
   if (!data || !data.snapshot_date) {
     return (
       <div style={{ padding: '32px',
-        background: 'rgba(110,127,92,0.04)',
-        border: '1px dashed rgba(110,127,92,0.25)',
+        background: 'rgba(76,107,69,0.04)',
+        border: '1px dashed rgba(76,107,69,0.25)',
         borderRadius: '8px', textAlign: 'center' }}>
         <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em',
           color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
@@ -174,7 +174,7 @@ export function EffortSignalPanel({ variant = 'full' }) {
       <div style={{ marginBottom: '24px' }}>
         <p style={{
           ...sc, fontSize: '13px', letterSpacing: '0.22em',
-          color: '#26302A', textTransform: 'uppercase',
+          color: '#262420', textTransform: 'uppercase',
           marginBottom: '8px',
         }}>
           The work in motion

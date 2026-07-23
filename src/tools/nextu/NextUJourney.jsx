@@ -78,7 +78,7 @@ function MiniWheel({ scores, size = 92 }) {
           <path
             key={`o-${key}`}
             d={`M ${X0} ${Y0} A ${R} ${R} 0 0 1 ${X1} ${Y1}`}
-            fill="none" stroke="rgba(110,127,92,0.3)" strokeWidth="1"
+            fill="none" stroke="rgba(76,107,69,0.3)" strokeWidth="1"
           />,
         ]
         if (score != null) {
@@ -527,7 +527,7 @@ export function NextUJourneyPage() {
         </p>
         <button
           onClick={() => { setLoadError(false); setLoading(true); setReloadTick(t => t + 1) }}
-          style={{ ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#26302A', background: 'transparent', border: '1px solid #6E7F5C', borderRadius: '40px', padding: '11px 26px', cursor: 'pointer' }}
+          style={{ ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#262420', background: 'transparent', border: '1px solid #4c6b45', borderRadius: '40px', padding: '11px 26px', cursor: 'pointer' }}
         >Try again</button>
       </div>
     )

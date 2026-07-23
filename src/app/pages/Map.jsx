@@ -204,7 +204,7 @@ function buildMarkerSVG({ domains, winning, opacity }) {
     const bx = cx + (ringOuterR - badgeOverlap) * diag
     const by = cy - (ringOuterR - badgeOverlap) * diag
     svg += `<circle cx="${bx}" cy="${by}" r="${badgeR}" fill="${goldDark}"/>`
-    svg += `<text x="${bx}" y="${by + 2.6}" text-anchor="middle" font-family="'IBM Plex Mono',serif" font-size="7" fill="white" font-weight="600">+${extraCount}</text>`
+    svg += `<text x="${bx}" y="${by + 2.6}" text-anchor="middle" font-family="'Cormorant SC',serif" font-size="7" fill="white" font-weight="600">+${extraCount}</text>`
   }
 
   svg += `</svg>`
@@ -253,7 +253,7 @@ function ActorPanel({ actor, onClose, navigate }) {
                 ...sc, fontSize: '13px', letterSpacing: '0.14em',
                 color: i === 0 ? c : at.ghost,
                 background: i === 0 ? `${c}15` : 'rgba(15,21,35,0.05)',
-                border: `1px solid ${i === 0 ? c + '35' : 'rgba(234,241,237,0.15)'}`,
+                border: `1px solid ${i === 0 ? c + '35' : 'rgba(38,36,32,0.15)'}`,
                 borderRadius: '4px', padding: '3px 9px',
               }}>
                 {DOMAIN_LABEL[d] || d}
@@ -325,7 +325,7 @@ function ActorPanel({ actor, onClose, navigate }) {
 
         {/* ── Four-dimensional placement ── */}
         {(subdomains.length > 0 || fields.length > 0 || lenses.length > 0 || problems.length > 0) && (
-          <div style={{ borderTop: `1px solid rgba(88,160,138,0.12)`, paddingTop: '14px', marginBottom: '16px' }}>
+          <div style={{ borderTop: `1px solid rgba(76,107,69,0.12)`, paddingTop: '14px', marginBottom: '16px' }}>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: at.ghost, marginBottom: '10px' }}>
               Placement
             </div>
@@ -451,8 +451,8 @@ function ActorListItem({ actor, onClick }) {
   return (
     <div
       onClick={onClick}
-      style={{ padding: '12px 0', borderBottom: `1px solid rgba(88,160,138,0.10)`, cursor: 'pointer', display: 'flex', gap: '12px', alignItems: 'flex-start' }}
-      onMouseEnter={e => e.currentTarget.style.background = 'rgba(88,160,138,0.03)'}
+      style={{ padding: '12px 0', borderBottom: `1px solid rgba(76,107,69,0.10)`, cursor: 'pointer', display: 'flex', gap: '12px', alignItems: 'flex-start' }}
+      onMouseEnter={e => e.currentTarget.style.background = 'rgba(76,107,69,0.03)'}
       onMouseLeave={e => e.currentTarget.style.background = ''}
     >
       {/* Multi-domain dot indicator */}
@@ -644,8 +644,8 @@ export function MapPage() {
       const prim = domains[0]
       const extras = domains.length > 1 ? ` +${domains.length - 1}` : ''
       marker.bindTooltip(
-        `<div style="font-family:'Newsreader',serif;font-size:13px;font-weight:300;color:#0F1523">${actor.name}</div>
-         <div style="font-family:'IBM Plex Mono',serif;font-size:11px;letter-spacing:0.1em;color:rgba(15,21,35,0.55);margin-top:2px">${DOMAIN_LABEL[prim] || ''}${extras}${actor.scale ? ' · ' + (SCALE_LABEL[actor.scale] || actor.scale) : ''}</div>`,
+        `<div style="font-family:'Lora',serif;font-size:13px;font-weight:300;color:#0F1523">${actor.name}</div>
+         <div style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.1em;color:rgba(15,21,35,0.55);margin-top:2px">${DOMAIN_LABEL[prim] || ''}${extras}${actor.scale ? ' · ' + (SCALE_LABEL[actor.scale] || actor.scale) : ''}</div>`,
         { direction: 'top', offset: [0, -8], className: 'beta-map-tooltip' }
       )
 
@@ -695,7 +695,7 @@ export function MapPage() {
         <style>{`
           .beta-map-tooltip {
             background: rgba(250,250,247,0.97) !important;
-            border: 1px solid rgba(88,160,138,0.25) !important;
+            border: 1px solid rgba(76,107,69,0.25) !important;
             border-radius: 6px !important;
             box-shadow: 0 4px 16px rgba(15,21,35,0.12) !important;
             padding: 8px 12px !important;
@@ -714,7 +714,7 @@ export function MapPage() {
               bottom: 0 !important;
               right: 0 !important;
               border-left: none !important;
-              border-top: 1.5px solid rgba(88,160,138,0.22) !important;
+              border-top: 1.5px solid rgba(76,107,69,0.22) !important;
               box-shadow: 0 -4px 20px rgba(15,21,35,0.10) !important;
               border-radius: 16px 16px 0 0 !important;
             }
@@ -741,7 +741,7 @@ export function MapPage() {
             </div>
             <button
               onClick={() => navigate('/nominate')}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '10px 18px', borderRadius: '40px', border: `1px solid rgba(88,160,138,0.35)`, background: 'transparent', color: at.ghost, cursor: 'pointer', whiteSpace: 'nowrap' }}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '10px 18px', borderRadius: '40px', border: `1px solid rgba(76,107,69,0.35)`, background: 'transparent', color: at.ghost, cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
               Nominate an actor
             </button>
@@ -871,7 +871,7 @@ export function MapPage() {
 
         {/* Map canvas */}
         <div className="beta-map-container" style={{ maxWidth: '1100px', margin: '0 auto', width: '100%', padding: '0 32px 20px' }}>
-          <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: `1.5px solid rgba(88,160,138,0.22)`, background: '#E8E4DC' }}>
+          <div style={{ position: 'relative', borderRadius: '14px', overflow: 'hidden', border: `1.5px solid rgba(76,107,69,0.22)`, background: '#E8E4DC' }}>
             <div className="beta-map-canvas" ref={mapContainer} style={{ width: '100%', height: '540px' }} />
 
             {!mapReady && (
@@ -881,15 +881,15 @@ export function MapPage() {
             )}
 
             {mapReady && mappedVisible === 0 && (
-              <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(250,250,247,0.94)', border: `1px solid rgba(88,160,138,0.25)`, borderRadius: '8px', padding: '10px 14px', maxWidth: '280px', zIndex: 700 }}>
-                <p style={{ ...body, fontSize: '13px', color: 'rgba(234,241,237,0.60)', lineHeight: 1.6, margin: 0 }}>
+              <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(250,250,247,0.94)', border: `1px solid rgba(76,107,69,0.25)`, borderRadius: '8px', padding: '10px 14px', maxWidth: '280px', zIndex: 700 }}>
+                <p style={{ ...body, fontSize: '13px', color: 'rgba(38,36,32,0.60)', lineHeight: 1.6, margin: 0 }}>
                   Actor coordinates are being added. Browse all actors in the list below.
                 </p>
               </div>
             )}
 
             {/* Scale legend */}
-            <div className="beta-map-scale-legend" style={{ position: 'absolute', bottom: '32px', right: '10px', background: 'rgba(250,250,247,0.94)', border: `1px solid rgba(88,160,138,0.20)`, borderRadius: '8px', padding: '10px 13px', zIndex: 700, minWidth: '160px' }}>
+            <div className="beta-map-scale-legend" style={{ position: 'absolute', bottom: '32px', right: '10px', background: 'rgba(250,250,247,0.94)', border: `1px solid rgba(76,107,69,0.20)`, borderRadius: '8px', padding: '10px 13px', zIndex: 700, minWidth: '160px' }}>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: at.ghost, marginBottom: '7px' }}>
                 Scale at zoom {Math.round(currentZoom)}
               </div>
@@ -928,7 +928,7 @@ export function MapPage() {
         {/* Unmapped actors list */}
         {filteredUnmapped.length > 0 && (
           <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 32px 80px', width: '100%' }}>
-            <hr style={{ border: 'none', borderTop: `1px solid rgba(88,160,138,0.15)`, marginBottom: '24px' }} />
+            <hr style={{ border: 'none', borderTop: `1px solid rgba(76,107,69,0.15)`, marginBottom: '24px' }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
               <h2 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: dark }}>
                 {focusSubdomain

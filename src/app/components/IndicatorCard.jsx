@@ -7,8 +7,8 @@ import { at } from '../../lib/designTokens'
 //
 // One signal card per indicator. Single number per card — no chart, no
 // sparkline. The default render shows:
-//   - Indicator name (IBM Plex Mono eyebrow)
-//   - The number (Fraunces display)
+//   - Indicator name (Cormorant SC eyebrow)
+//   - The number (Lora display)
 //   - The direction arrow (up / down / sideways), coloured per the score
 //     palette: blue for progress, warm grey for plateau, amber for friction,
 //     deep red for crisis
@@ -33,9 +33,9 @@ import { at } from '../../lib/designTokens'
 //   className — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 
 // Score palette per Design System v3.
 const COLOUR = {
@@ -87,7 +87,7 @@ export default function IndicatorCard({ indicator, focusName, className }) {
       className={className}
       style={{
         background: at.object,
-        border: '1px solid rgba(88,160,138, 0.20)',
+        border: '1px solid rgba(76,107,69, 0.20)',
         borderRadius: '14px',
         padding: '20px 22px',
         display: 'flex',

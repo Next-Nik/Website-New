@@ -6,33 +6,47 @@
  * ──────────────────────────────────────────────────────────── */
 
 :root {
-  --bg:           #E9EDE4;   /* fn.ground — sage paper */
-  --moss:         #6E7F5C;   /* fn.moss — living accent, replaces gold as chrome */
-  --moss-dk:      #56634A;
-  --moss-line:    rgba(110, 127, 92, 0.30);
-  --moss-faint:   rgba(110, 127, 92, 0.08);
-  --clay:         #B45A3C;   /* fn.clay — attention accent */
-  --clay-line:    rgba(180, 90, 60, 0.35);
-  --text:         #26302A;   /* fn.ink */
-  --text-meta:    rgba(38, 48, 42, 0.68);
-  --text-ghost:   rgba(38, 48, 42, 0.55);
-  --border:       rgba(38, 48, 42, 0.14);
+  /* Four-beat home system (TED + Omega + Tesla). One bright warm
+     ground for every surface; the accent alone carries scale —
+     moss for My Life, clay for Our Planet. The NextUs wordmark keeps
+     its scarf-gold `Us`. See MissionControl STAGE_CSS for the source. */
+  --bg:           #f3f0e9;   /* Omega-bright warm cream — page background */
+  --moss:         #4c6b45;   /* living accent · My Life pole */
+  --moss-dk:      #3c5637;
+  --moss-line:    rgba(76, 107, 69, 0.30);
+  --moss-faint:   rgba(76, 107, 69, 0.08);
+  --clay:         #a9743f;   /* attention accent · Our Planet pole */
+  --clay-line:    rgba(169, 116, 63, 0.35);
+  --text:         #262420;   /* warm ink */
+  --text-meta:    rgba(38, 36, 32, 0.68);
+  --text-ghost:   rgba(38, 36, 32, 0.58);
+  --border:       rgba(38, 36, 32, 0.11);
 
+  /* Scarf-gold — the NextUs wordmark `Us`, constant across both poles.
+     Distinct from heritage gold; not subject to the retheme gold law. */
+  --gold:          #cf9a24;
   /* Heritage gold — logo, beacons, and ≤3 approved moments ONLY.
      See designTokens.js `gold` export and audit-design.js `gold` law. */
   --gold-heritage: #C8922A;
   --gold-glow:      rgba(200, 146, 42, 0.55);
 
-  --bg-page:      #F4F5EF;   /* fn.object — leaf */
-  --bg-tool:      #E9EDE4;
-  --bg-warm:      #F4F5EF;
-  --bg-dark:      #10222B;   /* at.ground, for surfaces that intentionally cross rails */
-  --bg-card:      rgba(110, 146, 92, 0.06);
-  --bg-hover:     rgba(110, 127, 92, 0.08);
+  /* Shared surfaces + chrome (mirror the home's STAGE_CSS vars). */
+  --surface:      #ffffff;
+  --surface-2:    #eae5da;
+  --line:         rgba(38, 36, 32, 0.11);
+  --muted:        rgba(38, 36, 32, 0.58);
+  --shadow:       0 1px 2px rgba(38,36,32,.06), 0 10px 32px rgba(38,36,32,.08);
 
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-sc:      'IBM Plex Mono', 'Courier New', monospace;
-  --font-body:    'Newsreader', Georgia, serif;
+  --bg-page:      #ffffff;   /* card / raised surface */
+  --bg-tool:      #f3f0e9;
+  --bg-warm:      #eae5da;
+  --bg-dark:      #10222B;   /* at.ground — legacy, for surfaces still on the Atlas rail */
+  --bg-card:      rgba(76, 107, 69, 0.06);
+  --bg-hover:     rgba(76, 107, 69, 0.08);
+
+  --font-display: 'Lora', Georgia, serif;
+  --font-sc:      'Cormorant SC', Georgia, serif;
+  --font-body:    'Lora', Georgia, serif;
 
   --max-w:        680px;
   --nav-h:        64px;
@@ -123,7 +137,7 @@ button {
 .auth-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(38, 48, 42, 0.55);
+  background: rgba(38,36,32, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -134,13 +148,13 @@ button {
 
 .auth-card {
   background: var(--bg-page);
-  border: 1.5px solid rgba(110,127,92,0.55);
+  border: 1.5px solid rgba(76,107,69,0.55);
   border-radius: 14px;
   padding: 2.5rem 2rem;
   max-width: 380px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 1px 2px rgba(38,48,42,.08), 0 6px 16px rgba(38,48,42,.07);
+  box-shadow: 0 1px 2px rgba(38,36,32,.08), 0 6px 16px rgba(38,36,32,.07);
 }
 
 .auth-eyebrow {
@@ -194,10 +208,10 @@ button {
   left: 0;
   right: 0;
   height: var(--nav-h);
-  background: rgba(233, 237, 228, 0.96);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
+  background: rgba(243, 240, 233, 0.88);
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  border-bottom: 1px solid var(--line);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -214,6 +228,27 @@ button {
 
 .nav-logo img {
   height: 34px;
+  width: auto;
+  display: block;
+}
+
+/* Text wordmark — matches the four-beat home. Scarf-gold `Us`. */
+.nav-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-size: 22px;
+  color: var(--text);
+  text-decoration: none;
+  line-height: 1;
+}
+.nav-wordmark-text { color: var(--text); }
+.nav-wordmark-text > span { color: var(--gold); }
+.nav-wordmark-logo {
+  height: 26px;
   width: auto;
   display: block;
 }
@@ -262,7 +297,7 @@ button {
 }
 
 .nav-profile-dot:hover {
-  background: rgba(110, 127, 92, 0.15);
+  background: rgba(76, 107, 69, 0.15);
   border-color: var(--moss-dk);
   text-decoration: none;
 }

@@ -9,7 +9,7 @@ const FAQS = [
     items: [
       {
         q: 'Where do I begin?',
-        a: 'If you\'re not sure, start with North Star — a short conversation that reads where you are and points you toward the right tool. If you\'d rather just dive in, The Map is a good first move: seven domains, an honest picture of where things actually stand. It\'s deliberate work — give a first pass an honest hour.',
+        a: 'If you\'re not sure, start with North Star — a short conversation that reads where you are and points you toward the right tool. If you\'d rather just dive in, The Map is a good first move: seven domains, a clear picture of where things actually stand. It\'s deliberate work — give a first pass a full hour.',
       },
       {
         q: 'Do I need to use all the tools?',
@@ -134,14 +134,10 @@ const FAQS = [
     ],
   },
   {
-    section: 'Beta programme',
+    section: 'Feedback and support',
     items: [
       {
-        q: 'I\'m a beta tester. What does that mean?',
-        a: 'You have full access to the Horizon Suite during the beta period. In exchange, your feedback shapes what gets built next. If something is confusing, broken, or missing — we want to know. Use the Support link on your Dashboard to reach us directly.',
-      },
-      {
-        q: 'How do I give feedback?',
+        q: 'How do I give feedback or get help?',
         a: 'From your Dashboard, scroll to the bottom of the rail and click Support. You can ask a question, report something broken, or tell us what\'s landing. Someone from the team will get back to you.',
       },
     ],
@@ -153,7 +149,7 @@ function FAQItem({ q, a }) {
   return (
     <div
       style={{
-        borderBottom: '1px solid rgba(110,127,92,0.12)',
+        borderBottom: '1px solid rgba(76,107,69,0.12)',
       }}
     >
       <button
@@ -168,7 +164,7 @@ function FAQItem({ q, a }) {
         <span style={{
           flexShrink: 0, width: '20px', height: '20px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#26302A', fontSize: '18px', lineHeight: 1,
+          color: '#262420', fontSize: '18px', lineHeight: 1,
           transform: open ? 'rotate(45deg)' : 'none',
           transition: 'transform 0.18s ease',
           marginTop: '2px',
@@ -193,7 +189,7 @@ export function FAQPage() {
 
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'clamp(88px,10vw,112px) clamp(20px,5vw,40px) 120px' }}>
 
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '16px' }}>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px' }}>
           Support
         </span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,60px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
@@ -201,7 +197,7 @@ export function FAQPage() {
         </h1>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '64px', maxWidth: '520px' }}>
           If something isn't answered here, reach out directly at{' '}
-          <a href="mailto:support@nextus.world" style={{ color: '#26302A', textDecoration: 'none', borderBottom: '1px solid rgba(110,127,92,0.35)' }}>
+          <a href="mailto:support@nextus.world" style={{ color: '#262420', textDecoration: 'none', borderBottom: '1px solid rgba(76,107,69,0.35)' }}>
             support@nextus.world
           </a>
           {' '}or use the Support link on your Dashboard.
@@ -212,12 +208,12 @@ export function FAQPage() {
             <div key={section.section}>
               <span style={{
                 ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em',
-                color: '#26302A', display: 'block', marginBottom: '4px',
+                color: '#262420', display: 'block', marginBottom: '4px',
                 textTransform: 'uppercase',
               }}>
                 {section.section}
               </span>
-              <div style={{ height: '1px', background: 'rgba(110,127,92,0.35)', marginBottom: '4px' }} />
+              <div style={{ height: '1px', background: 'rgba(76,107,69,0.35)', marginBottom: '4px' }} />
               <div>
                 {section.items.map(item => (
                   <FAQItem key={item.q} q={item.q} a={item.a} />
@@ -229,11 +225,11 @@ export function FAQPage() {
 
         <div style={{
           marginTop: '72px', padding: '32px',
-          background: 'rgba(110,127,92,0.04)',
-          border: '1px solid rgba(110,127,92,0.20)',
+          background: 'rgba(76,107,69,0.04)',
+          border: '1px solid rgba(76,107,69,0.20)',
           borderRadius: '14px',
         }}>
-          <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '10px' }}>
+          <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '10px' }}>
             Still have a question?
           </span>
           <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '480px' }}>
@@ -243,8 +239,8 @@ export function FAQPage() {
             href="mailto:support@nextus.world"
             style={{
               display: 'inline-block', padding: '13px 28px',
-              borderRadius: '40px', border: '1.5px solid rgba(110,127,92,0.78)',
-              background: 'transparent', color: '#26302A',
+              borderRadius: '40px', border: '1.5px solid rgba(76,107,69,0.78)',
+              background: 'transparent', color: '#262420',
               ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.14em',
               textDecoration: 'none',
             }}

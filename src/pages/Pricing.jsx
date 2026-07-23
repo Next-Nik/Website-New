@@ -54,8 +54,8 @@ function PriceTag({ amount, period, note }) {
 function ToolCard({ name, desc, monthly, yearly, oneTime, monthlyLink, yearlyLink, oneTimeLink, featured }) {
   return (
     <div style={{
-      background: featured ? 'rgba(110,127,92,0.05)' : '#FFFFFF',
-      border: featured ? '1.5px solid rgba(110,127,92,0.78)' : '1.5px solid rgba(110,127,92,0.20)',
+      background: featured ? 'rgba(76,107,69,0.05)' : '#FFFFFF',
+      border: featured ? '1.5px solid rgba(76,107,69,0.78)' : '1.5px solid rgba(76,107,69,0.20)',
       borderRadius: '14px',
       padding: '28px 28px 24px',
       display: 'flex',
@@ -65,19 +65,19 @@ function ToolCard({ name, desc, monthly, yearly, oneTime, monthlyLink, yearlyLin
       {featured && (
         <div style={{
           position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)',
-          background: '#6E7F5C', color: '#FFFFFF',
+          background: '#4c6b45', color: '#FFFFFF',
           ...sc, fontSize: '13px', letterSpacing: '0.16em',
           padding: '4px 16px', borderRadius: '40px',
           whiteSpace: 'nowrap',
         }}>Best value</div>
       )}
-      <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.10em', color: '#26302A', marginBottom: '8px' }}>{name}</div>
+      <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.10em', color: '#262420', marginBottom: '8px' }}>{name}</div>
       <p style={{ ...body, fontSize: '15px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '20px', flex: 1 }}>{desc}</p>
 
       {oneTime && (
         <>
           <PriceTag amount={oneTime} note="one-time per sprint · past sprints always available" />
-          <a href={oneTimeLink} target="_blank" rel="noopener" style={{ display: 'block', marginTop: '16px', padding: '12px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,48,42,0.8)', background: '#6E7F5C', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+          <a href={oneTimeLink} target="_blank" rel="noopener" style={{ display: 'block', marginTop: '16px', padding: '12px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#4c6b45', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
             Get access →
           </a>
         </>
@@ -89,12 +89,12 @@ function ToolCard({ name, desc, monthly, yearly, oneTime, monthlyLink, yearlyLin
           {yearly && <PriceTag amount={yearly} period="/ year" note={monthly ? `save $${(monthly * 12 - yearly)} vs monthly` : null} />}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
             {monthlyLink && (
-              <a href={monthlyLink} target="_blank" rel="noopener" style={{ display: 'block', padding: '12px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,48,42,0.8)', background: '#6E7F5C', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+              <a href={monthlyLink} target="_blank" rel="noopener" style={{ display: 'block', padding: '12px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#4c6b45', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                 Monthly →
               </a>
             )}
             {yearlyLink && (
-              <a href={yearlyLink} target="_blank" rel="noopener" style={{ display: 'block', padding: '12px 0', textAlign: 'center', borderRadius: '40px', border: '1.5px solid rgba(110,127,92,0.78)', background: 'transparent', color: '#26302A', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+              <a href={yearlyLink} target="_blank" rel="noopener" style={{ display: 'block', padding: '12px 0', textAlign: 'center', borderRadius: '40px', border: '1.5px solid rgba(76,107,69,0.78)', background: 'transparent', color: '#262420', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                 Yearly (best value) →
               </a>
             )}
@@ -121,9 +121,9 @@ export function PricingPage() {
       <div className="pricing-main" style={{ maxWidth: '860px', margin: '0 auto', padding: '112px 40px 120px' }}>
 
         {/* Header */}
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '16px' }}>Pricing</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px' }}>Pricing</span>
         <h1 style={{ ...body, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          Start where you are.<br /><em style={{ color: '#26302A' }}>Go as far as you need.</em>
+          Start where you are.<br /><em style={{ color: '#262420' }}>Go as far as you need.</em>
         </h1>
         <p style={{ ...body, fontSize: '17px', fontWeight: 400, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '64px', maxWidth: '520px' }}>
           Every tool is available individually. Or get everything in one place with The Horizon Suite — designed to pay for itself from the first month.
@@ -131,16 +131,16 @@ export function PricingPage() {
 
         {/* The Horizon Suite — featured */}
         <div style={{ marginBottom: '48px' }}>
-          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '20px' }}>The full suite</span>
+          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '20px' }}>The full suite</span>
           <div style={{
-            background: 'rgba(110,127,92,0.05)',
-            border: '1.5px solid rgba(110,127,92,0.78)',
+            background: 'rgba(76,107,69,0.05)',
+            border: '1.5px solid rgba(76,107,69,0.78)',
             borderRadius: '14px',
             padding: '36px 36px 32px',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '24px' }}>
               <div style={{ flex: '1 1 300px' }}>
-                <div style={{ ...sc, fontSize: '20px', letterSpacing: '0.10em', color: '#26302A', marginBottom: '10px' }}>The Horizon Suite</div>
+                <div style={{ ...sc, fontSize: '20px', letterSpacing: '0.10em', color: '#262420', marginBottom: '10px' }}>The Horizon Suite</div>
                 <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '16px', maxWidth: '440px' }}>
                   Horizon State · Purpose Piece · The Map · Target Stretch · Horizon Practice. All five tools. The full navigation system for your life. The bundle is designed so the maths is obvious — Horizon State and Horizon Practice subscriptions alone cost $44/month individually.
                 </p>
@@ -159,10 +159,10 @@ export function PricingPage() {
                   <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>save $189 vs monthly</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <a href={L.nextus_self_monthly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,48,42,0.8)', background: '#6E7F5C', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+                  <a href={L.nextus_self_monthly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#4c6b45', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                     Monthly →
                   </a>
-                  <a href={L.nextus_self_yearly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1.5px solid rgba(110,127,92,0.78)', background: 'transparent', color: '#26302A', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+                  <a href={L.nextus_self_yearly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1.5px solid rgba(76,107,69,0.78)', background: 'transparent', color: '#262420', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                     Yearly →
                   </a>
                 </div>
@@ -192,7 +192,7 @@ export function PricingPage() {
           />
           <ToolCard
             name="The Map"
-            desc="Seven domains. One honest picture of where you are and where you want to be. The most powerful tool in the suite."
+            desc="Seven domains. One clear picture of where you are and where you want to be. The most powerful tool in the suite."
             oneTime={59}
             oneTimeLink={L.map}
           />
@@ -219,12 +219,12 @@ export function PricingPage() {
         </div>
 
         {/* Group Horizon */}
-        <div style={{ borderTop: '1px solid rgba(110,127,92,0.20)', paddingTop: '48px', marginBottom: '64px' }}>
-          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '20px' }}>Group Horizon</span>
+        <div style={{ borderTop: '1px solid rgba(76,107,69,0.20)', paddingTop: '48px', marginBottom: '64px' }}>
+          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '20px' }}>Group Horizon</span>
           <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <div style={{ flex: '1 1 320px' }}>
               <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: '#0F1523', lineHeight: 1.8, marginBottom: '12px' }}>
-                A 12-week cohort for people ready to do real work in the company of others doing the same. Six to eight people. A defined arc — from honest mapping through to purpose, horizon, and a 90-day sprint forward. Facilitated by Nik. Small enough that everyone is genuinely seen.
+                A 12-week cohort for people ready to do real work in the company of others doing the same. Six to eight people. A defined arc — from clear-eyed mapping through to purpose, horizon, and a 90-day sprint forward. Facilitated by Nik. Small enough that everyone is genuinely seen.
               </p>
               <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
                 The Horizon Suite included for the duration. The Map and Purpose Piece completed before the cohort begins.
@@ -240,7 +240,7 @@ export function PricingPage() {
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '6px' }}>paid in full</span>
                 <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>save $300</div>
               </div>
-              <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1.5px solid rgba(110,127,92,0.78)', background: 'transparent', color: '#26302A', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+              <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1.5px solid rgba(76,107,69,0.78)', background: 'transparent', color: '#262420', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                 Express interest →
               </a>
               <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '10px', textAlign: 'center' }}>Next cohort forming now. Six spots.</p>
@@ -262,7 +262,7 @@ export function PricingPage() {
 
         {/* Work with Nik detail */}
         <div style={{ marginBottom: '64px' }}>
-          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '20px' }}>1:1 Work with Nik</span>
+          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '20px' }}>1:1 Work with Nik</span>
           <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <div style={{ flex: '1 1 320px' }}>
               <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: '#0F1523', lineHeight: 1.8, marginBottom: '12px' }}>
@@ -280,7 +280,7 @@ export function PricingPage() {
               <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '20px' }}>
                 Three-month minimum. The Horizon Suite included.
               </div>
-              <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,48,42,0.8)', background: '#6E7F5C', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+              <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(38,36,32,0.8)', background: '#4c6b45', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                 Book a discovery call →
               </a>
             </div>
@@ -288,8 +288,8 @@ export function PricingPage() {
         </div>
 
         {/* FAQ */}
-        <div style={{ borderTop: '1px solid rgba(110,127,92,0.20)', paddingTop: '48px' }}>
-          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '28px' }}>Questions</span>
+        <div style={{ borderTop: '1px solid rgba(76,107,69,0.20)', paddingTop: '48px' }}>
+          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '28px' }}>Questions</span>
           {[
             {
               q: 'Can I use a one-time tool more than once?',
@@ -301,18 +301,18 @@ export function PricingPage() {
             },
             {
               q: "What's Group Horizon?",
-              a: 'A 12-week cohort of six to eight people, facilitated by Nik. A defined arc from honest mapping through to purpose, horizon, and a 90-day sprint forward. The Horizon Suite included. The Map and Purpose Piece are completed before the cohort begins — so you start at depth, not from scratch.',
+              a: 'A 12-week cohort of six to eight people, facilitated by Nik. A defined arc from clear-eyed mapping through to purpose, horizon, and a 90-day sprint forward. The Horizon Suite included. The Map and Purpose Piece are completed before the cohort begins — so you start at depth, not from scratch.',
             },
             {
               q: 'Is there a free trial?',
-              a: 'North Star is always free — no sign-up required. It reads where you are and points you to the right starting point. Beta cohort members received a 14-day free trial of the full suite.',
+              a: 'North Star is always free — no sign-up required. It reads where you are and points you to the right starting point.',
             },
             {
               q: "What's the founding member pricing?",
               a: 'For the first 30 days after launch, founding member pricing offers 50% off everything. Use the code FOUNDING50 at checkout. For people who show up before the proof is overwhelming.',
             },
           ].map(({ q, a }) => (
-            <div key={q} style={{ borderBottom: '1px solid rgba(110,127,92,0.08)', padding: '20px 0' }}>
+            <div key={q} style={{ borderBottom: '1px solid rgba(76,107,69,0.08)', padding: '20px 0' }}>
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: '#0F1523', marginBottom: '8px' }}>{q}</div>
               <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>{a}</p>
             </div>

@@ -9,12 +9,12 @@ export function SupportResourcesPage() {
       <Nav activePath="" />
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '112px 40px 120px' }}>
 
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '16px' }}>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px' }}>
           Support Resources
         </span>
         <h1 style={{ ...body, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '24px' }}>
           If you need someone<br />
-          <em style={{ color: '#26302A' }}>to talk to right now.</em>
+          <em style={{ color: '#262420' }}>to talk to right now.</em>
         </h1>
 
         <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '20px', maxWidth: '600px' }}>
@@ -28,16 +28,16 @@ export function SupportResourcesPage() {
           needs to talk.
         </p>
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', marginBottom: '40px' }} />
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', marginBottom: '40px' }} />
 
         <CrisisResources variant="full" />
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', margin: '48px 0 24px' }} />
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '48px 0 24px' }} />
 
         <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, maxWidth: '600px' }}>
           We do our best to keep this directory current. If you find a number that no longer
           works, or know of a resource we should add, please let us know at{' '}
-          <a href="mailto:hello@nextus.world" style={{ color: '#26302A', textDecoration: 'none', borderBottom: '1px solid rgba(110,127,92,0.3)' }}>
+          <a href="mailto:hello@nextus.world" style={{ color: '#262420', textDecoration: 'none', borderBottom: '1px solid rgba(76,107,69,0.3)' }}>
             hello@nextus.world
           </a>.
         </p>

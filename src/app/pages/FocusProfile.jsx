@@ -30,7 +30,7 @@ import { WatchButton } from '../components/WatchButton'
 import { TYPE_LABEL, KIND_LABEL } from '../components/FocusSearch'
 import { body, sc, at } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 const gold    = at.brass
 const dark    = at.text
 const parch   = at.ground
@@ -228,8 +228,8 @@ function WheelLayer({ focus }) {
       <SectionHeader>The seven domains</SectionHeader>
       <div style={{
         padding: '24px 26px',
-        background: 'rgba(217,178,74,0.04)',
-        border: '1px dashed rgba(217,178,74,0.35)',
+        background: 'rgba(169,116,63,0.04)',
+        border: '1px dashed rgba(169,116,63,0.35)',
         borderRadius: '10px',
       }}>
         <p style={{ ...body, fontSize: '15px', color: at.meta, lineHeight: 1.7, margin: 0 }}>
@@ -285,7 +285,7 @@ function NestedLayer({ focus, children }) {
                     fontSize: '14px',
                     color: dark,
                     background: at.object,
-                    border: '1px solid rgba(217,178,74,0.30)',
+                    border: '1px solid rgba(169,116,63,0.30)',
                     borderRadius: '20px',
                     padding: '6px 14px',
                     textDecoration: 'none',
@@ -323,7 +323,7 @@ function TouchesLayer({ touches }) {
               fontSize: '14px',
               color: dark,
               background: at.object,
-              border: '1px solid rgba(217,178,74,0.30)',
+              border: '1px solid rgba(169,116,63,0.30)',
               borderRadius: '20px',
               padding: '6px 14px',
               textDecoration: 'none',
@@ -351,7 +351,7 @@ function AffiliationsLayer({ counts, focusName }) {
             alignItems: 'center',
             padding: '12px 16px',
             background: at.object,
-            border: '1px solid rgba(217,178,74,0.18)',
+            border: '1px solid rgba(169,116,63,0.18)',
             borderRadius: '8px',
           }}>
             <span style={{ ...body, fontSize: '15px', color: dark }}>
@@ -388,7 +388,7 @@ function ActorsLayer({ actors, focusName }) {
               fontSize: '15px',
               color: dark,
               background: at.object,
-              border: '1px solid rgba(217,178,74,0.18)',
+              border: '1px solid rgba(169,116,63,0.18)',
               borderRadius: '8px',
               padding: '10px 16px',
               textDecoration: 'none',
@@ -442,8 +442,8 @@ function AffiliateLayer({ user, focus, showPicker, setShowPicker }) {
           fontSize: '13px',
           letterSpacing: '0.18em',
           color: gold,
-          background: 'rgba(217,178,74,0.04)',
-          border: '1.5px solid rgba(217,178,74,0.55)',
+          background: 'rgba(169,116,63,0.04)',
+          border: '1.5px solid rgba(169,116,63,0.55)',
           borderRadius: '30px',
           padding: '11px 26px',
           cursor: 'pointer',
@@ -476,7 +476,7 @@ function StewardshipFooter() {
     <footer style={{
       marginTop: '40px',
       paddingTop: '24px',
-      borderTop: '1px solid rgba(217,178,74,0.20)',
+      borderTop: '1px solid rgba(169,116,63,0.20)',
       textAlign: 'center',
     }}>
       <p style={{
@@ -515,7 +515,7 @@ function Divider() {
   return (
     <div style={{
       height: '1px',
-      background: 'rgba(217,178,74,0.10)',
+      background: 'rgba(169,116,63,0.10)',
       marginBottom: '40px',
       marginTop: '8px',
     }} />
@@ -564,8 +564,8 @@ function NotFoundShell({ slug }) {
           to="/focus"
           style={{
             ...sc, fontSize: '13px', letterSpacing: '0.16em',
-            color: gold, background: 'rgba(217,178,74,0.05)',
-            border: '1px solid rgba(217,178,74,0.55)',
+            color: gold, background: 'rgba(169,116,63,0.05)',
+            border: '1px solid rgba(169,116,63,0.55)',
             borderRadius: '30px', padding: '10px 22px',
             textDecoration: 'none', textTransform: 'uppercase',
           }}

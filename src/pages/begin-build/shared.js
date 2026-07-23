@@ -14,9 +14,9 @@
 import { useState } from 'react'
 
 // ── Brand ─────────────────────────────────────────────────────────
-export const BODY  = { fontFamily: "'Newsreader', Georgia, serif" }
-export const SC    = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-export const SERIF = { fontFamily: "'Fraunces', Georgia, serif" }
+export const BODY  = { fontFamily: "'Lora', Georgia, serif" }
+export const SC    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+export const SERIF = { fontFamily: "'Lora', Georgia, serif" }
 export const GOLD  = '#26302A'
 export const DARK  = '#0F1523'
 export const PARCH = '#FAFAF7'
@@ -222,7 +222,7 @@ export function CloserAndSubmit({ saving, error, submitLabel, onSubmit }) {
         style={{
           ...SC, fontSize: '14px', letterSpacing: '0.16em',
           padding: '14px 32px', borderRadius: '40px', border: 'none',
-          background: saving ? 'rgba(110,127,92,0.35)' : '#6E7F5C',
+          background: saving ? 'rgba(110,127,92,0.35)' : '#4c6b45',
           color: '#FFFFFF', cursor: saving ? 'not-allowed' : 'pointer',
           display: 'block', width: '100%', marginTop: '8px',
         }}

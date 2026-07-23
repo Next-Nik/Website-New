@@ -176,7 +176,7 @@ export function BeginBuildPracticePage() {
             onSubmit={submit}
           />
 
-          <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, textAlign: 'center', marginTop: '12px' }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, textAlign: 'center', marginTop: '12px' }}>
             Continue on your profile — your offering tab is where the rest gets built. You can refine, control visibility, and add depth at your own pace.
           </p>
         </form>

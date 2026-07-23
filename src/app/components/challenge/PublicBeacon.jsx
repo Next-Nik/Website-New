@@ -27,7 +27,7 @@ function fmtDate(iso) {
   if (!iso) return null
   const [y, m, d] = String(iso).split('-').map(Number)
   if (!y || !m || !d) return null
-  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  return new Date(y, m - 1, d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function daysUntil(iso) {
@@ -140,6 +140,10 @@ const PublicBeacon = forwardRef(function PublicBeacon(_props, ref) {
           {sparks > 0
             ? <>{people.toLocaleString()} {people === 1 ? 'person' : 'people'} · {nChal.toLocaleString()} {nChal === 1 ? 'challenge' : 'challenges'} · one shared close</>
             : <>Every check-in adds a spark. The first ones land here.</>}
+        </div>
+        {/* Permanent gloss — the spark definition lives here, not only in the zero state */}
+        <div style={{ ...body, fontSize: '13px', color: CREAM_60, lineHeight: 1.5, marginTop: '6px' }}>
+          1 spark = one real action, checked in
         </div>
         {closeStr && (
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: GOLD_T, textTransform: 'uppercase', marginTop: '12px' }}>

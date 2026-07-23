@@ -78,7 +78,7 @@ function scoreColour(score) {
   if (score == null) return TEXT_WHITE_FAINT
   if (score >= 7)    return at.verdigris             // progress
   if (score >= 4)    return at.brass                 // amber middle
-  if (score >= 2)    return 'rgba(217,178,74,0.65)'  // friction (muted brass)
+  if (score >= 2)    return 'rgba(169,116,63,0.65)'  // friction (muted brass)
   return '#D86464'                      // crisis (lighter red for dark bg)
 }
 

@@ -23,10 +23,10 @@ import { useViewerContext } from '../hooks/useViewerContext'
 import { useFeed } from '../hooks/useFeed'
 import { FeedItem } from './feed/FeedItem'
 
-const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
-const GOLD = '#26302A'
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
+const GOLD = '#262420'
 const INK  = '#0F1523'
 
 const SCALE_ORDER = [
@@ -113,8 +113,8 @@ function Header({ domain, subdomain, field, atFocus }) {
             <span key={i} style={{
               ...body, fontSize: '13px',
               color: 'rgba(15,21,35,0.72)',
-              background: 'rgba(110,127,92,0.04)',
-              border: '1px solid rgba(110,127,92,0.18)',
+              background: 'rgba(76,107,69,0.04)',
+              border: '1px solid rgba(76,107,69,0.18)',
               borderRadius: '12px', padding: '3px 10px',
             }}>
               {t}
@@ -191,8 +191,8 @@ function ActorsLayer({ field, atFocus, accentColor }) {
           ...body, fontSize: '14.5px',
           color: 'rgba(15,21,35,0.72)',
           padding: '18px',
-          background: 'rgba(110,127,92,0.04)',
-          border: '1px dashed rgba(110,127,92,0.30)',
+          background: 'rgba(76,107,69,0.04)',
+          border: '1px dashed rgba(76,107,69,0.30)',
           borderRadius: '8px',
         }}>
           {atFocus
@@ -235,7 +235,7 @@ function ActorCard({ actor, accentColor }) {
       style={{
         padding: '14px 16px',
         background: '#FFFFFF',
-        border: '1px solid rgba(110,127,92,0.18)',
+        border: '1px solid rgba(76,107,69,0.18)',
         borderRadius: '8px',
         color: INK,
       }}
@@ -358,8 +358,8 @@ function Quiet({ text }) {
       ...body, fontSize: '14.5px',
       color: 'rgba(15,21,35,0.72)',
       padding: '18px',
-      background: 'rgba(110,127,92,0.04)',
-      border: '1px dashed rgba(110,127,92,0.30)',
+      background: 'rgba(76,107,69,0.04)',
+      border: '1px dashed rgba(76,107,69,0.30)',
       borderRadius: '8px',
     }}>
       {text}

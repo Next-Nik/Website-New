@@ -17,32 +17,42 @@
 
 /* ── Field Notes — personal rail + shared chrome ──────────────── */
 export const fn = {
-  ground:    '#E9EDE4',                    // sage paper — page background
-  object:    '#F4F5EF',                    // leaf — cards, panels, modals
-  ink:       '#26302A',                    // graphite — primary text
-  moss:      '#6E7F5C',                    // living — active, progress, sync-ok, primary actions
-  mossTint:  'rgba(110,127,92,0.08)',
-  mossEdge:  'rgba(110,127,92,0.30)',
-  clay:      '#B45A3C',                    // attention — needs-you, warnings
-  clayTint:  'rgba(180,90,60,0.08)',
-  clayEdge:  'rgba(180,90,60,0.35)',
-  meta:      'rgba(38,48,42,0.68)',        // secondary text
-  ghost:     'rgba(38,48,42,0.55)',        // floor — nothing below
-  rule:      'rgba(38,48,42,0.14)',        // hairlines, dividers
+  ground:    '#f3f0e9',                    // Omega-bright warm cream — page background
+  object:    '#ffffff',                    // card / raised surface
+  surface2:  '#eae5da',                    // recessed / stat tiles
+  ink:       '#262420',                    // warm ink — primary text
+  moss:      '#4c6b45',                    // living accent · My Life pole
+  mossTint:  'rgba(76,107,69,0.08)',
+  mossEdge:  'rgba(76,107,69,0.30)',
+  clay:      '#a9743f',                    // attention accent · Our Planet pole
+  clayTint:  'rgba(169,116,63,0.08)',
+  clayEdge:  'rgba(169,116,63,0.35)',
+  gold:      '#cf9a24',                    // scarf-gold — the NextUs wordmark `Us`
+  meta:      'rgba(38,36,32,0.68)',        // secondary text
+  ghost:     'rgba(38,36,32,0.58)',        // floor — nothing below
+  rule:      'rgba(38,36,32,0.11)',        // hairlines, dividers
 }
 
-/* ── The Atlas — civilisational rail ──────────────────────────── */
+/* ── The Atlas — civilisational rail ──────────────────────────────
+ * RETHEMED bright (July 2026). The dark sea-ink theme is retired; the
+ * Atlas rail now shares the one bright warm ground of the four-beat
+ * system. Ground/text flip together as a pair, so every token-driven
+ * Atlas page stays readable through the flip. Accents map by hue:
+ * verdigris (living/green) → moss, brass (coordination/warm) → clay.
+ * The few intentionally-dark instrument frames on Mission Control read
+ * the PINNED literals in mission-control/tokens.js, not these tokens.
+ */
 export const at = {
-  ground:        '#10222B',                     // sea ink — page background
-  grid:          'rgba(217,226,221,0.05)',       // survey grid lines (56px cell)
-  object:        '#16303B',                      // chart panel — cards
-  text:          '#EAF1ED',                      // display text on ground
-  meta:          'rgba(217,226,221,0.66)',       // secondary text
-  ghost:         'rgba(217,226,221,0.50)',       // floor — nothing below
-  verdigris:     '#58A08A',                      // living systems — active, progress-start, sync-ok
-  verdigrisEdge: 'rgba(88,160,138,0.30)',        // card borders
-  brass:         '#D9B24A',                      // human coordination — calls, chips, progress-end
-  brassEdge:     'rgba(217,178,74,0.40)',
+  ground:        '#f3f0e9',                      // was sea ink — now bright warm ground
+  grid:          'rgba(38,36,32,0.05)',          // survey grid lines on light
+  object:        '#ffffff',                      // chart panel — cards
+  text:          '#262420',                      // display text (dark ink on bright)
+  meta:          'rgba(38,36,32,0.66)',          // secondary text
+  ghost:         'rgba(38,36,32,0.58)',          // floor — nothing below (0.55 floor honoured)
+  verdigris:     '#4c6b45',                      // living systems → moss
+  verdigrisEdge: 'rgba(76,107,69,0.30)',         // card borders
+  brass:         '#a9743f',                       // human coordination → clay
+  brassEdge:     'rgba(169,116,63,0.40)',
 }
 
 /* ── Heritage gold — TIGHTLY SCOPED. See Master Spec §4. ───────
@@ -83,22 +93,23 @@ export const shadow = {
     lift: '0 2px 4px rgba(38,48,42,.10), 0 12px 28px rgba(38,48,42,.12)',
   },
   at: {
-    rest: '0 2px 6px rgba(0,0,0,.35), 0 12px 30px rgba(0,0,0,.30)',
-    lift: '0 4px 10px rgba(0,0,0,.45), 0 22px 48px rgba(0,0,0,.42)',
-    liftEdge: '1px solid rgba(255,255,255,.08)', // border-top for lifted cards
+    // Rethemed bright: warm ink-based, matching the four-beat home shadow.
+    rest: '0 1px 2px rgba(38,36,32,.06), 0 10px 32px rgba(38,36,32,.08)',
+    lift: '0 4px 10px rgba(38,36,32,.10), 0 22px 48px rgba(38,36,32,.12)',
+    liftEdge: '1px solid rgba(38,36,32,.06)', // border-top for lifted cards
   },
 }
 
 /**
  * Typography spreads — use with object spread: { ...display, fontSize: '28px' }
  *
- * display  → Fraunces:      "the thing" — titles, card headings, ≥18px
- * bodyFont → Newsreader:    reading text, meta, user voice
- * mono     → IBM Plex Mono: chrome — eyebrows, labels, status, coordinates
+ * display  → Lora:      "the thing" — titles, card headings, ≥18px
+ * bodyFont → Lora:    reading text, meta, user voice
+ * mono     → Cormorant SC: chrome — eyebrows, labels, status, coordinates
  */
-export const display  = { fontFamily: "'Fraunces', Georgia, serif" }
-export const bodyFont = { fontFamily: "'Newsreader', Georgia, serif" }
-export const mono     = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
+export const display  = { fontFamily: "'Lora', Georgia, serif" }
+export const bodyFont = { fontFamily: "'Lora', Georgia, serif" }
+export const mono     = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 /**
  * Text presets — locked compositions with the floors baked in.

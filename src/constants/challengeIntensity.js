@@ -14,7 +14,7 @@ export const INTENSITY_LEVELS = [
   { level: 2, label: 'A daily habit',         blurb: 'A small thing you keep returning to, woven into your day.' },
   { level: 3, label: 'With others',           blurb: 'It pulls people in. You act together, or bring someone along.' },
   { level: 4, label: 'A lifestyle shift',     blurb: 'A sustained change to how you live day to day.' },
-  { level: 5, label: 'Major life change',     blurb: 'It reorganises your life. The sell-it-all, move-onto-the-boat end.' },
+  { level: 5, label: 'Major life change',     blurb: 'It reorganises your life. The end that changes everything.' },
 ]
 
 export const INTENSITY_BY_LEVEL = Object.fromEntries(INTENSITY_LEVELS.map(l => [l.level, l]))

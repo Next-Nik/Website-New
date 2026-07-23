@@ -229,7 +229,7 @@ export function MemberPublicPage() {
         {/* Owner preview banner — only the owner sees this, and only while unpublished */}
         {isOwner && (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            gap: '14px', background: unpublished ? 'rgba(217,178,74,0.10)' : 'rgba(42,140,79,0.10)',
+            gap: '14px', background: unpublished ? 'rgba(169,116,63,0.10)' : 'rgba(42,140,79,0.10)',
             border: `1px solid ${unpublished ? RULE : 'rgba(42,140,79,0.30)'}`,
             borderRadius: '12px', padding: '12px 18px', marginBottom: '28px' }}>
             <span style={{ ...body, fontSize: '14px', color: at.meta }}>

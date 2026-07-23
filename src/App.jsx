@@ -3,6 +3,8 @@ import { useAuth } from './hooks/useAuth'
 import { supabase } from './hooks/useSupabase'
 import { ActingAsProvider } from './app/context/ActingAsContext'
 import { SiteCopyProvider } from './lib/siteCopy'
+import { EditModeProvider } from './app/context/EditModeContext'
+import FounderEditBar from './app/components/FounderEditBar'
 import { useEffect, useState, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
 import { TermsAcceptanceModal } from './components/TermsAcceptanceModal'
@@ -17,11 +19,11 @@ class ErrorBoundary extends Component {
       return (
         <div style={{ minHeight: '100dvh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
           <div style={{ textAlign: 'center', maxWidth: '400px' }}>
-            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '17px', letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '16px' }}>Something went wrong</span>
-            <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '18px', color: 'rgba(15,21,35,0.55)', marginBottom: '24px', lineHeight: 1.7 }}>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '17px', letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px' }}>Something went wrong</span>
+            <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '18px', color: 'rgba(15,21,35,0.55)', marginBottom: '24px', lineHeight: 1.7 }}>
               We hit an unexpected error. Please refresh the page — your progress is saved.
             </p>
-            <button onClick={() => window.location.reload()} style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#26302A', background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '40px', padding: '12px 28px', cursor: 'pointer' }}>
+            <button onClick={() => window.location.reload()} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#262420', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '40px', padding: '12px 28px', cursor: 'pointer' }}>
               Refresh
             </button>
           </div>
@@ -90,6 +92,8 @@ import { MemberPublicPage } from './app/pages/MemberPublic'
 import { FocusProfile } from './app/pages/FocusProfile'
 import { FocusIndex } from './app/pages/FocusIndex'
 import { Explore } from './app/pages/Explore'
+import { FieldGuidePage } from './app/pages/FieldGuide'
+import { DailySurfacePage } from './app/pages/DailySurface'
 import { SearchPage } from './app/pages/Search'
 import { ClaimPage } from './app/pages/Claim'
 import { InviteAuthorPage } from './app/pages/InviteAuthor'
@@ -126,6 +130,13 @@ import { HorizonPracticePage }                     from './tools/horizon-practic
 import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import JournalPage                                 from './app/pages/Journal'
 import HorizonExport                               from './app/pages/HorizonExport'
+import HorizonDeclarePage                          from './app/pages/HorizonDeclare'
+import CirclesPage                                 from './app/pages/Circles'
+import CirclePage                                  from './app/pages/CirclePage'
+import TrailsPage                                  from './app/pages/Trails'
+import TrailPage                                   from './app/pages/TrailPage'
+import BoardPage                                   from './app/pages/BoardPage'
+import NorthStarSurface                            from './app/pages/NorthStar'
 import SentenceCompletion                          from './app/pages/SentenceCompletion'
 import IAmPractice                                 from './app/pages/IAmPractice'
 import IAmSpoken                                    from './app/pages/IAmSpoken'
@@ -149,11 +160,11 @@ function ScrollToTop() {
 }
 
 function ComingSoon({ name }) {
-  const sc = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+  const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
   return (
     <div style={{ minHeight: '100dvh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
       <div style={{ textAlign: 'center' }}>
-        <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '16px' }}>Horizon Suite</span>
+        <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px' }}>Horizon Suite</span>
         <h1 style={{ ...body, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 400, color: '#0F1523', marginBottom: '12px' }}>{name}</h1>
         <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)' }}>Coming soon.</p>
       </div>
@@ -172,6 +183,18 @@ function ComingSoon({ name }) {
 // URL, so it only exists for users who arrived via the wrapper.
 // Existing users on a new device won't have it set and will go
 // straight to Mission Control — they don't need a re-introduction.
+// ── /challenges ──
+// Signed-in → your challenges. Signed-out → the public browse page,
+// not a sign-in wall: a visitor landing on /challenges should see
+// challenges, not a locked door.
+function ChallengesRoute() {
+  const { user, loading } = useAuth()
+
+  if (loading) return null
+  if (!user) return <Navigate to="/challenges/browse" replace />
+  return <MyChallenges />
+}
+
 function RootRoute() {
   const { user, loading } = useAuth()
 
@@ -190,7 +213,7 @@ function RootRoute() {
     seen = window.localStorage.getItem('nextus.welcomeSeen') === '1'
   } catch {}
 
-  if (!welcomePath || seen) return <MissionControl />
+  if (!welcomePath || seen) return <MissionControl />  // the four-beat loop home (Horizon · Now · Next step · Path)
 
   const path = ['org', 'practitioner', 'self'].includes(welcomePath)
     ? welcomePath
@@ -310,6 +333,14 @@ function AppInner() {
         <Route path="/atlas/goals/:domain"      element={<HorizonGoalsPage />} />
         <Route path="/tools/horizon-practice"    element={<RequirePersonal><HorizonPracticePage /></RequirePersonal>} />
         <Route path="/journal"                   element={<RequirePersonal><JournalPage /></RequirePersonal>} />
+        <Route path="/horizon/declare"           element={<HorizonDeclarePage />} />  {/* BP-8 · the declaration screen */}
+        <Route path="/circles"                   element={<CirclesPage />} />  {/* BP-14 · your circles */}
+        <Route path="/circles/:id"               element={<CirclePage />} />   {/* BP-14 · the room */}
+        <Route path="/trails"                    element={<TrailsPage />} />   {/* BP-16 · trails index */}
+        <Route path="/trail/:id"                 element={<TrailPage />} />    {/* BP-16 · a walkable trail */}
+        <Route path="/boards"                    element={<BoardPage />} />    {/* BP-16 · domain boards */}
+        <Route path="/boards/:domain"            element={<BoardPage />} />
+        <Route path="/north-star"                element={<NorthStarSurface />} />  {/* BP-18 · whole-life synthesis */}
         <Route path="/me/export"                 element={<HorizonExport />} />
         <Route path="/tools/sentence-completion" element={<SentenceCompletion />} />
         <Route path="/tools/i-am"                element={<IAmPractice />} />
@@ -332,10 +363,11 @@ function AppInner() {
         <Route path="/profile/edit"                 element={<ProfileEdit />} />
         <Route path="/profile/:id"                  element={<MemberPublicPage />} />
         <Route path="/feed"                         element={<FeedPage />} />
+        <Route path="/next"                         element={<Navigate to="/" replace />} />  {/* reshape preview retired · the four-beat loop is now home */}
         <Route path="/contribution"                 element={<ContributionPage />} />
         <Route path="/contribution/legacy"          element={<Contribution />} />
         <Route path="/stretch/c/:slug"              element={<ChallengePage />} />
-        <Route path="/challenges"                   element={<MyChallenges />} />
+        <Route path="/challenges"                   element={<ChallengesRoute />} />
         <Route path="/challenges/new"               element={<ChallengeAuthor />} />
         <Route path="/challenges/browse"            element={<ChallengeBrowse />} />
         <Route path="/earth"                        element={<EarthLive />} />
@@ -372,6 +404,8 @@ function AppInner() {
         <Route path="/explore/:domain"                                   element={<Explore />} />
         <Route path="/explore/:domain/:subdomain"                        element={<Explore />} />
         <Route path="/explore/:domain/:subdomain/:field"                 element={<Explore />} />
+        <Route path="/guide"                        element={<FieldGuidePage />} /> {/* slug provisional · naming session pending */}
+        <Route path="/today"                        element={<DailySurfacePage />} /> {/* daily surface · slug provisional */}
         <Route path="/tuned-in"                     element={<WatchedFeed />} />
         <Route path="/watched"                      element={<Navigate to="/tuned-in" replace />} />
         <Route path="/curated"                      element={<CuratedFeed />} />
@@ -462,9 +496,12 @@ export default function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <SiteCopyProvider>
-          <ActingAsProvider>
-            <AppInner />
-          </ActingAsProvider>
+          <EditModeProvider>
+            <ActingAsProvider>
+              <AppInner />
+              <FounderEditBar />
+            </ActingAsProvider>
+          </EditModeProvider>
         </SiteCopyProvider>
       </BrowserRouter>
     </ErrorBoundary>

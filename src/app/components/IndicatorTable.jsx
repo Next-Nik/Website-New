@@ -31,13 +31,13 @@ import { at } from '../../lib/designTokens'
 //   className  — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
 
 const TIER_LABEL  = { api: 'Live', scrape: 'Pending', contributor: 'Contributor' }
 const TIER_COLOUR = {
   api:         { bg: 'rgba(93, 188, 157, 0.12)',  fg: '#3F8C6F' },
-  scrape:      { bg: 'rgba(217,178,74, 0.10)',  fg: at.brass },
+  scrape:      { bg: 'rgba(169,116,63, 0.10)',  fg: at.brass },
   contributor: { bg: 'rgba(15, 21, 35, 0.06)',    fg: at.meta },
 }
 const SCALE_LABEL = { local: 'Local', regional: 'Regional', planetary: 'Planetary' }
@@ -156,7 +156,7 @@ function Table({ rows }) {
     <div
       style={{
         background: at.object,
-        border: '1px solid rgba(88,160,138, 0.20)',
+        border: '1px solid rgba(76,107,69, 0.20)',
         borderRadius: '14px',
         overflow: 'hidden',
       }}
@@ -166,12 +166,12 @@ function Table({ rows }) {
           style={{
             width: '100%',
             borderCollapse: 'collapse',
-            fontFamily: "'Newsreader', Georgia, serif",
+            fontFamily: "'Lora', Georgia, serif",
             fontSize: '14px',
           }}
         >
           <thead>
-            <tr style={{ background: 'rgba(88,160,138, 0.05)' }}>
+            <tr style={{ background: 'rgba(76,107,69, 0.05)' }}>
               <Th>Indicator</Th>
               <Th>Source</Th>
               <Th>Resolution</Th>
@@ -214,7 +214,7 @@ function Row({ row }) {
   }
 
   return (
-    <tr style={{ borderTop: '1px solid rgba(88,160,138, 0.15)' }}>
+    <tr style={{ borderTop: '1px solid rgba(76,107,69, 0.15)' }}>
       <Td>
         <span style={{ fontWeight: 600, color: at.text }}>
           {row.name}
@@ -234,7 +234,7 @@ function Row({ row }) {
           </span>
         )}
         {isContext && (
-          <Pill text="Context" colour={at.ghost} bg="rgba(234,241,237,0.06)" tooltip="Context indicators are descriptive, not aspirational. They do not contribute to the rollup score." />
+          <Pill text="Context" colour={at.ghost} bg="rgba(38,36,32,0.06)" tooltip="Context indicators are descriptive, not aspirational. They do not contribute to the rollup score." />
         )}
         {aliasDomains.length > 0 && (
           <div
@@ -261,7 +261,7 @@ function Row({ row }) {
             style={{
               color: at.text,
               textDecoration: 'underline',
-              textDecorationColor: 'rgba(88,160,138, 0.45)',
+              textDecorationColor: 'rgba(76,107,69, 0.45)',
               textUnderlineOffset: '3px',
             }}
           >

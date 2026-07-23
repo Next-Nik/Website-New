@@ -22,9 +22,9 @@ import { useState } from 'react'
 //   className     — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 
 export default function WheelsToggleSection({
   selfSlot,
@@ -39,13 +39,13 @@ export default function WheelsToggleSection({
     <div
       className={className}
       style={{
-        background: isCiv ? '#0F1523' : '#FAFAF7',
+        background: isCiv ? '#a9743f' : '#FFFFFF',
         borderRadius: '14px',
         padding: '24px 22px',
         transition: 'background 240ms ease',
         border: isCiv
-          ? '1px solid rgba(110,127,92, 0.20)'
-          : '1px solid rgba(110,127,92, 0.20)',
+          ? '1px solid rgba(76,107,69, 0.20)'
+          : '1px solid rgba(76,107,69, 0.20)',
       }}
     >
       <div
@@ -65,7 +65,7 @@ export default function WheelsToggleSection({
               display: 'block',
               fontSize: '13px',
               letterSpacing: '0.08em',
-              color: isCiv ? '#6E7F5C' : '#26302A',
+              color: isCiv ? '#4c6b45' : '#262420',
               fontWeight: 600,
               marginBottom: '4px',
             }}
@@ -137,7 +137,7 @@ function ScaleToggle({ mode, onChange }) {
         padding: '3px',
         border:
           '1px solid ' +
-          (isSelf ? 'rgba(110,127,92, 0.20)' : 'rgba(110,127,92, 0.30)'),
+          (isSelf ? 'rgba(76,107,69, 0.20)' : 'rgba(76,107,69, 0.30)'),
       }}
     >
       <ToggleOption
@@ -211,8 +211,8 @@ function Placeholder({ dark, label }) {
           margin: '0 auto 16px',
           borderRadius: '50%',
           border: dark
-            ? '1px dashed rgba(110,127,92, 0.35)'
-            : '1px dashed rgba(110,127,92, 0.35)',
+            ? '1px dashed rgba(76,107,69, 0.35)'
+            : '1px dashed rgba(76,107,69, 0.35)',
         }}
       />
       <p

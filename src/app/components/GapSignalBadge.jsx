@@ -4,8 +4,8 @@ import { GapSignalExplainer } from './GapSignalExplainer'
 import { at } from '../../lib/designTokens'
 
 // Design tokens
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const goldDark = at.brass
 
 // ─────────────────────────────────────────────────────────────
@@ -45,15 +45,15 @@ export function GapSignalBadge({ domainId, focusId, focusName }) {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: '8px',
           padding: '8px 14px',
-          background: 'rgba(88,160,138,0.06)',
-          border: '1px solid rgba(88,160,138,0.32)',
+          background: 'rgba(76,107,69,0.06)',
+          border: '1px solid rgba(76,107,69,0.32)',
           borderRadius: '40px',
           cursor: 'pointer',
           textAlign: 'left',
           transition: 'background 0.15s',
         }}
-        onMouseEnter={e => e.currentTarget.style.background = 'rgba(88,160,138,0.10)'}
-        onMouseLeave={e => e.currentTarget.style.background = 'rgba(88,160,138,0.06)'}
+        onMouseEnter={e => e.currentTarget.style.background = 'rgba(76,107,69,0.10)'}
+        onMouseLeave={e => e.currentTarget.style.background = 'rgba(76,107,69,0.06)'}
       >
         {/* Pulse dot — small, slow, so it reads as signal not noise */}
         <span style={{
@@ -67,7 +67,7 @@ export function GapSignalBadge({ domainId, focusId, focusName }) {
           Gap Signal
         </span>
         <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.45 }}>
-          firing at {focusName || 'this Focus'}. Low score, low actor density, low funding.
+          firing at {focusName || 'this Focus'}. Low score, few people working on it, low funding.
         </span>
       </button>
 

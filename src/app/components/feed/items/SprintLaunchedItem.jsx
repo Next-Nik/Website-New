@@ -51,7 +51,7 @@ export function SprintLaunchedItem({ item }) {
         lineHeight: 1.65,
         margin: '8px 0 0',
         paddingLeft: '14px',
-        borderLeft: '2px solid rgba(110,127,92,0.30)',
+        borderLeft: '2px solid rgba(76,107,69,0.30)',
       }}>
         {horizonGoal || 'a domain they have chosen to focus on'}
       </p>
@@ -64,9 +64,9 @@ export function SprintLaunchedItem({ item }) {
               ...sc,
               fontSize: '13px',
               letterSpacing: '0.14em',
-              color: '#26302A',
-              background: 'rgba(110,127,92,0.06)',
-              border: '1px solid rgba(110,127,92,0.22)',
+              color: '#262420',
+              background: 'rgba(76,107,69,0.06)',
+              border: '1px solid rgba(76,107,69,0.22)',
               borderRadius: '4px',
               padding: '2px 8px',
             }}>

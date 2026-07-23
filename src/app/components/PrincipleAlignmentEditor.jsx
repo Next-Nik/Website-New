@@ -35,8 +35,8 @@ import { tagPrinciple, untagPrinciple } from '../hooks/useTaggedPrinciples'
 //   className         — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 
 const WEIGHT_LABEL = {
   primary: 'Primary',
@@ -201,7 +201,7 @@ export default function PrincipleAlignmentEditor({
               key={row.slug}
               style={{
                 background: '#FFFFFF',
-                border: '1px solid rgba(110,127,92, 0.20)',
+                border: '1px solid rgba(76,107,69, 0.20)',
                 borderRadius: '14px',
                 padding: '16px 18px',
               }}
@@ -221,7 +221,7 @@ export default function PrincipleAlignmentEditor({
                     ...sc,
                     fontSize: '14px',
                     letterSpacing: '0.04em',
-                    color: '#26302A',
+                    color: '#262420',
                     fontWeight: 600,
                   }}
                 >
@@ -274,7 +274,7 @@ export default function PrincipleAlignmentEditor({
                   color: '#0F1523',
                   background: '#FAFAF7',
                   padding: '10px 12px',
-                  border: '1px solid rgba(110,127,92, 0.20)',
+                  border: '1px solid rgba(76,107,69, 0.20)',
                   borderRadius: '14px',
                   resize: 'vertical',
                   outline: 'none',
@@ -334,7 +334,7 @@ export default function PrincipleAlignmentEditor({
             disabled={!dirty || saving}
             style={{
               ...sc,
-              background: !dirty || saving ? 'rgba(110,127,92, 0.20)' : '#0F1523',
+              background: !dirty || saving ? 'rgba(76,107,69, 0.20)' : '#0F1523',
               color: !dirty || saving ? 'rgba(255, 255, 255, 0.7)' : '#FFFFFF',
               border: 'none',
               borderRadius: '40px',
@@ -363,7 +363,7 @@ function WeightSelect({ value, onChange }) {
         background: 'rgba(15, 21, 35, 0.04)',
         borderRadius: '40px',
         padding: '3px',
-        border: '1px solid rgba(110,127,92, 0.20)',
+        border: '1px solid rgba(76,107,69, 0.20)',
       }}
     >
       {PRINCIPLE_WEIGHTS.map((w) => {
@@ -377,7 +377,7 @@ function WeightSelect({ value, onChange }) {
             onClick={() => onChange(w)}
             style={{
               ...sc,
-              background: active ? '#0F1523' : 'transparent',
+              background: active ? '#4c6b45' : 'transparent',
               color: active ? '#FFFFFF' : 'rgba(15, 21, 35, 0.72)',
               border: 'none',
               borderRadius: '40px',

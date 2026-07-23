@@ -17,9 +17,9 @@ import PrincipleStrip from '../PrincipleStrip'
 import { PRACTICE_KIND_BY_SLUG, VETTING_BY_SLUG } from '../../constants/practices'
 import { CIV_DOMAIN_BY_SLUG } from '../../constants/domains'
 
-const sc       = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body     = { fontFamily: "'Newsreader', Georgia, serif" }
-const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
+const sc       = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body     = { fontFamily: "'Lora', Georgia, serif" }
+const garamond = { fontFamily: "'Lora', Georgia, serif" }
 
 function previewText(text, max = 180) {
   if (!text) return ''
@@ -45,17 +45,17 @@ export default function PracticeCard({ practice }) {
         display: 'block',
         textDecoration: 'none',
         background: '#FFFFFF',
-        border: '1px solid rgba(110,127,92,0.18)',
+        border: '1px solid rgba(76,107,69,0.18)',
         borderRadius: '14px',
         padding: '20px 22px',
         marginBottom: '12px',
         transition: 'border-color 150ms ease, transform 150ms ease',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = 'rgba(110,127,92,0.45)'
+        e.currentTarget.style.borderColor = 'rgba(76,107,69,0.45)'
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'rgba(110,127,92,0.18)'
+        e.currentTarget.style.borderColor = 'rgba(76,107,69,0.18)'
       }}
     >
       {/* Top row: kind badge + domain + vetting */}
@@ -88,8 +88,8 @@ export default function PracticeCard({ practice }) {
             fontSize: '13px',
             letterSpacing: '0.1em',
             color: 'rgba(15,21,35,0.55)',
-            background: 'rgba(110,127,92,0.04)',
-            border: '1px solid rgba(110,127,92,0.18)',
+            background: 'rgba(76,107,69,0.04)',
+            border: '1px solid rgba(76,107,69,0.18)',
             borderRadius: '40px',
             padding: '2px 8px',
           }}>

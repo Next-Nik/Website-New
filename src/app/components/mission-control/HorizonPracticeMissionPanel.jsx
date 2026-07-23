@@ -343,7 +343,7 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
       {/* Map focus context */}
       {mapFocus?.focusDomains?.length > 0 && (
         <div style={{
-          background: 'rgba(110,127,92, 0.04)',
+          background: 'rgba(76,107,69, 0.04)',
           border: `1px solid ${GOLD_RULE}`,
           borderRadius: 14,
           padding: '16px 18px',

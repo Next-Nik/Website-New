@@ -262,7 +262,7 @@ export function EventPublicPage() {
         {/* Date / venue strip */}
         <div style={{
           padding: '20px 24px', borderRadius: '10px',
-          background: '#FFFFFF', border: '1px solid rgba(110,127,92,0.22)',
+          background: '#FFFFFF', border: '1px solid rgba(76,107,69,0.22)',
           marginBottom: '32px',
         }}>
           {startsLong && (
@@ -322,8 +322,8 @@ export function EventPublicPage() {
                       textDecoration: 'none',
                       display: 'flex', alignItems: 'center', gap: '12px',
                       padding: '10px 12px', borderRadius: '8px',
-                      background: 'rgba(38,48,42,0.04)',
-                      border: '1px solid rgba(110,127,92,0.18)',
+                      background: 'rgba(38,36,32,0.04)',
+                      border: '1px solid rgba(76,107,69,0.18)',
                     }}>
                       {p.image_url && (
                         <img src={p.image_url} alt="" style={{
@@ -382,7 +382,7 @@ export function EventPublicPage() {
                 <span key={t} style={{
                   ...sc, fontSize: '13px', letterSpacing: '0.12em',
                   padding: '4px 12px', borderRadius: '40px',
-                  background: 'rgba(38,48,42,0.10)', color: gold,
+                  background: 'rgba(38,36,32,0.10)', color: gold,
                 }}>
                   {t.replace(/-/g, ' ')}
                 </span>
@@ -402,8 +402,8 @@ export function EventPublicPage() {
                 <span key={p.domain_slug} style={{
                   ...sc, fontSize: '13px', letterSpacing: '0.12em',
                   padding: '4px 12px', borderRadius: '40px',
-                  border: p.is_primary ? '1.5px solid rgba(110,127,92,0.62)' : '1px solid rgba(110,127,92,0.25)',
-                  background: p.is_primary ? 'rgba(38,48,42,0.10)' : 'transparent',
+                  border: p.is_primary ? '1.5px solid rgba(76,107,69,0.62)' : '1px solid rgba(76,107,69,0.25)',
+                  background: p.is_primary ? 'rgba(38,36,32,0.10)' : 'transparent',
                   color: p.is_primary ? gold : 'rgba(15,21,35,0.72)',
                 }}>
                   {p.is_primary && '★ '}{DOMAIN_LABEL[p.domain_slug] || p.domain_slug}
@@ -417,7 +417,7 @@ export function EventPublicPage() {
         {event.status !== 'cancelled' && (
           <div style={{
             padding: '24px', borderRadius: '10px',
-            background: '#FFFFFF', border: '1px solid rgba(110,127,92,0.22)',
+            background: '#FFFFFF', border: '1px solid rgba(76,107,69,0.22)',
             marginBottom: '32px',
           }}>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -441,7 +441,7 @@ export function EventPublicPage() {
                   ...sc, fontSize: '13px', letterSpacing: '0.14em',
                   color: gold, textDecoration: 'none',
                   padding: '10px 20px', borderRadius: '40px',
-                  border: '1.5px solid rgba(110,127,92,0.40)',
+                  border: '1.5px solid rgba(76,107,69,0.40)',
                   textTransform: 'uppercase',
                 }}>
                   Get tickets ↗

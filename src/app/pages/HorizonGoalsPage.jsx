@@ -13,11 +13,11 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Nav }   from '../../components/Nav'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
 
-const gold  = '#26302A'
-const GOLD_C = '#6E7F5C'
+const gold  = '#262420'
+const GOLD_C = '#4c6b45'
 const dark  = '#0F1523'
 const parch = '#FAFAF7'
-const hair  = '1px solid rgba(110,127,92,0.18)'
+const hair  = '1px solid rgba(76,107,69,0.18)'
 const muted = 'rgba(15,21,35,0.72)'
 
 function Eyebrow({ children, style = {} }) {
@@ -111,8 +111,8 @@ function GoalDetail({ domain }) {
             {actors.map(a => (
               <Link key={a.id} to={`/org/${a.slug || a.id}`}
                 style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px 14px', background: '#FFF', border: hair, borderRadius: '8px', textDecoration: 'none', transition: 'all 0.15s' }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(110,127,92,0.5)'}
-                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(110,127,92,0.18)'}>
+                onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(76,107,69,0.5)'}
+                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(76,107,69,0.18)'}>
                 {a.image_url && <img src={a.image_url} alt={a.name} style={{ width: '36px', height: '36px', borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }} />}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ ...body, fontSize: '14px', color: dark, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</div>
@@ -131,9 +131,9 @@ function GoalDetail({ domain }) {
             {calls.map(c => (
               <Link key={c.id} to={`/stretch/c/${c.slug}`}
                 style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', padding: '14px 16px', background: '#FFF', border: hair, borderRadius: '8px', textDecoration: 'none', transition: 'all 0.15s' }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(110,127,92,0.5)'}
-                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(110,127,92,0.18)'}>
-                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: c.type === 'ask' ? '#5F8DAA' : gold, background: c.type === 'ask' ? 'rgba(95,141,170,0.08)' : 'rgba(110,127,92,0.08)', borderRadius: '12px', padding: '3px 10px', flexShrink: 0, marginTop: '2px' }}>
+                onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(76,107,69,0.5)'}
+                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(76,107,69,0.18)'}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: c.type === 'ask' ? '#5F8DAA' : gold, background: c.type === 'ask' ? 'rgba(95,141,170,0.08)' : 'rgba(76,107,69,0.08)', borderRadius: '12px', padding: '3px 10px', flexShrink: 0, marginTop: '2px' }}>
                   {c.type === 'ask' ? 'Ask' : 'Challenge'}
                 </div>
                 <div style={{ flex: 1 }}>
@@ -156,7 +156,7 @@ function GoalDetail({ domain }) {
           <p style={{ ...body, fontSize: '1.0625rem', color: muted, lineHeight: 1.7, maxWidth: '440px', margin: '0 auto 20px' }}>
             No actors or challenges aligned here yet. Be the first — claim a profile and name this as your destination.
           </p>
-          <Link to="/atlas" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, textDecoration: 'none', border: '1px solid rgba(110,127,92,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
+          <Link to="/atlas" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, textDecoration: 'none', border: '1px solid rgba(76,107,69,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
             Browse the Atlas →
           </Link>
         </div>

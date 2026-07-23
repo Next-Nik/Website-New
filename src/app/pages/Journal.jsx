@@ -33,17 +33,17 @@ import WorldMapSubstrate from '../components/mission-control/WorldMapSubstrate'
 import BreathPacer from '../components/daily/BreathPacer'
 import { body, sc } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 const tokens = {
   bg:        '#FAFAF7',
   ink:       '#0F1523',
   inkSoft:   'rgba(15, 21, 35, 0.78)',
   inkMid:    'rgba(15, 21, 35, 0.60)',
   inkFaint:  'rgba(15, 21, 35, 0.45)',
-  gold:      '#6E7F5C',
-  goldDk:    '#26302A',
-  goldRule:  'rgba(110,127,92, 0.30)',
-  goldFaint: 'rgba(110,127,92, 0.15)',
+  gold:      '#4c6b45',
+  goldDk:    '#262420',
+  goldRule:  'rgba(76,107,69, 0.30)',
+  goldFaint: 'rgba(76,107,69, 0.15)',
   card:      '#FFFFFF',
 }
 
@@ -378,7 +378,7 @@ export default function Journal() {
               style={{
                 marginTop: 14,
                 padding: '14px 16px',
-                background: 'rgba(110,127,92, 0.05)',
+                background: 'rgba(76,107,69, 0.05)',
                 border: `1px solid ${tokens.goldFaint}`,
                 borderRadius: 6,
               }}
@@ -489,7 +489,7 @@ export default function Journal() {
                         padding: '6px 12px',
                         borderRadius: 14,
                         border: `1px solid ${active ? tokens.gold : tokens.goldRule}`,
-                        background: active ? 'rgba(110,127,92, 0.10)' : 'transparent',
+                        background: active ? 'rgba(76,107,69, 0.10)' : 'transparent',
                         color: active ? tokens.goldDk : tokens.inkMid,
                         cursor: 'pointer',
                         fontWeight: active ? 600 : 400,
@@ -604,7 +604,7 @@ export default function Journal() {
                         padding: '8px 14px',
                         borderRadius: 4,
                         border: `1px solid ${tokens.goldRule}`,
-                        background: 'rgba(110,127,92, 0.05)',
+                        background: 'rgba(76,107,69, 0.05)',
                         color: tokens.goldDk,
                         cursor: 'pointer',
                         fontWeight: 500,
@@ -749,7 +749,7 @@ function DomainPill({ label }) {
       borderRadius: 12,
       border: `1px solid ${tokens.goldRule}`,
       color: tokens.goldDk,
-      background: 'rgba(110,127,92, 0.05)',
+      background: 'rgba(76,107,69, 0.05)',
     }}>
       {label}
     </span>
@@ -759,4 +759,4 @@ function DomainPill({ label }) {
 // Inline copy of body font tokens so StreamItem doesn't reach
 // outside its scope. (Avoids the shadowed `body` variable
 // problem that would otherwise creep in.)
-const inlineBody = { fontFamily: "'Newsreader', Georgia, serif" }
+const inlineBody = { fontFamily: "'Lora', Georgia, serif" }

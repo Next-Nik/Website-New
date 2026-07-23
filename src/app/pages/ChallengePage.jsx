@@ -15,6 +15,7 @@ import BroadcastComposer from '../components/challenge/BroadcastComposer'
 import BroadcastFeed from '../components/challenge/BroadcastFeed'
 import ConstellationMeter from '../components/challenge/ConstellationMeter'
 import PublicBeacon from '../components/challenge/PublicBeacon'
+import { Door } from '../components/Door'
 
 // ─── Design shortcuts ─────────────────────────────────────────────────────────
 
@@ -45,20 +46,20 @@ function Eyebrow({ children, style = {} }) {
 }
 
 function Rule({ style = {} }) {
-  return <div style={{ height: '1px', background: 'rgba(217,178,74,0.18)', margin: '16px 0', ...style }} />
+  return <div style={{ height: '1px', background: 'rgba(169,116,63,0.18)', margin: '16px 0', ...style }} />
 }
 
 function Btn({ onClick, disabled, children, style = {}, variant = 'solid' }) {
   const base = {
     ...sc, fontSize: '15px', letterSpacing: '0.14em', padding: '12px 28px',
     borderRadius: '40px', cursor: disabled ? 'not-allowed' : 'pointer',
-    border: '1.5px solid rgba(217,178,74,0.78)', transition: 'all 0.2s',
+    border: '1.5px solid rgba(169,116,63,0.78)', transition: 'all 0.2s',
     opacity: disabled ? 0.6 : 1,
   }
   const styles =
       variant === 'ghost'   ? { ...base, background: 'transparent', color: at.brass }
-    : variant === 'primary' ? { ...base, background: at.verdigris, color: at.text, border: `1.5px solid ${at.verdigris}`, fontSize: '16px', fontWeight: 500, padding: '15px 36px', boxShadow: '0 10px 26px -14px rgba(88,160,138,0.55)' }
-    : { ...base, background: 'rgba(217,178,74,0.08)', color: at.brass }
+    : variant === 'primary' ? { ...base, background: at.verdigris, color: at.text, border: `1.5px solid ${at.verdigris}`, fontSize: '16px', fontWeight: 500, padding: '15px 36px', boxShadow: '0 10px 26px -14px rgba(76,107,69,0.55)' }
+    : { ...base, background: 'rgba(169,116,63,0.08)', color: at.brass }
   return (
     <button type="button" onClick={onClick} disabled={disabled}
       style={{ ...styles, ...style }}
@@ -138,13 +139,13 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
   const link = { ...sc, fontSize: '13px', letterSpacing: '0.12em', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }
 
   return (
-    <div style={{ border: hair, borderRadius: '12px', padding: '14px 16px', marginBottom: '24px', background: 'rgba(217,178,74,0.03)' }}>
+    <div style={{ border: hair, borderRadius: '12px', padding: '14px 16px', marginBottom: '24px', background: 'rgba(169,116,63,0.03)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(234,241,237,0.55)', textTransform: 'uppercase' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(38,36,32,0.55)', textTransform: 'uppercase' }}>
           You author this
         </span>
         {closed && (
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(234,241,237,0.7)', border: '1px solid rgba(234,241,237,0.18)', borderRadius: '12px', padding: '2px 10px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(38,36,32,0.7)', border: '1px solid rgba(38,36,32,0.18)', borderRadius: '12px', padding: '2px 10px' }}>
             Closed{hidden ? ' · hidden' : ' · listed'}
           </span>
         )}
@@ -172,21 +173,21 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
             { k: 'cover_image_url', label: 'Cover image URL' },
           ].map(f => (
             <div key={f.k} style={{ marginBottom: '10px' }}>
-              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(234,241,237,0.55)', textTransform: 'uppercase', marginBottom: '4px' }}>{f.label}</div>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(38,36,32,0.55)', textTransform: 'uppercase', marginBottom: '4px' }}>{f.label}</div>
               <input type="text" value={draft[f.k]}
                 onChange={e => setDraft(prev => ({ ...prev, [f.k]: e.target.value }))}
-                style={{ ...body, width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '8px', border: '1px solid rgba(234,241,237,0.22)', background: 'rgba(234,241,237,0.05)', color: '#EAF1ED', fontSize: '14px' }} />
+                style={{ ...body, width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '8px', border: '1px solid rgba(38,36,32,0.22)', background: 'rgba(38,36,32,0.05)', color: '#262420', fontSize: '14px' }} />
             </div>
           ))}
           <div style={{ marginBottom: '12px' }}>
-            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(234,241,237,0.55)', textTransform: 'uppercase', marginBottom: '4px' }}>The longer piece</div>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(38,36,32,0.55)', textTransform: 'uppercase', marginBottom: '4px' }}>The longer piece</div>
             <textarea rows={5} value={draft.body_long}
               onChange={e => setDraft(prev => ({ ...prev, body_long: e.target.value }))}
-              style={{ ...body, width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '8px', border: '1px solid rgba(234,241,237,0.22)', background: 'rgba(234,241,237,0.05)', color: '#EAF1ED', fontSize: '14px', resize: 'vertical' }} />
+              style={{ ...body, width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '8px', border: '1px solid rgba(38,36,32,0.22)', background: 'rgba(38,36,32,0.05)', color: '#262420', fontSize: '14px', resize: 'vertical' }} />
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
             <Btn variant="ghost" disabled={busy} onClick={saveEdit} style={{ fontSize: '13px', padding: '8px 18px' }}>{busy ? 'Saving…' : 'Save changes'}</Btn>
-            <button style={{ ...link, color: 'rgba(234,241,237,0.55)' }} disabled={busy} onClick={() => { setMode(null); setDraft(null) }}>Cancel</button>
+            <button style={{ ...link, color: 'rgba(38,36,32,0.55)' }} disabled={busy} onClick={() => { setMode(null); setDraft(null) }}>Cancel</button>
           </div>
         </div>
       )}
@@ -194,7 +195,7 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
       {/* Close: listed vs hidden */}
       {!closed && mode === 'close' && (
         <div style={{ marginTop: '12px' }}>
-          <p style={{ ...body, fontSize: '14px', color: 'rgba(234,241,237,0.72)', lineHeight: 1.6, margin: '0 0 10px' }}>
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(38,36,32,0.72)', lineHeight: 1.6, margin: '0 0 10px' }}>
             Closing stops new participants. People already in it carry on. Keep it
             listed and it stays in the constellation, badged closed; hide it and it
             drops out of view. Either way you can reopen it.
@@ -202,7 +203,7 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <Btn variant="ghost" disabled={busy} onClick={() => doClose(true)} style={{ fontSize: '13px', padding: '8px 18px' }}>Close · keep listed</Btn>
             <Btn variant="ghost" disabled={busy} onClick={() => doClose(false)} style={{ fontSize: '13px', padding: '8px 18px' }}>Close · hide it</Btn>
-            <button style={{ ...link, color: 'rgba(234,241,237,0.55)' }} disabled={busy} onClick={() => setMode(null)}>Cancel</button>
+            <button style={{ ...link, color: 'rgba(38,36,32,0.55)' }} disabled={busy} onClick={() => setMode(null)}>Cancel</button>
           </div>
         </div>
       )}
@@ -219,7 +220,7 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
       {/* Delete confirmation, with re-root impact */}
       {mode === 'confirmDelete' && (
         <div style={{ marginTop: '12px' }}>
-          <p style={{ ...body, fontSize: '14px', color: 'rgba(234,241,237,0.72)', lineHeight: 1.6, margin: '0 0 10px' }}>
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(38,36,32,0.72)', lineHeight: 1.6, margin: '0 0 10px' }}>
             Delete is permanent. {impact == null ? 'Checking what this affects…' : (
               impact.direct_children > 0
                 ? <>It re-roots {impact.direct_children} challenge{impact.direct_children === 1 ? '' : 's'} built on this one{impact.by_others > 0 ? <> ({impact.by_others} by {impact.by_others === 1 ? 'another actor' : 'other actors'})</> : ''} {impact.children_become_roots ? 'to standalone roots' : 'one notch up the tree'}. {impact.participants > 0 ? `The ${impact.participants} participant record${impact.participants === 1 ? '' : 's'} are kept.` : ''}</>
@@ -228,7 +229,7 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
           </p>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <Btn variant="ghost" disabled={busy || impact == null} onClick={confirmDelete} style={{ fontSize: '13px', padding: '8px 18px', borderColor: 'rgba(138,48,48,0.5)', color: '#8A3030' }}>Delete permanently</Btn>
-            <button style={{ ...link, color: 'rgba(234,241,237,0.55)' }} disabled={busy} onClick={() => { setMode(null); setImpact(null) }}>Cancel</button>
+            <button style={{ ...link, color: 'rgba(38,36,32,0.55)' }} disabled={busy} onClick={() => { setMode(null); setImpact(null) }}>Cancel</button>
           </div>
         </div>
       )}
@@ -297,7 +298,7 @@ function ShareRail({ url, title, tagline, shareText }) {
     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center', margin: '16px 0' }}>
       {hasNative && (
         <button type="button" onClick={nativeShare}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, background: 'rgba(217,178,74,0.08)', border: '1px solid rgba(217,178,74,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, background: 'rgba(169,116,63,0.08)', border: '1px solid rgba(169,116,63,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
           Share →
         </button>
       )}
@@ -308,29 +309,29 @@ function ShareRail({ url, title, tagline, shareText }) {
             WhatsApp
           </a>
           <a href={mailUrl}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.brass, background: 'rgba(217,178,74,0.07)', border: '1px solid rgba(217,178,74,0.55)', borderRadius: '20px', padding: '7px 16px', textDecoration: 'none' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.brass, background: 'rgba(169,116,63,0.07)', border: '1px solid rgba(169,116,63,0.55)', borderRadius: '20px', padding: '7px 16px', textDecoration: 'none' }}>
             Email
           </a>
         </>
       )}
       <button type="button" onClick={copyLink}
-        style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: copied ? '#2A8C4F' : at.brass, background: 'none', border: '1px solid rgba(217,178,74,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer', transition: 'color 0.2s' }}>
+        style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: copied ? '#2A8C4F' : at.brass, background: 'none', border: '1px solid rgba(169,116,63,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer', transition: 'color 0.2s' }}>
         {copied ? '✓ Copied' : 'Copy link'}
       </button>
       <button type="button" onClick={toggleQr}
-        style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.brass, background: 'none', border: '1px solid rgba(217,178,74,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
+        style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.brass, background: 'none', border: '1px solid rgba(169,116,63,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
         {showQr ? 'Hide QR' : 'QR code'}
       </button>
       {showQr && qr && (
         <div style={{ flexBasis: '100%', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', marginTop: '6px' }}>
           <img src={qr} alt="QR code for this challenge"
-            style={{ width: '150px', height: '150px', border: '1px solid rgba(234,241,237,0.12)', borderRadius: '10px', background: '#FFFFFF' }} />
+            style={{ width: '150px', height: '150px', border: '1px solid rgba(38,36,32,0.12)', borderRadius: '10px', background: '#FFFFFF' }} />
           <div>
             <div style={{ ...body, fontSize: '14px', color: at.ghost, maxWidth: '38ch', lineHeight: 1.5 }}>
               Anyone who scans lands on this challenge and can take it on in under a minute.
             </div>
             <a href={qr} download="challenge-qr.png"
-              style={{ display: 'inline-block', marginTop: '8px', ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.brass, textDecoration: 'none', borderBottom: '1px solid rgba(217,178,74,0.5)', paddingBottom: '1px' }}>
+              style={{ display: 'inline-block', marginTop: '8px', ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.brass, textDecoration: 'none', borderBottom: '1px solid rgba(169,116,63,0.5)', paddingBottom: '1px' }}>
               Download PNG
             </a>
           </div>
@@ -360,7 +361,7 @@ function FlagModal({ callId, userId, isAsk, onClose }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{ background: at.ground, border: '1.5px solid rgba(217,178,74,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
+      <div style={{ background: at.ground, border: '1.5px solid rgba(169,116,63,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
           <Eyebrow style={{ marginBottom: 0 }}>{isAsk ? 'Flag this ask' : 'Flag this challenge'}</Eyebrow>
           <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', color: at.ghost }}>×</button>
@@ -380,7 +381,7 @@ function FlagModal({ callId, userId, isAsk, onClose }) {
               onChange={e => setReason(e.target.value)}
               placeholder="What's the concern?"
               rows={4}
-              style={{ width: '100%', ...body, fontSize: '1.0625rem', color: at.text, border: '1px solid rgba(217,178,74,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: at.ground, boxSizing: 'border-box', marginBottom: '14px' }}
+              style={{ width: '100%', ...body, fontSize: '1.0625rem', color: at.text, border: '1px solid rgba(169,116,63,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: at.ground, boxSizing: 'border-box', marginBottom: '14px' }}
             />
             <Btn onClick={submit} disabled={!reason.trim() || loading}>{loading ? 'Sending…' : 'Submit flag'}</Btn>
           </div>
@@ -396,7 +397,7 @@ function fmtCloseDate(iso) {
   if (!iso) return null
   const [y, m, d] = String(iso).split('-').map(Number)
   if (!y || !m || !d) return null
-  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  return new Date(y, m - 1, d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
@@ -433,7 +434,7 @@ function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{ background: at.ground, border: '1.5px solid rgba(217,178,74,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
+      <div style={{ background: at.ground, border: '1.5px solid rgba(169,116,63,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
           <Eyebrow style={{ marginBottom: 0 }}>Take on this challenge</Eyebrow>
           <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', color: at.ghost }}>×</button>
@@ -448,7 +449,7 @@ function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
             </p>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <a href="/challenges"
-                style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: at.brass, background: 'rgba(217,178,74,0.08)', border: '1.5px solid rgba(217,178,74,0.78)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
+                style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: at.brass, background: 'rgba(169,116,63,0.08)', border: '1.5px solid rgba(169,116,63,0.78)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
                 Track it →
               </a>
               <Btn variant="ghost" onClick={onClose}>Stay here</Btn>
@@ -456,9 +457,9 @@ function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
           </div>
         ) : (
           <div>
-            <div style={{ padding: '14px 16px', background: 'rgba(217,178,74,0.05)', border: hair, borderRadius: '10px', marginBottom: '16px' }}>
+            <div style={{ padding: '14px 16px', background: 'rgba(169,116,63,0.05)', border: hair, borderRadius: '10px', marginBottom: '16px' }}>
               <div style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.65, marginBottom: '8px' }}>
-                <strong style={{ ...sc, fontWeight: 400 }}>The move:</strong> {call.the_move}
+                <strong style={{ ...sc, fontWeight: 400 }}>What you'll do:</strong> {call.the_move}
               </div>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost }}>
                 {cadenceLabel}
@@ -474,15 +475,18 @@ function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
               </p>
             ) : (
               <>
-                <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '14px' }}>
-                  It starts the day you take it on and runs on its own clock. Choose your clock.
+                <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '8px' }}>
+                  It starts the day you take it on and runs on its own clock. Choose your rhythm.
+                </p>
+                <p style={{ ...body, fontSize: '14px', color: at.ghost, lineHeight: 1.6, marginBottom: '14px' }}>
+                  Calendar quarter: ends with the quarter, everyone together · Rolling 90 days: starts the day you join
                 </p>
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                   {[{ v: 'rolling', l: `Rolling ${call.duration_days || 90} days` }, { v: 'calendar', l: 'Calendar quarter' }].map(o => (
                     <button key={o.v} type="button" onClick={() => setClock(o.v)}
                       style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '7px 16px', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.2s',
-                        border: `1px solid ${clock === o.v ? 'rgba(217,178,74,0.78)' : 'rgba(217,178,74,0.3)'}`,
-                        background: clock === o.v ? 'rgba(217,178,74,0.08)' : 'transparent',
+                        border: `1px solid ${clock === o.v ? 'rgba(169,116,63,0.78)' : 'rgba(169,116,63,0.3)'}`,
+                        background: clock === o.v ? 'rgba(169,116,63,0.08)' : 'transparent',
                         color: clock === o.v ? at.brass : at.ghost }}>
                       {o.l}
                     </button>
@@ -509,10 +513,10 @@ function FoundingDoorsModal({ hasActor, onClose }) {
   // the three-path chooser there sets them up; no one is routed into the generic
   // "add anyone to the ecosystem" page, where authoring is a dead end.
   const createHref = '/challenges/new?carry=founding-nature'
-  const cream = at.text, cream80 = 'rgba(251,248,240,0.82)', cream60 = 'rgba(251,248,240,0.60)', goldT = '#D7A24A'
+  const cream = at.text, cream80 = 'rgba(251,248,240,0.82)', cream60 = 'rgba(251,248,240,0.60)', goldT = '#a9743f'
   const door = (href, title, sub) => (
     <a href={href} style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', textDecoration: 'none',
-      background: 'rgba(217,178,74,0.05)', border: '1px solid rgba(217,178,74,0.30)', borderRadius: '12px', padding: '16px 18px' }}>
+      background: 'rgba(169,116,63,0.05)', border: '1px solid rgba(169,116,63,0.30)', borderRadius: '12px', padding: '16px 18px' }}>
       <span style={{ flex: 1 }}>
         <span style={{ ...serif, fontWeight: 400, fontSize: '21px', lineHeight: 1.2, color: cream, display: 'block', marginBottom: '4px' }}>{title}</span>
         <span style={{ ...body, fontSize: '14px', lineHeight: 1.55, color: cream60, display: 'block' }}>{sub}</span>
@@ -523,7 +527,7 @@ function FoundingDoorsModal({ hasActor, onClose }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{ background: at.object, border: '1.5px solid rgba(217,178,74,0.3)', borderRadius: '14px', padding: '30px 28px 26px', maxWidth: '480px', width: '100%' }}>
+      <div style={{ background: at.object, border: '1.5px solid rgba(169,116,63,0.3)', borderRadius: '14px', padding: '30px 28px 26px', maxWidth: '480px', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: goldT }}>Accept challenge</div>
           <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.15rem', color: cream60 }}>×</button>
@@ -566,7 +570,7 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{ background: at.ground, border: '1.5px solid rgba(217,178,74,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
+      <div style={{ background: at.ground, border: '1.5px solid rgba(169,116,63,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
           <Eyebrow style={{ marginBottom: 0 }}>Offer to help</Eyebrow>
           <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', color: at.ghost }}>×</button>
@@ -574,10 +578,10 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
         {done ? (
           <div>
             <p style={{ ...body, fontSize: '1.125rem', ...muted, lineHeight: 1.7, marginBottom: '20px' }}>
-              You&rsquo;re in. When it&rsquo;s done, come back and mark it built.
+              You&rsquo;re in. When you&rsquo;ve finished, come back and mark it done.
             </p>
             {call.ask_details && (
-              <div style={{ padding: '14px 16px', background: 'rgba(217,178,74,0.05)', border: hair, borderRadius: '10px', marginBottom: '18px' }}>
+              <div style={{ padding: '14px 16px', background: 'rgba(169,116,63,0.05)', border: hair, borderRadius: '10px', marginBottom: '18px' }}>
                 <Eyebrow style={{ marginBottom: '6px' }}>How to complete this</Eyebrow>
                 <div style={{ ...body, fontSize: '1rem', ...muted, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{call.ask_details}</div>
               </div>
@@ -586,7 +590,7 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
           </div>
         ) : (
           <div>
-            <div style={{ padding: '14px 16px', background: 'rgba(217,178,74,0.05)', border: hair, borderRadius: '10px', marginBottom: '16px' }}>
+            <div style={{ padding: '14px 16px', background: 'rgba(169,116,63,0.05)', border: hair, borderRadius: '10px', marginBottom: '16px' }}>
               <div style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.65 }}>{call.the_move}</div>
               {spotsLeft !== null && (
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.brass, marginTop: '6px' }}>
@@ -595,7 +599,7 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
               )}
               {call.ask_deadline && (
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, marginTop: '4px' }}>
-                  Needed by {new Date(call.ask_deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  Needed by {new Date(call.ask_deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
               )}
             </div>
@@ -604,7 +608,7 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
               onChange={e => setNote(e.target.value)}
               placeholder="Any context you'd like to share (optional)"
               rows={3}
-              style={{ width: '100%', ...body, fontSize: '1.0625rem', color: at.text, border: '1px solid rgba(217,178,74,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: at.ground, boxSizing: 'border-box', marginBottom: '14px' }}
+              style={{ width: '100%', ...body, fontSize: '1.0625rem', color: at.text, border: '1px solid rgba(169,116,63,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: at.ground, boxSizing: 'border-box', marginBottom: '14px' }}
             />
             <Btn onClick={fulfill} disabled={loading}>{loading ? 'Sending…' : 'Offer to help →'}</Btn>
           </div>
@@ -619,7 +623,7 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
 
 function AskBody({ call }) {
   const deadline = call.ask_deadline
-    ? new Date(call.ask_deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    ? new Date(call.ask_deadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
     : null
   const spotsTotal = call.ask_quantity || null
   const spotsLeft  = spotsTotal ? Math.max(0, spotsTotal - ((call.active_count || 0) + (call.completed_count || 0))) : null
@@ -628,7 +632,7 @@ function AskBody({ call }) {
   return (
     <div>
       {/* What's needed */}
-      <div style={{ padding: '20px 22px', background: 'rgba(217,178,74,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
+      <div style={{ padding: '20px 22px', background: 'rgba(169,116,63,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
         <Eyebrow>What's needed</Eyebrow>
         <p style={{ ...body, fontSize: '1.125rem', color: at.text, lineHeight: 1.7, margin: 0 }}>
           {call.the_move}
@@ -746,7 +750,7 @@ function AuthorFeedbackSection({ callId, userId }) {
                           <span>{r.display_name}</span>
                         )}
                         {r.completed_at && (
-                          <span>{new Date(r.completed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                          <span>{new Date(r.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                         )}
                       </div>
                     </div>
@@ -927,7 +931,7 @@ export function ChallengePage() {
           This challenge may have been withdrawn or the link has changed.
         </p>
         <div style={{ marginTop: '24px' }}>
-          <a href="/atlas" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(217,178,74,0.5)', borderRadius: '30px', padding: '10px 24px', display: 'inline-block' }}>
+          <a href="/atlas" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(169,116,63,0.5)', borderRadius: '30px', padding: '10px 24px', display: 'inline-block' }}>
             Browse the Atlas →
           </a>
         </div>
@@ -947,7 +951,7 @@ export function ChallengePage() {
     <div style={{ background: at.ground, minHeight: '100dvh' }}>
       <Nav />
       <style>{`
-        .np-lede::first-letter{ -webkit-initial-letter: 2; initial-letter: 2; color: ${at.brass}; font-weight: 500; font-family: 'Fraunces', Georgia, serif; margin-right: 14px; }
+        .np-lede::first-letter{ -webkit-initial-letter: 2; initial-letter: 2; color: ${at.brass}; font-weight: 500; font-family: 'Lora', Georgia, serif; margin-right: 14px; }
       `}</style>
 
       {showDoors && user && (
@@ -972,12 +976,12 @@ export function ChallengePage() {
         {call.cover_image_url && (
           <div style={{ marginBottom: '32px', textAlign: 'center' }}>
             <div style={{ position: 'relative', display: 'inline-block', maxWidth: '460px', width: '100%' }}>
-              <div aria-hidden="true" style={{ position: 'absolute', inset: '-9%', background: 'radial-gradient(circle at 50% 46%, rgba(217,178,74,0.16), rgba(217,178,74,0.04) 45%, transparent 70%)', zIndex: 0, pointerEvents: 'none' }} />
+              <div aria-hidden="true" style={{ position: 'absolute', inset: '-9%', background: 'radial-gradient(circle at 50% 46%, rgba(169,116,63,0.16), rgba(169,116,63,0.04) 45%, transparent 70%)', zIndex: 0, pointerEvents: 'none' }} />
               <img
                 src={call.cover_image_url}
                 alt=""
                 loading="lazy"
-                style={{ position: 'relative', zIndex: 1, width: '100%', height: 'auto', borderRadius: '18px', border: hair, boxShadow: '0 18px 50px -28px rgba(234,241,237,0.32)', display: 'block' }}
+                style={{ position: 'relative', zIndex: 1, width: '100%', height: 'auto', borderRadius: '18px', border: hair, boxShadow: '0 18px 50px -28px rgba(38,36,32,0.32)', display: 'block' }}
               />
             </div>
           </div>
@@ -990,21 +994,27 @@ export function ChallengePage() {
               {call.type === 'challenge' ? 'Challenge' : 'Ask'} · {call.domain || call.scale}
             </Eyebrow>
             {call.visibility === 'link_only' && (
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, border: '1px solid rgba(234,241,237,0.18)', borderRadius: '12px', padding: '2px 10px' }}>
-                Link only
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, border: '1px solid rgba(38,36,32,0.18)', borderRadius: '12px', padding: '2px 10px' }}>
+                Unlisted · only people with the link
               </span>
             )}
             {call.lifecycle_state === 'closed' && (
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(234,241,237,0.7)', border: '1px solid rgba(234,241,237,0.22)', borderRadius: '12px', padding: '2px 10px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(38,36,32,0.7)', border: '1px solid rgba(38,36,32,0.22)', borderRadius: '12px', padding: '2px 10px' }}>
                 Closed
               </span>
             )}
           </div>
+          {/* Gloss on first use of "Ask" as a noun */}
+          {isAsk && (
+            <div style={{ ...body, fontSize: '14px', color: at.ghost, lineHeight: 1.5, marginBottom: '8px' }}>
+              an ask · something this organisation needs help with
+            </div>
+          )}
           <h1 style={{ ...serif, fontSize: 'clamp(2.1rem,5.5vw,3.6rem)', fontWeight: 300, color: at.text, lineHeight: 1.06, margin: '0 0 12px' }}>
             {call.title}
           </h1>
           {call.tagline && (
-            <p style={{ ...body, fontSize: '1.125rem', color: 'rgba(234,241,237,0.72)', lineHeight: 1.65, margin: 0 }}>
+            <p style={{ ...body, fontSize: '1.125rem', color: 'rgba(38,36,32,0.72)', lineHeight: 1.65, margin: 0 }}>
               {call.tagline}
             </p>
           )}
@@ -1024,25 +1034,26 @@ export function ChallengePage() {
         {(call.taken_on_count > 0 || call.active_count > 0) && (
           <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: at.brass, marginBottom: '8px' }}>
             {isAsk
-              ? `${(call.active_count || 0) + (call.completed_count || 0)} ${((call.active_count || 0) + (call.completed_count || 0)) === 1 ? 'person has' : 'people have'} offered to help${(call.completed_count || 0) > 0 ? ` · ${call.completed_count} built` : ''}`
+              ? `${(call.active_count || 0) + (call.completed_count || 0)} ${((call.active_count || 0) + (call.completed_count || 0)) === 1 ? 'person has' : 'people have'} offered to help${(call.completed_count || 0) > 0 ? ` · ${call.completed_count} done` : ''}`
               : `${call.taken_on_count.toLocaleString()} ${call.taken_on_count === 1 ? 'person has' : 'people have'} taken this on${call.active_count > 0 ? ` · ${call.active_count} active` : ''}`
             }
           </div>
         )}
 
-        {/* Cosigner count */}
+        {/* Cosigner count — hidden until co-signing exists on this page; an orphaned count is a trust leak.
         {cosignerCount > 0 && (
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, marginBottom: '20px' }}>
             Co-signed by {cosignerCount} constellation {cosignerCount === 1 ? 'member' : 'members'}
           </div>
         )}
-        {cosignerCount === 0 && (call.taken_on_count > 0 || call.active_count > 0) && (
+        */}
+        {(call.taken_on_count > 0 || call.active_count > 0) && (
           <div style={{ marginBottom: '20px' }} />
         )}
 
         {/* CTA */}
         {call.lifecycle_state === 'closed' && !alreadyJoined && (
-          <div style={{ ...body, fontSize: '15px', color: 'rgba(234,241,237,0.6)', lineHeight: 1.6, marginBottom: '8px' }}>
+          <div style={{ ...body, fontSize: '15px', color: 'rgba(38,36,32,0.6)', lineHeight: 1.6, marginBottom: '8px' }}>
             This {isAsk ? 'ask' : 'challenge'} is closed to new {isAsk ? 'offers' : 'participants'}.
           </div>
         )}
@@ -1066,7 +1077,7 @@ export function ChallengePage() {
             {isAsk ? (
               myStatus === 'complete' ? (
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#2A8C4F' }}>
-                  ✓ You built it. Thank you.
+                  ✓ Done. Thank you.
                 </span>
               ) : (
                 <>
@@ -1074,7 +1085,7 @@ export function ChallengePage() {
                     ✓ Accepted
                   </span>
                   <Btn onClick={completeAsk} disabled={busyComplete} style={{ marginBottom: 0 }}>
-                    {busyComplete ? 'Marking…' : 'Mark it built →'}
+                    {busyComplete ? 'Marking…' : 'Mark it done →'}
                   </Btn>
                 </>
               )
@@ -1083,7 +1094,7 @@ export function ChallengePage() {
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#2A8C4F' }}>
                   ✓ You're in
                 </span>
-                <a href="/challenges" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(217,178,74,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
+                <a href="/challenges" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(169,116,63,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
                   Track it →
                 </a>
               </>
@@ -1092,7 +1103,7 @@ export function ChallengePage() {
         )}
 
         {isAsk && call.ask_details && (myStatus === 'active' || myStatus === 'complete' || isAuthor) && (
-          <div style={{ padding: '16px 18px', background: 'rgba(217,178,74,0.05)', border: `1px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '12px' }}>
+          <div style={{ padding: '16px 18px', background: 'rgba(169,116,63,0.05)', border: `1px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '12px' }}>
             <Eyebrow>How to complete this</Eyebrow>
             <div style={{ ...body, fontSize: '1.0625rem', color: at.text, lineHeight: 1.6, whiteSpace: 'pre-wrap', margin: 0 }}>
               {call.ask_details}
@@ -1122,7 +1133,7 @@ export function ChallengePage() {
           <div>
             {/* The package */}
             {strands.length > 1 ? (
-              <div style={{ padding: '20px 22px', background: 'rgba(217,178,74,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
+              <div style={{ padding: '20px 22px', background: 'rgba(169,116,63,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
                 <Eyebrow style={{ marginBottom: '12px' }}>What you'll do</Eyebrow>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {strands.map((s, i) => {
@@ -1140,8 +1151,8 @@ export function ChallengePage() {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: '26px 28px', background: 'rgba(217,178,74,0.05)', border: `1.5px solid ${GOLD_C}`, borderRadius: '16px', marginBottom: '20px', boxShadow: '0 10px 40px -28px rgba(217,178,74,0.40)' }}>
-                <Eyebrow>The move</Eyebrow>
+              <div style={{ padding: '26px 28px', background: 'rgba(169,116,63,0.05)', border: `1.5px solid ${GOLD_C}`, borderRadius: '16px', marginBottom: '20px', boxShadow: '0 10px 40px -28px rgba(169,116,63,0.40)' }}>
+                <Eyebrow>What you'll do</Eyebrow>
                 <p style={{ ...body, fontSize: '1.1875rem', color: at.text, lineHeight: 1.6, margin: 0 }}>
                   {call.the_move}
                 </p>
@@ -1151,7 +1162,7 @@ export function ChallengePage() {
             {INTENSITY_BY_LEVEL[call.intensity_level] && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                 <ChiliRung level={call.intensity_level} size={18} />
-                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(234,241,237,0.6)', textTransform: 'uppercase' }}>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(38,36,32,0.6)', textTransform: 'uppercase' }}>
                   {INTENSITY_BY_LEVEL[call.intensity_level].label}
                 </span>
                 <IntensityInfo />
@@ -1278,7 +1289,7 @@ export function ChallengePage() {
                     </select>
                   )}
                   <button type="button" onClick={askToPartner} disabled={askBusy}
-                    style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: at.brass, background: 'rgba(217,178,74,0.08)', border: '1px solid rgba(217,178,74,0.5)', borderRadius: '30px', padding: '8px 20px', cursor: 'pointer', opacity: askBusy ? 0.5 : 1 }}>
+                    style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: at.brass, background: 'rgba(169,116,63,0.08)', border: '1px solid rgba(169,116,63,0.5)', borderRadius: '30px', padding: '8px 20px', cursor: 'pointer', opacity: askBusy ? 0.5 : 1 }}>
                     {askBusy ? 'Sending…' : 'Ask to partner →'}
                   </button>
                 </div>
@@ -1295,10 +1306,23 @@ export function ChallengePage() {
           </a>
         </div>
 
+        {/* The door — every story ends in one (BP-4). A challenge page a
+            stranger lands on always offers a way onward, out to the domain
+            where the rest of the work lives. */}
+        <div style={{ marginTop: '28px' }}>
+          <Door
+            isClaimed={false}
+            domainSlug={call.domain}
+            domainLabel={call.domain ? call.domain.replace(/-/g, ' ') : null}
+            tone="dark"
+            eyebrow="Where this goes"
+          />
+        </div>
+
         {/* Flag */}
         <div style={{ marginTop: '32px', textAlign: 'center' }}>
           <button type="button" onClick={() => setShowFlag(true)}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(234,241,237,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', textDecoration: 'underline', textDecorationColor: 'rgba(234,241,237,0.15)', textUnderlineOffset: '3px' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(38,36,32,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', textDecoration: 'underline', textDecorationColor: 'rgba(38,36,32,0.15)', textUnderlineOffset: '3px' }}>
             {isAsk ? 'Flag this ask' : 'Flag this challenge'}
           </button>
         </div>

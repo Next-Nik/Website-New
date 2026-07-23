@@ -129,10 +129,10 @@ export function AuthCallbackPage() {
   }, [])
 
   return (
-    <div style={{ minHeight: '100dvh', background: '#E9EDE4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100dvh', background: '#f3f0e9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center' }}>
         <img src="/logo_nav.png" alt="NextUs" style={{ width: '44px', height: '44px', objectFit: 'contain', marginBottom: '28px', opacity: 0.7 }} />
-        <div style={{ width: '28px', height: '28px', margin: '0 auto', border: '2px solid rgba(110,127,92,0.20)', borderTopColor: '#6E7F5C', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <div style={{ width: '28px', height: '28px', margin: '0 auto', border: '2px solid rgba(76,107,69,0.20)', borderTopColor: '#4c6b45', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </div>
     </div>

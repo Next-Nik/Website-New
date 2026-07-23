@@ -18,11 +18,11 @@ import { hasMapEngagement } from '../util/onboarding'
 
 const BG   = '#FAFAF7'
 const INK  = '#0F1523'
-const GOLD = '#26302A'
-const GC   = '#6E7F5C'
-const SERIF = "'Fraunces', Georgia, serif"
-const SC    = "'IBM Plex Mono', Georgia, serif"
-const LORA  = "'Newsreader', Georgia, serif"
+const GOLD = '#262420'
+const GC   = '#4c6b45'
+const SERIF = "'Lora', Georgia, serif"
+const SC    = "'Cormorant SC', Georgia, serif"
+const LORA  = "'Lora', Georgia, serif"
 
 const DISMISS_KEY = 'nextus.flPromptDismissed'
 
@@ -83,7 +83,7 @@ export default function FirstLightPrompt({ style }) {
         position: 'relative',
         display: 'flex', alignItems: 'center', gap: 16,
         background: BG,
-        border: `1px solid rgba(110,127,92,0.45)`,
+        border: `1px solid rgba(76,107,69,0.45)`,
         borderRadius: 10,
         padding: '16px 40px 16px 18px',
         cursor: 'pointer',

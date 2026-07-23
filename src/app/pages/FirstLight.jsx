@@ -20,9 +20,9 @@ import { supabase } from '../../hooks/useSupabase'
 import Wheel from '../components/Wheel'
 import { SELF_DOMAINS } from '../components/WheelSVG'
 
-const BG='#FAFAF7', CARD='#FFFFFF', INK='#0F1523', GOLD='#26302A', CHROME='#6E7F5C', RED='#8A3030'
-const META='rgba(15,21,35,0.72)', GHOST='rgba(15,21,35,0.55)', RULE='rgba(110,127,92,0.20)'
-const SERIF="'Fraunces',Georgia,serif", SC="'IBM Plex Mono',Georgia,serif", LORA="'Newsreader',Georgia,serif"
+const BG='#FAFAF7', CARD='#FFFFFF', INK='#0F1523', GOLD='#262420', CHROME='#4c6b45', RED='#8A3030'
+const META='rgba(15,21,35,0.72)', GHOST='rgba(15,21,35,0.55)', RULE='rgba(76,107,69,0.20)'
+const SERIF="'Lora', Georgia, serif", SC="'Cormorant SC',Georgia,serif", LORA="'Lora',Georgia,serif"
 
 const LABELS={10:'the best there is',9:'really good',8:'solid',7:'getting there',6:'getting by',5:'the line',4:'trying but not moving',3:'pretty rough',2:'barely holding on',1:'really struggling',0:'zero'}
 const lab=v=>LABELS[Math.round(v)]
@@ -68,16 +68,16 @@ function Track({ d, now, onSet }){
       </div>
       <div style={{ fontSize:13, color:GHOST, marginTop:-7, marginBottom:12, minHeight:16 }}>
         {focus
-          ? <><span style={{ color:RED, fontWeight:500 }}>below the line</span> · cross to <b style={{ color:GOLD, fontWeight:500 }}>5</b> first — this is the priority</>
+          ? <><span style={{ color:RED, fontWeight:500 }}>below the line</span> · cross to <b style={{ color:GOLD, fontWeight:500 }}>5</b> first · this is the priority</>
           : reaching
-            ? <>{lab(now)} · aim <b style={{ color:GOLD, fontWeight:500 }}>{fmt(aim)}</b> — {(aim-now)>=1?'a level':'half a level'} up</>
+            ? <>{lab(now)} · aim <b style={{ color:GOLD, fontWeight:500 }}>{fmt(aim)}</b> · {(aim-now)>=1?'a level':'half a level'} up</>
             : <>{lab(now)} · already at the top</>}
       </div>
       <div ref={ref} onPointerDown={down} onPointerMove={move}
         style={{ position:'relative', height:30, touchAction:'none', cursor:'pointer' }}>
         <div style={{ position:'absolute', top:'50%', left:0, right:0, height:4, transform:'translateY(-50%)', background:'rgba(15,21,35,0.10)', borderRadius:3 }} />
         <div style={{ position:'absolute', top:'50%', left:0, width:'50%', height:4, transform:'translateY(-50%)', background:'rgba(138,48,48,0.10)', borderRadius:'3px 0 0 3px' }} />
-        <div style={{ position:'absolute', top:'50%', height:4, transform:'translateY(-50%)', borderRadius:3, left:pct(lo)+'%', width:pct(hi-lo)+'%', background:focus?'rgba(138,48,48,0.30)':'rgba(110,127,92,0.34)' }} />
+        <div style={{ position:'absolute', top:'50%', height:4, transform:'translateY(-50%)', borderRadius:3, left:pct(lo)+'%', width:pct(hi-lo)+'%', background:focus?'rgba(138,48,48,0.30)':'rgba(76,107,69,0.34)' }} />
         <div style={{ position:'absolute', top:'50%', left:'50%', width:2, height:16, transform:'translate(-50%,-50%)', background:'rgba(15,21,35,0.30)' }} />
         <div style={{ position:'absolute', top:'calc(50% + 12px)', left:'50%', transform:'translateX(-50%)', fontFamily:SC, fontSize:13, letterSpacing:'0.08em', color:GHOST, whiteSpace:'nowrap' }}>THE LINE</div>
         {reaching && <div style={{ position:'absolute', top:'50%', left:pct(aim)+'%', width:15, height:15, transform:'translate(-50%,-50%)', borderRadius:'50%', background:CARD, border:`2.5px solid ${focus?RED:CHROME}`, boxShadow:'0 1px 4px rgba(15,21,35,0.18)', pointerEvents:'none' }} />}
@@ -128,8 +128,8 @@ export default function FirstLight(){
         <h1 style={{ fontFamily:SERIF, fontWeight:500, fontSize:34, lineHeight:1.06, letterSpacing:'-0.01em', margin:'10px 0 8px' }}>Your first light</h1>
         <p style={{ fontSize:16, color:META, margin:'0 0 4px' }}>
           {cover
-            ? <>Two minutes to wake up the personal side. Mark where each part of life is now — the system points you at the next move on its own.</>
-            : <>Mark where each part of life is <b style={{ color:INK, fontWeight:500 }}>now</b>. The system <span style={{ color:GOLD }}>aims you</span> — above the line fast where you&rsquo;re under it, a level up where you&rsquo;re over it.</>}
+            ? <>Two minutes: mark where each part of your life is now. You&rsquo;ll see your next move marked · the part of life that needs attention first.</>
+            : <>Mark where each part of your life is <b style={{ color:INK, fontWeight:500 }}>now</b>. The line is <span style={{ color:GOLD }}>5 out of 10</span>. Below it, that part of life comes first.</>}
         </p>
 
         {/* the wheel */}
@@ -140,13 +140,13 @@ export default function FirstLight(){
           {!cover && (
             <div style={{ fontSize:15, color:META, textAlign:'center', margin:'10px 8px 4px', lineHeight:1.42, minHeight:42 }}>
               {below.length > 0
-                ? <>Your focus: {below.map((d,i)=><span key={d.key}><span style={{ color:RED, fontWeight:500 }}>{d.name}</span>{i<below.length-1?(i===below.length-2?' and ':', '):''}</span>)} — under the line, so the aim is to cross to <b style={{ color:GOLD, fontWeight:500 }}>5</b> as fast as possible, before anything above gets pushed.</>
-                : <>Everything&rsquo;s above the line. The system&rsquo;s pointing each a level up — the Map is where you set real targets.</>}
+                ? <>Your focus: {below.map((d,i)=><span key={d.key}><span style={{ color:RED, fontWeight:500 }}>{d.name}</span>{i<below.length-1?(i===below.length-2?' and ':', '):''}</span>)} · under the line, so the aim is to cross to <b style={{ color:GOLD, fontWeight:500 }}>5</b> as fast as possible.</>
+                : <>Everything&rsquo;s above the line. Each part is aimed a level up · the Map is where you set your own targets.</>}
             </div>
           )}
           {cover && (
             <div style={{ position:'absolute', top:'46%', left:'50%', transform:'translate(-50%,-50%)', zIndex:5, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
-              <button onClick={() => setPhase('place')} style={{ fontFamily:SC, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', fontSize:16, color:'#fff', background:GOLD, border:'none', borderRadius:40, padding:'16px 40px', cursor:'pointer', boxShadow:'0 6px 22px -6px rgba(38,48,42,0.7), 0 0 0 6px rgba(110,127,92,0.12)' }}>Start</button>
+              <button onClick={() => setPhase('place')} style={{ fontFamily:SC, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', fontSize:16, color:'#fff', background:GOLD, border:'none', borderRadius:40, padding:'16px 40px', cursor:'pointer', boxShadow:'0 6px 22px -6px rgba(38,36,32,0.7), 0 0 0 6px rgba(76,107,69,0.12)' }}>Start</button>
               <span style={{ fontFamily:LORA, fontSize:13, color:META, background:'rgba(250,250,247,0.86)', padding:'2px 10px', borderRadius:20 }}>about two minutes</span>
             </div>
           )}
@@ -158,7 +158,7 @@ export default function FirstLight(){
               {SELF_DOMAINS.map(d => <Track key={d.key} d={d} now={scores[d.key]} onSet={v => setOne(d.key, v)} />)}
             </div>
             <p style={{ fontSize:13, color:GHOST, textAlign:'center', marginTop:16 }}>
-              The system aims you until the Map. The Map is where you set real targets.
+              These first aims are set for you. The Map is where you set your own targets.
             </p>
             <div style={{ position:'fixed', left:0, right:0, bottom:0, padding:'14px 22px calc(16px + env(safe-area-inset-bottom))', background:'linear-gradient(to top, #FAFAF7 72%, rgba(250,250,247,0))' }}>
               <div style={{ maxWidth:480, margin:'0 auto' }}>

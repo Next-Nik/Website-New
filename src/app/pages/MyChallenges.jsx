@@ -13,10 +13,18 @@ import { Nav }        from '../../components/Nav'
 import { useAuth }    from '../../hooks/useAuth'
 import { tokens, serif, body, sc, at } from '../../lib/designTokens'
 import PublicBeacon   from '../components/challenge/PublicBeacon'
+import MomentCapture  from '../components/MomentCapture'
+import TendedThing    from '../components/TendedThing'
+import Grove          from '../components/Grove'
+import ShareArtifactButton from '../components/ShareArtifactButton'
+import { getTendedThing, tendThing } from '../lib/tendedThing'
+import { getMyHorizonDeclaration } from '../lib/horizonDeclaration'
+import { platformUrl } from '../lib/shareArtifact'
+import { recordHorizonAction } from '../lib/horizonActions'
 
 const GOLD_C = at.verdigris
 const hair   = `1px solid ${at.verdigrisEdge}`
-const muted  = { color: 'rgba(234,241,237,0.78)' }
+const muted  = { color: 'rgba(38,36,32,0.78)' }
 
 // ─── Date helpers (UTC, matching the server's date keys) ──────────────────────
 
@@ -33,6 +41,13 @@ function daysInclusive(startKey, endKey) {
   const a = new Date(startKey + 'T00:00:00Z')
   const b = new Date(endKey + 'T00:00:00Z')
   return Math.max(1, Math.round((b - a) / 86400000) + 1)
+}
+
+// "2026-07-20" → "20 July" for the habit-dot tooltips (en-GB, no ISO leaking to UI).
+function fmtDayTitle(key) {
+  const [y, m, d] = String(key).split('-').map(Number)
+  if (!y || !m || !d) return key
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' })
 }
 
 // Day number within the window, 1-based, clamped to the window.
@@ -62,16 +77,33 @@ const CADENCE_LABEL = {
   'custom':         '',
 }
 
+// Quiet fade-in wrapper for the returned line after a check-in.
+function FadeIn({ children, style }) {
+  const [on, setOn] = useState(false)
+  useEffect(() => {
+    const t = requestAnimationFrame(() => setOn(true))
+    return () => cancelAnimationFrame(t)
+  }, [])
+  return (
+    <div style={{ ...style, opacity: on ? 1 : 0, transition: 'opacity 0.6s ease' }}>
+      {children}
+    </div>
+  )
+}
+
 // ─── A single challenge card ──────────────────────────────────────────────────
 
-function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
+function ChallengeCard({ p, userId, founding, onLeft, onSpark, horizonLine }) {
   const [leaving, setLeaving] = useState(false)   // false | 'confirm' | 'busy'
   const inConstellation = !!(founding && founding.ids && founding.ids.has(p.call_id))
   const closeStr = founding && founding.closes_on
-    ? new Date(founding.closes_on + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+    ? new Date(founding.closes_on + 'T12:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
     : null
   const [doneToday, setDoneToday] = useState(new Set(p.done_today || []))
   const [busy, setBusy]           = useState(null)
+  // The tended thing — this person's living thing for this challenge (BP-11).
+  const [tended, setTended]       = useState(null)
+  const [returned, setReturned]   = useState(null)   // { strandId, others } — real data back from the check-in
 
   const [localComplete, setLocalComplete] = useState(false)
   const [finishing,  setFinishing]  = useState(false)
@@ -107,9 +139,20 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
     const tk  = todayKey()
     return Array.from({ length: window }, (_, i) => {
       const key = addDays(p.started_on, i)
-      return { key, filled: set.has(key), isToday: key === tk, future: key > tk }
+      // Today counts as filled the moment any strand is checked in, so the
+      // dot ignites without a refetch.
+      const filled = set.has(key) || (key === tk && doneToday.size > 0)
+      return { key, filled, isToday: key === tk, future: key > tk }
     })
-  }, [p.started_on, p.done_dates, window])
+  }, [p.started_on, p.done_dates, window, doneToday])
+
+  // Load the living thing for this challenge.
+  useEffect(() => {
+    let live = true
+    if (!userId || !p.call_id) return
+    getTendedThing(p.call_id).then(t => { if (live) setTended(t) })
+    return () => { live = false }
+  }, [userId, p.call_id])
 
   async function toggle(strandId, btnEl) {
     const next = new Set(doneToday)
@@ -122,8 +165,19 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
     // on the beacon is a real, recorded action (data-integrity law); the
     // checkbox is optimistic, the fire is not.
     try {
-      await actorCallsRaw({ action: 'log_strand', userId, call_id: p.call_id, strand_id: strandId, done: willBeDone })
+      const r = await actorCallsRaw({ action: 'log_strand', userId, call_id: p.call_id, strand_id: strandId, done: willBeDone })
       if (willBeDone && inConstellation && onSpark) onSpark(btnEl)
+      if (willBeDone) {
+        const d = await r.json().catch(() => null)
+        if (r.ok && d && typeof d.others_today === 'number') setReturned({ strandId, others: d.others_today })
+        // A real act grows the tended thing — check-ins are its only food (BP-11).
+        if (r.ok) tendThing(p.call_id).then(t => { if (t) setTended(t) })
+        // …and accrues to the horizon-actions ledger (BP-18). Fire-and-forget:
+        // a ledger miss must never disturb the check-in itself.
+        if (r.ok) recordHorizonAction({ kind: 'drive', source: 'checkin', domain: p.domain || null })
+      } else {
+        setReturned(prev => (prev && prev.strandId === strandId ? null : prev))
+      }
     } catch {
       // revert on failure
       const revert = new Set(doneToday)
@@ -155,7 +209,7 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
         <div>
           <span style={{ ...serif, fontWeight: 300, fontSize: '34px', color: at.text, lineHeight: 1 }}>{complete ? window : dayNo}</span>
           {inConstellation && closeStr
-            ? <span style={{ ...body, fontSize: '15px', color: at.ghost }}> days &middot; runs to {closeStr} &middot; the shared close</span>
+            ? <span style={{ ...body, fontSize: '15px', color: at.ghost }}> days &middot; closes {closeStr} &middot; the shared close</span>
             : <span style={{ ...body, fontSize: '15px', color: at.ghost }}> of {window} days</span>}
         </div>
         {streak > 1 && (
@@ -169,17 +223,57 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
       {dots.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '20px' }}>
           {dots.map(d => (
-            <span key={d.key} title={d.key}
+            <span key={d.key} title={fmtDayTitle(d.key)}
               style={{
                 width: '9px', height: '9px', borderRadius: '50%', flexShrink: 0,
-                background: d.filled ? GOLD_C : 'transparent',
-                border: d.filled ? `1px solid ${GOLD_C}` : `1px solid rgba(234,241,237,0.18)`,
-                boxShadow: d.isToday ? `0 0 0 2px rgba(217,178,74,0.30)` : 'none',
-                opacity: d.future ? 0.5 : 1,
+                // Today's checked-in dot ignites at.brass (MyChallenges is not
+                // on the heritage-gold whitelist); other days keep verdigris.
+                background: d.filled ? (d.isToday ? at.brass : GOLD_C) : 'transparent',
+                border: d.filled
+                  ? `1px solid ${d.isToday ? at.brass : GOLD_C}`
+                  : `1px solid rgba(38,36,32,0.18)`,
+                boxShadow: d.isToday
+                  ? (d.filled
+                      ? `0 0 6px rgba(169,116,63,0.55), 0 0 0 2px rgba(169,116,63,0.30)`
+                      : `0 0 0 2px rgba(169,116,63,0.30)`)
+                  : 'none',
+                opacity: d.future ? 0.55 : 1,
+                transition: 'background 0.3s, box-shadow 0.3s',
               }} />
           ))}
         </div>
       )}
+
+      {/* The tended thing — belonging felt as growth, not points (BP-11).
+          Shown from the day you join (a seed), grows on each real check-in,
+          rests but never dies when you're away. */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '22px',
+        paddingBottom: '18px', borderBottom: hair }}>
+        <TendedThing stage={tended?.stage ?? 0} lastTendedAt={tended?.last_tended_at || null} size="md" />
+        <div style={{ ...body, fontSize: '14px', color: at.ghost, lineHeight: 1.5, maxWidth: '280px' }}>
+          Your living thing, lit from the fire the day you joined. It grows each time you show up · and only rests when you&rsquo;re away.
+        </div>
+      </div>
+
+      {/* Mint the progress view as a shareable image (BP-7): where things
+          stand · the step taken · the horizon. */}
+      <div style={{ marginBottom: '18px' }}>
+        <ShareArtifactButton
+          size="sm"
+          filename="nextus-progress.png"
+          shareText={`${p.title} · on NextUs`}
+          artifact={{
+            eyebrow: 'Progress on NextUs',
+            headline: p.title,
+            stepLine: complete
+              ? `Completed · ${window} days`
+              : `Day ${dayNo} of ${window}${streak > 1 ? ` · ${streak} days running` : ''}`,
+            horizon: horizonLine,
+            footNote: p.domain ? String(p.domain) : null,
+            url: platformUrl(p.slug ? `/stretch/c/${p.slug}` : '/challenges'),
+          }}
+        />
+      </div>
 
       {complete ? (
         <div style={{ ...body, fontSize: '15px', color: at.brass, paddingTop: '4px' }}>Completed.</div>
@@ -193,7 +287,7 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
             const cadence = CADENCE_LABEL[s.cadence] || ''
             return (
               <div key={s.id} style={{ padding: '10px 0 16px', borderBottom: hair }}>
-                <div style={{ ...body, fontSize: '1.0625rem', color: 'rgba(234,241,237,0.85)', lineHeight: 1.5, textDecoration: done ? 'line-through' : 'none', opacity: done ? 0.55 : 1, transition: 'all 0.25s' }}>
+                <div style={{ ...body, fontSize: '1.0625rem', color: done ? at.verdigris : 'rgba(38,36,32,0.85)', lineHeight: 1.5, transition: 'all 0.25s' }}>
                   {s.text}
                   {cadence && (
                     <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: at.ghost, marginLeft: '10px', whiteSpace: 'nowrap', display: 'inline-block', textDecoration: 'none' }}>{cadence}</span>
@@ -217,6 +311,17 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
                     </button>
                   )}
                 </div>
+                {done && returned && returned.strandId === s.id && (
+                  <FadeIn style={{ ...body, fontSize: '14px', color: at.ghost, marginTop: '10px', lineHeight: 1.5 }}>
+                    Day {dayNo} of {window}
+                    {returned.others > 0 && (
+                      <> &middot; {returned.others} {returned.others === 1 ? 'other' : 'others'} did this today</>
+                    )}
+                  </FadeIn>
+                )}
+                {done && (
+                  <MomentCapture challengeId={p.call_id} domain={p.domain || p.domain_id || null} />
+                )}
               </div>
             )
           })}
@@ -229,14 +334,14 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
               </button>
             ) : (
               <div>
-                <div style={{ ...body, fontSize: '14px', color: 'rgba(234,241,237,0.66)', lineHeight: 1.55, marginBottom: '12px' }}>
+                <div style={{ ...body, fontSize: '14px', color: 'rgba(38,36,32,0.66)', lineHeight: 1.55, marginBottom: '12px' }}>
                   This closes the whole challenge, not just today. Today's check-in is the button above.
                 </div>
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: at.ghost, textTransform: 'uppercase', marginBottom: '10px' }}>How did it go?</div>
                 <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginBottom: '10px' }}>
                   <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)}
                     style={{ marginTop: '3px', accentColor: GOLD_C, width: '15px', height: '15px', flexShrink: 0 }} />
-                  <span style={{ ...body, fontSize: '15px', color: 'rgba(234,241,237,0.78)', lineHeight: 1.5 }}>
+                  <span style={{ ...body, fontSize: '15px', color: 'rgba(38,36,32,0.78)', lineHeight: 1.5 }}>
                     Share how it went with {p.author?.name || 'the author'} (optional)
                   </span>
                 </label>
@@ -265,6 +370,11 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark }) {
           </div>
         </div>
       )}
+
+      {/* The grove — the constellation view of everyone's tended things, a
+          grove becoming a forest. Aggregate only, no names (BP-11). Shown for
+          constellation challenges, where there is a shared community to see. */}
+      {inConstellation && <Grove challengeId={p.call_id} title="The grove" />}
 
       {/* Leave — the mistake-acceptor's way out. Quiet by design: a foot-of-card
           affordance, one confirm, done. Past check-ins stay recorded; taking
@@ -311,6 +421,7 @@ export default function MyChallenges() {
   const [rows, setRows]       = useState([])
   const [loading, setLoading] = useState(true)
   const [founding, setFounding] = useState({ ids: new Set(), closes_on: null })
+  const [horizonLine, setHorizonLine] = useState(null)
   const beaconRef = useRef(null)   // PublicBeacon imperative API — emberFrom()/spark()
 
   // A check-in, made visible: the beacon flies an ember from the button to
@@ -319,6 +430,14 @@ export default function MyChallenges() {
   const sendEmber = useCallback((fromEl) => {
     try { beaconRef.current && beaconRef.current.emberFrom(fromEl) } catch (_) { /* visual only */ }
   }, [])
+
+  // The viewer's horizon, for the share artifact (BP-7 · BP-8). Loaded once.
+  useEffect(() => {
+    let live = true
+    if (!user) { setHorizonLine(null); return }
+    getMyHorizonDeclaration().then(d => { if (live) setHorizonLine(d?.line || null) })
+    return () => { live = false }
+  }, [user])
 
   useEffect(() => {
     if (!user) { setLoading(false); return }
@@ -363,7 +482,7 @@ export default function MyChallenges() {
               Browse challenges
             </Link>
             <Link to="/challenges/new" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.brass, textTransform: 'uppercase', textDecoration: 'none' }}>
-              + Author a challenge
+              + Post a challenge
             </Link>
           </div>
         )}
@@ -380,7 +499,8 @@ export default function MyChallenges() {
 
         {!user ? (
           <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7 }}>
-            Sign in to see the challenges you've taken on.
+            Sign in to see the challenges you've taken on.{' '}
+            <Link to="/challenges/browse" style={{ color: at.verdigris }}>Browse open challenges →</Link>
           </p>
         ) : loading ? (
           <p style={{ ...body, fontSize: '1.0625rem', color: at.ghost }}>Loading…</p>
@@ -390,12 +510,12 @@ export default function MyChallenges() {
               You haven't taken on a challenge yet.
             </p>
             <p style={{ ...body, fontSize: '15px', color: at.ghost, lineHeight: 1.65, margin: 0 }}>
-              <Link to="/challenges/browse" style={{ color: at.brass }}>Browse challenges</Link> and take one on. It starts a clock the day you join, and it appears here.
+              <Link to="/challenges/browse" style={{ color: at.brass }}>Browse challenges</Link> and take one on. Your 90 days start the day you join, and it appears here.
             </p>
           </div>
         ) : (
           rows.map(p => <ChallengeCard key={p.participant_id} p={p} userId={user.id} founding={founding}
-            onSpark={sendEmber}
+            onSpark={sendEmber} horizonLine={horizonLine}
             onLeft={pid => setRows(prev => prev.filter(r => r.participant_id !== pid))} />)
         )}
       </div>

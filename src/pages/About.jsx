@@ -7,7 +7,7 @@ import { TestimonialsPanel } from '../components/TestimonialsPanel'
 import { SiteFooter } from '../components/SiteFooter'
 import { serif, body, sc } from '../lib/designTokens'
 
-const gold  = { color: '#26302A' }
+const gold  = { color: '#262420' }
 const meta  = { color: 'rgba(15,21,35,0.55)' }
 const dark  = { color: '#0F1523' }
 
@@ -20,7 +20,7 @@ function P({ children, style = {} }) {
 }
 
 function Rule() {
-  return <hr style={{ border: 'none', borderTop: '1px solid rgba(110,127,92,0.20)', margin: '52px 0' }} />
+  return <hr style={{ border: 'none', borderTop: '1px solid rgba(76,107,69,0.20)', margin: '52px 0' }} />
 }
 
 export function AboutPage() {
@@ -32,7 +32,7 @@ export function AboutPage() {
         @media (max-width: 640px) {
           .about-cols { grid-template-columns: 1fr !important; }
           .about-cols .about-col-divider { display: none !important; }
-          .about-cols .about-col:first-child { border-bottom: 1px solid rgba(110,127,92,0.20); padding-bottom: 52px !important; }
+          .about-cols .about-col:first-child { border-bottom: 1px solid rgba(76,107,69,0.20); padding-bottom: 52px !important; }
           .about-wrap { padding-left: 24px !important; padding-right: 24px !important; }
         }
       `}</style>
@@ -66,14 +66,14 @@ export function AboutPage() {
 
             <P>
               Most personal development tools get applied without a map. Someone finds a methodology,
-              a practice, a coach — and brings it to bear on their life without any honest picture of
+              a practice, a coach — and brings it to bear on their life without any clear picture of
               where they actually are or what stage they're in. A tool applied at the wrong stage
               doesn't just miss. It can actively cause harm.
             </P>
             <P>NextUs Self is built on a different premise.</P>
             <P>
               There are stages to healing and development. The Horizon Suite is a series of tools
-              designed to meet you at yours. They are diagnostic first — drawing out an honest picture
+              designed to meet you at yours. They are diagnostic first — drawing out a clear picture
               of where you are and where you want to go. They are agnostic about what comes next.
               They don't prescribe a path. They illuminate the terrain and aim you toward the life
               your healthiest, most aligned self would actually thrive in.
@@ -82,7 +82,7 @@ export function AboutPage() {
               The tools can be used independently. But they are designed to stack — each one building
               on what the last revealed. Vision first. Then embodied action. Then the methodologies,
               practices, and support —{' '}
-              <a href="/" style={{ ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(38,48,42,0.35)' }}>
+              <a href="/" style={{ ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(38,36,32,0.35)' }}>
                 from people, practitioners, and organisations around the world
               </a>
               {' '}— that are yours to choose freely, held by the scaffold the Suite provides.
@@ -97,7 +97,7 @@ export function AboutPage() {
             </P>
 
             <div style={{ marginTop: '32px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-              <a href="/" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(38,48,42,0.35)', paddingBottom: '2px' }}>
+              <a href="/" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(38,36,32,0.35)', paddingBottom: '2px' }}>
                 NextUs Self →
               </a>
               <a href="/tools/north-star" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.55)', paddingBottom: '2px' }}>
@@ -107,7 +107,7 @@ export function AboutPage() {
           </div>
 
           {/* DIVIDER */}
-          <div className="about-col-divider" style={{ background: 'rgba(110,127,92,0.20)', alignSelf: 'stretch' }} />
+          <div className="about-col-divider" style={{ background: 'rgba(76,107,69,0.20)', alignSelf: 'stretch' }} />
 
           {/* RIGHT — NextUs Planet */}
           <div className="about-col" style={{ paddingLeft: '48px' }}>
@@ -132,7 +132,7 @@ export function AboutPage() {
             </P>
             <P>
               NextUs is a coordination platform designed to make that map visible, and those
-              connections real. It is diagnostic first — drawing an honest picture of where each
+              connections real. It is diagnostic first — drawing a clear picture of where each
               domain actually is, and what the horizon goal for that domain looks like at every scale.
               It is agnostic about how we get there. It doesn't prescribe ideology or method. It
               illuminates the terrain and connects the people already doing the work.
@@ -154,7 +154,7 @@ export function AboutPage() {
             </P>
 
             <div style={{ marginTop: '32px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-              <a href="/" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(38,48,42,0.35)', paddingBottom: '2px' }}>
+              <a href="/" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(38,36,32,0.35)', paddingBottom: '2px' }}>
                 NextUs →
               </a>
               <a href="/feed" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.55)', paddingBottom: '2px' }}>
@@ -193,7 +193,7 @@ export function AboutPage() {
             width: 100%;
             height: clamp(340px, 55vw, 600px);
             border-radius: 14px;
-            border: 1.5px solid rgba(110,127,92,0.55);
+            border: 1.5px solid rgba(76,107,69,0.55);
             overflow: hidden;
             margin-bottom: 64px;
             position: relative;
@@ -237,7 +237,7 @@ export function AboutPage() {
           <h2 style={{ ...serif, fontSize: 'clamp(32px,4.5vw,52px)', fontWeight: 300, ...dark, lineHeight: 1.1, marginBottom: '8px' }}>
             The person behind the work.
           </h2>
-          <div style={{ width: '40px', height: '1px', background: '#6E7F5C', margin: '24px 0 36px' }} />
+          <div style={{ width: '40px', height: '1px', background: '#4c6b45', margin: '24px 0 36px' }} />
 
           <P>
             Nik Wood has been doing this work for almost 30 years. Not building toward it — doing it.
@@ -260,8 +260,8 @@ export function AboutPage() {
                 display: 'inline-block',
                 padding: '14px 32px',
                 borderRadius: '40px',
-                border: '1px solid rgba(38,48,42,0.8)',
-                background: '#6E7F5C',
+                border: '1px solid rgba(38,36,32,0.8)',
+                background: '#4c6b45',
                 color: '#FFFFFF',
                 ...sc,
                 fontSize: '15px',
@@ -280,7 +280,7 @@ export function AboutPage() {
       <DarkSection style={{ textAlign: 'center' }}>
         <DarkEyebrow>The mission</DarkEyebrow>
         <DarkHeading>To live into a world where everyone is fully on their path and actively levelling up towards their full-yes life.</DarkHeading>
-        <DarkBody style={{ color: '#26302A', marginBottom: '40px' }}>To awaken and amplify the Godspark of humanity.</DarkBody>
+        <DarkBody style={{ marginBottom: '40px' }}>To awaken and amplify the Godspark of humanity.</DarkBody>
         <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', justifyContent: 'center' }}>
           <DarkSolidButton href="/work-with-nik">Work directly with Nik →</DarkSolidButton>
           <DarkGhostButton href="/podcast">Listen to the podcast →</DarkGhostButton>

@@ -23,8 +23,8 @@ import { useEffect, useState } from 'react'
 //   className          — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 
 function arraysEqual(a = [], b = []) {
   if (a.length !== b.length) return false
@@ -99,7 +99,7 @@ export default function MultiSelectChips({
             display: 'block',
             fontSize: '13px',
             letterSpacing: '0.08em',
-            color: '#26302A',
+            color: '#262420',
             fontWeight: 600,
             marginBottom: '8px',
           }}
@@ -147,15 +147,15 @@ export default function MultiSelectChips({
                 fontSize: '14px',
                 letterSpacing: '0.04em',
                 fontWeight: selected ? 600 : 400,
-                color: selected ? '#26302A' : 'rgba(15, 21, 35, 0.72)',
+                color: selected ? '#262420' : 'rgba(15, 21, 35, 0.72)',
                 background: selected
-                  ? 'rgba(110,127,92, 0.08)'
+                  ? 'rgba(76,107,69, 0.08)'
                   : 'transparent',
                 border:
                   '1px solid ' +
                   (selected
-                    ? 'rgba(110,127,92, 0.45)'
-                    : 'rgba(110,127,92, 0.20)'),
+                    ? 'rgba(76,107,69, 0.45)'
+                    : 'rgba(76,107,69, 0.20)'),
                 borderRadius: '40px',
                 cursor: disabled ? 'not-allowed' : 'pointer',
                 opacity: disabled ? 0.5 : 1,
@@ -164,7 +164,7 @@ export default function MultiSelectChips({
               }}
               onMouseEnter={(e) => {
                 if (disabled || selected) return
-                e.currentTarget.style.background = 'rgba(110,127,92, 0.05)'
+                e.currentTarget.style.background = 'rgba(76,107,69, 0.05)'
               }}
               onMouseLeave={(e) => {
                 if (disabled || selected) return
@@ -226,7 +226,7 @@ export default function MultiSelectChips({
             disabled={!dirty || saving}
             style={{
               ...sc,
-              background: !dirty || saving ? 'rgba(110,127,92, 0.20)' : '#0F1523',
+              background: !dirty || saving ? 'rgba(76,107,69, 0.20)' : '#0F1523',
               color: !dirty || saving ? 'rgba(255, 255, 255, 0.7)' : '#FFFFFF',
               border: 'none',
               borderRadius: '40px',

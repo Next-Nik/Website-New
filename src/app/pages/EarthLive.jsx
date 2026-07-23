@@ -18,11 +18,11 @@ import { serif, sc, body, at } from '../../lib/designTokens'
 import BeaconFire from '../components/challenge/BeaconFire'
 
 const NIGHT2   = at.ground  // Atlas sea-ink — aligned to the canonical rail ground
-const CREAM    = '#FBF8F0'
-const CREAM_80 = 'rgba(251,248,240,0.82)'
-const CREAM_60 = 'rgba(251,248,240,0.60)'
-const AMBER    = '#F2C45A'
-const GOLD_T   = '#D7A24A'
+const CREAM    = '#262420'
+const CREAM_80 = 'rgba(38,36,32,0.68)'
+const CREAM_60 = 'rgba(38,36,32,0.58)'
+const AMBER    = '#a9743f'
+const GOLD_T   = '#a9743f'
 const HAIR     = '1px solid rgba(242,196,90,0.26)'
 
 const ROOT_SLUG_FALLBACK = 'inaugural-nextus-earth-challenge'
@@ -32,7 +32,7 @@ function fmtDate(iso) {
   if (!iso) return null
   const [y, m, d] = String(iso).split('-').map(Number)
   if (!y) return null
-  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+  return new Date(y, m - 1, d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
 }
 function daysUntil(iso) {
   if (!iso) return null
@@ -58,7 +58,7 @@ const CADENCE_LINE = {
   'daily-absolute': 'Every single day',
   weekly: 'Weekly',
   monthly: 'Monthly',
-  once: 'One real act',
+  once: 'One action, done for real',
 }
 
 const K = ({ children }) => (
@@ -103,7 +103,7 @@ export default function EarthLive() {
 
   const btnSolid = {
     display: 'inline-block', ...sc, fontSize: '14px', letterSpacing: '0.14em',
-    textTransform: 'uppercase', color: '#1a1320', background: AMBER,
+    textTransform: 'uppercase', color: '#ffffff', background: AMBER,
     borderRadius: '28px', padding: '14px 30px', textDecoration: 'none',
   }
   const btnGhost = {
@@ -119,7 +119,7 @@ export default function EarthLive() {
 
       {/* ── 1 · The invitation: beacon, tagline, the ask ── */}
       <div style={{ textAlign: 'center', padding: '38px 20px 10px',
-        background: `radial-gradient(ellipse at 50% 0%, rgba(242,196,90,0.10), transparent 62%)` }}>
+        background: `radial-gradient(ellipse at 50% 0%, rgba(169,116,63,0.08), transparent 62%)` }}>
         <div style={{ maxWidth: '260px', margin: '0 auto 2px' }}>
           <BeaconFire sparks={sparks} />
         </div>
@@ -127,7 +127,7 @@ export default function EarthLive() {
           letterSpacing: '0.2em', textTransform: 'uppercase', color: GOLD_T,
           border: '1px solid rgba(242,196,90,0.4)', borderRadius: '20px', padding: '6px 16px' }}>
           <span className="el-pulse" style={{ width: '9px', height: '9px', borderRadius: '50%', background: AMBER }} />
-          Live
+          Live · updating
         </div>
         <style>{`
           .el-pulse { animation: elPulse 1.6s ease-in-out infinite; }
@@ -152,6 +152,11 @@ export default function EarthLive() {
                 {closes ? ` · to ${fmtDate(closes)}` : ''}
               </>}
         </div>
+        {!newlyLit && (
+          <div style={{ ...body, fontSize: '13.5px', color: CREAM_60, margin: '-14px 0 20px' }}>
+            1 spark = one real action, checked in
+          </div>
+        )}
         {!newlyLit && feed && feed.sparks_today > 0 && (
           <div style={{ ...body, fontSize: '15px', color: CREAM_80, margin: '-12px 0 20px' }}>
             <b style={{ ...serif, fontSize: '18px', color: AMBER, fontWeight: 300 }}>{feed.sparks_today}</b> sparks today, and counting
@@ -170,7 +175,7 @@ export default function EarthLive() {
               @media (prefers-reduced-motion: reduce) { .el-count { animation: none; } }
             `}</style>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: GOLD_T, marginBottom: '4px' }}>
-              The shared close
+              Closes {fmtDate(closes)}
             </div>
             {days > 0 ? (
               <>
@@ -178,7 +183,10 @@ export default function EarthLive() {
                   {days.toLocaleString()}
                 </div>
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: CREAM_60, marginTop: '6px' }}>
-                  {days === 1 ? 'day' : 'days'} to {fmtDate(closes)} · one close, held together
+                  {days === 1 ? 'day' : 'days'} left
+                </div>
+                <div style={{ ...body, fontSize: '14px', color: CREAM_80, marginTop: '8px' }}>
+                  Every challenge ends on the same day: {fmtDate(closes)}.
                 </div>
               </>
             ) : (
@@ -217,7 +225,7 @@ export default function EarthLive() {
                           <b style={{ ...serif, color: CREAM, fontSize: '17px', letterSpacing: 0, fontWeight: 300 }}>{c.people}</b> in
                           {' · '}<b style={{ ...serif, color: CREAM, fontSize: '17px', letterSpacing: 0, fontWeight: 300 }}>{c.checkins}</b> sparks
                         </>
-                      : <>{CADENCE_LINE[c.cadence] || 'Open'} · open to you</>}
+                      : <>{CADENCE_LINE[c.cadence] || 'Open'} · no one has taken this on yet · be first</>}
                   </div>
                 </Link>
               ))}
@@ -228,16 +236,21 @@ export default function EarthLive() {
         {/* ── 3 · Now: only once there is a now ── */}
         {events.length > 0 && (
           <>
-            <K>Now · as it happens</K>
+            <K>Happening now</K>
             <div style={{ border: HAIR, borderRadius: '14px', overflow: 'hidden' }}>
               {events.slice(0, 6).map((e, i) => (
                 <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'baseline',
                   padding: '12px 16px', borderBottom: i < Math.min(events.length, 6) - 1 ? 'rgba(242,196,90,0.12) 1px solid' : 'none' }}>
                   <span style={{ ...serif, fontSize: '18px', fontWeight: 400, whiteSpace: 'nowrap',
-                    color: e.kind === 'spark' ? AMBER : CREAM }}>{e.name}</span>
+                    color: e.kind === 'spark' ? AMBER : CREAM }}>
+                    {e.kind === 'sighting'
+                      ? `${e.count} ${e.count === 1 ? 'organisation' : 'organisations'}`
+                      : e.name}
+                  </span>
                   <span style={{ ...body, fontSize: '15px', color: CREAM_80 }}>
                     {e.kind === 'spark' ? `checked in on ${e.title}`
                       : e.kind === 'join' ? `took on ${e.title}`
+                      : e.kind === 'sighting' ? (e.count === 1 ? 'was written into a guide today' : 'were written into guides today')
                       : `published ${e.title}`}
                   </span>
                   <span style={{ marginLeft: 'auto', ...sc, fontSize: '13px', letterSpacing: '0.08em', color: CREAM_60, whiteSpace: 'nowrap' }}>

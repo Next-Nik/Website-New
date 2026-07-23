@@ -28,7 +28,7 @@ export default function IntensityInfo({ colour = tokens.goldChrome }) {
     <span ref={ref} style={{ position: 'relative', display: 'inline-flex' }}>
       <button type="button" aria-label="About intensity levels" onClick={() => setOpen(o => !o)}
         style={{ width: '18px', height: '18px', borderRadius: '50%', border: `1px solid ${tokens.goldChrome}`,
-          background: open ? 'rgba(217,178,74,0.12)' : 'transparent', color: at.brass,
+          background: open ? 'rgba(169,116,63,0.12)' : 'transparent', color: at.brass,
           ...sc, fontSize: '13px', lineHeight: 1, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
         i
       </button>

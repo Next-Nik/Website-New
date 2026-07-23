@@ -22,7 +22,7 @@ export function IAStatementItem({ item }) {
     >
       <div style={{
         paddingLeft: '14px',
-        borderLeft: '2px solid rgba(110,127,92,0.30)',
+        borderLeft: '2px solid rgba(76,107,69,0.30)',
       }}>
         <p style={{
           ...body,
@@ -46,9 +46,9 @@ export function IAStatementItem({ item }) {
             ...sc,
             fontSize: '13px',
             letterSpacing: '0.14em',
-            color: '#26302A',
-            background: 'rgba(110,127,92,0.06)',
-            border: '1px solid rgba(110,127,92,0.22)',
+            color: '#262420',
+            background: 'rgba(76,107,69,0.06)',
+            border: '1px solid rgba(76,107,69,0.22)',
             borderRadius: '4px',
             padding: '2px 8px',
           }}>

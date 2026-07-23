@@ -14,8 +14,8 @@
 
 import { useState } from 'react'
 
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 export const CIV_DOMAINS = [
   { slug: 'human-being',     label: 'Human Being',     shortLabel: 'Human',   color: '#2A6B9E' },
@@ -51,7 +51,7 @@ export default function NextUsWheel({
     <div style={{ position: 'relative', display: 'inline-block' }}>
       {/* Eyebrow */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#262420', textTransform: 'uppercase' }}>
           Civilisational
         </span>
         {onToggleVisibility && (
@@ -70,7 +70,7 @@ export default function NextUsWheel({
               ...sc,
               fontSize: '13px',
               letterSpacing: '0.1em',
-              color: visible ? '#26302A' : 'rgba(15,21,35,0.55)',
+              color: visible ? '#262420' : 'rgba(15,21,35,0.55)',
               transition: 'color 150ms ease',
             }}
           >
@@ -101,7 +101,7 @@ export default function NextUsWheel({
                 key={frac}
                 points={pts}
                 fill="none"
-                stroke="rgba(110,127,92,0.08)"
+                stroke="rgba(76,107,69,0.08)"
                 strokeWidth="0.5"
               />
             )
@@ -117,7 +117,7 @@ export default function NextUsWheel({
                 y1={cy}
                 x2={x}
                 y2={y}
-                stroke="rgba(110,127,92,0.08)"
+                stroke="rgba(76,107,69,0.08)"
                 strokeWidth="0.5"
               />
             )
@@ -180,7 +180,7 @@ export default function NextUsWheel({
                 y={ly}
                 textAnchor={anchor}
                 dominantBaseline="middle"
-                fontFamily="'IBM Plex Mono', Georgia, serif"
+                fontFamily="'Cormorant SC', Georgia, serif"
                 fontSize="11"
                 letterSpacing="0.5"
                 fill={isActive ? d.color : 'rgba(15,21,35,0.55)'}
@@ -207,7 +207,7 @@ export default function NextUsWheel({
             </span>
             <a
               href="/tools/purpose-piece"
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textDecoration: 'none' }}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#262420', textDecoration: 'none' }}
             >
               Begin
             </a>

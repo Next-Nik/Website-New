@@ -1,8 +1,8 @@
 import { at } from '../../lib/designTokens'
 // Design tokens
-const serif = { fontFamily: "'Fraunces', Georgia, serif" }
-const body  = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc    = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const serif = { fontFamily: "'Lora', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
+const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const dark     = at.text
 const goldDark = at.brass
 const success  = '#2A6B3A'
@@ -104,7 +104,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
               gap: '12px',
               alignItems: 'baseline',
               padding: '12px 0',
-              borderBottom: '1px solid rgba(88,160,138,0.10)',
+              borderBottom: '1px solid rgba(76,107,69,0.10)',
             }}>
               <div>
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: dark, marginBottom: '2px' }}>
@@ -141,8 +141,8 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
         {/* Tier 3 transparency — only shown when relevant */}
         {payload.contributor_density > 0 && (
           <div style={{
-            background: 'rgba(234,241,237,0.04)',
-            border: '1px solid rgba(234,241,237,0.10)',
+            background: 'rgba(38,36,32,0.04)',
+            border: '1px solid rgba(38,36,32,0.10)',
             borderRadius: '8px',
             padding: '12px 14px',
             marginBottom: '20px',
@@ -167,7 +167,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
             What this signals
           </div>
           <p style={{ ...body, fontSize: '13px', color: at.meta, lineHeight: 1.7, margin: 0 }}>
-            This territory is structurally underserved at this Focus. The work is not just hard, it is largely unattended. New actors, fresh capital, and contributor knowledge would all move the picture. If you know an organisation working here that isn't on the map, nominate them.
+            Very few people are working on this here. The work is not just hard, it is largely unattended. New people, fresh funding, and shared knowledge would all move the picture. If you know an organisation working here that isn't on the map, nominate them.
           </p>
         </div>
 
@@ -175,7 +175,6 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.ghost }}>
             Computed from {payload.indicator_count} indicator{payload.indicator_count === 1 ? '' : 's'}
-            {payload.fresh === false ? ' \u00b7 cached' : ' \u00b7 fresh'}
           </div>
           <button
             onClick={onClose}

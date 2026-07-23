@@ -4,7 +4,7 @@
 // The writing room. Step 8 of the Onboarding data model, given
 // its own chapter on the thread — narrative work at a different
 // altitude deserves its own room. The widest measure on the
-// platform, Newsreader at 18px, the prompts in the margin, nothing else.
+// platform, Lora at 18px, the prompts in the margin, nothing else.
 //
 // Two surfaces: the Biography itself, and From Here Forward —
 // present tense, its own screen. Completion sets status='complete'
@@ -138,7 +138,7 @@ export function HorizonBiographyPage() {
         width: '100%', boxSizing: 'border-box', marginTop: '26px',
         padding: '22px 24px', border: `1px solid ${tokens.goldFaint}`,
         borderRadius: '8px', background: '#FFFFFF',
-        fontFamily: "'Newsreader', Georgia, serif", fontStyle: 'italic',
+        fontFamily: "'Lora', Georgia, serif", fontStyle: 'italic',
         fontSize: '18px', lineHeight: 1.75, color: tokens.dark,
         minHeight, resize: 'vertical', outline: 'none',
       }}

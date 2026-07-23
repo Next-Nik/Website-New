@@ -252,7 +252,7 @@ function OrgSpine({ actors, selectedId, onSelect, userId, onChange }) {
   const roots = rootsOf(actors)
   return (
     <aside className="mo-spine">
-      <p className="mo-spine-eyebrow">Your spine</p>
+      <p className="mo-spine-eyebrow">Your org tree</p>
       <div className="mo-spine-tree">
         {roots.map(r => (
           <SpineNode key={r.id} actor={r} actors={actors} depth={0}
@@ -857,6 +857,9 @@ function RoomMode({ actor, links, linksLoading, savingKey, saveField }) {
         </div>
       </div>
 
+      {/* ── Fill empty fields from a URL (never overwrites) ── */}
+      <UpdateFromUrl actor={actor} saveField={saveField} />
+
       {/* ── Footer ── */}
       <div className="mo-manage-link-row">
         <Link to={`/org/${slugOrId}`} className="mo-manage-link"
@@ -1120,10 +1123,213 @@ function ErrorState({ error }) {
 
 // ─── Helpers ─────────────────────────────────────────────────
 
+// Fill-empty-from-URL. Reads a URL via the same /api/org-extract path the
+// setup flow uses, then writes ONLY the evidence fields that are currently
+// empty — never overwriting anything the owner already has. Each field is
+// saved in place via saveField (no delete-and-reload). Owner-only voice
+// fields (mission, working_on_now, the showcase fields) are never touched
+// here: the extractor never returns them, and this only fills evidence.
+// Update-from-URL with tiered overwrite.
+//
+// The extractor may write what a website can legitimately state, and must
+// never touch what only a human authors or what records real action.
+//
+//   HARD LOCK (never written, not even offered): the owner-voice fields
+//     (mission, working_on_now, offers, and the five showcase fields),
+//     identity/ownership plumbing (profile_owner, claimed, slug, id),
+//     relationships and provenance, and everything EARNED BY ACTION —
+//     galleries, moments, sparks, the tended thing, field-guide ties.
+//     None of these are facts a URL states, so the extractor never returns
+//     them and this control never reaches them.
+//   WARN (replace only on explicit confirm; owner protects per field): the
+//     evidence-description fields — description, tagline, impact_summary,
+//     domain, scale, location. Existing human-edited content here has value.
+//   SILENT (overwrite without asking): website, image/logo — factual, low
+//     loss, usually what you're updating from.
+//
+// Fields not currently set are simply filled. Only fields that already hold
+// a value AND would be replaced trigger the warning + per-field checkboxes.
+
+const WARN_FIELDS = [
+  { col: 'description',    label: 'description' },
+  { col: 'tagline',        label: 'tagline' },
+  { col: 'impact_summary', label: 'what you offer' },
+  { col: 'domains',        label: 'domain' },
+  { col: 'scale',          label: 'scale' },
+  { col: 'location_name',  label: 'location' },
+]
+const SILENT_FIELDS = [
+  { col: 'website',   label: 'website' },
+  { col: 'image_url', label: 'logo' },
+]
+
+function UpdateFromUrl({ actor, saveField }) {
+  const [open, setOpen]       = useState(false)
+  const [url, setUrl]         = useState('')
+  const [busy, setBusy]       = useState(false)
+  const [msg, setMsg]         = useState(null)
+  const [plan, setPlan]       = useState(null)   // { fills:[[col,val,label]], replaces:[[col,val,label]], silent:[[col,val,label]] }
+  const [protect, setProtect] = useState({})     // col -> true means "keep mine, don't replace"
+
+  const isEmpty = v =>
+    v === null || v === undefined ||
+    (typeof v === 'string' && !v.trim()) ||
+    (Array.isArray(v) && v.length === 0)
+
+  function valueFor(col, mapped) {
+    if (col === 'domains') return mapped.primary_domain ? [mapped.primary_domain] : null
+    if (col === 'tagline') return mapped.tagline || null
+    if (col === 'image_url') return mapped.image_url || null
+    return mapped[col] || null
+  }
+
+  async function read() {
+    if (!url.trim() || busy) return
+    setBusy(true); setMsg(null); setPlan(null)
+    try {
+      const res = await fetch('/api/org-extract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: url.trim() }),
+      })
+      const data = await res.json()
+      if (data.error) { setMsg(data.message || 'Could not read that URL. Nothing was changed.'); return }
+      const planet = (data.results || []).find(r => r.label === 'Planet' || r.track === 'planet')
+      if (!planet) { setMsg('Did not find an organisation at that URL. Nothing was changed.'); return }
+      const mapped = mapExtractToForm(planet)
+
+      const fills = [], replaces = [], silent = []
+      for (const { col, label } of WARN_FIELDS) {
+        const val = valueFor(col, mapped)
+        if (val === null || val === undefined) continue
+        if (isEmpty(actor[col])) fills.push([col, val, label])
+        else replaces.push([col, val, label])
+      }
+      for (const { col, label } of SILENT_FIELDS) {
+        const val = valueFor(col, mapped)
+        if (val !== null && val !== undefined) silent.push([col, val, label])
+      }
+
+      if (fills.length === 0 && replaces.length === 0 && silent.length === 0) {
+        setMsg('The site did not give anything new to add.'); return
+      }
+      setPlan({ fills, replaces, silent })
+      setProtect({})   // default: replace everything in the warn tier
+    } catch {
+      setMsg('Could not reach the reader. Nothing was changed.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function apply() {
+    if (!plan || busy) return
+    setBusy(true); setMsg(null)
+    try {
+      const writes = [
+        ...plan.fills,
+        ...plan.replaces.filter(([col]) => !protect[col]),
+        ...plan.silent,
+      ]
+      for (const [col, value] of writes) await saveField(col, value)
+      const kept = plan.replaces.filter(([col]) => protect[col]).length
+      const n = writes.length
+      setMsg(
+        `Updated ${n} field${n === 1 ? '' : 's'}` +
+        (kept ? ` · kept ${kept} you protected` : '') +
+        '. Review above and edit anything that is not quite right.'
+      )
+      setPlan(null); setUrl('')
+    } catch {
+      setMsg('Something went wrong part-way. Check the fields above.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  if (!open) {
+    return (
+      <div className="mo-fromurl-row">
+        <button type="button" className="mo-fromurl-toggle" onClick={() => setOpen(true)}>
+          Update from url
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="mo-fromurl">
+      <label className="mo-fromurl-label">Read a website and update your profile from it</label>
+      <div className="mo-fromurl-input-row">
+        <input
+          className="mo-fromurl-input"
+          type="url"
+          placeholder="https://your-site.org"
+          value={url}
+          onChange={e => { setUrl(e.target.value); setPlan(null) }}
+          disabled={busy}
+        />
+        <button type="button" className="mo-fromurl-go" onClick={read} disabled={!url.trim() || busy || !!plan}>
+          {busy && !plan ? 'Reading…' : 'Read site'}
+        </button>
+      </div>
+      <p className="mo-fromurl-note">
+        Your mission, your voice, your galleries and everything you have earned through real action are never touched.
+      </p>
+
+      {plan && (
+        <div className="mo-fromurl-plan">
+          {plan.fills.length > 0 && (
+            <p className="mo-fromurl-planline">
+              Will fill {plan.fills.length} empty field{plan.fills.length === 1 ? '' : 's'}: {plan.fills.map(f => f[2]).join(', ')}.
+            </p>
+          )}
+          {plan.silent.length > 0 && (
+            <p className="mo-fromurl-planline">
+              Will update {plan.silent.map(s => s[2]).join(', ')}.
+            </p>
+          )}
+
+          {plan.replaces.length > 0 && (
+            <div className="mo-fromurl-warn">
+              <p className="mo-fromurl-warn-head">
+                This will overwrite what you have already written in these fields. Copy anything you want to keep first, or tick a field to protect it.
+              </p>
+              {plan.replaces.map(([col, , label]) => (
+                <label key={col} className="mo-fromurl-check">
+                  <input
+                    type="checkbox"
+                    checked={!!protect[col]}
+                    onChange={e => setProtect(p => ({ ...p, [col]: e.target.checked }))}
+                  />
+                  <span>Keep my {label}</span>
+                </label>
+              ))}
+            </div>
+          )}
+
+          <div className="mo-fromurl-actions">
+            <button type="button" className="mo-fromurl-go" onClick={apply} disabled={busy}>
+              {busy ? 'Updating…' : plan.replaces.some(([c]) => !protect[c]) ? 'Overwrite and update' : 'Update'}
+            </button>
+            <button type="button" className="mo-fromurl-cancel" onClick={() => { setPlan(null); setMsg(null) }} disabled={busy}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {msg && <p className="mo-fromurl-msg">{msg}</p>}
+    </div>
+  )
+}
+
 function mapExtractToForm(planet) {
   const out = {}
   if (planet.name)           out.name = String(planet.name).slice(0, 240)
   if (planet.description)    out.description = String(planet.description).slice(0, 240)
+  if (planet.tagline)        out.tagline = String(planet.tagline).slice(0, 240)
+  if (planet.image_url)      out.image_url = String(planet.image_url)
   if (planet.impact_summary) out.impact_summary = String(planet.impact_summary)
   if (planet.website)        out.website = String(planet.website)
   if (planet.location_name)  out.location_name = String(planet.location_name)
@@ -1370,6 +1576,103 @@ const PANEL_CSS = `
 }
 .mo-card-display:last-child { margin-bottom: 0; }
 
+.mo-fromurl-row { margin: 18px 0 4px; }
+.mo-fromurl-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  color: rgba(15,21,35,0.55);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.mo-fromurl-toggle:hover { color: rgba(15,21,35,0.8); }
+.mo-fromurl { margin: 18px 0 4px; }
+.mo-fromurl-label {
+  display: block;
+  font-size: 13px;
+  color: rgba(15,21,35,0.7);
+  margin-bottom: 6px;
+}
+.mo-fromurl-input-row { display: flex; gap: 8px; }
+.mo-fromurl-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 14px;
+  border: 1px solid rgba(15,21,35,0.2);
+  border-radius: 6px;
+}
+.mo-fromurl-go {
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 13px;
+  border: 1px solid rgba(15,21,35,0.25);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.mo-fromurl-go:disabled { opacity: 0.5; cursor: not-allowed; }
+.mo-fromurl-note {
+  font-size: 12px;
+  color: rgba(15,21,35,0.5);
+  margin: 6px 0 0;
+}
+.mo-fromurl-msg {
+  font-size: 13px;
+  color: rgba(15,21,35,0.72);
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+.mo-fromurl-plan { margin-top: 12px; }
+.mo-fromurl-planline {
+  font-size: 13px;
+  color: rgba(15,21,35,0.72);
+  margin: 4px 0;
+  line-height: 1.5;
+}
+.mo-fromurl-warn {
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px solid rgba(138,48,48,0.35);
+  border-radius: 6px;
+  background: rgba(138,48,48,0.05);
+}
+.mo-fromurl-warn-head {
+  font-size: 13px;
+  color: #8A3030;
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+.mo-fromurl-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(15,21,35,0.8);
+  margin: 4px 0;
+  cursor: pointer;
+}
+.mo-fromurl-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.mo-fromurl-cancel {
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 13px;
+  border: 1px solid rgba(15,21,35,0.2);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+.mo-fromurl-cancel:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .mo-manage-link-row {
   display: flex;
   gap: 14px;
@@ -1421,14 +1724,14 @@ const PANEL_CSS = `
 .moc-mark-frame {
   width: 96px; height: 96px;
   border-radius: 4px; overflow: hidden;
-  border: 1.5px solid rgba(110,127,92,0.70);
-  outline: 1px solid rgba(110,127,92,0.35);
+  border: 1.5px solid rgba(76,107,69,0.70);
+  outline: 1px solid rgba(76,107,69,0.35);
   outline-offset: 5px;
   background: ${BG_CARD};
   display: flex; align-items: center; justify-content: center;
   padding: 14px; box-sizing: border-box;
 }
-.moc-mark-frame.is-portrait { padding: 0; background: rgba(110,127,92,0.05); }
+.moc-mark-frame.is-portrait { padding: 0; background: rgba(76,107,69,0.05); }
 .moc-mark-img { width: 100%; height: 100%; display: block; }
 .moc-mark-empty {
   cursor: pointer; padding: 8px;
@@ -1443,7 +1746,7 @@ const PANEL_CSS = `
 .moc-identity-body { flex: 1; min-width: 200px; }
 .moc-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 .moc-meta-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.moc-meta-sep { color: rgba(110,127,92,0.45); font-size: 13px; }
+.moc-meta-sep { color: rgba(76,107,69,0.45); font-size: 13px; }
 .moc-meta-pill {
   font-family: ${FONT_SC}; font-size: 13px; font-weight: 600;
   letter-spacing: 0.16em; text-transform: uppercase; color: ${TEXT_META};
@@ -1559,7 +1862,7 @@ const PANEL_CSS = `
 .moc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .moc-chip {
   font-family: ${FONT_SC}; font-size: 12px; letter-spacing: 0.1em;
-  color: ${GOLD_DK}; background: rgba(110,127,92,0.06);
+  color: ${GOLD_DK}; background: rgba(76,107,69,0.06);
   border: 1px solid ${GOLD_RULE}; border-radius: 40px;
   padding: 5px 13px; text-decoration: none;
 }
@@ -1601,7 +1904,7 @@ const PANEL_CSS = `
 }
 @media (max-width: 680px) { .mo-spine { position: static; } }
 .mo-spine-eyebrow {
-  font-family: 'IBM Plex Mono', Georgia, serif;
+  font-family: 'Cormorant SC', Georgia, serif;
   font-size: 14px;
   letter-spacing: 0.12em;
   text-transform: uppercase;

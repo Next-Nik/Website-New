@@ -27,7 +27,7 @@ function TabBar({ activeTab, onChange }) {
     <div style={{
       display: 'flex',
       gap: 0,
-      borderBottom: '1px solid rgba(110,127,92,0.18)',
+      borderBottom: '1px solid rgba(76,107,69,0.18)',
       marginBottom: '36px',
     }}>
       {TABS.map(tab => {
@@ -139,8 +139,8 @@ function LoadMoreButton({ onClick, page }) {
         fontSize: '13px',
         letterSpacing: '0.18em',
         color: gold,
-        background: 'rgba(110,127,92,0.05)',
-        border: '1px solid rgba(110,127,92,0.35)',
+        background: 'rgba(76,107,69,0.05)',
+        border: '1px solid rgba(76,107,69,0.35)',
         borderRadius: '40px',
         padding: '12px 28px',
         cursor: 'pointer',
@@ -166,7 +166,7 @@ function EndOfFeedNotice() {
     <div style={{
       textAlign: 'center',
       padding: '56px 24px 24px',
-      borderTop: '1px solid rgba(110,127,92,0.10)',
+      borderTop: '1px solid rgba(76,107,69,0.10)',
       marginTop: '32px',
     }}>
       <p style={{
@@ -197,8 +197,8 @@ function NotSignedIn() {
         </p>
         <button onClick={() => navigate('/login?redirect=/beta/feed')} style={{
           ...sc, fontSize: '13px', letterSpacing: '0.16em',
-          color: gold, background: 'rgba(110,127,92,0.05)',
-          border: '1px solid rgba(110,127,92,0.35)',
+          color: gold, background: 'rgba(76,107,69,0.05)',
+          border: '1px solid rgba(76,107,69,0.35)',
           borderRadius: '40px', padding: '11px 24px', cursor: 'pointer',
         }}>
           Sign in

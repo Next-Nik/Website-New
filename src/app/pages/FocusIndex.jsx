@@ -12,7 +12,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { TYPE_LABEL } from '../components/FocusSearch'
 import { body, sc, at } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 const gold    = at.brass
 const dark    = at.text
 const parch   = at.ground
@@ -229,8 +229,8 @@ export function FocusIndex() {
               to={`/focus/${parent.slug}`}
               style={{
                 ...sc, fontSize: '13px', letterSpacing: '0.16em',
-                color: gold, background: 'rgba(217,178,74,0.05)',
-                border: '1px solid rgba(217,178,74,0.55)',
+                color: gold, background: 'rgba(169,116,63,0.05)',
+                border: '1px solid rgba(169,116,63,0.55)',
                 borderRadius: '30px', padding: '8px 18px',
                 textDecoration: 'none', textTransform: 'uppercase',
               }}
@@ -276,7 +276,7 @@ export function FocusIndex() {
                     letterSpacing: '0.14em',
                     textTransform: 'uppercase',
                     color: active ? '#FFFFFF' : d.color,
-                    background: active ? d.color : 'rgba(234,241,237,0.04)',
+                    background: active ? d.color : 'rgba(38,36,32,0.04)',
                     border: '1.5px solid ' + d.color,
                     borderRadius: '20px',
                     padding: '6px 14px',
@@ -307,7 +307,7 @@ export function FocusIndex() {
               ...body, fontSize: '15px', color: dark,
               padding: '10px 16px',
               borderRadius: '8px',
-              border: '1.5px solid rgba(217,178,74,0.30)',
+              border: '1.5px solid rgba(169,116,63,0.30)',
               background: at.object, outline: 'none',
               width: '100%', maxWidth: '420px',
             }}
@@ -317,7 +317,7 @@ export function FocusIndex() {
               marginTop: '10px',
               maxWidth: '420px',
               background: at.object,
-              border: '1.5px solid rgba(217,178,74,0.30)',
+              border: '1.5px solid rgba(169,116,63,0.30)',
               borderRadius: '8px',
               maxHeight: '320px',
               overflowY: 'auto',
@@ -339,7 +339,7 @@ export function FocusIndex() {
                   style={{
                     display: 'flex', justifyContent: 'space-between',
                     alignItems: 'center', padding: '10px 16px',
-                    borderBottom: '1px solid rgba(217,178,74,0.10)',
+                    borderBottom: '1px solid rgba(169,116,63,0.10)',
                     textDecoration: 'none', color: dark,
                   }}
                 >
@@ -365,8 +365,8 @@ export function FocusIndex() {
             ...body, fontSize: '15px',
             color: at.meta,
             padding: '20px',
-            background: 'rgba(217,178,74,0.04)',
-            border: '1px dashed rgba(217,178,74,0.35)',
+            background: 'rgba(169,116,63,0.04)',
+            border: '1px dashed rgba(169,116,63,0.35)',
             borderRadius: '8px',
           }}>
             {totalCount === 0
@@ -403,7 +403,7 @@ export function FocusIndex() {
                         style={{
                           ...sc, fontSize: '13px', letterSpacing: '0.14em',
                           color: gold, background: 'none',
-                          border: '1px dashed rgba(217,178,74,0.45)',
+                          border: '1px dashed rgba(169,116,63,0.45)',
                           borderRadius: '20px',
                           padding: '7px 14px',
                           cursor: 'pointer', textTransform: 'uppercase',
@@ -419,7 +419,7 @@ export function FocusIndex() {
                         style={{
                           ...sc, fontSize: '13px', letterSpacing: '0.14em',
                           color: at.ghost, background: 'none',
-                          border: '1px dashed rgba(234,241,237,0.15)',
+                          border: '1px dashed rgba(38,36,32,0.15)',
                           borderRadius: '20px',
                           padding: '7px 14px',
                           cursor: 'pointer', textTransform: 'uppercase',
@@ -447,7 +447,7 @@ function ChildCard({ focus }) {
       gap: '6px',
       padding: '7px 14px',
       borderRadius: '20px',
-      border: '1px solid rgba(217,178,74,0.30)',
+      border: '1px solid rgba(169,116,63,0.30)',
       background: at.object,
     }}>
       <Link
@@ -459,7 +459,7 @@ function ChildCard({ focus }) {
       <Link
         to={'/focus/' + focus.slug}
         title={'Open ' + focus.name + "'s profile"}
-        style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: gold, textDecoration: 'none', padding: '0 4px', borderLeft: '1px solid rgba(217,178,74,0.20)' }}
+        style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: gold, textDecoration: 'none', padding: '0 4px', borderLeft: '1px solid rgba(169,116,63,0.20)' }}
       >
         OPEN
       </Link>

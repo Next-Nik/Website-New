@@ -117,11 +117,11 @@ export function BeginBuildGroupPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <button onClick={() => navigate('/begin/build/practice')}
-                style={{ ...SC, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: 'none', background: '#6E7F5C', color: '#FFFFFF', cursor: 'pointer' }}>
+                style={{ ...SC, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: 'none', background: '#4c6b45', color: '#FFFFFF', cursor: 'pointer' }}>
                 Bring another person  →
               </button>
               <button onClick={() => { setForm(EMPTY); setDone(false) }}
-                style={{ ...SC, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: '1.5px solid rgba(110,127,92,0.78)', background: 'rgba(110,127,92,0.05)', color: GOLD, cursor: 'pointer' }}>
+                style={{ ...SC, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: '1.5px solid rgba(76,107,69,0.78)', background: 'rgba(76,107,69,0.05)', color: GOLD, cursor: 'pointer' }}>
                 Bring another formation  →
               </button>
               <button onClick={() => navigate('/')}

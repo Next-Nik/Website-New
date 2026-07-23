@@ -25,11 +25,11 @@
 
 import { useMemo } from 'react'
 
-const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const display = { fontFamily: "'Lora', Georgia, serif" }
 
-const GOLD = '#26302A'
-const GOLD_LIGHT = '#6E7F5C'
+const GOLD = '#262420'
+const GOLD_LIGHT = '#4c6b45'
 const INK = '#0F1523'
 const PARCH = '#FAFAF7'
 
@@ -185,8 +185,8 @@ export function NavigatorWheel({
             position: 'absolute',
             top: '12px',
             right: '12px',
-            background: 'rgba(110,127,92,0.04)',
-            border: '1px solid rgba(110,127,92,0.40)',
+            background: 'rgba(76,107,69,0.04)',
+            border: '1px solid rgba(76,107,69,0.40)',
             borderRadius: '20px',
             padding: '4px 10px',
             cursor: 'pointer',

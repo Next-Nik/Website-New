@@ -37,14 +37,14 @@ import { CIV_DOMAINS, SUBDOMAIN_MAP_BETA, LENSES_PER_DOMAIN, SHOW_LENSES_PUBLIC 
 import { PRINCIPLES_ORDERED } from '../constants/principles'
 import { body, sc } from '../../lib/designTokens'
 
-const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
+const garamond = { fontFamily: "'Lora', Georgia, serif" }
 
 // ─── Form primitives ───────────────────────────────────────
 
 function Eyebrow({ children, style = {} }) {
   return (
     <span style={{
-      ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#26302A',
+      ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#262420',
       textTransform: 'uppercase', display: 'block', marginBottom: '8px',
       ...style,
     }}>
@@ -72,29 +72,29 @@ function FieldGroup({ children, style }) {
 function TextInput({ value, onChange, placeholder }) {
   return (
     <input type="text" value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-      style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '11px 14px', borderRadius: '10px', border: '1px solid rgba(110,127,92,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', boxSizing: 'border-box' }} />
+      style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '11px 14px', borderRadius: '10px', border: '1px solid rgba(76,107,69,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', boxSizing: 'border-box' }} />
   )
 }
 
 function TextArea({ value, onChange, placeholder, rows = 4 }) {
   return (
     <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows}
-      style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '12px 14px', borderRadius: '10px', border: '1px solid rgba(110,127,92,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65, boxSizing: 'border-box' }} />
+      style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '12px 14px', borderRadius: '10px', border: '1px solid rgba(76,107,69,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65, boxSizing: 'border-box' }} />
   )
 }
 
-function ChipToggle({ label, active, onClick, color = '#26302A' }) {
+function ChipToggle({ label, active, onClick, color = '#262420' }) {
   return (
     <button type="button" onClick={onClick} aria-pressed={active}
       style={{
         ...sc, fontSize: '13px', letterSpacing: '0.04em',
         color: active ? color : 'rgba(15,21,35,0.72)',
-        background: active ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
-        border: active ? `1px solid ${color}` : '1px solid rgba(110,127,92,0.25)',
+        background: active ? 'rgba(76,107,69,0.08)' : '#FFFFFF',
+        border: active ? `1px solid ${color}` : '1px solid rgba(76,107,69,0.25)',
         borderRadius: '40px', padding: '5px 12px', cursor: 'pointer',
         fontWeight: active ? 600 : 400, transition: 'background 120ms ease',
       }}
-      onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'rgba(110,127,92,0.04)' }}
+      onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'rgba(76,107,69,0.04)' }}
       onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = '#FFFFFF' }}>
       {label}
     </button>
@@ -333,11 +333,11 @@ export default function PracticeContribute() {
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link to={`/practice/${savedSlug}`}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#FFFFFF', background: '#0F1523', padding: '11px 24px', borderRadius: '40px', textDecoration: 'none', fontWeight: 600 }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#FFFFFF', background: '#3c5637', padding: '11px 24px', borderRadius: '40px', textDecoration: 'none', fontWeight: 600 }}>
               View the practice
             </Link>
             <button onClick={() => { setForm(EMPTY); setSavedSlug(null); window.scrollTo({ top: 0 }) }}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.40)', borderRadius: '40px', padding: '11px 24px', cursor: 'pointer' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#262420', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.40)', borderRadius: '40px', padding: '11px 24px', cursor: 'pointer' }}>
               Contribute another
             </button>
             <Link to="/practices"
@@ -445,7 +445,7 @@ export default function PracticeContribute() {
                       padding: '10px 18px', borderRadius: '40px', cursor: 'pointer',
                       color: isOn ? k.color : 'rgba(15,21,35,0.72)',
                       background: isOn ? `${k.color}10` : '#FFFFFF',
-                      border: isOn ? `1px solid ${k.color}` : '1px solid rgba(110,127,92,0.25)',
+                      border: isOn ? `1px solid ${k.color}` : '1px solid rgba(76,107,69,0.25)',
                       fontWeight: isOn ? 600 : 400,
                     }}>
                     {k.label}
@@ -454,7 +454,7 @@ export default function PracticeContribute() {
               })}
             </div>
             {kindCfg && (
-              <div style={{ marginTop: '12px', padding: '10px 14px', background: 'rgba(110,127,92,0.04)', border: '1px solid rgba(110,127,92,0.20)', borderRadius: '8px' }}>
+              <div style={{ marginTop: '12px', padding: '10px 14px', background: 'rgba(76,107,69,0.04)', border: '1px solid rgba(76,107,69,0.20)', borderRadius: '8px' }}>
                 <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: 0 }}>
                   {kindCfg.contributePrompt}
                 </p>
@@ -472,7 +472,7 @@ export default function PracticeContribute() {
                 set('secondary_subdomains', [])
                 set('lenses', [])
               }}
-              style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '11px 14px', borderRadius: '10px', border: '1px solid rgba(110,127,92,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', boxSizing: 'border-box' }}>
+              style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '11px 14px', borderRadius: '10px', border: '1px solid rgba(76,107,69,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', boxSizing: 'border-box' }}>
               <option value="">-- Select primary domain --</option>
               {CIV_DOMAINS.map(d => (
                 <option key={d.slug} value={d.slug}>{d.label}</option>
@@ -502,7 +502,7 @@ export default function PracticeContribute() {
               <Eyebrow>Primary subdomain</Eyebrow>
               <Hint>Optional. Which substrate within the domain does this practice touch most centrally?</Hint>
               <select value={form.primary_subdomain} onChange={e => set('primary_subdomain', e.target.value)}
-                style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '11px 14px', borderRadius: '10px', border: '1px solid rgba(110,127,92,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', boxSizing: 'border-box' }}>
+                style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '11px 14px', borderRadius: '10px', border: '1px solid rgba(76,107,69,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', boxSizing: 'border-box' }}>
                 <option value="">-- None --</option>
                 {subdomainOptions.map(s => (
                   <option key={s.value} value={s.value}>{s.label}</option>
@@ -549,7 +549,7 @@ export default function PracticeContribute() {
                     set('problem_chains', next)
                   }}
                   placeholder="e.g. cultural erasure &gt; artisan tradition loss &gt; indigenous textile transmission"
-                  style={{ ...body, fontSize: '14px', color: '#0F1523', padding: '9px 12px', borderRadius: '8px', border: '1px solid rgba(110,127,92,0.25)', background: '#FFFFFF', outline: 'none', flex: 1, boxSizing: 'border-box' }} />
+                  style={{ ...body, fontSize: '14px', color: '#0F1523', padding: '9px 12px', borderRadius: '8px', border: '1px solid rgba(76,107,69,0.25)', background: '#FFFFFF', outline: 'none', flex: 1, boxSizing: 'border-box' }} />
                 {form.problem_chains.length > 1 && (
                   <button type="button"
                     onClick={() => {
@@ -564,7 +564,7 @@ export default function PracticeContribute() {
             ))}
             <button type="button"
               onClick={() => set('problem_chains', [...form.problem_chains, ''])}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, marginTop: '4px' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#262420', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, marginTop: '4px' }}>
               + Add another chain
             </button>
           </FieldGroup>
@@ -633,7 +633,7 @@ export default function PracticeContribute() {
                   <input type="checkbox"
                     checked={form.contributor_roles.includes(r.slug)}
                     onChange={() => toggleArray('contributor_roles', r.slug)}
-                    style={{ width: '16px', height: '16px', accentColor: '#26302A', cursor: 'pointer' }} />
+                    style={{ width: '16px', height: '16px', accentColor: '#262420', cursor: 'pointer' }} />
                   <span style={{ ...body, fontSize: '15px', color: '#0F1523' }}>{r.label}</span>
                 </label>
               ))}
@@ -648,7 +648,7 @@ export default function PracticeContribute() {
                 <input type="checkbox"
                   checked={form.attribute_publicly}
                   onChange={e => set('attribute_publicly', e.target.checked)}
-                  style={{ width: '16px', height: '16px', accentColor: '#26302A', cursor: 'pointer', marginTop: '3px' }} />
+                  style={{ width: '16px', height: '16px', accentColor: '#262420', cursor: 'pointer', marginTop: '3px' }} />
                 <span style={{ ...body, fontSize: '14px', color: '#0F1523', lineHeight: 1.5 }}>
                   Display my name as the contributor. (Default on.)
                 </span>
@@ -662,12 +662,12 @@ export default function PracticeContribute() {
           </FieldGroup>
 
           {/* Submit */}
-          <div style={{ paddingTop: '20px', borderTop: '1px solid rgba(110,127,92,0.18)', display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+          <div style={{ paddingTop: '20px', borderTop: '1px solid rgba(76,107,69,0.18)', display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
             <button type="submit" disabled={saving}
               style={{
                 ...sc, fontSize: '13px', letterSpacing: '0.16em',
                 padding: '13px 30px', borderRadius: '40px', border: 'none',
-                background: '#0F1523', color: '#FFFFFF', cursor: saving ? 'default' : 'pointer', fontWeight: 600,
+                background: '#3c5637', color: '#FFFFFF', cursor: saving ? 'default' : 'pointer', fontWeight: 600,
                 opacity: saving ? 0.6 : 1,
               }}>
               {saving ? 'Saving…' : 'Add this practice'}

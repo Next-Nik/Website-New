@@ -52,8 +52,8 @@ export function TermsAcceptanceModal() {
       }}>
 
         {/* Header */}
-        <div style={{ padding: '36px 40px 20px', borderBottom: '1px solid rgba(110,127,92,0.15)' }}>
-          <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: '#26302A', display: 'block', marginBottom: '12px' }}>
+        <div style={{ padding: '36px 40px 20px', borderBottom: '1px solid rgba(76,107,69,0.15)' }}>
+          <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: '#262420', display: 'block', marginBottom: '12px' }}>
             Before you continue
           </span>
           <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,32px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.15, margin: '0 0 12px' }}>
@@ -75,7 +75,7 @@ export function TermsAcceptanceModal() {
         </div>
 
         {/* Footer with checkbox + button */}
-        <div style={{ padding: '24px 40px 32px', borderTop: '1px solid rgba(110,127,92,0.15)', background: '#FAFAF7' }}>
+        <div style={{ padding: '24px 40px 32px', borderTop: '1px solid rgba(76,107,69,0.15)', background: '#FAFAF7' }}>
 
           <label style={{
             display: 'flex', alignItems: 'flex-start', gap: '12px',
@@ -88,7 +88,7 @@ export function TermsAcceptanceModal() {
               style={{
                 marginTop: '4px',
                 width: '18px', height: '18px',
-                accentColor: '#26302A',
+                accentColor: '#262420',
                 cursor: 'pointer',
               }}
             />
@@ -107,7 +107,7 @@ export function TermsAcceptanceModal() {
               padding: '14px 32px',
               borderRadius: '40px',
               border: 'none',
-              background: !agreed || accepting ? 'rgba(110,127,92,0.30)' : '#6E7F5C',
+              background: !agreed || accepting ? 'rgba(76,107,69,0.30)' : '#4c6b45',
               color: '#FFFFFF',
               cursor: !agreed || accepting ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s',

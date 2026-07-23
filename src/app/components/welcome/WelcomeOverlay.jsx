@@ -333,16 +333,16 @@ const WELCOME_CSS = `
   --bg-parchment:  #FAFAF7;
   --bg-page:       #FFFFFF;
   --bg-ink:        #0F1523;
-  --gold:          #6E7F5C;
-  --gold-dk:       #26302A;
-  --gold-rule:     rgba(110,127,92, 0.20);
+  --gold:          #4c6b45;
+  --gold-dk:       #262420;
+  --gold-rule:     rgba(76,107,69, 0.20);
   --text-ink:      #0F1523;
   --text-meta:     rgba(15, 21, 35, 0.72);
   --text-faint:    rgba(15, 21, 35, 0.40);
   --text-white:    #FFFFFF;
-  --font-display:  'Fraunces', Georgia, serif;
-  --font-sc:       'IBM Plex Mono', Georgia, serif;
-  --font-body:     'Newsreader', Georgia, serif;
+  --font-display:  'Lora', Georgia, serif;
+  --font-sc:       'Cormorant SC', Georgia, serif;
+  --font-body:     'Lora', Georgia, serif;
 
   position: fixed;
   inset: 0;
@@ -429,11 +429,11 @@ const WELCOME_CSS = `
      right give the surface depth without disturbing the meditative
      pacing of the welcome beats. */
   background:
-    radial-gradient(ellipse 60% 40% at 18% 12%, rgba(110,127,92, 0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 40% at 18% 12%, rgba(76,107,69, 0.07) 0%, transparent 65%),
     radial-gradient(ellipse 50% 36% at 82% 88%, rgba(74, 100, 168, 0.16) 0%, transparent 70%),
     linear-gradient(180deg, #1A2030 0%, #131826 55%, #0F1523 100%);
   color: var(--text-white);
-  border-color: rgba(110,127,92, 0.28);
+  border-color: rgba(76,107,69, 0.28);
 }
 .overlay-card.dark .eyebrow,
 .overlay-card.dark .closing-eyebrow,
@@ -458,10 +458,10 @@ const WELCOME_CSS = `
 .overlay-card.dark .kin-name .meet { color: var(--gold); }
 .overlay-card.dark .next-card {
   background: rgba(255,255,255,0.04);
-  border-color: rgba(110,127,92,0.32);
+  border-color: rgba(76,107,69,0.32);
 }
 .overlay-card.dark .controls {
-  border-top-color: rgba(110,127,92,0.32);
+  border-top-color: rgba(76,107,69,0.32);
   background: linear-gradient(to bottom, rgba(15,21,35,0) 0%, var(--bg-ink) 30%);
 }
 .overlay-card.dark .back-control { color: var(--text-white); }
@@ -478,7 +478,7 @@ const WELCOME_CSS = `
 .overlay-card.dark .label { fill: var(--text-white); opacity: 0.72; }
 .overlay-card.dark .label-active { fill: var(--gold); opacity: 1; }
 .overlay-card.dark .beat-body .accent { color: var(--gold); }
-.overlay-card.dark .progress-dot { background: rgba(110,127,92,0.32); }
+.overlay-card.dark .progress-dot { background: rgba(76,107,69,0.32); }
 .overlay-card.dark .progress-dot.active { background: var(--gold); }
 
 /* Back control (top-left of card) */
@@ -756,16 +756,16 @@ const WELCOME_CSS = `
   padding: 11px 28px;
   cursor: pointer;
   transition: background 0.18s, color 0.18s, transform 0.18s;
-  box-shadow: 0 2px 8px rgba(110,127,92, 0.10);
+  box-shadow: 0 2px 8px rgba(76,107,69, 0.10);
 }
 .next-btn:hover { background: var(--gold); color: white; transform: translateY(-1px); }
 .next-btn.primary { background: var(--gold); color: white; }
 .next-btn.primary:hover { background: var(--gold-dk); }
 
 /* SVG wheel pieces */
-.horizon-spoke { stroke: rgba(110,127,92,0.45); stroke-width: 1; }
-.horizon-ring  { fill: none; stroke: rgba(110,127,92,0.32); stroke-width: 1; stroke-dasharray: 3 3; }
-.current-poly  { fill: rgba(110,127,92,0.14); stroke: var(--gold); stroke-width: 1.5; stroke-linejoin: round; }
+.horizon-spoke { stroke: rgba(76,107,69,0.45); stroke-width: 1; }
+.horizon-ring  { fill: none; stroke: rgba(76,107,69,0.32); stroke-width: 1; stroke-dasharray: 3 3; }
+.current-poly  { fill: rgba(76,107,69,0.14); stroke: var(--gold); stroke-width: 1.5; stroke-linejoin: round; }
 .label {
   font-family: var(--font-sc);
   font-size: 13px;
@@ -782,7 +782,7 @@ const WELCOME_CSS = `
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.18em;
-  fill: rgba(110,127,92,0.55);
+  fill: rgba(76,107,69,0.55);
   text-transform: uppercase;
 }
 .scale-label-lit { fill: var(--gold); font-size: 12px; }

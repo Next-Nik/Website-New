@@ -24,7 +24,7 @@ export function ToolCompassPanel() {
           transform: 'translateY(-50%)',
           zIndex: 1500,
           background: '#FAFAF7',
-          border: '1.5px solid rgba(110,127,92,0.78)',
+          border: '1.5px solid rgba(76,107,69,0.78)',
           width: '44px',
           height: '120px',
           cursor: 'pointer',
@@ -41,10 +41,10 @@ export function ToolCompassPanel() {
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
-          fontFamily: "'IBM Plex Mono', Georgia, serif",
+          fontFamily: "'Cormorant SC', Georgia, serif",
           fontSize: '13px',
           letterSpacing: '0.14em',
-          color: '#26302A',
+          color: '#262420',
           textTransform: 'uppercase',
           userSelect: 'none',
         }}>
@@ -70,7 +70,7 @@ export function ToolCompassPanel() {
             width: 'min(480px, 92vw)',
             height: '100%',
             background: '#FAFAF7',
-            borderRight: '1.5px solid rgba(110,127,92,0.3)',
+            borderRight: '1.5px solid rgba(76,107,69,0.3)',
             overflowY: 'auto',
             display: 'flex',
             flexDirection: 'column',
@@ -79,7 +79,7 @@ export function ToolCompassPanel() {
             {/* Header */}
             <div style={{
               padding: '28px 24px 20px',
-              borderBottom: '1px solid rgba(110,127,92,0.18)',
+              borderBottom: '1px solid rgba(76,107,69,0.18)',
               position: 'sticky',
               top: 0,
               background: '#FAFAF7',
@@ -89,13 +89,13 @@ export function ToolCompassPanel() {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#262420', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   Horizon Suite
                 </span>
-                <h2 style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
+                <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
                   Where do I start?
                 </h2>
-                <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                   Five tools. One ecosystem. The right entry depends on where you are.
                 </p>
               </div>
@@ -120,7 +120,7 @@ export function ToolCompassPanel() {
 
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
-              <p style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
+              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
                 Begin with North Star — it reads where you are and points you somewhere real. Everything else follows from honest location.
               </p>
             </div>
@@ -136,8 +136,8 @@ export function ToolCompassPanel() {
                     display: 'block',
                     padding: '16px 18px',
                     borderRadius: '14px',
-                    background: 'rgba(110,127,92,0.02)',
-                    border: '1.5px solid rgba(110,127,92,0.78)',
+                    background: 'rgba(76,107,69,0.02)',
+                    border: '1.5px solid rgba(76,107,69,0.78)',
                     textDecoration: 'none',
                     boxShadow: '0 1px 4px rgba(15,21,35,0.72)',
                     transition: 'transform 0.15s, box-shadow 0.15s, border-color 0.2s',
@@ -145,26 +145,26 @@ export function ToolCompassPanel() {
                   onMouseEnter={e => {
                     e.currentTarget.style.transform = 'translateY(-2px)'
                     e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.72)'
-                    e.currentTarget.style.borderColor = 'rgba(110,127,92,1)'
-                    e.currentTarget.style.background = 'rgba(110,127,92,0.06)'
+                    e.currentTarget.style.borderColor = 'rgba(76,107,69,1)'
+                    e.currentTarget.style.background = 'rgba(76,107,69,0.06)'
                   }}
                   onMouseLeave={e => {
                     e.currentTarget.style.transform = ''
                     e.currentTarget.style.boxShadow = '0 1px 4px rgba(15,21,35,0.72)'
-                    e.currentTarget.style.borderColor = 'rgba(110,127,92,0.78)'
-                    e.currentTarget.style.background = 'rgba(110,127,92,0.02)'
+                    e.currentTarget.style.borderColor = 'rgba(76,107,69,0.78)'
+                    e.currentTarget.style.background = 'rgba(76,107,69,0.02)'
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#26302A', textTransform: 'uppercase' }}>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#262420', textTransform: 'uppercase' }}>
                       {tool.eyebrow}
                     </span>
-                    <span style={{ color: '#26302A', fontSize: '1.3125rem' }}>→</span>
+                    <span style={{ color: '#262420', fontSize: '1.3125rem' }}>→</span>
                   </div>
-                  <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '1.25rem', color: '#26302A', marginBottom: '6px', lineHeight: 1.2 }}>
+                  <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: '#262420', marginBottom: '6px', lineHeight: 1.2 }}>
                     {tool.label}
                   </div>
-                  <div style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
+                  <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
                     {tool.hook}
                   </div>
                 </Link>
@@ -183,7 +183,7 @@ export function ToolCompassPanel() {
               transform: 'translateY(-50%)',
               zIndex: 2100,
               background: '#FAFAF7',
-              border: '1.5px solid rgba(110,127,92,0.78)',
+              border: '1.5px solid rgba(76,107,69,0.78)',
               borderLeft: 'none',
               width: '44px',
               height: '120px',
@@ -196,7 +196,7 @@ export function ToolCompassPanel() {
               borderRadius: '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '15px', color: '#26302A' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', color: '#262420' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

@@ -12,8 +12,8 @@
 //   visibility        — { [session_id]: 'private' | 'public' | 'sprint_buddies' | 'friends' }
 //   onToggleVisibility — (sessionId, currentVisibility) => void
 
-const body = { fontFamily: "'Newsreader', Georgia, serif" }
-const sc   = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const SLOTS = [
   { index: 0, label: 'Personal',       hint: 'A sprint pointed inward.' },
@@ -39,7 +39,7 @@ function SlotEmpty({ slot }) {
   return (
     <div style={{
       padding: '20px 18px',
-      border: '1px dashed rgba(110,127,92,0.20)',
+      border: '1px dashed rgba(76,107,69,0.20)',
       borderRadius: '14px',
       minHeight: '120px',
       display: 'flex',
@@ -72,7 +72,7 @@ function SlotEmpty({ slot }) {
           ...sc,
           fontSize: '13px',
           letterSpacing: '0.12em',
-          color: '#26302A',
+          color: '#262420',
           textDecoration: 'none',
           display: 'inline-block',
         }}
@@ -99,7 +99,7 @@ function VisibilitySelect({ value, onChange }) {
         ...sc,
         fontSize: '13px',
         letterSpacing: '0.1em',
-        color: value === 'public' ? '#26302A' : 'rgba(15,21,35,0.55)',
+        color: value === 'public' ? '#262420' : 'rgba(15,21,35,0.55)',
         background: 'transparent',
         border: 'none',
         cursor: 'pointer',
@@ -126,8 +126,8 @@ function SlotFilled({ slot, session, visibilityValue, onToggleVisibility }) {
   return (
     <div style={{
       padding: '16px 18px',
-      background: 'rgba(110,127,92,0.05)',
-      border: '1px solid rgba(110,127,92,0.20)',
+      background: 'rgba(76,107,69,0.05)',
+      border: '1px solid rgba(76,107,69,0.20)',
       borderRadius: '14px',
       position: 'relative',
     }}>
@@ -137,7 +137,7 @@ function SlotFilled({ slot, session, visibilityValue, onToggleVisibility }) {
           ...sc,
           fontSize: '13px',
           letterSpacing: '0.18em',
-          color: '#26302A',
+          color: '#262420',
           textTransform: 'uppercase',
         }}>
           {slot.label}
@@ -161,8 +161,8 @@ function SlotFilled({ slot, session, visibilityValue, onToggleVisibility }) {
               fontSize: '13px',
               letterSpacing: '0.08em',
               color: 'rgba(15,21,35,0.72)',
-              background: 'rgba(110,127,92,0.05)',
-              border: '1px solid rgba(110,127,92,0.20)',
+              background: 'rgba(76,107,69,0.05)',
+              border: '1px solid rgba(76,107,69,0.20)',
               borderRadius: '40px',
               padding: '2px 8px',
             }}>
@@ -195,7 +195,7 @@ function SlotFilled({ slot, session, visibilityValue, onToggleVisibility }) {
         )}
         <a
           href="/tools/target-sprint"
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textDecoration: 'none', marginLeft: 'auto' }}
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#262420', textDecoration: 'none', marginLeft: 'auto' }}
         >
           Open sprint
         </a>
@@ -218,7 +218,7 @@ export default function SprintSlate({ sessions = [], visibility = {}, onToggleVi
     <div>
       {/* Section heading */}
       <div style={{ marginBottom: '16px' }}>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#262420', textTransform: 'uppercase' }}>
           Sprint Slate
         </span>
       </div>

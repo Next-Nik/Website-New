@@ -45,7 +45,7 @@ export default function BroadcastComposer({ call, userId, colour }) {
 
   return (
     <div style={{ marginTop: '20px', marginBottom: '20px' }}>
-      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(234,241,237,0.58)', textTransform: 'uppercase', marginBottom: '8px' }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(38,36,32,0.58)', textTransform: 'uppercase', marginBottom: '8px' }}>
         Message everyone running this
       </div>
       <div style={{ border: `1.5px solid ${colour}`, borderRadius: '14px', background: tokens.bgCard, padding: '18px' }}>
@@ -56,7 +56,7 @@ export default function BroadcastComposer({ call, userId, colour }) {
           style={{ width: '100%', minHeight: '88px', border: `1px solid ${at.verdigrisEdge}`, borderRadius: '10px', background: at.object, padding: '13px 15px', ...bodyFont, fontSize: '15px', lineHeight: 1.55, color: at.text, resize: 'vertical', outline: 'none', boxSizing: 'border-box' }}
         />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginTop: '13px', flexWrap: 'wrap' }}>
-          <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: 'rgba(234,241,237,0.58)', display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+          <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: 'rgba(38,36,32,0.58)', display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
             <input type="checkbox" checked={email} onChange={e => setEmail(e.target.checked)} style={{ accentColor: colour }} />
             Also send as an email digest
           </label>

@@ -24,7 +24,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { useAuth } from '../../hooks/useAuth'
 import { ComposeMessage } from './mission-control/ComposeMessage'
 
-const sc = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 export function MessageButton({ actor }) {
   const { user } = useAuth()
@@ -92,13 +92,13 @@ export function MessageButton({ actor }) {
           ...sc, fontSize: '13px', letterSpacing: '0.14em',
           padding: '10px 22px', borderRadius: '40px',
           border: 'none',
-          background: isUnclaimed ? 'rgba(110,127,92,0.20)' : '#6E7F5C',
+          background: isUnclaimed ? 'rgba(76,107,69,0.20)' : '#4c6b45',
           color: '#FFFFFF',
           cursor: isUnclaimed ? 'not-allowed' : 'pointer',
           transition: 'background 0.15s ease',
         }}
-        onMouseEnter={e => { if (!isUnclaimed) e.currentTarget.style.background = '#26302A' }}
-        onMouseLeave={e => { if (!isUnclaimed) e.currentTarget.style.background = '#6E7F5C' }}
+        onMouseEnter={e => { if (!isUnclaimed) e.currentTarget.style.background = '#262420' }}
+        onMouseLeave={e => { if (!isUnclaimed) e.currentTarget.style.background = '#4c6b45' }}
       >
         Message {actor.name}
       </button>

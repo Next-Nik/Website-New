@@ -1,6 +1,6 @@
 // src/app/pages/Add.jsx
 //
-// Public "Add to the ecosystem" page. Requires login.
+// Public "Add to the Atlas" page. Requires login.
 //
 // Structure:
 //   1. Optional URL autofill at top — paste URL, AI reads site and
@@ -12,7 +12,7 @@
 //      All go live immediately.
 //
 // Provenance:
-//   "I'm adding to the ecosystem" → seeded_by: 'community', profile_owner: null
+//   "I'm adding this to the Atlas" → seeded_by: 'community', profile_owner: null
 //   "I represent this org"        → seeded_by: 'self',      profile_owner: user.id
 
 import { logActivity } from '../components/pulse/logActivity'
@@ -64,12 +64,6 @@ const ACTOR_TYPES = [
   { value: 'resource',     label: 'Resource' },
 ]
 
-const LABEL_COLORS = {
-  Planet:       { color: '#2A4A8A', bg: 'rgba(42,74,138,0.08)',  border: 'rgba(42,74,138,0.25)' },
-  Self:         { color: '#2A6B3A', bg: 'rgba(42,107,58,0.08)',  border: 'rgba(42,107,58,0.25)' },
-  Practitioner: { color: at.brass, bg: 'rgba(217,178,74,0.08)', border: 'rgba(217,178,74,0.25)' },
-}
-
 const EMPTY_FORM = {
   name: '', type: 'organisation', tagline: '', image_url: '',
   website: '', primary_domain: '',
@@ -115,7 +109,7 @@ function TextInput({ value, onChange, onBlur, placeholder, type = 'text' }) {
       onBlur={onBlur}
       placeholder={placeholder}
       style={{ ...body, fontSize: '15px', color: dark, padding: '10px 14px',
-        borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)',
+        borderRadius: '8px', border: '1.5px solid rgba(169,116,63,0.30)',
         background: at.object, outline: 'none', width: '100%', boxSizing: 'border-box' }} />
   )
 }
@@ -124,7 +118,7 @@ function SelectInput({ value, onChange, options }) {
   return (
     <select value={value ?? ''} onChange={e => onChange(e.target.value)}
       style={{ ...body, fontSize: '15px', color: dark, padding: '10px 14px',
-        borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)',
+        borderRadius: '8px', border: '1.5px solid rgba(169,116,63,0.30)',
         background: at.object, outline: 'none', width: '100%' }}>
       {options.map(o => <option key={o.value ?? o} value={o.value ?? o}>{o.label ?? o}</option>)}
     </select>
@@ -135,27 +129,14 @@ function Field({ children, style }) {
   return <div style={{ marginBottom: '22px', ...style }}>{children}</div>
 }
 
-// ── Label badge for extra proposals ───────────────────────────
-
-function LabelBadge({ label }) {
-  const cfg = LABEL_COLORS[label] || LABEL_COLORS.Planet
-  return (
-    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
-      padding: '2px 10px', borderRadius: '40px',
-      color: cfg.color, background: cfg.bg, border: `1px solid ${cfg.border}` }}>
-      {label}
-    </span>
-  )
-}
-
 // ── Duplicate card ─────────────────────────────────────────────
 
 function DuplicateCard({ actor }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       gap: '12px', padding: '10px 14px', marginBottom: '6px',
-      background: 'rgba(217,178,74,0.04)', borderRadius: '8px',
-      border: '1px solid rgba(217,178,74,0.22)' }}>
+      background: 'rgba(169,116,63,0.04)', borderRadius: '8px',
+      border: '1px solid rgba(169,116,63,0.22)' }}>
       <div>
         <div style={{ ...body, fontSize: '14px', color: dark }}>{actor.name}</div>
         {actor.location_name && (
@@ -167,7 +148,7 @@ function DuplicateCard({ actor }) {
           <Link to={`/org/${actor.slug || actor.id}/claim`} target="_blank"
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.object,
               textDecoration: 'none', whiteSpace: 'nowrap', padding: '5px 12px',
-              borderRadius: '40px', border: '1px solid rgba(217,178,74,0.55)',
+              borderRadius: '40px', border: '1px solid rgba(169,116,63,0.55)',
               background: gold }}>
             Claim it
           </Link>
@@ -175,8 +156,8 @@ function DuplicateCard({ actor }) {
         <Link to={`/org/${actor.slug || actor.id}`} target="_blank"
           style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
             textDecoration: 'none', whiteSpace: 'nowrap', padding: '5px 12px',
-            borderRadius: '40px', border: '1px solid rgba(217,178,74,0.35)',
-            background: 'rgba(217,178,74,0.05)' }}>
+            borderRadius: '40px', border: '1px solid rgba(169,116,63,0.35)',
+            background: 'rgba(169,116,63,0.05)' }}>
           View
         </Link>
       </div>
@@ -190,22 +171,22 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
   const primaryDomain = proposal.domains?.[0] || proposal.domain_id || ''
   return (
     <div style={{
-      background: checked ? at.object : 'rgba(234,241,237,0.04)',
-      border: checked ? '1.5px solid rgba(217,178,74,0.40)' : '1.5px solid rgba(217,178,74,0.16)',
+      background: checked ? at.object : 'rgba(38,36,32,0.04)',
+      border: checked ? '1.5px solid rgba(169,116,63,0.40)' : '1.5px solid rgba(169,116,63,0.16)',
       borderRadius: '10px', padding: '16px 18px', marginBottom: '10px',
       transition: 'all 0.15s ease',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: checked ? '14px' : 0 }}>
         <button type="button" onClick={onToggle}
           style={{ width: '20px', height: '20px', borderRadius: '5px', flexShrink: 0,
-            border: checked ? '2px solid at.brass' : '2px solid rgba(217,178,74,0.35)',
+            border: checked ? '2px solid at.brass' : '2px solid rgba(169,116,63,0.35)',
             background: checked ? at.brass : at.object,
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {checked && <span style={{ color: at.object, fontSize: '13px', lineHeight: 1 }}>✓</span>}
         </button>
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
-          color: gold, background: 'rgba(217,178,74,0.08)',
-          border: '1px solid rgba(217,178,74,0.25)',
+          color: gold, background: 'rgba(169,116,63,0.08)',
+          border: '1px solid rgba(169,116,63,0.25)',
           padding: '2px 10px', borderRadius: '40px' }}>
           {proposal.type || 'organisation'}
         </span>
@@ -234,7 +215,7 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <div>
               <FieldLabel>Website</FieldLabel>
-              <TextInput value={proposal.website} onChange={v => onChange('website', v)} placeholder="https://..." />
+              <TextInput value={proposal.website} onChange={v => onChange('website', v)} placeholder="https://…" />
             </div>
             <div>
               <FieldLabel>Location</FieldLabel>
@@ -246,7 +227,7 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
             <textarea value={proposal.description ?? ''} rows={2}
               onChange={e => onChange('description', e.target.value)}
               style={{ ...body, fontSize: '14px', color: dark, padding: '8px 12px',
-                borderRadius: '7px', border: '1.5px solid rgba(217,178,74,0.28)',
+                borderRadius: '7px', border: '1.5px solid rgba(169,116,63,0.28)',
                 background: at.object, outline: 'none', width: '100%',
                 resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box' }} />
           </div>
@@ -256,8 +237,8 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', paddingTop: '4px' }}>
               {proposal.relationships?.map((r, idx) => (
                 <span key={idx} style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
-                  color: at.ghost, background: 'rgba(217,178,74,0.06)',
-                  border: '1px solid rgba(217,178,74,0.20)',
+                  color: at.ghost, background: 'rgba(169,116,63,0.06)',
+                  border: '1px solid rgba(169,116,63,0.20)',
                   borderRadius: '40px', padding: '2px 9px' }}>
                   {r.to_name}
                 </span>
@@ -417,7 +398,7 @@ export function AddPage() {
       if (data.error) { setReadErr(data.message || 'Could not read the site.'); return }
 
       const results = data.results || []
-      if (!results.length) { setReadErr('No actor found at that URL.'); return }
+      if (!results.length) { setReadErr('We could not find a person, organisation, or project at that URL.'); return }
 
       // First result populates the main form. Build from a clean slate rather
       // than merging into current state — a re-read must fully replace a prior
@@ -505,7 +486,7 @@ export function AddPage() {
   // picked wrong (July 2026). Hidden in owned-only mode: the only valid
   // outcome there is a profile the person controls.
   const representsToggle = !mineMode && (
-        <div style={{ background: at.object, border: '1.5px solid rgba(217,178,74,0.22)',
+        <div style={{ background: at.object, border: '1.5px solid rgba(169,116,63,0.22)',
           borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em',
             color: at.ghost, textTransform: 'uppercase', marginBottom: '12px' }}>
@@ -537,7 +518,7 @@ export function AddPage() {
               const selfHint = isPractitioner
                 ? "I'm adding my own practitioner profile. I'll own and manage it."
                 : `I'm adding my own ${targetWord}. I'll be the owner and can manage it directly.`
-              const otherLabel = "I'm adding this to the ecosystem"
+              const otherLabel = "I'm adding this to the Atlas"
               const otherHint  = isPractitioner
                 ? `I don't represent this person. NextUs holds the entry in trust until they claim it.`
                 : `I don't run this ${targetWord}. NextUs holds the entry in trust until claimed.`
@@ -550,11 +531,11 @@ export function AddPage() {
                 style={{ display: 'flex', alignItems: 'flex-start', gap: '12px',
                   padding: '13px 15px', borderRadius: '9px', cursor: 'pointer', textAlign: 'left',
                   border: represents === opt.val
-                    ? '1.5px solid rgba(217,178,74,0.55)' : '1.5px solid rgba(217,178,74,0.18)',
-                  background: represents === opt.val ? 'rgba(217,178,74,0.04)' : at.object }}>
+                    ? '1.5px solid rgba(169,116,63,0.55)' : '1.5px solid rgba(169,116,63,0.18)',
+                  background: represents === opt.val ? 'rgba(169,116,63,0.04)' : at.object }}>
                 <div style={{ width: '17px', height: '17px', borderRadius: '50%', flexShrink: 0,
                   marginTop: '2px',
-                  border: represents === opt.val ? `5px solid ${at.brass}` : '2px solid rgba(217,178,74,0.38)',
+                  border: represents === opt.val ? `5px solid ${at.brass}` : '2px solid rgba(169,116,63,0.38)',
                   background: at.object, transition: 'all 0.15s ease' }} />
                 <div>
                   <div style={{ ...body, fontSize: '15px', color: dark, lineHeight: 1.3 }}>{opt.label}</div>
@@ -695,12 +676,11 @@ export function AddPage() {
             textTransform: 'uppercase', marginBottom: '18px' }}>Added to the Atlas</div>
           <h1 style={{ ...serif, fontSize: 'clamp(26px,4vw,38px)', fontWeight: 400,
             color: dark, lineHeight: 1.1, marginBottom: '24px' }}>
-            {saved.length === 1 ? `${saved[0].name} is on the map.` : `${saved.length} entries are on the map.`}
+            {saved.length === 1 ? `${saved[0].name} is on the Atlas.` : `${saved.length} entries are on the Atlas.`}
           </h1>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '32px' }}>
             {saved.map(s => (
               <div key={s.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                {s.label !== 'Primary' && <LabelBadge label={s.label} />}
                 <span style={{ ...body, fontSize: '15px', color: dark }}>{s.name}</span>
                 <Link to={`/org/${s.slug || s.id}`} target="_blank"
                   style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}>
@@ -726,14 +706,14 @@ export function AddPage() {
             )}
             <button onClick={reset}
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px',
-                borderRadius: '40px', background: 'rgba(217,178,74,0.06)',
-                border: '1.5px solid rgba(217,178,74,0.55)', color: gold, cursor: 'pointer' }}>
+                borderRadius: '40px', background: 'rgba(169,116,63,0.06)',
+                border: '1.5px solid rgba(169,116,63,0.55)', color: gold, cursor: 'pointer' }}>
               Add another
             </button>
             <Link to="/feed"
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px',
                 borderRadius: '40px', background: 'transparent',
-                border: '1px solid rgba(217,178,74,0.30)',
+                border: '1px solid rgba(169,116,63,0.30)',
                 color: at.meta, textDecoration: 'none' }}>
               Back to feed
             </Link>
@@ -758,13 +738,13 @@ export function AddPage() {
           color: dark, lineHeight: 1.08, marginBottom: '10px' }}>
           {mineMode
             ? (form.type === 'practitioner' ? 'Set up your profile' : 'Set up your organisation')
-            : 'Add to the ecosystem'}
+            : 'Add to the Atlas'}
         </h1>
         <p style={{ ...body, fontSize: '16px', color: at.meta,
           lineHeight: 1.7, marginBottom: '24px', maxWidth: '520px' }}>
           {mineMode
             ? 'This is yours to own and manage. A challenge is published by someone others can find and follow, so a name, a picture, and a statement of what you do are all required.'
-            : 'Know an organisation, practitioner, place, or project doing serious work toward a Horizon Goal? Add them. They go live immediately.'}
+            : 'The Atlas is the shared map of every person, organisation, and project on NextUs. Know someone doing serious work toward a Horizon Goal · the future their domain is aiming for? Add them. They go live immediately.'}
         </p>
 
         {/* ── STAGE 1 — SOURCE ────────────────────────────────
@@ -776,7 +756,7 @@ export function AddPage() {
         {representsToggle}
 
         {/* ── Optional URL autofill ─────────────────────────── */}
-        <div style={{ background: at.object, border: '1.5px solid rgba(217,178,74,0.22)',
+        <div style={{ background: at.object, border: '1.5px solid rgba(169,116,63,0.22)',
           borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em',
             color: at.ghost, textTransform: 'uppercase', marginBottom: '8px' }}>
@@ -786,15 +766,15 @@ export function AddPage() {
             lineHeight: 1.55, marginBottom: '12px' }}>
             {mineMode
               ? 'Optional. Paste a link and we will fill in what we can, then you review it. Or skip and fill it in yourself below.'
-              : 'Their website, or any page where their work shows up — or a few words if there\'s no URL. Podcasts, newsletters, and channels become links on their profile.'}
+              : 'Their website, or any page where their work shows up · or a few words if there\'s no URL. Podcasts, newsletters, and channels become links on their profile.'}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <textarea value={aiUrl}
               onChange={e => setAiUrl(e.target.value)}
               rows={2}
-              placeholder={'Paste a URL or describe them...'}
+              placeholder={'Paste a URL or describe them…'}
               style={{ ...body, fontSize: '16px', color: dark, padding: '12px 16px',
-                borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.55)',
+                borderRadius: '8px', border: '1.5px solid rgba(169,116,63,0.55)',
                 background: at.object, outline: 'none', width: '100%',
                 boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.30)',
                 resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box' }}
@@ -803,7 +783,7 @@ export function AddPage() {
               <button onClick={readSite} disabled={reading || !aiUrl.trim()}
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
                   padding: '10px 22px', borderRadius: '40px', border: 'none',
-                  background: reading || !aiUrl.trim() ? 'rgba(217,178,74,0.25)' : at.verdigris,
+                  background: reading || !aiUrl.trim() ? 'rgba(169,116,63,0.25)' : at.verdigris,
                   color: at.object, whiteSpace: 'nowrap',
                   cursor: reading || !aiUrl.trim() ? 'not-allowed' : 'pointer' }}>
                 {reading ? (
@@ -816,7 +796,7 @@ export function AddPage() {
                       animation: 'add-spin 0.7s linear infinite',
                       marginRight: '6px', verticalAlign: 'middle',
                     }} />
-                    Reading...
+                    Reading…
                   </>
                 ) : 'Read site'}
               </button>
@@ -829,7 +809,7 @@ export function AddPage() {
           )}
           {aiUsed && !readErr && (
             <p style={{ ...body, fontSize: '13px', color: gold, marginTop: '8px', marginBottom: 0 }}>
-              Form filled from site — review everything before submitting.
+              Form filled from site · review everything before submitting.
             </p>
           )}
         </div>
@@ -851,7 +831,7 @@ export function AddPage() {
           <>
             {/* Collapsed source summary */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '14px', flexWrap: 'wrap',
-              background: at.object, border: '1px solid rgba(217,178,74,0.22)',
+              background: at.object, border: '1px solid rgba(169,116,63,0.22)',
               borderRadius: '10px', padding: '12px 18px', marginBottom: '28px' }}>
               <span style={{ ...body, fontSize: '14px', color: at.meta }}>
                 {aiUsed
@@ -886,7 +866,7 @@ export function AddPage() {
 
         {/* ── Duplicate warning ─────────────────────────────── */}
         {duplicates.length > 0 && !dupDismissed && (
-          <div style={{ background: 'rgba(217,178,74,0.04)', border: '1px solid rgba(217,178,74,0.28)',
+          <div style={{ background: 'rgba(169,116,63,0.04)', border: '1px solid rgba(169,116,63,0.28)',
             borderRadius: '12px', padding: '16px 18px', marginBottom: '24px' }}>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold,
               marginBottom: '10px' }}>
@@ -903,8 +883,8 @@ export function AddPage() {
               <button type="button" onClick={() => setDupDismissed(true)}
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '9px 20px',
                   borderRadius: '40px', cursor: 'pointer',
-                  border: '1.5px solid rgba(217,178,74,0.55)',
-                  background: 'rgba(217,178,74,0.06)', color: gold }}>
+                  border: '1.5px solid rgba(169,116,63,0.55)',
+                  background: 'rgba(169,116,63,0.06)', color: gold }}>
                 I'm adding something different · continue
               </button>
             </div>
@@ -940,9 +920,9 @@ export function AddPage() {
               : 'Logo for organisations, portrait for practitioners. Found automatically when reading a source · upload your own or paste an image URL to replace it.'}</Hint>
             <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginTop: '8px' }}>
               <div style={{ width: '72px', height: '72px', borderRadius: '10px', flexShrink: 0,
-                border: '1.5px solid rgba(217,178,74,0.28)',
+                border: '1.5px solid rgba(169,116,63,0.28)',
                 background: at.object,
-                backgroundImage: 'linear-gradient(45deg, rgba(234,241,237,0.06) 25%, transparent 25%), linear-gradient(-45deg, rgba(234,241,237,0.06) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(234,241,237,0.06) 75%), linear-gradient(-45deg, transparent 75%, rgba(234,241,237,0.06) 75%)',
+                backgroundImage: 'linear-gradient(45deg, rgba(38,36,32,0.06) 25%, transparent 25%), linear-gradient(-45deg, rgba(38,36,32,0.06) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(38,36,32,0.06) 75%), linear-gradient(-45deg, transparent 75%, rgba(38,36,32,0.06) 75%)',
                 backgroundSize: '12px 12px',
                 backgroundPosition: '0 0, 0 6px, 6px -6px, -6px 0',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
@@ -970,7 +950,7 @@ export function AddPage() {
                     <span style={{ ...body, fontSize: '14px', color: at.ghost, textTransform: 'none', letterSpacing: 'normal' }}>or</span>
                     <span style={{ display: 'inline-flex', alignItems: 'center',
                       padding: '10px 18px', borderRadius: '8px',
-                      border: '1.5px solid rgba(217,178,74,0.4)', background: at.object }}>
+                      border: '1.5px solid rgba(169,116,63,0.4)', background: at.object }}>
                       {imgBusy ? 'Uploading…' : 'Upload'}
                     </span>
                     <input type="file" accept="image/*" disabled={imgBusy} onChange={onPickImage} style={{ display: 'none' }} />
@@ -995,7 +975,7 @@ export function AddPage() {
             </div>
             {selectedGoal && (
               <div style={{ marginTop: '10px', padding: '11px 13px',
-                background: 'rgba(217,178,74,0.04)', border: '1px solid rgba(217,178,74,0.18)',
+                background: 'rgba(169,116,63,0.04)', border: '1px solid rgba(169,116,63,0.18)',
                 borderRadius: '8px' }}>
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
                   color: at.ghost, marginBottom: '4px' }}>HORIZON GOAL</div>
@@ -1009,7 +989,7 @@ export function AddPage() {
           {form.primary_domain && (
             <Field>
               <FieldLabel>Secondary domains</FieldLabel>
-              <Hint>Where else does this work honestly live? Do not pad.</Hint>
+              <Hint>Where else does this work belong? Only add what's true.</Hint>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
                 {CIV_DOMAINS.filter(d => d.slug !== form.primary_domain).map(d => {
                   const isOn = form.secondary_domains.includes(d.slug)
@@ -1018,8 +998,8 @@ export function AddPage() {
                       style={{ ...sc, fontSize: '13px', letterSpacing: '0.04em',
                         padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
                         color: isOn ? gold : at.meta,
-                        background: isOn ? 'rgba(217,178,74,0.08)' : at.object,
-                        border: isOn ? '1px solid rgba(217,178,74,0.55)' : '1px solid rgba(217,178,74,0.25)' }}>
+                        background: isOn ? 'rgba(169,116,63,0.08)' : at.object,
+                        border: isOn ? '1px solid rgba(169,116,63,0.55)' : '1px solid rgba(169,116,63,0.25)' }}>
                       {d.label}
                     </button>
                   )
@@ -1049,7 +1029,7 @@ export function AddPage() {
             <div style={{ marginTop: '8px' }}>
               <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={4}
                 style={{ ...body, fontSize: '15px', color: dark, padding: '10px 14px',
-                  borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)',
+                  borderRadius: '8px', border: '1.5px solid rgba(169,116,63,0.30)',
                   background: at.object, outline: 'none', width: '100%',
                   resize: 'vertical', lineHeight: 1.65, boxSizing: 'border-box' }} />
             </div>
@@ -1064,7 +1044,7 @@ export function AddPage() {
             <div style={{ marginBottom: '24px' }}>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
                 color: gold, marginBottom: '10px' }}>
-                Also identified — add these too?
+                Also identified · add these too?
               </div>
               {extras.map((ex, i) => (
                 <ExtraProposalCard
@@ -1090,10 +1070,10 @@ export function AddPage() {
           <button type="submit" disabled={saving}
             style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em',
               padding: '14px 32px', borderRadius: '40px', border: 'none',
-              background: saving ? 'rgba(217,178,74,0.35)' : at.verdigris,
+              background: saving ? 'rgba(169,116,63,0.35)' : at.verdigris,
               color: at.object, cursor: saving ? 'not-allowed' : 'pointer',
               display: 'block', width: '100%', marginTop: '8px' }}>
-            {saving ? 'Adding...' : extras.some((_, i) => extraChecked[i])
+            {saving ? 'Adding…' : extras.some((_, i) => extraChecked[i])
               ? `Add ${1 + extraChecked.filter(Boolean).length} entries to the Atlas`
               : 'Add to the Atlas'}
           </button>

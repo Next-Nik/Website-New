@@ -2,9 +2,9 @@
 //
 // Renders lineage attribution as a block-quote.
 //
-// Default rendering: gold left border, Newsreader body text.
+// Default rendering: gold left border, Lora body text.
 // When traditional / indigenous / ancestral lineage is detected:
-//   - text renders in Fraunces italic
+//   - text renders in Lora italic
 //   - the slim gold border thickens slightly
 //   - prefixed with the indigenous-relational PrincipleBadge
 // The attributed source's self-description is never abbreviated or
@@ -19,9 +19,9 @@
 import PrincipleBadge from '../PrincipleBadge'
 import { detectsTraditionalLineage } from '../../constants/practices'
 
-const sc      = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
-const body    = { fontFamily: "'Newsreader', Georgia, serif" }
-const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const body    = { fontFamily: "'Lora', Georgia, serif" }
+const garamond = { fontFamily: "'Lora', Georgia, serif" }
 
 export default function LineageBlock({ text, forceTraditional = false, className }) {
   if (!text || !text.trim()) return null
@@ -46,10 +46,10 @@ export default function LineageBlock({ text, forceTraditional = false, className
         margin: 0,
         padding: '12px 18px',
         borderLeft: isTraditional
-          ? '3px solid #26302A'
-          : '2px solid rgba(110,127,92,0.55)',
+          ? '3px solid #262420'
+          : '2px solid rgba(76,107,69,0.55)',
         background: isTraditional
-          ? 'rgba(110,127,92,0.04)'
+          ? 'rgba(76,107,69,0.04)'
           : 'transparent',
         borderRadius: '0 6px 6px 0',
       }}>

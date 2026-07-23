@@ -86,6 +86,25 @@ async function constellationActivity(supabase, limitIn) {
       sparksToday = count || 0
     }
 
+    // sightings: today's field notes, as one aggregate event — a count only,
+    // never a name, never a who-wrote-what pairing. The actor_field_notes
+    // table arrives in a parallel migration, so any failure here (including
+    // the table not existing yet) simply means no sighting event.
+    let sighting = null
+    try {
+      const dayKey = new Date().toISOString().slice(0, 10)
+      const { data: notes, error: notesErr } = await supabase.from('actor_field_notes')
+        .select('actor_id, created_at')
+        .gte('created_at', dayKey + 'T00:00:00Z')
+      if (!notesErr && notes && notes.length) {
+        const orgCount = new Set(notes.map(n => n.actor_id).filter(Boolean)).size
+        const latest = notes.reduce((m, n) => (n.created_at > m ? n.created_at : m), notes[0].created_at)
+        if (orgCount > 0) {
+          sighting = { kind: 'sighting', count: orgCount, notes: notes.length, at: latest }
+        }
+      }
+    } catch (_) { /* table not migrated yet — no sighting events */ }
+
     // recent publishes into the tree (skip the root itself)
     const { data: pubs } = await supabase.from('actor_calls')
       .select('id, title, created_at, nextus_actors ( name )')
@@ -133,6 +152,7 @@ async function constellationActivity(supabase, limitIn) {
     ;(pubs || []).forEach(c => {
       events.push({ kind: 'publish', name: c.nextus_actors?.name || 'A new author', title: c.title, at: c.created_at })
     })
+    if (sighting) events.push(sighting)
     events.sort((a, b) => new Date(b.at) - new Date(a.at))
 
     return ({

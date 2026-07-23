@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { Layout } from '../components/Layout'
 import { supabase } from '../../hooks/useSupabase'
 import { GapSignalBadge } from '../components/GapSignalBadge'
@@ -63,7 +63,16 @@ export function DomainPage() {
             <span style={{ ...sc, fontSize: '14px', letterSpacing: '0.2em', color: goldDark, display: 'block', marginBottom: '16px' }}>The Atlas</span>
             <h1 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: dark, marginBottom: '12px' }}>Unknown domain</h1>
             <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
-              No domain matches "{slug}". Try one of the seven canonical slugs.
+              That page doesn't exist. The seven domains are:{' '}
+              {CIV_DOMAINS.map((d, i) => (
+                <span key={d.slug}>
+                  <Link to={`/domain/${d.slug}`}
+                    style={{ color: goldDark, textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+                    {d.label}
+                  </Link>
+                  {i < CIV_DOMAINS.length - 1 ? ' · ' : '.'}
+                </span>
+              ))}
             </p>
           </div>
         </div>
@@ -80,8 +89,8 @@ export function DomainPage() {
         <div style={{ position: 'absolute', top: '72px', right: '32px', zIndex: 2 }}>
           <ShareButton
             url={typeof window !== 'undefined' ? window.location.href : null}
-            title={`${domain.label} — NextUs Atlas`}
-            text={`Actors and activity in the ${domain.label} domain on the NextUs Atlas`}
+            title={`${domain.label} · NextUs Atlas`}
+            text={`People, projects, and activity in the ${domain.label} domain on the NextUs Atlas`}
           />
         </div>
 
@@ -104,9 +113,12 @@ export function DomainPage() {
           padding: '18px 22px',
           marginBottom: '24px',
         }}>
-          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
-            Pick a Focus
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
+            Choose a Focus
           </div>
+          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', margin: '0 0 8px', lineHeight: 1.5 }}>
+            Focus · how close to home: your street, your city, the whole planet.
+          </p>
           <select
             value={selectedFocusId}
             onChange={e => setSelectedFocusId(e.target.value)}
@@ -121,7 +133,7 @@ export function DomainPage() {
               cursor: loading ? 'wait' : 'pointer',
             }}
           >
-            <option value="">{loading ? 'Loading focuses…' : 'Select a Focus'}</option>
+            <option value="">{loading ? 'Loading focuses…' : 'Choose a Focus'}</option>
             {focuses.map(f => (
               <option key={f.id} value={f.id}>{f.name} ({f.type})</option>
             ))}
@@ -130,14 +142,14 @@ export function DomainPage() {
 
         {/* Actor grid placeholder */}
         <div style={{
-          border: '1.5px dashed rgba(88,160,138,0.30)',
+          border: '1.5px dashed rgba(76,107,69,0.30)',
           borderRadius: '14px',
           padding: '40px',
           textAlign: 'center',
           marginBottom: '14px',
         }}>
           <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
-            The actor grid for this domain is on its way.
+            The people, organisations, and projects working in this domain will appear here soon.
           </p>
         </div>
 

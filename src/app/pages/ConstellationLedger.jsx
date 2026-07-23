@@ -90,7 +90,7 @@ export default function ConstellationLedger() {
                 { v: fmt(tally.orgs), k: 'Orgs' },
                 { v: fmt(tally.people), k: 'People' },
               ].map((n, i) => (
-                <div key={i} style={{ flex: n.hero ? '1.5 1 0' : '1 1 0', minWidth: '130px', border: `1px solid ${n.hero ? tokens.goldFaint : 'rgba(234,241,237,0.14)'}`, borderRadius: '14px', padding: '16px 18px', background: at.object }}>
+                <div key={i} style={{ flex: n.hero ? '1.5 1 0' : '1 1 0', minWidth: '130px', border: `1px solid ${n.hero ? tokens.goldFaint : 'rgba(38,36,32,0.14)'}`, borderRadius: '14px', padding: '16px 18px', background: at.object }}>
                   <div style={{ ...serif, fontWeight: 500, fontSize: n.hero ? '50px' : '38px', lineHeight: 1, color: n.hero ? AMBER_DEEP : at.text, fontVariantNumeric: 'tabular-nums' }}>{n.v}</div>
                   <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: at.ghost, marginTop: '5px' }}>{n.k}</div>
                 </div>

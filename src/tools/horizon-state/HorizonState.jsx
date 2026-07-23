@@ -46,7 +46,7 @@ const PHASE_ADVANCE_THRESHOLD = {
   calibration: 40,
 }
 
-const gold  = { color: '#26302A' }
+const gold  = { color: '#262420' }
 const muted = { color: 'rgba(15,21,35,0.72)' }
 const meta  = { color: 'rgba(15,21,35,0.78)' }
 
@@ -241,8 +241,8 @@ function AudioPlayer({ url, onEnded, onNearEnd, locked, currentPhase = 'baseline
   return (
     <div style={{
       padding: '20px 22px',
-      background: locked ? 'rgba(110,127,92,0.05)' : '#FFFFFF',
-      border: `1.5px solid ${locked ? 'rgba(110,127,92,0.2)' : 'rgba(110,127,92,0.78)'}`,
+      background: locked ? 'rgba(76,107,69,0.05)' : '#FFFFFF',
+      border: `1.5px solid ${locked ? 'rgba(76,107,69,0.2)' : 'rgba(76,107,69,0.78)'}`,
       borderRadius: '14px',
       transition: 'all 0.4s ease',
       opacity: locked ? 0.55 : 1,
@@ -264,8 +264,8 @@ function AudioPlayer({ url, onEnded, onNearEnd, locked, currentPhase = 'baseline
           disabled={locked || !loaded}
           style={{
             width: '52px', height: '52px', borderRadius: '50%',
-            background: playing ? 'rgba(110,127,92,0.1)' : 'rgba(110,127,92,0.05)',
-            border: '1.5px solid rgba(110,127,92,0.78)',
+            background: playing ? 'rgba(76,107,69,0.1)' : 'rgba(76,107,69,0.05)',
+            border: '1.5px solid rgba(76,107,69,0.78)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: locked ? 'not-allowed' : loaded ? 'pointer' : 'wait',
             flexShrink: 0, ...gold, fontSize: '18px', transition: 'all 0.2s',
@@ -278,8 +278,8 @@ function AudioPlayer({ url, onEnded, onNearEnd, locked, currentPhase = 'baseline
             const a = audioRef.current; if (!a || !duration || locked) return
             const rect = e.currentTarget.getBoundingClientRect()
             a.currentTime = ((e.clientX - rect.left) / rect.width) * duration
-          }} style={{ width: '100%', height: '4px', background: 'rgba(110,127,92,0.15)', borderRadius: '2px', cursor: locked ? 'default' : 'pointer', position: 'relative' }}>
-            <div style={{ height: '100%', width: `${pct}%`, background: '#6E7F5C', borderRadius: '2px', transition: 'width 0.1s linear' }} />
+          }} style={{ width: '100%', height: '4px', background: 'rgba(76,107,69,0.15)', borderRadius: '2px', cursor: locked ? 'default' : 'pointer', position: 'relative' }}>
+            <div style={{ height: '100%', width: `${pct}%`, background: '#4c6b45', borderRadius: '2px', transition: 'width 0.1s linear' }} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', ...muted }}>{fmt(current)}</span>
@@ -297,13 +297,13 @@ function AuthModal({ onDismiss }) {
   const returnUrl = encodeURIComponent(window.location.href)
   return (
     <div onClick={e => e.target === e.currentTarget && onDismiss()} style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '14px', padding: '36px 32px 28px', maxWidth: '400px', width: '100%' }}>
+      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '14px', padding: '36px 32px 28px', maxWidth: '400px', width: '100%' }}>
         <span style={{ display: 'block', ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Foundation</span>
         <h2 style={{ ...sc, fontSize: '1.625rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.2, marginBottom: '10px' }}>Sign in to listen.</h2>
         <p style={{ ...body, fontSize: '1.25rem', fontWeight: 400, ...meta, lineHeight: 1.7, marginBottom: '24px' }}>
           Horizon State is part of the Horizon Suite {'—'} a free account keeps your progress and gives you access to the full protocol.
         </p>
-        <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', width: '100%', padding: '14px', textAlign: 'center', background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '40px', ...sc, fontSize: '1.125rem', letterSpacing: '0.16em', ...gold, textDecoration: 'none', marginBottom: '12px' }}>
+        <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', width: '100%', padding: '14px', textAlign: 'center', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '40px', ...sc, fontSize: '1.125rem', letterSpacing: '0.16em', ...gold, textDecoration: 'none', marginBottom: '12px' }}>
           Sign in or create account {'→'}
         </a>
         <button onClick={onDismiss} style={{ display: 'block', width: '100%', textAlign: 'center', background: 'none', border: 'none', ...body, fontSize: '1.125rem', ...muted, cursor: 'pointer', padding: '4px' }}>
@@ -321,7 +321,7 @@ function FlameDelta({ before, after }) {
   const color  = delta > 0 ? '#5A8AB8' : delta < 0 ? '#8A7030' : 'rgba(15,21,35,0.72)'
   const symbol = delta > 0 ? '\u2191' : delta < 0 ? '\u2193' : '—'
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', padding: '20px', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.15)', borderRadius: '12px', marginTop: '20px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', padding: '20px', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.15)', borderRadius: '12px', marginTop: '20px' }}>
       <div style={{ textAlign: 'center' }}>
         <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...muted, marginBottom: '8px' }}>BEFORE</div>
         <FlameGlyph value={before} size={40} ghost />
@@ -424,22 +424,22 @@ function FoundationReview({ user, sessions, phase = 'baseline' }) {
   if (!weeklyAvailable) return null
 
   return (
-    <div style={{ marginTop: '32px', padding: '24px 28px', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.2)', borderRadius: '14px' }}>
+    <div style={{ marginTop: '32px', padding: '24px 28px', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.2)', borderRadius: '14px' }}>
       <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '8px' }}>Foundation Review</span>
       <p style={{ ...body, fontSize: '1.125rem', ...muted, lineHeight: 1.7, marginBottom: '20px' }}>
         {sessionsThisWeek.length} sessions this week. A reflection is available.
       </p>
       {!reviewText && !loading && (
-        <button onClick={() => requestReview('weekly')} style={{ ...sc, fontSize: '1.3125rem', letterSpacing: '0.14em', ...gold, background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '40px', padding: '12px 28px', cursor: 'pointer' }}>
+        <button onClick={() => requestReview('weekly')} style={{ ...sc, fontSize: '1.3125rem', letterSpacing: '0.14em', ...gold, background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '40px', padding: '12px 28px', cursor: 'pointer' }}>
           Request weekly reflection {'→'}
         </button>
       )}
       {loading && <p style={{ ...body, fontSize: '1.125rem', ...muted }}>Reading your practice{'…'}</p>}
       {error && <p style={{ ...body, fontSize: '1.3125rem', color: 'rgba(138,48,48,0.7)' }}>{error}</p>}
       {reviewText && (
-        <div style={{ borderLeft: '2px solid rgba(110,127,92,0.35)', padding: '16px 0 16px 20px' }}>
+        <div style={{ borderLeft: '2px solid rgba(76,107,69,0.35)', padding: '16px 0 16px 20px' }}>
           <p style={{ ...body, fontSize: '1.25rem', lineHeight: 1.85, ...meta, margin: 0 }}>{reviewText}</p>
-          {saved && <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#26302A', display: 'block', marginTop: '12px' }}>Saved</span>}
+          {saved && <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#262420', display: 'block', marginTop: '12px' }}>Saved</span>}
         </div>
       )}
 
@@ -610,7 +610,7 @@ function FoundationReports({ user, sessions, phase = 'baseline' }) {
   return (
     <div>
       {/* Period tabs */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid rgba(110,127,92,0.18)', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid rgba(76,107,69,0.18)', marginBottom: '24px' }}>
         {PERIODS.map(p => {
           const isActive = activePeriod === p.key
           return (
@@ -621,8 +621,8 @@ function FoundationReports({ user, sessions, phase = 'baseline' }) {
                 ...sc, fontSize: '13px', letterSpacing: '0.18em',
                 padding: '10px 16px',
                 background: 'none', border: 'none', cursor: 'pointer',
-                color: isActive ? '#26302A' : 'rgba(15,21,35,0.55)',
-                borderBottom: isActive ? '2px solid #26302A' : '2px solid transparent',
+                color: isActive ? '#262420' : 'rgba(15,21,35,0.55)',
+                borderBottom: isActive ? '2px solid #262420' : '2px solid transparent',
                 marginBottom: '-1px',
                 transition: 'all 0.2s',
               }}
@@ -634,7 +634,7 @@ function FoundationReports({ user, sessions, phase = 'baseline' }) {
       </div>
 
       {/* Current period state */}
-      <div style={{ padding: '20px 24px', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.2)', borderRadius: '14px', marginBottom: '24px' }}>
+      <div style={{ padding: '20px 24px', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.2)', borderRadius: '14px', marginBottom: '24px' }}>
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>
           {periodMeta.label} {'·'} {periodLabel(activePeriod, periodMeta.id)}
         </span>
@@ -647,7 +647,7 @@ function FoundationReports({ user, sessions, phase = 'baseline' }) {
         {meetsThreshold && !reviewBelow && !requesting && (
           <button
             onClick={requestReview}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', ...gold, background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '40px', padding: '10px 22px', cursor: 'pointer' }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', ...gold, background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '40px', padding: '10px 22px', cursor: 'pointer' }}
           >
             {currentPeriodReview ? 'Refresh reflection' : 'Request reflection'} {'→'}
           </button>
@@ -658,8 +658,8 @@ function FoundationReports({ user, sessions, phase = 'baseline' }) {
 
       {/* Active reflection (current period — fresh or stored) */}
       {reviewBelow && (
-        <div style={{ borderLeft: '2px solid rgba(110,127,92,0.35)', padding: '4px 0 4px 20px', marginBottom: '24px' }}>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(38,48,42,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+        <div style={{ borderLeft: '2px solid rgba(76,107,69,0.35)', padding: '4px 0 4px 20px', marginBottom: '24px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(38,36,32,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
             {reviewLabel}
           </span>
           <p style={{ ...body, fontSize: '17px', lineHeight: 1.85, ...meta, margin: 0, whiteSpace: 'pre-wrap' }}>{reviewBelow}</p>
@@ -684,12 +684,12 @@ function FoundationReports({ user, sessions, phase = 'baseline' }) {
       {/* Past reflections in this period type */}
       {pastPeriodReviews.length > 0 && (
         <div>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: 'rgba(38,48,42,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '14px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: 'rgba(38,36,32,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '14px' }}>
             Earlier {periodMeta.label.toLowerCase()} reflections
           </span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {pastPeriodReviews.map(r => (
-              <div key={r.period_id} style={{ borderLeft: '2px solid rgba(110,127,92,0.18)', padding: '4px 0 4px 18px' }}>
+              <div key={r.period_id} style={{ borderLeft: '2px solid rgba(76,107,69,0.18)', padding: '4px 0 4px 18px' }}>
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   {r.period_label}
                 </span>
@@ -757,9 +757,9 @@ function FoundationLogs({ sessions }) {
           'rgba(15,21,35,0.55)'
 
         return (
-          <div key={day.date} style={{ padding: '18px 22px', background: 'rgba(110,127,92,0.04)', border: '1px solid rgba(110,127,92,0.18)', borderRadius: '12px' }}>
+          <div key={day.date} style={{ padding: '18px 22px', background: 'rgba(76,107,69,0.04)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#26302A', textTransform: 'uppercase' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#262420', textTransform: 'uppercase' }}>
                 {formatDate(day.date)}
               </span>
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: deltaColor }}>
@@ -776,13 +776,13 @@ function FoundationLogs({ sessions }) {
 
             {before?.note && (
               <div style={{ marginBottom: after?.note ? '10px' : 0 }}>
-                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(38,48,42,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Before</span>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(38,36,32,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Before</span>
                 <p style={{ ...body, fontSize: '15px', lineHeight: 1.6, ...muted, margin: 0, whiteSpace: 'pre-wrap' }}>{before.note}</p>
               </div>
             )}
             {after?.note && (
               <div>
-                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(38,48,42,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>After</span>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(38,36,32,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>After</span>
                 <p style={{ ...body, fontSize: '15px', lineHeight: 1.6, ...muted, margin: 0, whiteSpace: 'pre-wrap' }}>{after.note}</p>
               </div>
             )}
@@ -1112,12 +1112,12 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
           <p style={{ ...body, fontSize: '1.125rem', ...muted, lineHeight: 1.75, marginBottom: '6px' }}>
             Done. See you tomorrow.
           </p>
-          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', marginBottom: '20px' }}>
+          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#262420', marginBottom: '20px' }}>
             {sessionCount} session{sessionCount !== 1 ? 's' : ''} this week
           </p>
           {lifeIaStatement && (
-            <div style={{ margin: '0 auto 24px', maxWidth: '400px', padding: '14px 20px', border: '1px solid rgba(110,127,92,0.25)', borderRadius: '10px', background: 'rgba(110,127,92,0.04)' }}>
-              <p style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: '#26302A', lineHeight: 1.7, margin: 0 }}>
+            <div style={{ margin: '0 auto 24px', maxWidth: '400px', padding: '14px 20px', border: '1px solid rgba(76,107,69,0.25)', borderRadius: '10px', background: 'rgba(76,107,69,0.04)' }}>
+              <p style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: '#262420', lineHeight: 1.7, margin: 0 }}>
                 {lifeIaStatement}
               </p>
             </div>
@@ -1129,7 +1129,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
             >
               Listen again {'→'}
             </button>
-            <a href="/dashboard" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#26302A', textDecoration: 'none' }}>
+            <a href="/dashboard" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#262420', textDecoration: 'none' }}>
               Mission Control {'→'}
             </a>
           </div>
@@ -1243,13 +1243,13 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
             backdropFilter: 'blur(4px)',
           }}
         >
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#26302A', textTransform: 'uppercase', marginBottom: '16px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#262420', textTransform: 'uppercase', marginBottom: '16px' }}>
             Horizon State {'·'} Foundation
           </span>
           <p style={{ ...body, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '320px' }}>
             Regulated internal stability {'—'} the floor you stand on. Check in before and after to see what the audio actually does to your system.
           </p>
-          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#26302A' }}>
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#262420' }}>
             Tap anywhere to begin
           </span>
         </div>
@@ -1299,11 +1299,11 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
               Check in to unlock the audio.
             </span>
           ) : !afterUnlocked ? (
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#26302A', textTransform: 'uppercase' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#262420', textTransform: 'uppercase' }}>
               Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
             </span>
           ) : (
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#26302A', textTransform: 'uppercase' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#262420', textTransform: 'uppercase' }}>
               Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
             </span>
           )}
@@ -1314,13 +1314,13 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
 
           {/* Before flame */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: beforeDone ? 'rgba(38,48,42,0.55)' : '#26302A', textTransform: 'uppercase', marginBottom: '8px' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: beforeDone ? 'rgba(38,36,32,0.55)' : '#262420', textTransform: 'uppercase', marginBottom: '8px' }}>
               Starting State
             </span>
             <div style={{ pointerEvents: beforeDone ? 'none' : 'auto', opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
               <FlameSlider value={beforeValue} onChange={setBeforeValue} ghostValue={null} />
             </div>
-            <span style={{ ...body, fontSize: '0.875rem', color: beforeDone ? 'rgba(38,48,42,0.55)' : 'rgba(15,21,35,0.55)', marginTop: '6px' }}>
+            <span style={{ ...body, fontSize: '0.875rem', color: beforeDone ? 'rgba(38,36,32,0.55)' : 'rgba(15,21,35,0.55)', marginTop: '6px' }}>
               {beforeDone ? 'saved' : ''}
             </span>
           </div>
@@ -1334,11 +1334,11 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
               aria-label={mobilePlaying ? 'Pause' : 'Play'}
               style={{
                 width: '48px', height: '48px', borderRadius: '50%',
-                background: mobilePlaying ? 'rgba(110,127,92,0.1)' : 'rgba(110,127,92,0.05)',
-                border: `1.5px solid ${beforeDone ? 'rgba(110,127,92,0.78)' : 'rgba(110,127,92,0.25)'}`,
+                background: mobilePlaying ? 'rgba(76,107,69,0.1)' : 'rgba(76,107,69,0.05)',
+                border: `1.5px solid ${beforeDone ? 'rgba(76,107,69,0.78)' : 'rgba(76,107,69,0.25)'}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: beforeDone && mobileLoaded ? 'pointer' : 'not-allowed',
-                flexShrink: 0, color: '#26302A', fontSize: '16px',
+                flexShrink: 0, color: '#262420', fontSize: '16px',
                 transition: 'all 0.2s', opacity: beforeDone ? 1 : 0.4,
               }}
             >
@@ -1352,7 +1352,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
 
           {/* After flame */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: afterUnlocked ? 1 : 0.22, transition: 'opacity 0.8s ease', pointerEvents: afterUnlocked ? 'auto' : 'none' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#26302A', textTransform: 'uppercase', marginBottom: '8px' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#262420', textTransform: 'uppercase', marginBottom: '8px' }}>
               After State
             </span>
             <FlameSlider value={afterValue} onChange={setAfterValue} ghostValue={beforeDone ? beforeValue : null} />
@@ -1375,14 +1375,14 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
             }}
             style={{
               width: '100%', height: '3px', marginBottom: '16px',
-              background: 'rgba(110,127,92,0.15)', borderRadius: '2px',
+              background: 'rgba(76,107,69,0.15)', borderRadius: '2px',
               cursor: 'pointer', position: 'relative',
             }}
           >
             <div style={{
               position: 'absolute', left: 0, top: 0, height: '100%',
               width: `${mobilePct}%`,
-              background: 'rgba(110,127,92,0.65)', borderRadius: '2px',
+              background: 'rgba(76,107,69,0.65)', borderRadius: '2px',
               transition: 'width 0.5s linear',
             }} />
           </div>
@@ -1398,12 +1398,12 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
                 placeholder={'A note about where you\'re starting…'}
                 rows={3}
                 disabled={beforeDone}
-                style={{ width: '100%', padding: '10px 14px', fontFamily: "'Newsreader',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, transition: 'border-color 0.2s', boxSizing: 'border-box', opacity: beforeDone ? 0.5 : 1 }}
-                onFocus={e => { e.target.style.borderColor = 'rgba(110,127,92,0.45)' }}
-                onBlur={e => { e.target.style.borderColor = 'rgba(110,127,92,0.18)' }}
+                style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, transition: 'border-color 0.2s', boxSizing: 'border-box', opacity: beforeDone ? 0.5 : 1 }}
+                onFocus={e => { e.target.style.borderColor = 'rgba(76,107,69,0.45)' }}
+                onBlur={e => { e.target.style.borderColor = 'rgba(76,107,69,0.18)' }}
               />
               {!beforeDone && (
-                <button onClick={handleBegin} disabled={saving} style={{ width: '100%', padding: '12px', marginTop: '10px', ...sc, fontSize: '1rem', letterSpacing: '0.14em', color: '#26302A', background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>
+                <button onClick={handleBegin} disabled={saving} style={{ width: '100%', padding: '12px', marginTop: '10px', ...sc, fontSize: '1rem', letterSpacing: '0.14em', color: '#262420', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>
                   Begin {'→'}
                 </button>
               )}
@@ -1415,11 +1415,11 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
                 onChange={e => setAfterNote(e.target.value)}
                 placeholder={"A note about how you\'re leaving…"}
                 rows={3}
-                style={{ width: '100%', padding: '10px 14px', fontFamily: "'Newsreader',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, transition: 'border-color 0.2s', boxSizing: 'border-box' }}
-                onFocus={e => { e.target.style.borderColor = 'rgba(110,127,92,0.45)' }}
-                onBlur={e => { e.target.style.borderColor = 'rgba(110,127,92,0.18)' }}
+                style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+                onFocus={e => { e.target.style.borderColor = 'rgba(76,107,69,0.45)' }}
+                onBlur={e => { e.target.style.borderColor = 'rgba(76,107,69,0.18)' }}
               />
-              <button onClick={handleSave} disabled={saving} style={{ width: '100%', padding: '12px', marginTop: '10px', ...sc, fontSize: '1rem', letterSpacing: '0.14em', color: '#26302A', background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>
+              <button onClick={handleSave} disabled={saving} style={{ width: '100%', padding: '12px', marginTop: '10px', ...sc, fontSize: '1rem', letterSpacing: '0.14em', color: '#262420', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>
                 {saving ? 'Saving…' : 'Save ✓'}
               </button>
             </>
@@ -1429,7 +1429,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
         {/* Audio scrubber — below journal, visible once before is done */}
         {beforeDone && audioUrl && (
           <div style={{ marginTop: '4px', marginBottom: '8px' }}>
-            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#26302A', textAlign: 'center', marginBottom: '8px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#262420', textAlign: 'center', marginBottom: '8px' }}>
               Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
             </div>
             <div
@@ -1439,9 +1439,9 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
                 const rect = e.currentTarget.getBoundingClientRect()
                 a.currentTime = ((e.clientX - rect.left) / rect.width) * mobileDuration
               }}
-              style={{ width: '100%', height: '4px', background: 'rgba(110,127,92,0.15)', borderRadius: '2px', cursor: 'pointer', position: 'relative', marginBottom: '4px' }}
+              style={{ width: '100%', height: '4px', background: 'rgba(76,107,69,0.15)', borderRadius: '2px', cursor: 'pointer', position: 'relative', marginBottom: '4px' }}
             >
-              <div style={{ height: '100%', width: mobilePct + '%', background: '#6E7F5C', borderRadius: '2px', transition: 'width 0.1s linear' }} />
+              <div style={{ height: '100%', width: mobilePct + '%', background: '#4c6b45', borderRadius: '2px', transition: 'width 0.1s linear' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>{mobileFmt(mobileCurrent)}</span>
@@ -1457,19 +1457,19 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
 
         {/* Before */}
         <div className="hs-col-before-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
-          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#26302A', textTransform: 'uppercase', marginBottom: '4px' }}>Starting State</span>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(38,48,42,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Foundation</span>
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#262420', textTransform: 'uppercase', marginBottom: '4px' }}>Starting State</span>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(38,36,32,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Foundation</span>
           <div style={{ pointerEvents: beforeDone ? 'none' : 'auto', marginBottom: '14px' }}>
             <FlameSlider value={beforeValue} onChange={setBeforeValue} ghostValue={null} />
           </div>
           <textarea value={beforeNote} onChange={e => setBeforeNote(e.target.value)}
             placeholder={'A note about where you\'re starting…'} rows={2} disabled={beforeDone}
-            style={{ width: '100%', padding: '10px 14px', fontFamily: "'Newsreader',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
-            onFocus={e => { e.target.style.borderColor = 'rgba(110,127,92,0.45)' }}
-            onBlur={e => { e.target.style.borderColor = 'rgba(110,127,92,0.18)' }}
+            style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+            onFocus={e => { e.target.style.borderColor = 'rgba(76,107,69,0.45)' }}
+            onBlur={e => { e.target.style.borderColor = 'rgba(76,107,69,0.18)' }}
           />
           {!beforeDone && (
-            <button onClick={handleBegin} disabled={saving} style={{ width: '100%', padding: '12px', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', color: '#26302A', background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>Begin {'→'}</button>
+            <button onClick={handleBegin} disabled={saving} style={{ width: '100%', padding: '12px', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', color: '#262420', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>Begin {'→'}</button>
           )}
         </div>
 
@@ -1481,29 +1481,29 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
             <AudioPlayer url={audioUrl} locked={!beforeDone} onNearEnd={() => setAfterUnlocked(true)} onEnded={() => setAfterUnlocked(true)} currentPhase={currentPhase} />
           )}
           {!user && !audioLoading && !audioError && (
-            <div style={{ padding: '20px 22px', background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.2)', borderRadius: '14px', opacity: 0.6 }}>
+            <div style={{ padding: '20px 22px', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.2)', borderRadius: '14px', opacity: 0.6 }}>
               <p style={{ ...body, fontSize: '1.3125rem', ...muted, marginBottom: '14px', lineHeight: 1.6 }}>Check-in to unlock the audio.</p>
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}</div>
-              <button onClick={() => setShowModal(true)} style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', ...gold, fontSize: '18px' }}>{'\u25B6'}</button>
+              <button onClick={() => setShowModal(true)} style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', ...gold, fontSize: '18px' }}>{'\u25B6'}</button>
             </div>
           )}
         </div>
 
         {/* After */}
         <div className="hs-col-after-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: afterUnlocked ? 1 : 0.22, transition: 'opacity 0.8s ease', pointerEvents: afterUnlocked ? 'auto' : 'none' }}>
-          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#26302A', textTransform: 'uppercase', marginBottom: '4px' }}>After State</span>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(38,48,42,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Foundation</span>
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#262420', textTransform: 'uppercase', marginBottom: '4px' }}>After State</span>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(38,36,32,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Foundation</span>
           <div style={{ marginBottom: '14px' }}>
             <FlameSlider value={afterValue} onChange={setAfterValue} ghostValue={beforeDone ? beforeValue : null} />
           </div>
           <textarea value={afterNote} onChange={e => setAfterNote(e.target.value)}
             placeholder={"A note about how you\'re leaving…"} rows={2}
-            style={{ width: '100%', padding: '10px 14px', fontFamily: "'Newsreader',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
-            onFocus={e => { e.target.style.borderColor = 'rgba(110,127,92,0.45)' }}
-            onBlur={e => { e.target.style.borderColor = 'rgba(110,127,92,0.18)' }}
+            style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+            onFocus={e => { e.target.style.borderColor = 'rgba(76,107,69,0.45)' }}
+            onBlur={e => { e.target.style.borderColor = 'rgba(76,107,69,0.18)' }}
           />
           {afterUnlocked && (
-            <button onClick={handleSave} disabled={saving} style={{ width: '100%', padding: '12px', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', color: '#26302A', background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>{saving ? 'Saving…' : 'Save ✓'}</button>
+            <button onClick={handleSave} disabled={saving} style={{ width: '100%', padding: '12px', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', color: '#262420', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>{saving ? 'Saving…' : 'Save ✓'}</button>
           )}
         </div>
 
@@ -1576,7 +1576,7 @@ export function HorizonStatePage() {
         </div>
 
         {/* Phase tabs */}
-        <div style={{ display: 'flex', gap: 0, marginBottom: '32px', borderBottom: '1px solid rgba(110,127,92,0.2)' }}>
+        <div style={{ display: 'flex', gap: 0, marginBottom: '32px', borderBottom: '1px solid rgba(76,107,69,0.2)' }}>
           {PHASES.map(p => {
             const isActive  = activePhase === p.key
             // Locked phases stay visible and selectable for preview — only
@@ -1591,8 +1591,8 @@ export function HorizonStatePage() {
                   padding: '12px 20px',
                   background: 'none', border: 'none',
                   cursor: 'pointer',
-                  color: isActive ? '#26302A' : accessible ? 'rgba(110,127,92,0.55)' : 'rgba(110,127,92,0.25)',
-                  borderBottom: isActive ? '2px solid #26302A' : '2px solid transparent',
+                  color: isActive ? '#262420' : accessible ? 'rgba(76,107,69,0.55)' : 'rgba(76,107,69,0.25)',
+                  borderBottom: isActive ? '2px solid #262420' : '2px solid transparent',
                   marginBottom: '-1px',
                   transition: 'all 0.2s',
                 }}
@@ -1619,11 +1619,11 @@ export function HorizonStatePage() {
               {phaseAccessible(p.key) ? (
                 <button
                   onClick={() => setSessionPhase(p.key)}
-                  style={{ width: '100%', padding: '15px', ...sc, fontSize: '15px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#26302A', background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '40px', cursor: 'pointer' }}
+                  style={{ width: '100%', padding: '15px', ...sc, fontSize: '15px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#262420', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '40px', cursor: 'pointer' }}
                 >Start {p.label} {'\u2192'}</button>
               ) : (
                 <>
-                  <button disabled style={{ width: '100%', padding: '15px', ...sc, fontSize: '15px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#26302A', background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)', borderRadius: '40px', cursor: 'not-allowed', opacity: 0.4 }}>
+                  <button disabled style={{ width: '100%', padding: '15px', ...sc, fontSize: '15px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#262420', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '40px', cursor: 'not-allowed', opacity: 0.4 }}>
                     Start {p.label} {'\u2192'}
                   </button>
                   <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginTop: '12px' }}>
@@ -1631,7 +1631,7 @@ export function HorizonStatePage() {
                   </p>
                 </>
               )}
-              <div style={{ borderTop: '1px solid rgba(110,127,92,0.18)', marginTop: '40px' }} />
+              <div style={{ borderTop: '1px solid rgba(76,107,69,0.18)', marginTop: '40px' }} />
             </div>
 
             {/* First-time pitch for this phase */}
@@ -1642,7 +1642,7 @@ export function HorizonStatePage() {
             ) : (
               <>
                 {/* Reports / Logs sub-tabs */}
-                <div style={{ display: 'flex', gap: 0, marginBottom: '24px', borderBottom: '1px solid rgba(110,127,92,0.12)' }}>
+                <div style={{ display: 'flex', gap: 0, marginBottom: '24px', borderBottom: '1px solid rgba(76,107,69,0.12)' }}>
                   {[
                     { key: 'reports', label: 'Reports' },
                     { key: 'logs',    label: 'Logs'    },
@@ -1657,7 +1657,7 @@ export function HorizonStatePage() {
                           padding: '10px 14px',
                           background: 'none', border: 'none', cursor: 'pointer',
                           color: isActiveView ? '#0F1523' : 'rgba(15,21,35,0.55)',
-                          borderBottom: isActiveView ? '2px solid #26302A' : '2px solid transparent',
+                          borderBottom: isActiveView ? '2px solid #262420' : '2px solid transparent',
                           marginBottom: '-1px',
                           transition: 'all 0.2s',
                           textTransform: 'uppercase',
@@ -1701,12 +1701,12 @@ export function HorizonStatePage() {
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1100, background: '#FAFAF7', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
           <div style={{ maxWidth: '900px', margin: '0 auto', padding: 'max(16px, env(safe-area-inset-top)) 20px calc(48px + env(safe-area-inset-bottom))' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#26302A' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#262420' }}>
                 Horizon State {'·'} {PHASES.find(x => x.key === sessionPhase)?.label || 'Foundation'}
               </span>
               <button
                 onClick={() => { setSessionPhase(null); reload() }}
-                style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#26302A', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px 0' }}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#262420', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px 0' }}
               >Close ✕</button>
             </div>
             <BaselineCard
@@ -1748,8 +1748,8 @@ function PhaseIntro({ phase }) {
   const c = copy[phase.key] || { heading: 'Welcome to Phase ' + phase.number, body: '' }
 
   return (
-    <div style={{ padding: '40px 32px', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.2)', borderRadius: '14px', textAlign: 'center', maxWidth: '560px', margin: '0 auto' }}>
-      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '16px', textTransform: 'uppercase' }}>
+    <div style={{ padding: '40px 32px', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.2)', borderRadius: '14px', textAlign: 'center', maxWidth: '560px', margin: '0 auto' }}>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px', textTransform: 'uppercase' }}>
         Horizon State {'·'} {phase.label}
       </span>
       <h2 style={{ ...serif, fontSize: '28px', fontWeight: 400, color: '#0F1523', lineHeight: 1.25, marginBottom: '16px' }}>
@@ -1783,8 +1783,8 @@ function PhaseAdvancePrompt({ currentPhase, nextPhaseKey, sessionCount, onAdvanc
   }
 
   return (
-    <div style={{ marginTop: '40px', padding: '28px 32px', background: 'rgba(110,127,92,0.04)', border: '1px solid rgba(110,127,92,0.25)', borderRadius: '14px' }}>
-      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '10px', textTransform: 'uppercase' }}>
+    <div style={{ marginTop: '40px', padding: '28px 32px', background: 'rgba(76,107,69,0.04)', border: '1px solid rgba(76,107,69,0.25)', borderRadius: '14px' }}>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '10px', textTransform: 'uppercase' }}>
         Phase {nextPhase.number} available
       </span>
       <p style={{ ...body, fontSize: '17px', fontWeight: 400, ...meta, lineHeight: 1.7, marginBottom: '20px' }}>
@@ -1797,8 +1797,8 @@ function PhaseAdvancePrompt({ currentPhase, nextPhaseKey, sessionCount, onAdvanc
         onClick={handleAdvance}
         disabled={advancing}
         style={{
-          ...sc, fontSize: '1rem', letterSpacing: '0.16em', color: '#26302A',
-          background: 'rgba(110,127,92,0.05)', border: '1.5px solid rgba(110,127,92,0.78)',
+          ...sc, fontSize: '1rem', letterSpacing: '0.16em', color: '#262420',
+          background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)',
           borderRadius: '40px', padding: '12px 28px', cursor: advancing ? 'default' : 'pointer',
           opacity: advancing ? 0.6 : 1, transition: 'all 0.2s',
         }}
@@ -1816,8 +1816,8 @@ function PhaseAdvancePrompt({ currentPhase, nextPhaseKey, sessionCount, onAdvanc
 
 function FirstTimePitch() {
   return (
-    <div style={{ padding: '40px 32px', background: 'rgba(110,127,92,0.05)', border: '1px solid rgba(110,127,92,0.2)', borderRadius: '14px', textAlign: 'center', maxWidth: '560px', margin: '0 auto' }}>
-      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', display: 'block', marginBottom: '16px', textTransform: 'uppercase' }}>
+    <div style={{ padding: '40px 32px', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.2)', borderRadius: '14px', textAlign: 'center', maxWidth: '560px', margin: '0 auto' }}>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px', textTransform: 'uppercase' }}>
         Horizon State {'·'} Foundation
       </span>
       <h2 style={{ ...serif, fontSize: '28px', fontWeight: 400, color: '#0F1523', lineHeight: 1.25, marginBottom: '16px' }}>

@@ -123,7 +123,7 @@ export function InstallPrompt() {
         background: fn.object,
         border: `1px solid ${fn.rule}`,
         borderRadius: 14,
-        boxShadow: '0 8px 28px rgba(38,48,42,0.18)',
+        boxShadow: '0 8px 28px rgba(38,36,32,0.18)',
         padding: '14px 14px 12px',
         display: 'flex',
         gap: 12,
@@ -140,7 +140,7 @@ export function InstallPrompt() {
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          fontFamily: 'Fraunces, serif',
+          fontFamily: 'Lora, serif',
           fontSize: 15,
           fontWeight: 600,
           color: fn.ink,
@@ -152,7 +152,7 @@ export function InstallPrompt() {
         {mode === 'native' ? (
           <>
             <div style={{
-              fontFamily: 'Newsreader, serif',
+              fontFamily: 'Lora, serif',
               fontSize: 13,
               color: fn.meta,
               lineHeight: 1.45,
@@ -164,7 +164,7 @@ export function InstallPrompt() {
               <button
                 onClick={install}
                 style={{
-                  fontFamily: 'IBM Plex Mono, monospace',
+                  fontFamily: 'Cormorant SC, monospace',
                   fontSize: 13,
                   padding: '8px 16px',
                   borderRadius: 999,
@@ -179,7 +179,7 @@ export function InstallPrompt() {
               <button
                 onClick={dismiss}
                 style={{
-                  fontFamily: 'IBM Plex Mono, monospace',
+                  fontFamily: 'Cormorant SC, monospace',
                   fontSize: 13,
                   padding: '8px 12px',
                   borderRadius: 999,
@@ -196,7 +196,7 @@ export function InstallPrompt() {
         ) : (
           <>
             <div style={{
-              fontFamily: 'Newsreader, serif',
+              fontFamily: 'Lora, serif',
               fontSize: 13,
               color: fn.meta,
               lineHeight: 1.45,
@@ -208,7 +208,7 @@ export function InstallPrompt() {
               <button
                 onClick={dismiss}
                 style={{
-                  fontFamily: 'IBM Plex Mono, monospace',
+                  fontFamily: 'Cormorant SC, monospace',
                   fontSize: 13,
                   padding: '8px 12px',
                   borderRadius: 999,

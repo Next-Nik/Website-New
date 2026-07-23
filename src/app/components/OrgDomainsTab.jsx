@@ -48,8 +48,8 @@ function ChipSelect({ options, selected, onChange, small }) {
             style={{
               ...sc, fontSize: small ? '11px' : '12px', letterSpacing: '0.12em',
               padding: small ? '4px 10px' : '6px 14px', borderRadius: '40px', cursor: 'pointer',
-              border: on ? '1.5px solid rgba(88,160,138,0.78)' : '1.5px solid rgba(88,160,138,0.25)',
-              background: on ? 'rgba(88,160,138,0.10)' : 'transparent',
+              border: on ? '1.5px solid rgba(76,107,69,0.78)' : '1.5px solid rgba(76,107,69,0.25)',
+              background: on ? 'rgba(76,107,69,0.10)' : 'transparent',
               color: on ? gold : 'rgba(15,21,35,0.55)',
               transition: 'all 0.15s',
             }}>
@@ -69,12 +69,12 @@ function OrderedList({ items, onReorder, onRemove, renderItem }) {
       {items.map((item, i) => (
         <div key={item} style={{
           display: 'flex', alignItems: 'center', gap: '10px',
-          padding: '8px 12px', background: i === 0 ? 'rgba(88,160,138,0.06)' : '#FFFFFF',
-          border: i === 0 ? '1px solid rgba(88,160,138,0.35)' : '1px solid rgba(88,160,138,0.15)',
+          padding: '8px 12px', background: i === 0 ? 'rgba(76,107,69,0.06)' : '#FFFFFF',
+          border: i === 0 ? '1px solid rgba(76,107,69,0.35)' : '1px solid rgba(76,107,69,0.15)',
           borderRadius: '8px',
         }}>
           {i === 0 && (
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', background: '#58A08A', color: '#FFFFFF', padding: '2px 8px', borderRadius: '40px', flexShrink: 0 }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', background: '#4c6b45', color: '#FFFFFF', padding: '2px 8px', borderRadius: '40px', flexShrink: 0 }}>
               Primary
             </span>
           )}
@@ -141,10 +141,10 @@ function ProblemChainEditor({ chains, onChange }) {
           onChange={e => setDraft(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), add())}
           placeholder="civilisational > sector > specific"
-          style={{ ...body, fontSize: '14px', color: dark, padding: '9px 14px', borderRadius: '8px', border: '1.5px solid rgba(88,160,138,0.30)', background: '#FFFFFF', outline: 'none', flex: 1 }}
+          style={{ ...body, fontSize: '14px', color: dark, padding: '9px 14px', borderRadius: '8px', border: '1.5px solid rgba(76,107,69,0.30)', background: '#FFFFFF', outline: 'none', flex: 1 }}
         />
         <button onClick={add} disabled={!draft.trim()}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '9px 16px', borderRadius: '8px', border: '1.5px solid rgba(88,160,138,0.60)', background: 'rgba(88,160,138,0.05)', color: gold, cursor: 'pointer' }}>
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '9px 16px', borderRadius: '8px', border: '1.5px solid rgba(76,107,69,0.60)', background: 'rgba(76,107,69,0.05)', color: gold, cursor: 'pointer' }}>
           Add
         </button>
       </div>
@@ -262,7 +262,7 @@ export function OrgDomainsTab({ actorId, toast }) {
     <div style={{ maxWidth: '700px' }}>
 
       {/* Explainer */}
-      <SectionCard style={{ marginBottom: '28px', background: 'rgba(88,160,138,0.02)' }}>
+      <SectionCard style={{ marginBottom: '28px', background: 'rgba(76,107,69,0.02)' }}>
         <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>
           Four-dimensional placement
         </p>
@@ -311,7 +311,7 @@ export function OrgDomainsTab({ actorId, toast }) {
 
         {/* Horizon goal preview */}
         {previewDomain && DOMAIN_HORIZON[previewDomain] && (
-          <div style={{ marginTop: '16px', background: 'rgba(88,160,138,0.04)', border: '1px solid rgba(88,160,138,0.18)', borderRadius: '10px', padding: '14px 18px' }}>
+          <div style={{ marginTop: '16px', background: 'rgba(76,107,69,0.04)', border: '1px solid rgba(76,107,69,0.18)', borderRadius: '10px', padding: '14px 18px' }}>
             <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, marginBottom: '6px' }}>
               {DOMAIN_LABEL[previewDomain]} Horizon Goal
             </p>
