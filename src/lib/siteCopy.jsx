@@ -37,7 +37,7 @@ export const COPY_GROUPS = [
     items: [
       // Hero
       { id: 'home.hero.eyebrow',  label: 'Hero · eyebrow',  default: 'A LIFE WORTH LIVING. A FUTURE WORTH BUILDING.' },
-      { id: 'home.hero.title',    label: 'Hero · title',    default: 'NextUs builds the future.' },
+      { id: 'home.hero.title',    label: 'Hero · title',    default: 'NextUs: Build the future' },
       { id: 'home.hero.title2',   label: 'Hero · title line 2 (smaller)', default: "The world's future and yours, built in unison." },
       { id: 'home.hero.cta',      label: 'Hero · button',   default: 'Start' },
       { id: 'home.hero.subtitle', label: 'Hero · subtitle', multiline: true,
