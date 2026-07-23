@@ -48,7 +48,7 @@ import WorldMapSubstrate  from '../components/mission-control/WorldMapSubstrate'
 import WheelStage         from '../components/mission-control/WheelStage'
 import NowFeed            from '../components/mission-control/NowFeed'
 import EditableText       from '../components/EditableText'
-import CardPhotoEditor    from '../components/mission-control/CardPhotoEditor'
+import CardPhoto          from '../components/mission-control/CardPhoto'
 import { useCopy, siteImageUrl } from '../../lib/siteCopy'
 import SideRail           from '../components/mission-control/SideRail'
 import Tile               from '../components/mission-control/Tile'
@@ -1174,24 +1174,28 @@ export default function MissionControl() {
   const renderCard = (c, i) => {
     const slug = c.kicker.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
     const imgId = `mc.card.${slug}.image`
+    const posId = `mc.card.${slug}.pos`
     const imgPath = copy(imgId)
     const imgUrl = imgPath ? siteImageUrl(imgPath) : null
+    const pos = copy(posId) || 'center'
     return (
-      <div className="mc-card-wrap" key={c.kicker + i}>
-        <button type="button" className="mc-card" onClick={c.onClick}>
-          <span
-            className={`mc-card-img${imgUrl ? '' : ' ' + c.img}`}
-            style={imgUrl ? { backgroundImage: `url(${imgUrl})` } : undefined}
-          />
-          <span className="mc-card-body">
-            <EditableText as="span" className="mc-card-kicker">{c.kicker}</EditableText>
-            <EditableText as="span" className="mc-card-h">{c.title}</EditableText>
-            <EditableText as="span" className="mc-card-p">{c.blurb}</EditableText>
-            <EditableText as="span" className="mc-card-go">{c.cta}</EditableText>
-          </span>
-        </button>
-        {isFounderUser && <CardPhotoEditor imgId={imgId} hasImage={!!imgUrl} />}
-      </div>
+      <CardPhoto
+        key={c.kicker + i}
+        imgId={imgId}
+        posId={posId}
+        imgUrl={imgUrl}
+        pos={pos}
+        fallbackClass={c.img}
+        isFounder={isFounderUser}
+        onOpen={c.onClick}
+      >
+        <span className="mc-card-body">
+          <EditableText as="span" className="mc-card-kicker">{c.kicker}</EditableText>
+          <EditableText as="span" className="mc-card-h">{c.title}</EditableText>
+          <EditableText as="span" className="mc-card-p">{c.blurb}</EditableText>
+          <EditableText as="span" className="mc-card-go">{c.cta}</EditableText>
+        </span>
+      </CardPhoto>
     )
   }
 
@@ -1990,6 +1994,24 @@ const STAGE_CSS = `
 }
 .mc-card-photobtn:hover, .mc-card-photoclear:hover { background: rgba(0,0,0,0.65); }
 .mc-card-photoclear { font-size: 18px; line-height: 1; font-weight: 700; }
+.mc-card-photobtn.is-active {
+  background: var(--mc-accent, #a9743f);
+  border-color: #fff; font-size: 16px; font-weight: 700;
+}
+
+/* Reposition mode: the image becomes a draggable surface. */
+.mc-card-img--moving {
+  cursor: grab;
+  touch-action: none;            /* let us own the drag on touch devices */
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.85), inset 0 0 0 4px rgba(0,0,0,0.35);
+}
+.mc-card-img--moving:active { cursor: grabbing; }
+.mc-card-movehint {
+  position: absolute; left: 10px; top: 10px; z-index: 3;
+  font-size: 12px; color: #fff; background: rgba(0,0,0,0.6);
+  padding: 4px 9px; border-radius: 999px; pointer-events: none;
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+}
 .mc-card-photoerr {
   font-size: 13px; color: #fff; background: rgba(169,116,63,0.92);
   padding: 3px 8px; border-radius: 6px; white-space: nowrap;
