@@ -16,7 +16,7 @@
 // marketing surface is readable without it.
 // ─────────────────────────────────────────────────────────────
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Nav }         from '../components/Nav'
 import { SiteFooter }  from '../components/SiteFooter'
@@ -317,6 +317,59 @@ function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dar
   )
 }
 
+// ── Parallax substrate ───────────────────────────────────────
+// An oversized background layer that drifts against scroll to give a band
+// depth. The 20% overscan (top -20%, height 140%) is the safety margin the
+// drift stays inside, so no edge is ever revealed. Updates batch through
+// requestAnimationFrame on a passive listener; prefers-reduced-motion stills
+// it to a static, centred layer. The parent section must be position:relative
+// with overflow:hidden.
+function ParallaxSubstrate({ src, opacity = 0.1, depth = 0.15 }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const reduce = typeof window !== 'undefined' && window.matchMedia
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduce) return
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const parent = el.parentElement
+      if (!parent) return
+      const rect = parent.getBoundingClientRect()
+      const vh = window.innerHeight || document.documentElement.clientHeight
+      const h = rect.height || 1
+      // 0 as the band's top meets the viewport bottom, 1 once it has fully
+      // scrolled past the top. Clamped to the visible window.
+      const p = Math.min(1, Math.max(0, (vh - rect.top) / (vh + h)))
+      // Symmetric drift bounded to depth*h (< the 20% overscan).
+      const shift = (0.5 - p) * 2 * depth * h
+      el.style.transform = `translate3d(0, ${shift.toFixed(1)}px, 0)`
+    }
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update) }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [depth])
+  return (
+    <div ref={ref} aria-hidden="true" style={{
+      position: 'absolute', left: 0, right: 0, top: '-20%', height: '140%',
+      backgroundImage: `url(${src})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      opacity,
+      pointerEvents: 'none',
+      willChange: 'transform',
+    }} />
+  )
+}
+
 // ── How-it-works content ─────────────────────────────────────
 // Step text comes from the copy registry (editable on the founder page);
 // the `n` numerals are structural and stay in code. Built per-render from
@@ -475,16 +528,10 @@ export function MarketingHomePage() {
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* world-map substrate — same treatment as the Align band, lifted a
-            touch because the section navy matches the image's own navy */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: 'url(/hero-civ.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 0.16,
-          pointerEvents: 'none',
-        }} />
+        {/* world-map substrate with scroll parallax — same treatment as the
+            Align band, lifted a touch because the section navy matches the
+            image's own navy */}
+        <ParallaxSubstrate src="/hero-civ.jpg" opacity={0.16} />
         <div className="mh-earth" style={{
           maxWidth: '880px', margin: '0 auto',
           position: 'relative', zIndex: 1,
@@ -590,15 +637,8 @@ export function MarketingHomePage() {
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* subtle globe echo behind text */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          backgroundImage: 'url(/hero-civ.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 0.07,
-          pointerEvents: 'none',
-        }} />
+        {/* subtle globe echo behind text, drifting on scroll */}
+        <ParallaxSubstrate src="/hero-civ.jpg" opacity={0.07} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '20px' }}>
             <Copy id="home.align.eyebrow" />
