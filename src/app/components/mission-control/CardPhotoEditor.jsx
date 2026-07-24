@@ -12,6 +12,7 @@
 import { useRef, useState } from 'react'
 import { supabase } from '../../../hooks/useSupabase'
 import { saveCopy, clearCopy, useSiteCopyMeta } from '../../../lib/siteCopy'
+import { downscaleImageToBlob } from '../../../lib/imageDownscale'
 
 export default function CardPhotoEditor({ imgId, hasImage }) {
   const { refresh } = useSiteCopyMeta()
@@ -25,17 +26,22 @@ export default function CardPhotoEditor({ imgId, hasImage }) {
     if (!f.type.startsWith('image/')) { setErr('Images only'); return }
     setBusy(true); setErr(null)
     try {
-      const ext = (f.name.split('.').pop() || 'jpg').toLowerCase()
+      // Downscale before upload (see CardPhoto) so the bucket never rejects a
+      // full-size original with "object exceeded the maximum allowed size".
+      const { blob, ext, type } = await downscaleImageToBlob(f, { maxEdge: 1600, quality: 0.82 })
       const path = `cards/${imgId.replace(/[^a-z0-9.-]+/gi, '-')}-${Date.now()}.${ext}`
       const { error: upErr } = await supabase.storage
         .from('site-images')
-        .upload(path, f, { upsert: true, contentType: f.type })
+        .upload(path, blob, { upsert: true, contentType: type })
       if (upErr) throw upErr
       const ok = await saveCopy(imgId, path)
       if (!ok) throw new Error('Could not save')
       await refresh()
     } catch (e2) {
-      setErr(e2?.message || 'Upload failed')
+      const msg = /maximum allowed size|exceeded/i.test(e2?.message || '')
+        ? 'That image is too large even after resizing. Try a smaller one.'
+        : (e2?.message || 'Upload failed')
+      setErr(msg)
     } finally {
       setBusy(false)
       if (fileRef.current) fileRef.current.value = ''

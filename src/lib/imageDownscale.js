@@ -59,3 +59,12 @@ export async function downscaleImage(file, { maxEdge = 1600, quality = 0.82 } = 
   }
   return { dataUrl, type, ext: type === 'image/webp' ? 'webp' : 'jpg' }
 }
+
+// Same downscale, but returns an uploadable Blob instead of a data URL — for
+// the storage.upload() paths (founder card photos) that need binary, not a
+// string. Reuses downscaleImage so there is one resize implementation, not two.
+export async function downscaleImageToBlob(file, opts = {}) {
+  const { dataUrl, type, ext } = await downscaleImage(file, opts)
+  const blob = await (await fetch(dataUrl)).blob()
+  return { blob, type, ext }
+}
