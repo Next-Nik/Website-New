@@ -14,7 +14,7 @@ const BUCKET = 'nextus-audio'
 // ─── Phase constants ──────────────────────────────────────────────────────────
 
 const PHASES = [
-  { key: 'baseline',    label: 'Foundation',  number: '1', locked: false },
+  { key: 'baseline',    label: 'Baseline',  number: '1', locked: false },
   { key: 'calibration', label: 'Calibration', number: '2', locked: false },
   { key: 'embodiment',  label: 'Embodiment',  number: '3', locked: false },
 ]
@@ -255,7 +255,7 @@ function AudioPlayer({ url, onEnded, onNearEnd, locked, currentPhase = 'baseline
         </p>
       )}
       <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>
-        Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
+        Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Baseline'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <button
@@ -298,7 +298,7 @@ function AuthModal({ onDismiss }) {
   return (
     <div onClick={e => e.target === e.currentTarget && onDismiss()} style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(76,107,69,0.78)', borderRadius: '14px', padding: '36px 32px 28px', maxWidth: '400px', width: '100%' }}>
-        <span style={{ display: 'block', ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Foundation</span>
+        <span style={{ display: 'block', ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Baseline</span>
         <h2 style={{ ...sc, fontSize: '1.625rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.2, marginBottom: '10px' }}>Sign in to listen.</h2>
         <p style={{ ...body, fontSize: '1.25rem', fontWeight: 400, ...meta, lineHeight: 1.7, marginBottom: '24px' }}>
           Horizon State is part of the Horizon Suite {'—'} a free account keeps your progress and gives you access to the full protocol.
@@ -425,7 +425,7 @@ function FoundationReview({ user, sessions, phase = 'baseline' }) {
 
   return (
     <div style={{ marginTop: '32px', padding: '24px 28px', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.2)', borderRadius: '14px' }}>
-      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '8px' }}>Foundation Review</span>
+      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '8px' }}>Baseline Review</span>
       <p style={{ ...body, fontSize: '1.125rem', ...muted, lineHeight: 1.7, marginBottom: '20px' }}>
         {sessionsThisWeek.length} sessions this week. A reflection is available.
       </p>
@@ -1244,7 +1244,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
           }}
         >
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#262420', textTransform: 'uppercase', marginBottom: '16px' }}>
-            Horizon State {'·'} Foundation
+            Horizon State {'·'} Baseline
           </span>
           <p style={{ ...body, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '320px' }}>
             Regulated internal stability {'—'} the floor you stand on. Check in before and after to see what the audio actually does to your system.
@@ -1300,11 +1300,11 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
             </span>
           ) : !afterUnlocked ? (
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#262420', textTransform: 'uppercase' }}>
-              Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
+              Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Baseline'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
             </span>
           ) : (
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#262420', textTransform: 'uppercase' }}>
-              Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
+              Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Baseline'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
             </span>
           )}
         </div>
@@ -1430,7 +1430,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
         {beforeDone && audioUrl && (
           <div style={{ marginTop: '4px', marginBottom: '8px' }}>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#262420', textAlign: 'center', marginBottom: '8px' }}>
-              Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
+              Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Baseline'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
             </div>
             <div
               onClick={e => {
@@ -1458,7 +1458,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
         {/* Before */}
         <div className="hs-col-before-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
           <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#262420', textTransform: 'uppercase', marginBottom: '4px' }}>Starting State</span>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(38,36,32,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Foundation</span>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(38,36,32,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Baseline</span>
           <div style={{ pointerEvents: beforeDone ? 'none' : 'auto', marginBottom: '14px' }}>
             <FlameSlider value={beforeValue} onChange={setBeforeValue} ghostValue={null} />
           </div>
@@ -1483,7 +1483,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
           {!user && !audioLoading && !audioError && (
             <div style={{ padding: '20px 22px', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.2)', borderRadius: '14px', opacity: 0.6 }}>
               <p style={{ ...body, fontSize: '1.3125rem', ...muted, marginBottom: '14px', lineHeight: 1.6 }}>Check-in to unlock the audio.</p>
-              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}</div>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Baseline'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}</div>
               <button onClick={() => setShowModal(true)} style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(76,107,69,0.05)', border: '1.5px solid rgba(76,107,69,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', ...gold, fontSize: '18px' }}>{'\u25B6'}</button>
             </div>
           )}
@@ -1492,7 +1492,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
         {/* After */}
         <div className="hs-col-after-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: afterUnlocked ? 1 : 0.22, transition: 'opacity 0.8s ease', pointerEvents: afterUnlocked ? 'auto' : 'none' }}>
           <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#262420', textTransform: 'uppercase', marginBottom: '4px' }}>After State</span>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(38,36,32,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Foundation</span>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(38,36,32,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Baseline</span>
           <div style={{ marginBottom: '14px' }}>
             <FlameSlider value={afterValue} onChange={setAfterValue} ghostValue={beforeDone ? beforeValue : null} />
           </div>
@@ -1702,7 +1702,7 @@ export function HorizonStatePage() {
           <div style={{ maxWidth: '900px', margin: '0 auto', padding: 'max(16px, env(safe-area-inset-top)) 20px calc(48px + env(safe-area-inset-bottom))' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#262420' }}>
-                Horizon State {'·'} {PHASES.find(x => x.key === sessionPhase)?.label || 'Foundation'}
+                Horizon State {'·'} {PHASES.find(x => x.key === sessionPhase)?.label || 'Baseline'}
               </span>
               <button
                 onClick={() => { setSessionPhase(null); reload() }}
@@ -1818,7 +1818,7 @@ function FirstTimePitch() {
   return (
     <div style={{ padding: '40px 32px', background: 'rgba(76,107,69,0.05)', border: '1px solid rgba(76,107,69,0.2)', borderRadius: '14px', textAlign: 'center', maxWidth: '560px', margin: '0 auto' }}>
       <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#262420', display: 'block', marginBottom: '16px', textTransform: 'uppercase' }}>
-        Horizon State {'·'} Foundation
+        Horizon State {'·'} Baseline
       </span>
       <h2 style={{ ...serif, fontSize: '28px', fontWeight: 400, color: '#0F1523', lineHeight: 1.25, marginBottom: '16px' }}>
         The layer beneath everything else.

@@ -465,7 +465,7 @@ function SetupMode({ userId, onCreated }) {
         setExtractMsg(data.message || 'Could not read that URL. You can still fill in the form by hand.')
         return
       }
-      const planet = (data.results || []).find(r => r.label === 'Planet' || r.track === 'planet')
+      const planet = (data.results || [])[0] || null
       if (!planet) {
         setExtractMsg('Did not find an organisation record at that URL. You can fill in the form by hand below.')
         return
@@ -1194,7 +1194,7 @@ function UpdateFromUrl({ actor, saveField }) {
       })
       const data = await res.json()
       if (data.error) { setMsg(data.message || 'Could not read that URL. Nothing was changed.'); return }
-      const planet = (data.results || []).find(r => r.label === 'Planet' || r.track === 'planet')
+      const planet = (data.results || [])[0] || null
       if (!planet) { setMsg('Did not find an organisation at that URL. Nothing was changed.'); return }
       const mapped = mapExtractToForm(planet)
 

@@ -119,8 +119,6 @@ export function CheckoutPage() {
   const ref       = params.get('ref')   ?? undefined
 
   // Beta codes bypass Stripe — NextCore personal codes also bypass (validated server-side)
-  // We attempt bypass for any code not going to Stripe pricing
-  const tryBypass = !!promoCode
 
   useEffect(() => {
     if (authLoading) return

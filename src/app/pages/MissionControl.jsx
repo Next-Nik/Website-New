@@ -50,7 +50,6 @@ import NowFeed            from '../components/mission-control/NowFeed'
 import EditableText       from '../components/EditableText'
 import CardPhoto          from '../components/mission-control/CardPhoto'
 import { useCopy, siteImageUrl } from '../../lib/siteCopy'
-import SideRail           from '../components/mission-control/SideRail'
 import Tile               from '../components/mission-control/Tile'
 import Panel              from '../components/mission-control/Panel'
 import CivDomainPanel             from '../components/mission-control/CivDomainPanel'
@@ -60,10 +59,7 @@ import MyPracticeMissionPanel     from '../components/mission-control/MyPractice
 import OrgRoomOverlay             from '../components/OrgRoomOverlay'
 import MapMissionPanel            from '../components/mission-control/MapMissionPanel'
 import TargetSprintMissionPanel   from '../components/mission-control/TargetSprintMissionPanel'
-import PurposePieceMissionPanel   from '../components/mission-control/PurposePieceMissionPanel'
-import DailySessionPanel          from '../components/daily/DailySessionPanel'
 import ProfileMissionPanel        from '../components/mission-control/ProfileMissionPanel'
-import SettingsMissionPanel       from '../components/mission-control/SettingsMissionPanel'
 import WorldViewMissionPanel      from '../components/mission-control/WorldViewMissionPanel'
 import GetToDoMissionPanel        from '../components/mission-control/GetToDoMissionPanel'
 import AddOverlay                 from '../components/AddOverlay'
@@ -322,23 +318,6 @@ function civPlacementKey(purposeData) {
 }
 
 
-function ScopePlaceholder({ scope }) {
-  const label = scope === 'practice' ? 'My Practice' : 'My Org'
-  const body = scope === 'practice'
-    ? 'Your practitioner working room is being built. It will hold your placement, your offerings, and the contribution interest coming your way — with a URL-paste setup that pre-fills your placement from a page you already have on the web.'
-    : 'Your organisation working room is being built. It will bring your organisation\'s profile, offers, and asks into Mission Control, with the same URL-paste setup shortcut.'
-
-  return (
-    <div className="mc-scope-placeholder">
-      <div className="mc-scope-placeholder-inner">
-        <p className="mc-scope-placeholder-eyebrow">{label.toUpperCase()}</p>
-        <h2 className="mc-scope-placeholder-title">Coming soon</h2>
-        <div className="mc-scope-placeholder-rule" />
-        <p className="mc-scope-placeholder-body">{body}</p>
-      </div>
-    </div>
-  )
-}
 
 // ── Inline Next Steps launcher for the Resources panel ─────────────────────
 function ResourcesNextStepsInput({ onSubmit }) {
@@ -901,7 +880,7 @@ export default function MissionControl() {
     const rootDomainId = levelPath.length > 0
       ? domainTree[levelPath[0].index]?.id
       : selectedItem?.id
-    navigate(`/nextus/actors${rootDomainId ? `?domain=${rootDomainId}` : ''}`)
+    navigate(rootDomainId ? `/explore/${rootDomainId}` : '/guide')
   }
 
   // ── Self callbacks. SELF_KEYS at index i pairs with SELF_DOMAINS at
@@ -1041,7 +1020,7 @@ export default function MissionControl() {
   // Step 3: Horizon Self (user_metadata.horizon_self populated)
   const iaCount = (data.mapData || []).filter(r => r.ia_statement).length
   const hasHorizonSelf = !!(data.mapResults?.life_ia_statement)
-  const mapComplete = iaCount >= 7 && hasHorizonSelf
+  const selfJourneyComplete = iaCount >= 7 && hasHorizonSelf
   const hasHorizonSelfMeta = !!(data.user?.user_metadata?.horizon_self)
   const nextUState = mapAudited === 0
     ? null
@@ -1055,7 +1034,7 @@ export default function MissionControl() {
 
   // Horizon State phase from users row (baseline | calibration | embodiment)
   const horizonStatePhase = data.userRow?.horizon_state_phase || 'baseline'
-  const hsPhase2Locked = !mapComplete && horizonStatePhase !== 'baseline'
+  const hsPhase2Locked = !selfJourneyComplete && horizonStatePhase !== 'baseline'
   // Phase 2+ is gated — only baseline (Phase 1) is always open.
   // The tile opens regardless; the panel shows the gate if needed.
   const mapState = mapAudited === 0
@@ -1107,7 +1086,7 @@ export default function MissionControl() {
     toDoCount > 0
       ? { label: 'Your open to-dos', onClick: () => openPersonalPanel('get-to-do') }
       : mapAudited < 7
-        ? { label: `Continue The Map · ${mapAudited} of 7`, onClick: () => openPersonalPanel('map') }
+        ? { label: mapAudited === 0 ? 'Start The Map' : `Continue The Map · ${mapAudited} of 7`, onClick: () => openPersonalPanel('map') }
         : iaCount < 7
           ? { label: `Your I Am statements · ${iaCount} of 7`, onClick: () => navigate('/nextu/i-am') }
           : !hasHorizonSelfMeta
@@ -1144,7 +1123,9 @@ export default function MissionControl() {
         { kicker: 'My Focus', title: 'What we’re here for', blurb: 'The domain of the planet we’re choosing to move.', cta: 'Set a focus', img: 'mc-im2', onClick: () => { setActiveScope('planet'); setActivePanel('focus') } },
       ]
     : [
-        { kicker: 'North Star', title: 'Your guiding aim', blurb: 'The one direction the whole loop points towards.', cta: 'Set your star', img: 'mc-im1', onClick: () => navigate('/north-star') },
+        mapAudited === 0
+          ? { kicker: 'The Map', title: 'Start with The Map', blurb: 'Seven domains. An honest picture of where you are.', cta: 'Start The Map', img: 'mc-im1', onClick: () => openPersonalPanel('map') }
+          : { kicker: 'North Star', title: 'Your guiding aim', blurb: 'The one direction the whole loop points towards.', cta: 'Set your star', img: 'mc-im1', onClick: () => navigate('/north-star') },
         { kicker: 'NextU', title: 'Who you’re becoming', blurb: 'Your seven domains, growing towards the horizon.', cta: 'Open NextU', img: 'mc-im5', onClick: () => navigate('/nextu') },
       ]
 
@@ -1155,7 +1136,7 @@ export default function MissionControl() {
         { kicker: 'Add Org', title: 'Start something', blurb: 'Bring a new organisation onto the map.', cta: 'Add an org', img: 'mc-im2', onClick: () => navigate('/add') },
       ]
     : [
-        { kicker: 'Get To Do', title: 'Your next step', blurb: 'One clear action, drawn from your horizon.', cta: 'See what’s next', img: 'mc-im6', onClick: () => openPersonalPanel('get-to-do') },
+        { kicker: 'Get To Do', title: 'Your next step', blurb: 'One clear action, drawn from your horizon.', cta: 'See what’s next', img: 'mc-im6', onClick: () => (toDoCount > 0 ? openPersonalPanel('get-to-do') : openPersonalPanel('map')) },
         { kicker: 'Circles', title: 'Move with people', blurb: 'The people walking the same way as you.', cta: 'Open Circles', img: 'mc-im5', onClick: () => navigate('/circles') },
       ]
 
@@ -1316,7 +1297,7 @@ export default function MissionControl() {
 
           {/* The declared horizon's home (BP-8) — verbatim once declared. */}
           <HorizonBanner userId={data.user?.id} fallbackLine={!isCiv ? lifeHorizon : null} />
-          <FirstLightPrompt style={{ margin: '18px 0 0', maxWidth: 720 }} />
+          {!isCiv && <FirstLightPrompt style={{ margin: '18px 0 0', maxWidth: 720 }} />}
 
           <div className="mc-cards">
             {horizonCards.map(renderCard)}
@@ -1687,27 +1668,6 @@ export default function MissionControl() {
           inside it offers every daily tool in any order. The
           component owns its own headers and buttons; the Panel
           provides only chrome and close. */}
-      <Panel
-        open={activePanel === 'daily'}
-        onClose={closePanel}
-        eyebrow="DAILY"
-        actions={[
-          { label: 'REPORTS & LOGS →',
-            onClick: () => navigate('/tools/horizon-state') },
-          { label: 'CLOSE', onClick: closePanel },
-        ]}
-      >
-        {activePanel === 'daily' && (
-          <DailySessionPanel
-            user={data.user}
-            sprintData={data.sprintData}
-            practiceData={data.practiceData}
-            mapComplete={mapComplete}
-            onNavigate={(path) => { closePanel(); navigate(path) }}
-            onOpenGetToDo={() => { closePanel(); openPersonalPanel('get-to-do') }}
-          />
-        )}
-      </Panel>
 
       <Panel
         open={activePanel === 'target-sprint'}
@@ -1727,28 +1687,6 @@ export default function MissionControl() {
         />
       </Panel>
 
-      <Panel
-        open={activePanel === 'resources'}
-        onClose={closePanel}
-        eyebrow="FOR YOUR WORK · RESOURCES"
-        title="Things that fit where you are"
-      >
-        {/* Next Steps entry — inline input launches the tool in motion */}
-        <div style={{ marginBottom: '24px' }}>
-          <ResourcesNextStepsInput onSubmit={(q) => { closePanel(); navigate(`/tools/nextsteps?q=${encodeURIComponent(q)}`) }} />
-        </div>
-
-        {/* Feed — empty for now, fills as content is surfaced */}
-        <div style={{ borderTop: '1px solid rgba(76,107,69,0.15)', paddingTop: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <span style={{ color: '#262420', fontSize: '14px' }}>✦</span>
-            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)' }}>YOUR FEED</span>
-          </div>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0, lineHeight: 1.6 }}>
-            Articles, conversations, practitioners, and exercises — surfaced as your work moves.
-          </p>
-        </div>
-      </Panel>
 
       <Panel
         open={activePanel === 'world-view'}
@@ -1762,17 +1700,6 @@ export default function MissionControl() {
         <WorldViewMissionPanel />
       </Panel>
 
-      <Panel
-        open={activePanel === 'missions'}
-        onClose={closePanel}
-        eyebrow="OUTWARD AIM · PLANET SPRINT"
-        title="Quests in your range"
-      >
-        <p>Planet Sprint is Target Sprint pointed outward. Same architecture, civilisational target. Quests are sprints offered by orgs and other actors, ready to accept. Time-frames vary: a doc edit by Tuesday, a community garden build over six weeks, a multi-month policy push.</p>
-        <div className="mc-panel-build-edge">
-          Building in progress. Quest feed, accept-quest flow, and contribution log render here once orgs start posting.
-        </div>
-      </Panel>
 
       <Panel
         open={activePanel === 'profile'}
@@ -1795,22 +1722,6 @@ export default function MissionControl() {
         />
       </Panel>
 
-      <Panel
-        open={activePanel === 'purpose-piece'}
-        onClose={closePanel}
-        eyebrow="YOUR FIT · PURPOSE PIECE"
-        title={!isUnplaced ? placement.split(' · ').map(s => s.toLowerCase()).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' · ') : 'Find where you fit.'}
-        actions={[
-          { label: !isUnplaced ? 'REVISIT YOUR FIT →' : 'BEGIN PURPOSE PIECE →', primary: true,
-            onClick: () => navigate('/tools/purpose-piece') },
-          { label: 'CLOSE', onClick: closePanel },
-        ]}
-      >
-        <PurposePieceMissionPanel
-          purposeData={data.purposeData}
-          onNavigate={navigate}
-        />
-      </Panel>
 
       <Panel
         open={activePanel === 'map'}
@@ -1819,7 +1730,7 @@ export default function MissionControl() {
         title="Your seven domains"
         actions={[
           { label: mapAudited === 7 ? 'REVISIT A DOMAIN' : 'OPEN THE MAP →', primary: true,
-            onClick: () => navigate('/tools/map') },
+            onClick: () => navigate('/nextu/map') },
           { label: 'CLOSE', onClick: closePanel },
         ]}
       >
@@ -1847,20 +1758,6 @@ export default function MissionControl() {
         />
       </Panel>
 
-      <Panel
-        open={activePanel === 'settings'}
-        onClose={closePanel}
-        eyebrow="SYSTEM · SETTINGS"
-        title="Account &amp; preferences"
-        actions={[
-          { label: 'CLOSE', onClick: closePanel },
-        ]}
-      >
-        <SettingsMissionPanel
-          user={data.user}
-          onNavigate={navigate}
-        />
-      </Panel>
 
     </div>
   )

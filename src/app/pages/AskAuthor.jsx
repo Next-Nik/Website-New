@@ -20,14 +20,16 @@ import { tokens, serif, body, sc } from '../../lib/designTokens'
 
 const GOLD_C = tokens.goldChrome
 
+// Canonical CIV domain slugs (audit T11) — asks tagged with legacy short
+// slugs ('human', 'tech', 'finance') never matched their domain surfaces.
 const DOMAINS = [
-  { v: 'nature',  l: 'Nature' },
-  { v: 'vision',  l: 'Vision' },
-  { v: 'human',   l: 'Human' },
-  { v: 'finance', l: 'Finance' },
-  { v: 'society', l: 'Society' },
-  { v: 'legacy',  l: 'Legacy' },
-  { v: 'tech',    l: 'Tech' },
+  { v: 'nature',          l: 'Nature' },
+  { v: 'vision',          l: 'Vision' },
+  { v: 'human-being',     l: 'Human Being' },
+  { v: 'finance-economy', l: 'Economy' },
+  { v: 'society',         l: 'Society' },
+  { v: 'legacy',          l: 'Legacy' },
+  { v: 'technology',      l: 'Technology' },
 ]
 
 function Field({ label, hint, children }) {
@@ -80,6 +82,13 @@ export default function AskAuthor() {
     supabase.from('actor_calls').select('title').eq('id', pid).maybeSingle()
       .then(({ data }) => { if (data) setParentTitle(data.title) })
   }, [])
+
+  // Optional ?actor=<id> preselects the authoring org (the org manager's
+  // "Post a need" door arrives here with its actor in hand).
+  useEffect(() => {
+    const aid = new URLSearchParams(window.location.search).get('actor')
+    if (aid && actors.some(a => a.id === aid)) setAuthorActor(aid)
+  }, [actors])
 
   async function publish(visibility) {
     const errs = []

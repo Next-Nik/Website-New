@@ -198,7 +198,7 @@ export default function HorizonDeclarePage() {
             </label>
 
             <div style={{ display: 'flex', gap: space.md, flexWrap: 'wrap' }}>
-              <button type="button" onClick={() => navigate('/mission-control')}
+              <button type="button" onClick={() => navigate('/')}
                 style={primaryBtn()}>
                 Back to Mission Control →
               </button>

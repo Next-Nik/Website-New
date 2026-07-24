@@ -96,7 +96,7 @@ export function ToolCompassPanel() {
                   Where do I start?
                 </h2>
                 <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
-                  Five tools. One ecosystem. The right entry depends on where you are.
+                  Six tools. One ecosystem. The right entry depends on where you are.
                 </p>
               </div>
               <button

@@ -46,20 +46,33 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
     setError(null)
 
     try {
+      // Server-side create (audit T10). The old direct insert wrote columns
+      // the platform never reads (claimed_by) and skipped the ones it does
+      // (profile_owner, status) — and was RLS-denied for non-founders anyway.
+      // /api/add-actor sets profile_owner, status 'live', vetting 'approved'.
+      let token = null
+      try { token = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
+      if (!token) throw new Error('Your session has expired. Please sign in again.')
+
+      const resp = await fetch('/api/add-actor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          represents: true,
+          primary: { name: name.trim(), type: actorType, website: website.trim() || null },
+          extras: [],
+        }),
+      })
+      const json = await resp.json().catch(() => ({}))
+      if (!resp.ok || !json.ok) throw new Error(json.error || 'Save failed')
+      const createdId = json.results?.[0]?.id
+      if (!createdId) throw new Error('No actor returned')
+
       const { data, error: err } = await supabase
         .from('nextus_actors')
-        .insert({
-          name:          name.trim(),
-          actor_type:    actorType,
-          website:       website.trim() || null,
-          claimed_by:    user.id,
-          vetting_status: 'self_registered',
-          seeded_by:     'self',
-          created_at:    new Date().toISOString(),
-        })
-        .select()
+        .select('*')
+        .eq('id', createdId)
         .single()
-
       if (err) throw err
       onClaimed(data)
     } catch (err) {

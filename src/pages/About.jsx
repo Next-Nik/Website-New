@@ -82,7 +82,7 @@ export function AboutPage() {
               The tools can be used independently. But they are designed to stack — each one building
               on what the last revealed. Vision first. Then embodied action. Then the methodologies,
               practices, and support —{' '}
-              <a href="/" style={{ ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(38,36,32,0.35)' }}>
+              <a href="/guide" style={{ ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(38,36,32,0.35)' }}>
                 from people, practitioners, and organisations around the world
               </a>
               {' '}— that are yours to choose freely, held by the scaffold the Suite provides.
@@ -97,7 +97,7 @@ export function AboutPage() {
             </P>
 
             <div style={{ marginTop: '32px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-              <a href="/" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(38,36,32,0.35)', paddingBottom: '2px' }}>
+              <a href="/tools" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(38,36,32,0.35)', paddingBottom: '2px' }}>
                 NextUs Self →
               </a>
               <a href="/tools/north-star" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.55)', paddingBottom: '2px' }}>
@@ -154,7 +154,7 @@ export function AboutPage() {
             </P>
 
             <div style={{ marginTop: '32px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-              <a href="/" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(38,36,32,0.35)', paddingBottom: '2px' }}>
+              <a href="/explore" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(38,36,32,0.35)', paddingBottom: '2px' }}>
                 NextUs →
               </a>
               <a href="/feed" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.55)', paddingBottom: '2px' }}>
@@ -179,7 +179,7 @@ export function AboutPage() {
           The same work, at different scales. The wheel at every level.
         </DarkBody>
         <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginTop: '12px' }}>
-          <DarkSolidButton href="/">Enter the platform →</DarkSolidButton>
+          <DarkSolidButton href="/login">Enter the platform →</DarkSolidButton>
           <DarkGhostButton href="/work-with-nik">Work with Nik →</DarkGhostButton>
         </div>
       </DarkSection>

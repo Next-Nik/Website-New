@@ -83,20 +83,8 @@ export default function ContributorSignalsList({
             margin: 0,
           }}
         >
-          This territory is still being measured. If you are doing work
-          here, you can{' '}
-          <a
-            href="/signals/new"
-            style={{
-              color: at.brass,
-              textDecoration: 'underline',
-              textDecorationColor: 'rgba(76,107,69, 0.45)',
-              textUnderlineOffset: '3px',
-            }}
-          >
-            contribute a signal
-          </a>
-          .
+          This territory is still being measured. Signals land here as
+          organisations doing the work check in and are written into guides.
         </p>
       </div>
     )

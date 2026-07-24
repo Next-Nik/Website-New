@@ -25,6 +25,9 @@ const supabase = createClient(
 // group:    written to users.beta_group in Supabase
 // kitTagId: Kit tag ID — get from Kit Dashboard → Subscribers → Tags
 const PROMO_GROUP_MAP = {
+  // FOUNDING50 is the launch-window code advertised on /pricing (audit T07).
+  // kitTagId null = no Kit tag yet; tagUserGroup guards on it.
+  'FOUNDING50':  { group: 'founding_member', kitTagId: null },
   'BETA50':      { group: 'beta_tester', kitTagId: 19032269 },
   'BETACORE75':  { group: 'beta_core',   kitTagId: 19032272 },
   'EARLYBIRD50': { group: 'early_bird',  kitTagId: 19032276 },
@@ -202,7 +205,7 @@ module.exports = async function handler(req, res) {
         const lineItems = await stripe.checkout.sessions.listLineItems(session.id)
         for (const item of lineItems.data) {
           const mapping = PRICE_MAP[item.price?.id]
-          if (!mapping) { console.warn('No mapping for price:', item.price?.id); continue }
+          if (!mapping) { console.error('[stripe-webhook] UNMAPPED PRICE — access NOT granted:', item.price?.id, 'session:', session.id, '— add it to PRICE_MAP'); continue }
           const products = Array.isArray(mapping.product) ? mapping.product : [mapping.product]
           await grantAccess(userId, products, mapping.tier)
         }

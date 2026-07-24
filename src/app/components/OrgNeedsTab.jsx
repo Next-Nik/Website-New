@@ -125,7 +125,7 @@ export function OrgNeedsTab({ actorId, navigate, toast }) {
             ? 'No needs posted yet.'
             : `${openNeeds.length} open · ${needs.length} total`}
         </p>
-        <Btn small variant="solid" onClick={() => navigate(`/org/${actorId}/needs/new`)}>
+        <Btn small variant="solid" onClick={() => navigate(`/asks/new?actor=${actorId}`)}>
           + Post a need
         </Btn>
       </div>
@@ -135,7 +135,7 @@ export function OrgNeedsTab({ actorId, navigate, toast }) {
           <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
             Post your first need to let contributors know how they can help. Be specific — specific needs attract specific contributors.
           </p>
-          <Btn onClick={() => navigate(`/org/${actorId}/needs/new`)}>Post a need →</Btn>
+          <Btn onClick={() => navigate(`/asks/new?actor=${actorId}`)}>Post a need →</Btn>
         </SectionCard>
       )}
 

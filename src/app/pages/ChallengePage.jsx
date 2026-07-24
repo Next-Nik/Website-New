@@ -931,7 +931,7 @@ export function ChallengePage() {
           This challenge may have been withdrawn or the link has changed.
         </p>
         <div style={{ marginTop: '24px' }}>
-          <a href="/atlas" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(169,116,63,0.5)', borderRadius: '30px', padding: '10px 24px', display: 'inline-block' }}>
+          <a href="/guide" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(169,116,63,0.5)', borderRadius: '30px', padding: '10px 24px', display: 'inline-block' }}>
             Browse the Atlas →
           </a>
         </div>
@@ -1026,7 +1026,7 @@ export function ChallengePage() {
             call={call}
             userId={user.id}
             onUpdated={(c) => setCall(prev => ({ ...prev, ...c }))}
-            onDeleted={() => { window.location.href = '/atlas' }}
+            onDeleted={() => { window.location.href = '/guide' }}
           />
         )}
 

@@ -215,7 +215,7 @@ export default function EarthLive() {
                 @media (max-width: 600px) { .el-grid { grid-template-columns: 1fr; } }
               `}</style>
               {challenges.map((c) => (
-                <Link key={c.call_id} to={c.slug ? `/stretch/c/${c.slug}` : '#'}
+                <Link key={c.call_id} to={c.slug ? `/stretch/c/${c.slug}` : '#'} onClick={e => { if (!c.slug) e.preventDefault() }}
                   style={{ border: HAIR, borderRadius: '14px', padding: '15px 16px', textDecoration: 'none', display: 'block' }}>
                   <div style={{ ...serif, fontWeight: 400, fontSize: '20px', lineHeight: 1.2, color: CREAM }}>{c.title}</div>
                   <div style={{ ...body, fontSize: '13.5px', color: CREAM_60, margin: '3px 0 8px' }}>{c.actor_name || 'Community'}</div>
@@ -268,7 +268,7 @@ export default function EarthLive() {
             <K>Participating organisations</K>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               {orgs.map((o, i) => (
-                <Link key={i} to={o.slug ? `/org/${o.slug}` : '#'}
+                <Link key={i} to={o.slug ? `/org/${o.slug}` : '#'} onClick={e => { if (!o.slug) e.preventDefault() }}
                   style={{ display: 'flex', gap: '9px', alignItems: 'center', textDecoration: 'none',
                     border: '1px solid rgba(242,196,90,0.3)', borderRadius: '24px',
                     padding: '7px 14px 7px 8px', ...body, fontSize: '14.5px', color: CREAM_80 }}>

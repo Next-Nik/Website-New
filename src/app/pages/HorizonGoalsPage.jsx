@@ -156,7 +156,7 @@ function GoalDetail({ domain }) {
           <p style={{ ...body, fontSize: '1.0625rem', color: muted, lineHeight: 1.7, maxWidth: '440px', margin: '0 auto 20px' }}>
             No actors or challenges aligned here yet. Be the first — claim a profile and name this as your destination.
           </p>
-          <Link to="/atlas" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, textDecoration: 'none', border: '1px solid rgba(76,107,69,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
+          <Link to="/guide" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, textDecoration: 'none', border: '1px solid rgba(76,107,69,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
             Browse the Atlas →
           </Link>
         </div>

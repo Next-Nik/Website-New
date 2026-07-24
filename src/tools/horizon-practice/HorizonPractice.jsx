@@ -2630,17 +2630,9 @@ export function HorizonPracticePage() {
                 <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
               </button>
 
-              <button onClick={() => setView('evening')} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
-                borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
-              }}>
-                <div>
-                  <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Evening Integrate</div>
-                  <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>Close the day. What landed. What to carry forward.</div>
-                </div>
-                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
-              </button>
+              {/* Evening Integrate entrance hidden until the session is built
+                  (audit T12) — the view code below is preserved and returns
+                  the moment this button does. */}
 
               <button onClick={() => setLogOpen(true)} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',

@@ -38,13 +38,13 @@ function MoreIcon({ active }) {
 
 function MoreMenu({ onClose }) {
   const lifeOSLinks = [
-    { label: 'NextUs Self', path: '/nextus-self', desc: 'Your life — seven domains' },
+    { label: 'NextUs Self', path: '/tools', desc: 'Your life — seven domains' },
   ]
 
   const nextusLinks = [
-    { label: 'NextUs',         path: '/nextus',         desc: 'Seven civilisational domains' },
-    { label: 'Orgs and Individuals', path: '/nextus/actors', desc: 'Who is doing the work' },
-    { label: 'Map',            path: '/nextus/map',     desc: 'Where the work is happening' },
+    { label: 'NextUs',         path: '/explore',        desc: 'Seven civilisational domains' },
+    { label: 'Orgs and Individuals', path: '/feed',     desc: 'Who is doing the work' },
+    { label: 'Map',            path: '/map',            desc: 'Where the work is happening' },
   ]
 
   const siteLinks = [
@@ -149,7 +149,7 @@ export function BottomTabs() {
       label:  'NextUs',
       icon:   <MoreIcon active={isPlanet} />,
       active: isPlanet,
-      to:     '/nextus',
+      to:     '/explore',
       action: null,
     },
     {

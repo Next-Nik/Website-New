@@ -37,6 +37,7 @@ class ErrorBoundary extends Component {
 // ── Site pages ────────────────────────────────────────────────
 import { AboutPage }              from './pages/About'
 import { WorkWithNikPage, PodcastPage } from './pages/WorkAndPodcast'
+import { NotFoundPage }          from './pages/NotFound'
 import { LoginPage }              from './pages/Login'
 import { PrivacyPage, TermsPage } from './pages/Legal'
 import { SupportResourcesPage } from './pages/SupportResources'
@@ -78,7 +79,6 @@ import { NextMarketPage }         from './app/pages/NextMarket'
 import { AdminConsolePage }   from './app/pages/AdminConsole'
 import { PrismLabPage }       from './app/pages/PrismLab'
 import { MovieMagicPage }     from './pages/MovieMagic'
-import { NominatePage }       from './app/pages/Nominate'
 import { AddPage }            from './app/pages/Add'
 import { EventManagePage }    from './app/pages/EventManage'
 import { EventPublicPage }    from './app/pages/EventPublic'
@@ -444,7 +444,7 @@ function AppInner() {
         <Route path="/begin/build/group"    element={<BeginBuildGroupPage />} />
 
         {/* ── Legacy redirects — clean once confirmed dead ── */}
-        <Route path="/life-os"             element={<Navigate to="/nextus-self" replace />} />
+        <Route path="/life-os"             element={<Navigate to="/" replace />} />
 
         {/* ── Admin ── */}
         <Route path="/admin"           element={<AdminConsolePage />} />
@@ -454,7 +454,7 @@ function AppInner() {
         <Route path="/auth/callback"   element={<AuthCallbackPage />} />
 
         {/* ── Fallback ── */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*"              element={<NotFoundPage />} />  {/* real 404 — silent home-redirects hid broken links (audit T47) */}
       </Routes>
 
       {/* Mobile bottom tabs — hidden on Mission Control where the brand

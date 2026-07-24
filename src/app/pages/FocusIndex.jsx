@@ -372,7 +372,7 @@ export function FocusIndex() {
             {totalCount === 0
               ? (parent
                   ? 'Nothing is yet seeded directly under ' + parent.name + '.'
-                  : 'The directory is empty. Run migrations 043 and 045 to seed.')
+                  : 'The directory is still being seeded. Check back soon.')
               : 'No nested entities match the selected domain' + (selectedDomains.size > 1 ? 's' : '') + '.'}
           </div>
         )}

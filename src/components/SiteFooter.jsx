@@ -39,6 +39,7 @@ export function SiteFooter() {
             {'\u00A9'} 2026 NextUs {'·'} Nik Wood
           </span>
           <div style={{ display: 'flex', gap: '20px' }}>
+            <a href="/watch" style={{ ...mono, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(38,36,32,0.55)', textDecoration: 'none' }}>Watch</a>
             <a href="/faq" style={{ ...mono, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(38,36,32,0.55)', textDecoration: 'none' }}>FAQ</a>
             <a href="/support" style={{ ...mono, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(38,36,32,0.55)', textDecoration: 'none' }}>Support Resources</a>
             <a href="mailto:hello@nextus.world" style={{ ...mono, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(38,36,32,0.55)', textDecoration: 'none' }}>Contact</a>

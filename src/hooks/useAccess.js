@@ -3,8 +3,9 @@ import { useAuth } from './useAuth'
 
 const TIER_RANK = { full: 3, beta: 2, preview: 1, none: 0 }
 
-// Founder check — matches AdminConsole and ContentEditor pattern
-function isFounder(user) {
+// Founder check — the one shared definition (audit T39). Import this
+// instead of re-implementing the predicate inline.
+export function isFounder(user) {
   return user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
 }
 

@@ -67,7 +67,7 @@ export function RemovePage() {
               We could not complete that
             </h1>
             <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.6)', lineHeight: 1.7 }}>{msg}</p>
-            <Link to="/atlas" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold,
+            <Link to="/guide" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold,
               textDecoration: 'none', display: 'inline-block', marginTop: '20px' }}>The Atlas &rarr;</Link>
           </>
         )}

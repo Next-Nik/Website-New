@@ -125,6 +125,13 @@ export default function WelcomeNext() {
           >
             ← Back to start
           </button>
+          <button
+            type="button"
+            className="next-back"
+            onClick={() => navigate('/')}
+          >
+            Go to your dashboard →
+          </button>
         </div>
       </div>
     </div>
