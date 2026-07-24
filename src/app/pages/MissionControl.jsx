@@ -1621,6 +1621,12 @@ export default function MissionControl() {
 
       <footer className="mc-foot">
         <div className="mc-wrap"><EditableText>NextUs · What we want · Where we are · What’s next · How we get there</EditableText></div>
+        {/* Build marker — not user copy, not wrapped in EditableText. Bump the
+            string any time this file changes so a device can be checked
+            against it (View Source / long-press-inspect / just read it) to
+            confirm the deploy that's live is the one just pushed, before
+            spending time re-testing a specific bug on that device. */}
+        <div className="mc-wrap mc-build-mark">build 2026-07-24-photofix-a</div>
       </footer>
 
       {/* ─── MY ORG — opens from the right-rail tile, fades up in place ─ */}
@@ -2517,6 +2523,11 @@ const STAGE_CSS = `
   font-size: 13px;
   padding: 28px 0;
   margin-top: auto;
+}
+.mc-build-mark {
+  margin-top: 6px;
+  font-size: 13px;
+  opacity: 0.55;
 }
 
 /* ── responsive ─────────────────────────────────────────────── */
