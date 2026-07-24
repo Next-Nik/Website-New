@@ -1172,6 +1172,7 @@ export default function MissionControl() {
         pos={pos}
         fallbackClass={c.img}
         isFounder={isFounderUser}
+        label={c.title}
         onOpen={c.onClick}
       >
         <span className="mc-card-body">
@@ -2043,13 +2044,13 @@ const STAGE_CSS = `
   border-color: #fff; font-size: 16px; font-weight: 700;
 }
 
-/* Reposition mode: the image becomes a draggable surface. */
-.mc-card-img--moving {
+/* Reposition mode: the media frame becomes a draggable surface. */
+.mc-card-media--moving {
   cursor: grab;
   touch-action: none;            /* let us own the drag on touch devices */
   box-shadow: inset 0 0 0 2px rgba(255,255,255,0.85), inset 0 0 0 4px rgba(0,0,0,0.35);
 }
-.mc-card-img--moving:active { cursor: grabbing; }
+.mc-card-media--moving:active { cursor: grabbing; }
 .mc-card-movehint {
   position: absolute; left: 10px; top: 10px; z-index: 3;
   font-size: 12px; color: #fff; background: rgba(0,0,0,0.6);
@@ -2061,10 +2062,27 @@ const STAGE_CSS = `
   padding: 3px 8px; border-radius: 6px; white-space: nowrap;
 }
 
+/* ── Card shell ───────────────────────────────────────────────
+   REBUILT July 2026. Read the header comment in CardPhoto.jsx before
+   changing anything in this block; every line below is load-bearing
+   against the WebKit blank-card failure, and the previous version's
+   "fix" (a compositing hint on the media child) was the cause.
+
+   Three rules:
+     1. This is a <div>, not a <button>. The click target is the
+        stretched .mc-card-hit below.
+     2. NO overflow: hidden. The media clips itself, so nothing here
+        ever asks WebKit to apply a rounded clip to a transformed
+        descendant. That is what frees the hover lift to be safe.
+     3. No layer-promotion hints anywhere in this component. No
+        translateZ, no backface-visibility, no will-change.
+
+   Inset shorthands are written out longhand on purpose — one fewer
+   modern-CSS dependency in the one component that has to work
+   everywhere. */
 .mc-card {
   position: relative;
   border-radius: 18px;
-  overflow: hidden;
   background: var(--mc-surface);
   border: 1px solid var(--mc-line);
   box-shadow: var(--mc-shadow);
@@ -2079,31 +2097,55 @@ const STAGE_CSS = `
   min-height: 230px;
 }
 .mc-card:hover { transform: translateY(-4px); box-shadow: 0 14px 44px rgba(38,36,32,.18); }
-.mc-card-img {
-  height: 150px;
-  background-size: cover;
-  background-position: center;
+
+/* Media frame. In flow, declared height, never shrinks, no promotion. */
+.mc-card-media {
   position: relative;
+  height: 150px;
+  flex: 0 0 150px;
+}
+/* The photo AND the no-photo gradient are both this element (the gradient
+   arrives as a data-URI SVG src). One element, one paint path, one thing
+   that can ever be wrong. It carries its own border-radius so no ancestor
+   needs to clip it. */
+.mc-card-photo {
   display: block;
-  /* WebKit compositing bug (all iOS/iPadOS Safari, old hardware and new):
-     a background-image on a child of an overflow:hidden + border-radius
-     parent that also has a transition on transform (see .mc-card above,
-     used for the hover lift) can silently fail to paint -- the card shell,
-     shadow, and any overlaid buttons render fine, only the photo/gradient
-     is blank. Forcing this element onto its own compositing layer sidesteps
-     the bug. Chrome/Firefox/Android were never affected; do not remove this
-     without testing on real iOS Safari, old and new. */
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 17px 17px 0 0;   /* 17, not 18 — sits inside the 1px border */
+  pointer-events: none;           /* the frame owns the crop drag */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
-.mc-card-img::after {
-  content: "";
+.mc-card-scrim {
   position: absolute;
-  inset: 0;
+  left: 0; right: 0; top: 0; bottom: 0;
+  border-radius: 17px 17px 0 0;
   background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,.28));
+  pointer-events: none;
 }
+/* Stretched hit target: the whole card is clickable, with real button
+   semantics, without any media living inside a form control. Goes inert
+   while the founder is editing copy or dragging a crop. */
+.mc-card-hit {
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  z-index: 2;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 18px;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.mc-card-hit:focus-visible { outline: 2px solid var(--mc-accent); outline-offset: 3px; }
+.mc-card-hit[data-inert="true"] { pointer-events: none; }
+
 .mc-card-body {
   padding: 16px 18px 20px;
   flex: 1;
@@ -2124,15 +2166,13 @@ const STAGE_CSS = `
 .mc-card-go { font-family: var(--mc-mono); margin-top: auto; padding-top: 12px; font-size: 13px; font-weight: 600; letter-spacing: .06em; color: var(--mc-ink); }
 .mc-card-go::after { content: " ›"; color: var(--mc-accent); }
 
-/* card gradient palettes (placeholder photography) */
-.mc-im1 { background-image: linear-gradient(135deg,#8fae7e,#4c6b45); }
-.mc-im2 { background-image: linear-gradient(135deg,#e3c68a,#b98b3e); }
-.mc-im3 { background-image: linear-gradient(135deg,#7fa9b0,#3d6b73); }
-.mc-im4 { background-image: linear-gradient(135deg,#c9a27f,#7a5233); }
-.mc-im5 { background-image: linear-gradient(135deg,#a7b98f,#5f7a48); }
-.mc-im6 { background-image: linear-gradient(135deg,#d8b48c,#9c6b3c); }
-.mc-im7 { background-image: linear-gradient(160deg,#6c8f6a,#2f4a30); }
-.mc-im8 { background-image: linear-gradient(160deg,#caa15f,#6e4a22); }
+/* Card gradient palettes (placeholder photography).
+   The .mc-im1..8 CSS rules are DELETED as of the July 2026 rebuild. The
+   mc-imN strings survive only as keys into FALLBACK_GRADIENTS in
+   CardPhoto.jsx, which paints the no-photo state as a data-URI SVG on the
+   same <img> the photo uses. Do not reinstate a CSS background-image
+   gradient here — a second rendering path for the same state is what made
+   this bug take three rounds to find. */
 
 /* ── NOW surface: collapsed <-> feed ────────────────────────── */
 .mc-now-shell {

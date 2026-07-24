@@ -2,42 +2,76 @@
 // CardPhoto.jsx
 //
 // Renders one home-card image and, for the founder only, the controls
-// to change it, remove it, and — new — drag it inside the frame to fix
-// the crop.
+// to change it, remove it, and drag it inside the frame to fix the crop.
 //
 // Two founder overrides back a card, both stored in `site_copy`
 // (reusing saveCopy/clearCopy, so no new table or migration):
 //   • mc.card.<slug>.image  → storage path of the uploaded photo
 //   • mc.card.<slug>.pos    → object-position, e.g. "62% 30%"
 //
-// RENDERING (July 2026 — rewritten): the photo is a real <img> with
-// object-fit: cover, NOT a CSS `background-image` on a div. The no-photo
-// fallback is a real inline <svg> gradient, not `background-image:
-// linear-gradient(...)`. Both changes exist to route around a WebKit
-// compositing bug, confirmed across an original iPad Pro, a current
-// iPhone, and desktop Safari on macOS alike (Chrome/Firefox/Android were
-// never affected): a `background-image` on a child of a parent that has
-// `overflow: hidden` + `border-radius` + a `transition` on `transform`
-// (`.mc-card` has all three, for the hover lift) can silently fail to
-// paint in Safari — the card shell, shadow, and buttons on top all
-// render fine, only the background-image layer is dropped. It reproduced
-// identically whether the background-image was a real photo URL or a
-// pure CSS linear-gradient, which is what pointed at the mechanism
-// rather than image format or caching (both ruled out first). The
-// working reference is ChallengePage.jsx's cover image, which has always
-// used a plain <img> with border-radius on the image itself — no
-// clipping parent, no transform-transition nearby, and it has never
-// exhibited this bug. <img> and <svg> are raster/vector replaced content
-// on a different paint path than a CSS `background-image` layer, so they
-// sidestep the bug rather than trying to out-guess Safari's compositing
-// heuristics with a translateZ(0) hack (kept on .mc-card-img in
-// MissionControl.jsx too, as harmless defense-in-depth, but not relied
-// on alone after this rewrite).
+// ─────────────────────────────────────────────────────────────
+// REBUILT July 2026 — the blank-card rebuild.
 //
-// Repositioning is still pixel-accurate: we measure the photo's natural
-// size, work out how far it overflows the frame on each axis, and
-// translate a pixel drag into the matching change in object-position.
-// Axes with no overflow simply don't move.
+// History: this card rendered blank on every WebKit browser (desktop
+// Safari on macOS, iPhone, iPad) while Chrome on macOS and Android
+// rendered it correctly. Three fixes were attempted at the asset layer
+// — WebP to JPEG, `background-image` to `<img>`, CSS gradient to inline
+// `<svg>` — and none of them moved it. The reason they could not is
+// that the failure was never in the asset. Two independent structural
+// faults were producing one symptom:
+//
+//   1. The photo layer. The media element was absolutely positioned
+//      inside a `<span>` that carried `translateZ(0)` and
+//      `backface-visibility: hidden`, nested inside a `<button>` with
+//      `overflow: hidden`, `border-radius`, and `transition: transform`.
+//      That asks WebKit to apply a rounded clip to a promoted
+//      compositing layer whose ancestor is also promoted. Blink handles
+//      it. WebKit can drop the layer's paint entirely. The layer hints
+//      were added as a mitigation and were in fact the exposure — they
+//      were the one variable that survived all three rewrites, which is
+//      exactly why the bug did too.
+//
+//   2. The no-photo layer, failing for a different reason. The fallback
+//      was `<svg width="100%" height="100%">` with NO `viewBox`, inside
+//      a parent whose height came only from `inset: 0`. An SVG with
+//      percentage dimensions, no viewBox and no intrinsic size, in a
+//      parent with no declared height, is a known WebKit zero-size
+//      case. So the gradient could vanish even where the photo would
+//      have painted, and vice versa.
+//
+// THE RULES THIS FILE NOW HOLDS. Each one removes a class of failure
+// rather than working around an instance of it. Do not reintroduce any
+// of them without testing on real WebKit first.
+//
+//   • Not a `<button>`. The card shell is a `<div>`; the click target is
+//     one transparent `<button className="mc-card-hit">` stretched over
+//     it. Full keyboard and assistive-tech semantics, and no media
+//     inside a native form control. This was the only place in the
+//     entire codebase with an `<img>` inside a `<button>`, and it was
+//     the only card on the site that failed.
+//   • The image is in flow. Declared `height`, `object-fit: cover`, no
+//     `position: absolute`, no `inset`, no reliance on a containing
+//     block resolving correctly.
+//   • The image clips itself. `border-radius` sits on the `<img>` and
+//     `overflow: hidden` is gone from the card, so nothing is being
+//     clipped by a transformed ancestor. The hover lift is then free.
+//   • Zero layer promotion. No `translateZ`, no `backface-visibility`,
+//     no `will-change`, anywhere in this component or its CSS.
+//   • ONE rendering path for both states. The no-photo fallback is the
+//     same `<img>` with a data-URI SVG gradient as its `src` — same
+//     element, same `object-fit`, same paint path. If a photo renders,
+//     the gradient renders. There is no second failure mode left to
+//     find. This is the single most important rule here.
+//   • No `loading="lazy"`. These cards are above the fold, and lazy
+//     loading has its own history of interacting badly with transformed
+//     ancestors on iOS.
+//   • A failed photo falls back to the gradient rather than to nothing,
+//     so a dead storage URL can never present as a blank card again.
+//
+// Repositioning is unchanged and still pixel-accurate: measure the
+// photo's natural size, work out how far it overflows the frame on each
+// axis, translate a pixel drag into the matching change in
+// object-position. Axes with no overflow do not move.
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from 'react'
@@ -48,13 +82,10 @@ import { useEditMode } from '../../context/EditModeContext'
 
 const clamp = (n) => Math.max(0, Math.min(100, n))
 
-// Fallback gradient colour pairs — same values as the old .mc-im1..8 CSS
-// classes in MissionControl.jsx, now painted as a real <svg> gradient
-// instead of a CSS `background-image: linear-gradient(...)` (see header
-// comment: the CSS version was confirmed blank on Safari, same bug as
-// real photos). Keep in sync with MissionControl.jsx's .mc-imN rules —
-// those CSS rules are left in place harmlessly for any other consumer,
-// but CardPhoto no longer relies on them for its own rendering.
+// Fallback gradient colour pairs. The `mc-imN` keys are historical — they
+// were CSS class names once. The CSS rules are gone; only these keys and
+// these values remain, and they are the single source of truth for the
+// no-photo state.
 const FALLBACK_GRADIENTS = {
   'mc-im1': ['#8fae7e', '#4c6b45'],
   'mc-im2': ['#e3c68a', '#b98b3e'],
@@ -64,6 +95,32 @@ const FALLBACK_GRADIENTS = {
   'mc-im6': ['#d8b48c', '#9c6b3c'],
   'mc-im7': ['#6c8f6a', '#2f4a30'],
   'mc-im8': ['#caa15f', '#6e4a22'],
+}
+
+// Build the no-photo gradient as a data-URI SVG so it can be the `src` of
+// the SAME <img> the photo uses. Three details are load-bearing for WebKit
+// and are the reason the previous inline-<svg> version could fail:
+//   • xmlns is mandatory for SVG inside <img>.
+//   • Explicit width/height AND viewBox give the image an intrinsic size,
+//     so it never computes to zero.
+//   • encodeURIComponent escapes the '#' in both the hex colours and
+//     url(#g); an unescaped '#' truncates the data URI at the fragment.
+const gradCache = new Map()
+function gradientSrc(key) {
+  const k = FALLBACK_GRADIENTS[key] ? key : 'mc-im1'
+  if (gradCache.has(k)) return gradCache.get(k)
+  const [from, to] = FALLBACK_GRADIENTS[k]
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" ' +
+    'viewBox="0 0 400 300" preserveAspectRatio="none">' +
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+    `<stop offset="0" stop-color="${from}"/>` +
+    `<stop offset="1" stop-color="${to}"/>` +
+    '</linearGradient></defs>' +
+    '<rect x="0" y="0" width="400" height="300" fill="url(#g)"/></svg>'
+  const uri = `data:image/svg+xml,${encodeURIComponent(svg)}`
+  gradCache.set(k, uri)
+  return uri
 }
 
 // Parse a position string (identical syntax for background-position and
@@ -89,34 +146,35 @@ export default function CardPhoto({
   pos,
   fallbackClass,
   isFounder,
+  label,
   onOpen,
   children,
 }) {
   const { refresh } = useSiteCopyMeta()
   const { editing } = useEditMode()   // founder is editing copy → card must not navigate
   const fileRef = useRef(null)
-  const imgRef = useRef(null)
-  const natRef = useRef({ w: 0, h: 0 })   // photo's natural pixel size
-  const liveRef = useRef(null)            // position mid-drag (avoids stale closures)
+  const frameRef = useRef(null)       // the media frame — drag surface and rect source
+  const imgRef = useRef(null)         // the <img> — natural-size source
+  const natRef = useRef({ w: 0, h: 0 })
+  const liveRef = useRef(null)        // position mid-drag (avoids stale closures)
 
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
   const [moving, setMoving] = useState(false)
-  const [live, setLive] = useState(null)  // triggers re-render while dragging
+  const [live, setLive] = useState(null)   // triggers re-render while dragging
+  const [failed, setFailed] = useState(false)
 
   const effectivePos = live || pos || 'center'
 
-  // Preload the photo once to learn its natural dimensions, so drag math
-  // is exact. Falls back to frame-sized sensitivity if it can't measure.
-  useEffect(() => {
-    natRef.current = { w: 0, h: 0 }
-    if (!imgUrl) return
-    const im = new Image()
-    im.onload = () => { natRef.current = { w: im.naturalWidth, h: im.naturalHeight } }
-    im.src = imgUrl
-  }, [imgUrl])
+  // A photo that 404s or fails to decode falls back to the gradient, not to
+  // a blank frame. One less way for this card to present as empty.
+  const showPhoto = !!imgUrl && !failed
+  const src = showPhoto ? imgUrl : gradientSrc(fallbackClass)
 
-  // ── Self-healing WebP repair (July 2026) ──────────────────────────────
+  // A new URL deserves a fresh attempt.
+  useEffect(() => { setFailed(false) }, [imgUrl])
+
+  // ── Self-healing WebP repair ──────────────────────────────────────────
   // Photos uploaded during the brief WebP-encoding window don't decode on
   // older iPhone/iPad Safari. The founder's own browser CAN decode them —
   // so when the founder loads a card whose stored photo is .webp, quietly
@@ -161,7 +219,7 @@ export default function CardPhoto({
   useEffect(() => { liveRef.current = null; setLive(null) }, [pos, imgUrl])
 
   // Leave reposition mode if the photo is removed.
-  useEffect(() => { if (!imgUrl && moving) setMoving(false) }, [imgUrl, moving])
+  useEffect(() => { if (!showPhoto && moving) setMoving(false) }, [showPhoto, moving])
 
   async function upload(e) {
     const f = e.target.files?.[0]
@@ -203,14 +261,14 @@ export default function CardPhoto({
     setBusy(false)
   }
 
-  // Drag the photo inside the frame. Only active in reposition mode.
+  // Drag the photo inside the frame. Only active in reposition mode, where
+  // .mc-card-hit is inert so the press reaches this frame at all.
   function onPointerDown(e) {
-    if (!moving || !imgUrl || !imgRef.current) return
-    // Keep the press from reaching the card button (which would navigate).
+    if (!moving || !showPhoto || !frameRef.current) return
     e.preventDefault()
     e.stopPropagation()
 
-    const el = imgRef.current
+    const el = frameRef.current
     const rect = el.getBoundingClientRect()
     const start = parsePos(effectivePos)
     const startX = e.clientX
@@ -254,12 +312,11 @@ export default function CardPhoto({
     el.addEventListener('pointercancel', up)
   }
 
-  function handleCardClick() {
-    if (moving) return          // in reposition mode a click shouldn't navigate
-    if (editing) return         // founder editing copy — a click on the card (or the
-                                // padding around an EditableText field) must not navigate
-    onOpen?.()
-  }
+  // The stretched hit target goes inert in two states, which together
+  // reproduce the old in-button click guards exactly:
+  //   editing → clicks fall through to EditableText underneath
+  //   moving  → the press reaches the media frame for the crop drag
+  const inert = editing || moving
 
   const moveIcon = (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -278,54 +335,48 @@ export default function CardPhoto({
     </svg>
   )
 
-  const gradientId = `mc-card-grad-${imgId.replace(/[^a-z0-9]+/gi, '-')}`
-  const [gradFrom, gradTo] = FALLBACK_GRADIENTS[fallbackClass] || FALLBACK_GRADIENTS['mc-im1']
-
   return (
     <div className="mc-card-wrap">
-      <button type="button" className="mc-card" onClick={handleCardClick}>
-        <span
-          ref={imgRef}
-          className={`mc-card-img${moving ? ' mc-card-img--moving' : ''}`}
+      <div className="mc-card">
+        <div
+          ref={frameRef}
+          className={`mc-card-media${moving ? ' mc-card-media--moving' : ''}`}
           onPointerDown={onPointerDown}
         >
-          {imgUrl ? (
-            // Real <img>, not a CSS background-image — see header comment.
-            <img
-              src={imgUrl}
-              alt=""
-              draggable={false}
-              style={{
-                position: 'absolute', inset: 0, width: '100%', height: '100%',
-                objectFit: 'cover', objectPosition: effectivePos, display: 'block',
-                pointerEvents: 'none',   // all drag/click handled by the parent span
-                WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none',
-              }}
-            />
-          ) : (
-            // Real <svg> gradient, not CSS `background-image: linear-gradient(...)`
-            // — same Safari compositing bug hit pure-CSS gradients too.
-            // NOTE: no style= on the <svg> tag itself (Chrome 148 bug, project
-            // convention) — sizing/positioning lives on this wrapping span.
-            <span style={{ position: 'absolute', inset: 0, display: 'block', pointerEvents: 'none' }}>
-              <svg width="100%" height="100%" preserveAspectRatio="none" aria-hidden="true">
-                <defs>
-                  <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor={gradFrom} />
-                    <stop offset="100%" stopColor={gradTo} />
-                  </linearGradient>
-                </defs>
-                <rect width="100%" height="100%" fill={`url(#${gradientId})`} />
-              </svg>
-            </span>
-          )}
-        </span>
+          {/* ONE <img> for both states. Photo or gradient, same element,
+              same paint path. See the header comment before changing this. */}
+          <img
+            ref={imgRef}
+            className="mc-card-photo"
+            src={src}
+            alt=""
+            draggable={false}
+            onLoad={(e) => {
+              const el = e.currentTarget
+              natRef.current = { w: el.naturalWidth || 0, h: el.naturalHeight || 0 }
+            }}
+            onError={() => { if (showPhoto) setFailed(true) }}
+            style={{ objectPosition: showPhoto ? effectivePos : 'center' }}
+          />
+          <span className="mc-card-scrim" aria-hidden="true" />
+        </div>
+
         {children}
-      </button>
+
+        {/* Stretched hit target. The card's whole surface is clickable
+            without any media living inside a form control. */}
+        <button
+          type="button"
+          className="mc-card-hit"
+          aria-label={label || 'Open'}
+          data-inert={inert ? 'true' : 'false'}
+          onClick={() => { if (inert) return; onOpen?.() }}
+        />
+      </div>
 
       {isFounder && (
         <div className="mc-card-photoedit" onClick={(e) => e.stopPropagation()}>
-          {imgUrl && !busy && (
+          {showPhoto && !busy && (
             <button
               type="button"
               className={`mc-card-photobtn${moving ? ' is-active' : ''}`}

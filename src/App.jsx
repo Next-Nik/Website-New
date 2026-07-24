@@ -78,6 +78,7 @@ import { MapPage as PlanetMapPage } from './app/pages/Map'
 import { NextMarketPage }         from './app/pages/NextMarket'
 import { AdminConsolePage }   from './app/pages/AdminConsole'
 import { PrismLabPage }       from './app/pages/PrismLab'
+import { CardLabPage }        from './app/pages/CardLab'   /* TEMPORARY · remove with the /admin/card-lab route */
 import { MovieMagicPage }     from './pages/MovieMagic'
 import { AddPage }            from './app/pages/Add'
 import { EventManagePage }    from './app/pages/EventManage'
@@ -449,6 +450,7 @@ function AppInner() {
         {/* ── Admin ── */}
         <Route path="/admin"           element={<AdminConsolePage />} />
         <Route path="/admin/prism"     element={<PrismLabPage />} />
+        <Route path="/admin/card-lab"  element={<CardLabPage />} />  {/* TEMPORARY · WebKit blank-card diagnostic · delete once confirmed */}
         <Route path="/movie-magic"     element={<MovieMagicPage />} />
         <Route path="/join/:slug"      element={<GroupJoinPage />} />
         <Route path="/auth/callback"   element={<AuthCallbackPage />} />
