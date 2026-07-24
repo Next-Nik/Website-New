@@ -2079,6 +2079,18 @@ const STAGE_CSS = `
   background-position: center;
   position: relative;
   display: block;
+  /* WebKit compositing bug (all iOS/iPadOS Safari, old hardware and new):
+     a background-image on a child of an overflow:hidden + border-radius
+     parent that also has a transition on transform (see .mc-card above,
+     used for the hover lift) can silently fail to paint -- the card shell,
+     shadow, and any overlaid buttons render fine, only the photo/gradient
+     is blank. Forcing this element onto its own compositing layer sidesteps
+     the bug. Chrome/Firefox/Android were never affected; do not remove this
+     without testing on real iOS Safari, old and new. */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 .mc-card-img::after {
   content: "";

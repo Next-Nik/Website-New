@@ -8,14 +8,36 @@
 // Two founder overrides back a card, both stored in `site_copy`
 // (reusing saveCopy/clearCopy, so no new table or migration):
 //   • mc.card.<slug>.image  → storage path of the uploaded photo
-//   • mc.card.<slug>.pos    → CSS background-position, e.g. "62% 30%"
+//   • mc.card.<slug>.pos    → object-position, e.g. "62% 30%"
 //
-// The image is drawn with `background-size: cover`, so the frame always
-// stays full-bleed; repositioning only chooses WHICH part of the photo
-// shows through. Dragging is pixel-accurate: we measure the photo's
-// natural size, work out how far it overflows the frame on each axis,
-// and translate a pixel drag into the matching change in background
-// position. Axes with no overflow simply don't move.
+// RENDERING (July 2026 — rewritten): the photo is a real <img> with
+// object-fit: cover, NOT a CSS `background-image` on a div. The no-photo
+// fallback is a real inline <svg> gradient, not `background-image:
+// linear-gradient(...)`. Both changes exist to route around a WebKit
+// compositing bug, confirmed across an original iPad Pro, a current
+// iPhone, and desktop Safari on macOS alike (Chrome/Firefox/Android were
+// never affected): a `background-image` on a child of a parent that has
+// `overflow: hidden` + `border-radius` + a `transition` on `transform`
+// (`.mc-card` has all three, for the hover lift) can silently fail to
+// paint in Safari — the card shell, shadow, and buttons on top all
+// render fine, only the background-image layer is dropped. It reproduced
+// identically whether the background-image was a real photo URL or a
+// pure CSS linear-gradient, which is what pointed at the mechanism
+// rather than image format or caching (both ruled out first). The
+// working reference is ChallengePage.jsx's cover image, which has always
+// used a plain <img> with border-radius on the image itself — no
+// clipping parent, no transform-transition nearby, and it has never
+// exhibited this bug. <img> and <svg> are raster/vector replaced content
+// on a different paint path than a CSS `background-image` layer, so they
+// sidestep the bug rather than trying to out-guess Safari's compositing
+// heuristics with a translateZ(0) hack (kept on .mc-card-img in
+// MissionControl.jsx too, as harmless defense-in-depth, but not relied
+// on alone after this rewrite).
+//
+// Repositioning is still pixel-accurate: we measure the photo's natural
+// size, work out how far it overflows the frame on each axis, and
+// translate a pixel drag into the matching change in object-position.
+// Axes with no overflow simply don't move.
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from 'react'
@@ -26,7 +48,26 @@ import { useEditMode } from '../../context/EditModeContext'
 
 const clamp = (n) => Math.max(0, Math.min(100, n))
 
-// Parse a CSS background-position string into {x, y} percentages.
+// Fallback gradient colour pairs — same values as the old .mc-im1..8 CSS
+// classes in MissionControl.jsx, now painted as a real <svg> gradient
+// instead of a CSS `background-image: linear-gradient(...)` (see header
+// comment: the CSS version was confirmed blank on Safari, same bug as
+// real photos). Keep in sync with MissionControl.jsx's .mc-imN rules —
+// those CSS rules are left in place harmlessly for any other consumer,
+// but CardPhoto no longer relies on them for its own rendering.
+const FALLBACK_GRADIENTS = {
+  'mc-im1': ['#8fae7e', '#4c6b45'],
+  'mc-im2': ['#e3c68a', '#b98b3e'],
+  'mc-im3': ['#7fa9b0', '#3d6b73'],
+  'mc-im4': ['#c9a27f', '#7a5233'],
+  'mc-im5': ['#a7b98f', '#5f7a48'],
+  'mc-im6': ['#d8b48c', '#9c6b3c'],
+  'mc-im7': ['#6c8f6a', '#2f4a30'],
+  'mc-im8': ['#caa15f', '#6e4a22'],
+}
+
+// Parse a position string (identical syntax for background-position and
+// object-position) into {x, y} percentages.
 function parsePos(str) {
   if (!str || str === 'center') return { x: 50, y: 50 }
   const parts = String(str).trim().split(/\s+/)
@@ -237,18 +278,48 @@ export default function CardPhoto({
     </svg>
   )
 
+  const gradientId = `mc-card-grad-${imgId.replace(/[^a-z0-9]+/gi, '-')}`
+  const [gradFrom, gradTo] = FALLBACK_GRADIENTS[fallbackClass] || FALLBACK_GRADIENTS['mc-im1']
+
   return (
     <div className="mc-card-wrap">
       <button type="button" className="mc-card" onClick={handleCardClick}>
         <span
           ref={imgRef}
-          className={
-            `mc-card-img${imgUrl ? '' : ' ' + fallbackClass}` +
-            (moving ? ' mc-card-img--moving' : '')
-          }
-          style={imgUrl ? { backgroundImage: `url(${imgUrl})`, backgroundPosition: effectivePos } : undefined}
+          className={`mc-card-img${moving ? ' mc-card-img--moving' : ''}`}
           onPointerDown={onPointerDown}
-        />
+        >
+          {imgUrl ? (
+            // Real <img>, not a CSS background-image — see header comment.
+            <img
+              src={imgUrl}
+              alt=""
+              draggable={false}
+              style={{
+                position: 'absolute', inset: 0, width: '100%', height: '100%',
+                objectFit: 'cover', objectPosition: effectivePos, display: 'block',
+                pointerEvents: 'none',   // all drag/click handled by the parent span
+                WebkitTouchCallout: 'none', WebkitUserSelect: 'none', userSelect: 'none',
+              }}
+            />
+          ) : (
+            // Real <svg> gradient, not CSS `background-image: linear-gradient(...)`
+            // — same Safari compositing bug hit pure-CSS gradients too.
+            // NOTE: no style= on the <svg> tag itself (Chrome 148 bug, project
+            // convention) — sizing/positioning lives on this wrapping span.
+            <span style={{ position: 'absolute', inset: 0, display: 'block', pointerEvents: 'none' }}>
+              <svg width="100%" height="100%" preserveAspectRatio="none" aria-hidden="true">
+                <defs>
+                  <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor={gradFrom} />
+                    <stop offset="100%" stopColor={gradTo} />
+                  </linearGradient>
+                </defs>
+                <rect width="100%" height="100%" fill={`url(#${gradientId})`} />
+              </svg>
+            </span>
+          )}
+        </span>
         {children}
       </button>
 
