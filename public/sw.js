@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nextus-v7';
+const CACHE_NAME = 'nextus-v8';
 
 const SHELL_ASSETS = [
   '/manifest.json',
