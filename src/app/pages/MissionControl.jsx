@@ -2512,6 +2512,14 @@ const STAGE_CSS = `
   .mc-glance { grid-template-columns: 1fr; }
   .mc-feed-grid { columns: 2; }
 }
+/* Tablet (incl. iPad portrait & landscape): the in-page beat links are scroll
+   anchors, not core nav. Dropping them here — and tightening the gap — keeps
+   the pole toggle, Daily Tools, mail, and avatar on-screen instead of letting
+   the right-hand items hang off the edge. */
+@media (max-width: 1024px) {
+  .mc-nav-links { display: none; }
+  .mc-nav-inner { gap: 16px; }
+}
 @media (max-width: 640px) {
   .mc-wrap, .mc-nav-inner { padding: 0 18px; }
   .mc-nav-links { display: none; }
