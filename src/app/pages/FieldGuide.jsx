@@ -1,138 +1,180 @@
 // src/app/pages/FieldGuide.jsx
 //
-// "Your guide" — a grid over the Atlas showing which organisations the
-// signed-in user has met, with a private one-line note as the capture
-// mechanic. Dark Atlas rail (at.* tokens).
+// The Field Guide at /guide (slug provisional · naming session pending).
 //
-// NAMING IS PROVISIONAL: the UI label "Your guide" and the route slug
-// /guide are both placeholders · naming session pending.
+// v3 (July 2026) — the life-list build. Part pokédex, part birder's
+// life-list, part field guide. The page is the user's own record of the
+// organisations they have ENCOUNTERED — not a browse of the whole Atlas
+// (that's /explore). Design follows the v3 mockup, translated onto the
+// bright warm at.* tokens:
 //
-// Tier marks (derived in src/app/lib/guideTiers.js):
-//   not met            — dashed outline circle
-//   known / following  — verdigris fill (at.verdigris)
-//   allied / companion — at.brass fill. NOT heritage gold: this file is
-//                        not on the scripts/audit-design.js GOLD_WHITELIST
-//                        and the gold law forbids new usages without
-//                        sign-off, so brass is the deliberate choice here.
+//   · Champions ring — the ONE capped thing (5–10, actor_champions,
+//     DB-enforced). Brass foil treatment, never heritage gold: this file
+//     is not on the scripts/audit-design.js GOLD_WHITELIST.
+//   · Collection — unlimited. Grouped by domain ("habitat") with a
+//     running head + epithet, "x of y collected" counts, banding codes
+//     (REGE 1), species lines, scale dots, first-met stamps.
+//   · Not-yet-met — dark silhouette teaser slots (capped at 2 per
+//     habitat) + the count, linking to /explore.
+//   · Scout card — add an org that isn't on the platform yet (→ /add,
+//     which fires the cold invite server-side).
+//   · Specimen overlay — mission slot (their words, or your suggestion
+//     via actor_mission_suggestions), horizon slot, your private field
+//     note (actor_field_notes — writing one is what collects the org),
+//     the relationship chain, and the champion toggle.
 //
-// The companion threshold is internal — no counts or progress indicators
-// are ever rendered; only the tier state shows.
-//
-// Signed out: the grid renders with every actor in the not-met state and
-// the add affordance routes to /login.
+// Tiers stay DERIVED (src/app/lib/guideTiers.js) and thresholds are
+// never surfaced. Champion is orthogonal to the tier ladder.
 
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { SiteFooter } from '../../components/SiteFooter'
 import { supabase } from '../../hooks/useSupabase'
 import { useAuth } from '../../hooks/useAuth'
-import { at, atText, display } from '../../lib/designTokens'
+import { at, atText, display, mono, bodyFont } from '../../lib/designTokens'
 import { CIV_DOMAINS } from '../constants/domains'
-import { loadGuideState, TIER_ORDER } from '../lib/guideTiers'
-import { useWatch } from '../hooks/useWatch'
+import { DOMAIN_HORIZON_GOALS } from '../constants/domains'
+import { loadGuideState } from '../lib/guideTiers'
+import { useChampions } from '../hooks/useChampions'
 
-const TIER_RANK = Object.fromEntries(TIER_ORDER.map((t, i) => [t, i]))
-// Human labels for the derived tier, shown in the guide grid (BP-12). Never a
-// count or threshold — just the state.
-const TIER_LABEL = { known: 'Known', following: 'Following', allied: 'Allied', companion: 'Companion' }
+// ── Vocabulary ────────────────────────────────────────────────────────────
+const TIER_LABEL = { found: 'Found', known: 'Known', following: 'Tuned in', allied: 'Allied', companion: 'Companion' }
+const LADDER = ['found', 'known', 'following', 'allied', 'companion']
 
-const CIV_COLOUR_BY_SLUG = Object.fromEntries(
-  CIV_DOMAINS.map(d => [d.slug, d.color]),
-)
+// Short habitat epithets — condensed from DOMAIN_HORIZON_GOALS.
+const EPITHET = {
+  'human-being':     'every human, fully themselves',
+  'society':         'space to function, room to thrive',
+  'nature':          'the living planet, thriving',
+  'technology':      'technology in service of life',
+  'finance-economy': 'enough to act on what matters',
+  'legacy':          'tending what we transmit',
+  'vision':          'creating forward, for all',
+}
+
+// 8-level canonical scale → 5 display dots (Local → Civilisational).
+const SCALE_BUCKET = {
+  'local': 1, 'municipal': 1,
+  'state-province': 2,
+  'national': 3,
+  'regional': 4, 'international': 4,
+  'global': 5, 'civilisational': 5,
+}
+const SCALE_SHORT = {
+  'local': 'Local', 'municipal': 'Municipal', 'state-province': 'State',
+  'national': 'National', 'regional': 'Regional', 'international': 'Int’l',
+  'global': 'Global', 'civilisational': 'Civilisational',
+}
+
+// ── Small derivations ─────────────────────────────────────────────────────
+
+// Birder-style banding code: first two letters of the first two words,
+// else first four letters. Collision counter appended by the caller.
+function bandRoot(name) {
+  const words = String(name || '').toUpperCase().replace(/[^A-Z\s]/g, ' ').split(/\s+/).filter(Boolean)
+  if (words.length >= 2) return (words[0].slice(0, 2) + words[1].slice(0, 2)).padEnd(4, 'X')
+  return (words[0] || 'XXXX').slice(0, 4).padEnd(4, 'X')
+}
+
+// Darken a #rrggbb hex by a factor (0..1) for seal gradients.
+function shade(hex, f) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex || '')
+  if (!m) return hex
+  const n = parseInt(m[1], 16)
+  const ch = (x) => Math.max(0, Math.round(x * (1 - f)))
+  const r = ch((n >> 16) & 255), g = ch((n >> 8) & 255), b = ch(n & 255)
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`
+}
+
+function sealGradient(color) {
+  return `linear-gradient(150deg, ${color}, ${shade(color, 0.32)})`
+}
+
+function fmtMet(ts) {
+  if (!ts) return null
+  const d = new Date(ts)
+  if (Number.isNaN(d.getTime())) return null
+  const day = d.getDate()
+  const mon = d.toLocaleString('en-GB', { month: 'short' })
+  const yr = String(d.getFullYear()).slice(2)
+  return `${day} ${mon} ’${yr}`
+}
+
+// Fire-and-forget warm ping (server verifies + throttles).
+async function firePing(actorId, kind) {
+  try {
+    const token = (await supabase.auth.getSession()).data.session?.access_token
+    if (!token) return
+    fetch('/api/guide-ping', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ actorId, kind }),
+    }).catch(() => {})
+  } catch { /* never block the act */ }
+}
+
+const brassTint = 'rgba(169,116,63,0.07)'
+const brassEdgeSoft = 'rgba(169,116,63,0.35)'
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Page
+// ═══════════════════════════════════════════════════════════════════════════
 
 export function FieldGuidePage() {
   const { user } = useAuth()
+  const navigate = useNavigate()
 
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading]   = useState(true)
   const [loadError, setLoadError] = useState(false)
   const [reloadKey, setReloadKey] = useState(0)
-  const [domains, setDomains] = useState([])
-  const [subdomains, setSubdomains] = useState([])
-  const [actors, setActors] = useState([])
-  const [guide, setGuide] = useState(() => new Map())
-  const [selectedDomain, setSelectedDomain] = useState(null)
+  const [actors, setActors]     = useState([])
+  const [guide, setGuide]       = useState(() => new Map())
+  const [myOrg, setMyOrg]       = useState(null)
+  const [myOrgCounts, setMyOrgCounts] = useState(null)
+  const [sort, setSort]         = useState('domain')   // 'domain' | 'recent'
+  const [openActor, setOpenActor] = useState(null)     // specimen overlay
+  const [capMsg, setCapMsg]     = useState(null)
+
+  const champs = useChampions()
 
   useEffect(() => {
     let cancelled = false
     async function load() {
-      setLoading(true)
-      setLoadError(false)
+      setLoading(true); setLoadError(false)
       try {
-
-      // ── Taxonomy (domains + subdomains) ─────────────────────────────────
-      // Used ONLY to group and colour the actor grid. A failure here must
-      // NOT blank the Atlas — the actors are the content. On error we log
-      // the real cause and fall back to an ungrouped view ("Elsewhere in
-      // the Atlas"). Colours come from CIV_DOMAINS (single source of truth),
-      // DB colour as fallback.
-      let allDomains = []
-      const { data: domainRows, error: domainErr } = await supabase
-        .from('nextus_domains')
-        .select('id, slug, name, color, position')
-        .eq('domain_kind', 'civ')
-        .order('position')
-      if (cancelled) return
-      if (domainErr) {
-        console.error('[FieldGuide] domains query failed — falling back to an ungrouped Atlas:', domainErr)
-      } else {
-        allDomains = (domainRows || []).map(d => ({
-          ...d,
-          color: CIV_COLOUR_BY_SLUG[d.slug] || d.color || at.verdigris,
-        }))
-      }
-      setDomains(allDomains)
-
-      // All subdomains for those domains, one batched query. Also non-fatal.
-      const domainIds = allDomains.map(d => d.id)
-      if (domainIds.length > 0) {
-        const { data: subRows, error: subErr } = await supabase
-          .from('nextus_subdomains')
-          .select('id, domain_id, slug, name, position')
-          .in('domain_id', domainIds)
-          .order('position')
+        const { data: actorRows, error: actorErr } = await supabase
+          .from('nextus_actors')
+          .select('id, slug, name, tagline, short_description, description, domains, scale, mission_statement, profile_owner')
+          .eq('status', 'live')
+          .order('name')
+          .limit(1000)
         if (cancelled) return
-        if (subErr) {
-          console.error('[FieldGuide] subdomains query failed — grouping at domain level only:', subErr)
-          setSubdomains([])
-        } else {
-          setSubdomains(subRows || [])
+        if (actorErr) throw actorErr
+        setActors(actorRows || [])
+
+        try {
+          const state = await loadGuideState(supabase, user?.id)
+          if (!cancelled) setGuide(state)
+        } catch (e) {
+          console.error('[FieldGuide] guide state failed:', e)
+          if (!cancelled) setGuide(new Map())
         }
-      } else {
-        setSubdomains([])
-      }
 
-      // ── Actors — the actual Atlas content ───────────────────────────────
-      // THIS is the query whose failure genuinely means "could not load the
-      // Atlas." Its error was previously swallowed (data destructured, error
-      // dropped), so a real failure surfaced as an empty map with no signal.
-      // Surface it, and only here do we hard-fail the page.
-      const { data: actorRows, error: actorErr } = await supabase
-        .from('nextus_actors')
-        .select('id, slug, name, short_description, description, domains, subdomains')
-        .eq('status', 'live')
-        .order('name')
-        .limit(1000)
-      if (cancelled) return
-      if (actorErr) {
-        console.error('[FieldGuide] actors query failed — cannot load the Atlas:', actorErr)
-        throw actorErr
-      }
-      setActors(actorRows || [])
-
-      // The viewer's guide state (empty map when signed out). Already
-      // defensive internally, but never let it blank a loaded Atlas.
-      try {
-        const state = await loadGuideState(supabase, user?.id)
-        if (cancelled) return
-        setGuide(state)
-      } catch (guideErr) {
-        console.error('[FieldGuide] guide state failed — showing the Atlas without tier marks:', guideErr)
-        if (!cancelled) setGuide(new Map())
-      }
-
+        // The user's own entry, if they own one.
+        if (user?.id) {
+          const mine = (actorRows || []).find(a => a.profile_owner === user.id) || null
+          if (!cancelled) setMyOrg(mine)
+          if (mine) {
+            try {
+              const { data: counts } = await supabase
+                .rpc('actor_guide_counts', { p_actor_ids: [mine.id] })
+              if (!cancelled && counts && counts[0]) setMyOrgCounts(counts[0])
+            } catch { /* counting RPC not migrated yet — banner shows without stats */ }
+          }
+        }
       } catch (e) {
-        console.error('[FieldGuide] Atlas load failed:', e)
+        console.error('[FieldGuide] load failed:', e)
         if (!cancelled) setLoadError(true)
       } finally {
         if (!cancelled) setLoading(false)
@@ -142,502 +184,818 @@ export function FieldGuidePage() {
     return () => { cancelled = true }
   }, [user?.id, reloadKey])
 
-  // Place every actor exactly once: first matching domain (in position
-  // order), then first matching subdomain within it; actors tagged to a
-  // domain but no subdomain land in that domain's "Other" group; actors
-  // with no domain tags land in "Elsewhere in the Atlas".
-  const placement = useMemo(() => {
-    const subsByDomainId = new Map()
-    for (const s of subdomains) {
-      if (!subsByDomainId.has(s.domain_id)) subsByDomainId.set(s.domain_id, [])
-      subsByDomainId.get(s.domain_id).push(s)
-    }
+  // Stable Nº and banding codes across the whole live Atlas (name order).
+  const codes = useMemo(() => {
+    const byId = new Map()
+    const seen = new Map()
+    actors.forEach((a, i) => {
+      const root = bandRoot(a.name)
+      const n = (seen.get(root) || 0) + 1
+      seen.set(root, n)
+      byId.set(a.id, { dex: i + 1, code: `${root} ${n}` })
+    })
+    return byId
+  }, [actors])
 
-    const byDomain = new Map() // domain.slug → { subGroups: Map<subSlug, actors[]>, rest: actors[] }
-    for (const d of domains) {
-      byDomain.set(d.slug, { subGroups: new Map(), rest: [] })
-    }
-    const elsewhere = []
-
+  // Domain buckets: met / unmet per habitat (first matching domain wins).
+  const habitats = useMemo(() => {
+    const buckets = CIV_DOMAINS.map(d => ({ domain: d, met: [], unmet: [] }))
+    const bySlug = new Map(buckets.map(b => [b.domain.slug, b]))
     for (const a of actors) {
-      const actorDomains = Array.isArray(a.domains) ? a.domains : []
-      const home = domains.find(d => actorDomains.includes(d.slug))
-      if (!home) { elsewhere.push(a); continue }
-
-      const bucket = byDomain.get(home.slug)
-      const actorSubs = Array.isArray(a.subdomains) ? a.subdomains : []
-      const sub = (subsByDomainId.get(home.id) || [])
-        .find(s => actorSubs.includes(s.slug))
-      if (sub) {
-        if (!bucket.subGroups.has(sub.slug)) bucket.subGroups.set(sub.slug, [])
-        bucket.subGroups.get(sub.slug).push(a)
-      } else {
-        bucket.rest.push(a)
-      }
+      const ds = Array.isArray(a.domains) ? a.domains : []
+      const home = CIV_DOMAINS.find(d => ds.includes(d.slug))
+      if (!home) continue
+      const b = bySlug.get(home.slug)
+      if (guide.has(a.id)) b.met.push(a)
+      else b.unmet.push(a)
     }
+    // Champions first inside each habitat, then by first-met (newest last —
+    // a journal reads oldest → newest).
+    for (const b of buckets) {
+      b.met.sort((x, y) => {
+        const ex = guide.get(x.id), ey = guide.get(y.id)
+        if (!!ey?.isChampion !== !!ex?.isChampion) return ey?.isChampion ? 1 : -1
+        return (ex?.firstMetAt || 0) - (ey?.firstMetAt || 0)
+      })
+    }
+    return buckets
+  }, [actors, guide])
 
-    return { byDomain, elsewhere, subsByDomainId }
-  }, [domains, subdomains, actors])
-
-  const metCount = useMemo(
-    () => actors.reduce((n, a) => n + (guide.has(a.id) ? 1 : 0), 0),
+  const metActors = useMemo(
+    () => actors.filter(a => guide.has(a.id)),
     [actors, guide],
   )
 
-  // Record a saved note locally: tier lifts to at least 'known'.
-  function handleSaved(actorId, note) {
+  const recentList = useMemo(
+    () => [...metActors].sort((x, y) =>
+      (guide.get(y.id)?.firstMetAt || 0) - (guide.get(x.id)?.firstMetAt || 0)),
+    [metActors, guide],
+  )
+
+  const championActors = useMemo(
+    () => champs.champions
+      .map(c => actors.find(a => a.id === c.actor_id))
+      .filter(Boolean),
+    [champs.champions, actors],
+  )
+
+  const actorById = useMemo(() => new Map(actors.map(a => [a.id, a])), [actors])
+  const domainOf = (a) => {
+    const ds = Array.isArray(a?.domains) ? a.domains : []
+    return CIV_DOMAINS.find(d => ds.includes(d.slug)) || null
+  }
+
+  // ── Local mutations ──────────────────────────────────────────────────────
+  function handleNoteSaved(actorId, note, isNew) {
     setGuide(prev => {
       const next = new Map(prev)
       const entry = next.get(actorId)
-      if (entry) {
-        next.set(actorId, { ...entry, note })
-      } else {
-        next.set(actorId, { tier: 'known', note })
-      }
+      if (entry) next.set(actorId, { ...entry, note, tier: entry.tier === 'found' ? 'known' : entry.tier })
+      else next.set(actorId, { tier: 'known', note, isChampion: false, firstMetAt: Date.now() })
       return next
     })
+    if (isNew) firePing(actorId, 'added_to_guide')
   }
 
-  // Following from the guide grid (BP-12) — the quiet tier. Reuses the watch
-  // system (nextus_user_watches) so the actor's events and calls reach the
-  // follower; guideTiers already derives 'following' from a watch row.
-  const { isWatching, toggle: toggleWatch } = useWatch()
-
-  async function handleFollow(actorId, actorName) {
-    let res
+  async function handleChampionToggle(actorId) {
+    setCapMsg(null)
     try {
-      res = await toggleWatch('actor', actorId)
-    } catch (_) {
-      return  // cap reached or offline — the tune-in system surfaces this elsewhere
+      const res = await champs.toggle(actorId)
+      setGuide(prev => {
+        const next = new Map(prev)
+        const entry = next.get(actorId)
+        if (entry) next.set(actorId, { ...entry, isChampion: res.added })
+        else if (res.added) next.set(actorId, { tier: 'known', note: null, isChampion: true, firstMetAt: Date.now() })
+        return next
+      })
+    } catch (e) {
+      if (e.code === 'CHAMPION_CAP_REACHED') setCapMsg(e.message)
+      else console.error('[FieldGuide] champion toggle failed:', e)
     }
-    setGuide(prev => {
-      const next = new Map(prev)
-      const entry = next.get(actorId)
-      if (res?.added) {
-        // Lift to following, but never downgrade a real-act tier (allied/companion).
-        if (!entry) next.set(actorId, { tier: 'following', note: null })
-        else if (TIER_RANK[entry.tier] < TIER_RANK['following']) next.set(actorId, { ...entry, tier: 'following' })
-      } else {
-        // Unfollowed. Real-act tiers stand; a bare 'following' falls back to
-        // known (if a note exists) or found.
-        if (entry && entry.tier === 'following') {
-          if (entry.note) next.set(actorId, { ...entry, tier: 'known' })
-          else next.delete(actorId)
-        }
-      }
-      return next
-    })
   }
 
-  const watch = { isWatching, onFollow: handleFollow }
-
-  const visibleDomains = selectedDomain
-    ? domains.filter(d => d.slug === selectedDomain)
-    : domains
+  const asOf = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 
   return (
     <div style={{ background: at.ground, minHeight: '100dvh' }}>
       <Nav activePath="" />
 
       <div style={{
-        maxWidth: '1060px',
-        margin: '0 auto',
+        maxWidth: '1060px', margin: '0 auto',
         padding: 'clamp(96px, 12vw, 128px) clamp(20px, 5vw, 40px) 80px',
       }}>
-        <header style={{ marginBottom: '28px' }}>
-          {/* UI label provisional · naming session pending */}
-          <h1 style={{
-            ...display,
-            fontSize: 'clamp(32px, 5vw, 44px)',
-            fontWeight: 300,
-            color: at.text,
-            margin: 0,
-            marginBottom: '10px',
-            lineHeight: 1.15,
-          }}>
-            Your guide
-          </h1>
-          <p style={{ ...atText.chrome, margin: 0 }}>
-            {loading ? 'Loading the Atlas…' : loadError ? (
-              <>Could not load the Atlas. <a href="#" onClick={e => { e.preventDefault(); setReloadKey(k => k + 1) }} style={{ color: at.verdigris }}>Try again</a></>
-            ) : `${metCount} met · ${actors.length} in the Atlas`}
-          </p>
+
+        {/* ── Header ── */}
+        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '18px', flexWrap: 'wrap', marginBottom: '22px' }}>
+          <div>
+            <div style={{ ...atText.eyebrow, color: at.brass }}>Your field guide</div>
+            {/* UI label provisional · naming session pending */}
+            <h1 style={{ ...display, fontSize: 'clamp(30px, 5vw, 42px)', fontWeight: 300, color: at.text, margin: '6px 0 4px', lineHeight: 1.12 }}>
+              The orgs you’ve encountered
+            </h1>
+            <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: at.ghost }}>
+              As of {asOf}
+            </div>
+          </div>
+          <div style={{ textAlign: 'right', minWidth: '170px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', justifyContent: 'flex-end' }}>
+              <span style={{ ...display, fontWeight: 300, fontSize: '42px', color: at.text, lineHeight: 1 }}>
+                {loading ? '…' : metActors.length}
+              </span>
+              <span style={{ ...atText.body }}>encountered</span>
+            </div>
+            <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: at.ghost, marginTop: '4px' }}>
+              life list · no limit · keep exploring
+            </div>
+          </div>
         </header>
 
-        {!loading && (
-          <DomainChips
-            domains={domains}
-            selected={selectedDomain}
-            onSelect={setSelectedDomain}
-          />
-        )}
-
-        {!loading && !loadError && actors.length === 0 && (
-          <p style={{ ...atText.body, marginTop: '24px' }}>
-            No organisations in the Atlas yet.
+        {loadError && (
+          <p style={{ ...atText.body }}>
+            Could not load your guide.{' '}
+            <a href="#" onClick={e => { e.preventDefault(); setReloadKey(k => k + 1) }} style={{ color: at.verdigris }}>Try again</a>
           </p>
         )}
 
-        {!loading && actors.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '36px', marginTop: '28px' }}>
-            {visibleDomains.map(d => {
-              const bucket = placement.byDomain.get(d.slug)
-              if (!bucket) return null
-              const orderedSubs = (placement.subsByDomainId.get(d.id) || [])
-                .filter(s => bucket.subGroups.has(s.slug))
-              if (orderedSubs.length === 0 && bucket.rest.length === 0) return null
-              return (
-                <section key={d.slug}>
-                  {orderedSubs.map(s => (
-                    <ActorGrid
-                      key={s.slug}
-                      heading={`${d.name} · ${s.name}`}
-                      colour={d.color}
-                      actors={bucket.subGroups.get(s.slug)}
-                      guide={guide}
-                      user={user}
-                      onSaved={handleSaved}
-                      watch={watch}
-                    />
-                  ))}
-                  {bucket.rest.length > 0 && (
-                    <ActorGrid
-                      heading={`${d.name} · Other`}
-                      colour={d.color}
-                      actors={bucket.rest}
-                      guide={guide}
-                      user={user}
-                      onSaved={handleSaved}
-                      watch={watch}
-                    />
-                  )}
-                </section>
-              )
-            })}
-
-            {!selectedDomain && placement.elsewhere.length > 0 && (
-              <ActorGrid
-                heading="Elsewhere in the Atlas"
-                colour={at.verdigris}
-                actors={placement.elsewhere}
-                guide={guide}
-                user={user}
-                onSaved={handleSaved}
-                watch={watch}
-              />
-            )}
+        {!user && !loading && (
+          <div style={{ background: at.object, border: `1px solid ${at.verdigrisEdge}`, borderRadius: '14px', padding: '22px', marginBottom: '20px' }}>
+            <p style={{ ...atText.body, margin: '0 0 12px' }}>
+              A field guide to the organisations you encounter — collect the ones you meet,
+              keep a private note on who they are, and choose the five to ten you let shape you.
+            </p>
+            <Link to="/login?redirect=%2Fguide" style={{ ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#fff', background: at.brass, borderRadius: '40px', padding: '10px 20px', textDecoration: 'none', display: 'inline-block' }}>
+              Sign in to start yours
+            </Link>
           </div>
         )}
+
+        {user && !loading && !loadError && (
+          <>
+            {/* ── Champions ring ── */}
+            <ChampionsRing
+              championActors={championActors}
+              count={champs.count}
+              cap={champs.cap}
+              capMsg={capMsg}
+              domainOf={domainOf}
+              onOpen={(a) => setOpenActor(a)}
+            />
+
+            {/* ── My org banner ── */}
+            {myOrg && (
+              <MyOrgBanner org={myOrg} counts={myOrgCounts} onManage={() => navigate(`/org/${myOrg.slug || myOrg.id}`)} />
+            )}
+
+            {/* ── Sort ── */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '4px 0 6px', flexWrap: 'wrap' }}>
+              <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase', color: at.ghost }}>Sort</span>
+              {[['domain', 'Domain'], ['recent', 'Recently met']].map(([k, label]) => (
+                <button key={k} type="button" onClick={() => setSort(k)}
+                  style={{
+                    ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.08em',
+                    color: sort === k ? '#fff' : at.meta,
+                    background: sort === k ? at.brass : at.object,
+                    border: `1px solid ${sort === k ? at.brass : at.verdigrisEdge}`,
+                    borderRadius: '99px', padding: '6px 14px', cursor: 'pointer',
+                  }}>
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* ── Collection ── */}
+            {sort === 'domain' ? (
+              habitats.map(({ domain, met, unmet }) => (
+                (met.length > 0 || unmet.length > 0) && (
+                  <HabitatSection
+                    key={domain.slug}
+                    domain={domain}
+                    met={met}
+                    unmetCount={unmet.length}
+                    guide={guide}
+                    codes={codes}
+                    onOpen={setOpenActor}
+                  />
+                )
+              ))
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(176px, 1fr))', gap: '12px', marginTop: '18px' }}>
+                {recentList.map(a => (
+                  <GuideCard key={a.id} actor={a} entry={guide.get(a.id)} code={codes.get(a.id)} domain={domainOf(a)} onOpen={() => setOpenActor(a)} />
+                ))}
+                <ScoutCard onClick={() => navigate('/add')} />
+              </div>
+            )}
+
+            {metActors.length === 0 && (
+              <p style={{ ...atText.body, marginTop: '20px' }}>
+                Nothing collected yet. Meet an organisation on{' '}
+                <Link to="/explore" style={{ color: at.verdigris }}>Explore</Link> or{' '}
+                <Link to="/map" style={{ color: at.verdigris }}>The Map</Link>, and write a one-line
+                note on who they are — that’s what writes them into your guide.
+              </p>
+            )}
+
+            {/* ── Legend ── */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '22px', flexWrap: 'wrap', marginTop: '30px', paddingTop: '12px', borderTop: `1px solid ${at.verdigrisEdge}` }}>
+              {[['★ champion', at.brass], ['● collected', at.ghost], ['◌ not yet met', at.ghost], ['●●●●● scale · local → civilisational', at.ghost]].map(([t, c]) => (
+                <span key={t} style={{ ...mono, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: c }}>{t}</span>
+              ))}
+            </div>
+          </>
+        )}
       </div>
+
+      {/* ── Specimen overlay ── */}
+      {openActor && (
+        <SpecimenOverlay
+          actor={openActor}
+          entry={guide.get(openActor.id) || null}
+          code={codes.get(openActor.id)}
+          domain={domainOf(openActor)}
+          user={user}
+          isChampion={champs.isChampion(openActor.id)}
+          capMsg={capMsg}
+          onChampion={() => handleChampionToggle(openActor.id)}
+          onNoteSaved={handleNoteSaved}
+          onClose={() => { setOpenActor(null); setCapMsg(null) }}
+        />
+      )}
 
       <SiteFooter />
     </div>
   )
 }
 
-// ── Domain chips row ──────────────────────────────────────────────────────
-function DomainChips({ domains, selected, onSelect }) {
-  const base = {
-    ...atText.chrome,
-    fontSize: '13px',
-    letterSpacing: '0.08em',
-    padding: '5px 14px',
-    borderRadius: '16px',
-    cursor: 'pointer',
-    background: 'transparent',
-  }
-  return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-      <button
-        type="button"
-        onClick={() => onSelect(null)}
-        style={{
-          ...base,
-          border: `1px solid ${at.verdigrisEdge}`,
-          color: selected === null ? at.ground : at.meta,
-          background: selected === null ? at.verdigris : 'transparent',
-        }}
-      >
-        All domains
-      </button>
-      {domains.map(d => {
-        const active = selected === d.slug
-        return (
-          <button
-            key={d.slug}
-            type="button"
-            onClick={() => onSelect(active ? null : d.slug)}
-            style={{
-              ...base,
-              border: `1px solid ${d.color}`,
-              color: active ? at.ground : d.color,
-              background: active ? d.color : 'transparent',
-            }}
-          >
-            {d.name}
-          </button>
-        )
-      })}
-    </div>
-  )
-}
+// ═══════════════════════════════════════════════════════════════════════════
+// Champions ring
+// ═══════════════════════════════════════════════════════════════════════════
 
-// ── One subdomain grid ────────────────────────────────────────────────────
-function ActorGrid({ heading, colour, actors, guide, user, onSaved, watch }) {
+function ChampionsRing({ championActors, count, cap, capMsg, domainOf, onOpen }) {
+  const empty = Math.max(0, cap - count)
   return (
-    <div style={{ marginBottom: '24px' }}>
-      <div style={{
-        ...atText.eyebrow,
-        color: colour,
-        marginBottom: '12px',
-      }}>
-        {heading}
+    <div style={{
+      position: 'relative', borderRadius: '14px', padding: '16px 18px', marginBottom: '16px',
+      background: `linear-gradient(120deg, rgba(169,116,63,0.12), rgba(169,116,63,0.04) 45%, rgba(169,116,63,0.13))`,
+      border: `1.5px solid ${brassEdgeSoft}`, overflow: 'hidden',
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px' }}>
+        <span style={{ ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: at.brass }}>★ Your champions</span>
+        <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: at.ghost }}>{count} of {cap} · capped</span>
       </div>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))',
-        gap: '10px',
-      }}>
-        {actors.map(a => (
-          <ActorCard
-            key={a.id}
-            actor={a}
-            entry={guide.get(a.id) || null}
-            user={user}
-            onSaved={onSaved}
-            watch={watch}
-          />
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+        {championActors.map(a => {
+          const d = domainOf(a)
+          return (
+            <button key={a.id} type="button" onClick={() => onOpen(a)} title={a.name}
+              style={{ position: 'relative', border: 'none', background: 'transparent', padding: 0, cursor: 'pointer' }}>
+              <span style={{
+                width: '42px', height: '42px', borderRadius: '50%', display: 'grid', placeItems: 'center',
+                fontFamily: display.fontFamily, fontWeight: 600, fontSize: '17px', color: '#fff',
+                background: sealGradient(d?.color || at.verdigris),
+                boxShadow: `inset 0 0 0 2px rgba(255,255,255,0.55), 0 0 0 2px ${brassEdgeSoft}, 0 3px 8px rgba(38,36,32,0.2)`,
+              }}>
+                {String(a.name || '?').charAt(0).toUpperCase()}
+              </span>
+              <span aria-hidden="true" style={{ position: 'absolute', top: '-7px', right: '-3px', fontSize: '13px', color: at.brass }}>★</span>
+            </button>
+          )
+        })}
+        {Array.from({ length: empty }).map((_, i) => (
+          <span key={`e${i}`} aria-hidden="true" style={{
+            width: '42px', height: '42px', borderRadius: '50%',
+            border: `1.5px dashed ${brassEdgeSoft}`, display: 'grid', placeItems: 'center',
+            color: brassEdgeSoft, fontFamily: display.fontFamily, fontSize: '20px',
+          }}>+</span>
         ))}
       </div>
+      <div style={{ ...atText.caption, marginTop: '10px', lineHeight: 1.5 }}>
+        The five to ten impact-makers you orbit most. We become the average of the company we
+        keep, so choose these on purpose. Their moves rise to the top of your{' '}
+        <Link to="/tuned-in" style={{ color: at.verdigris }}>Tuned In</Link> feed.
+      </div>
+      {capMsg && (
+        <div style={{ ...atText.caption, color: '#8A3030', marginTop: '8px' }}>{capMsg}</div>
+      )}
     </div>
   )
 }
 
-// ── Tier mark ─────────────────────────────────────────────────────────────
-// Plain circle span, no SVG. Colour states:
-//   not met            → dashed outline
-//   known / following  → verdigris fill
-//   allied / companion → brass fill (see file header — not heritage gold)
-function TierMark({ tier }) {
-  const met = tier === 'known' || tier === 'following'
-  const high = tier === 'allied' || tier === 'companion'
+// ═══════════════════════════════════════════════════════════════════════════
+// My org banner
+// ═══════════════════════════════════════════════════════════════════════════
+
+function MyOrgBanner({ org, counts, onManage }) {
   return (
-    <span
-      aria-hidden="true"
-      style={{
-        width: '11px',
-        height: '11px',
-        borderRadius: '50%',
-        flexShrink: 0,
-        marginTop: '4px',
-        background: high ? at.brass : met ? at.verdigris : 'transparent',
-        border: (high || met) ? 'none' : `1.5px dashed ${at.ghost}`,
-        boxSizing: 'border-box',
-      }}
-    />
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: '14px', background: at.object,
+      border: `1.5px solid ${brassEdgeSoft}`, borderRadius: '14px', padding: '13px 16px', marginBottom: '16px', flexWrap: 'wrap',
+    }}>
+      <span style={{
+        width: '40px', height: '40px', borderRadius: '50%', display: 'grid', placeItems: 'center',
+        fontFamily: display.fontFamily, fontWeight: 600, fontSize: '17px', color: '#fff',
+        background: sealGradient(at.brass), boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.5)',
+      }}>
+        {String(org.name || '?').charAt(0).toUpperCase()}
+      </span>
+      <div style={{ flex: 1, minWidth: '160px' }}>
+        <div style={{ ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: at.brass }}>Your own entry</div>
+        <div style={{ ...display, fontSize: '19px', color: at.text, lineHeight: 1.1 }}>{org.name}</div>
+      </div>
+      {counts && (
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.08em', color: at.brass, background: brassTint, border: `1px solid ${at.verdigrisEdge}`, borderRadius: '99px', padding: '6px 13px' }}>
+            ◈ In {counts.guide_count} field guide{Number(counts.guide_count) === 1 ? '' : 's'}
+          </span>
+          <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.08em', color: at.brass, background: brassTint, border: `1px solid ${at.verdigrisEdge}`, borderRadius: '99px', padding: '6px 13px' }}>
+            ★ Champion to {counts.champion_count} {Number(counts.champion_count) === 1 ? 'person' : 'people'}
+          </span>
+        </div>
+      )}
+      <button type="button" onClick={onManage} style={{
+        ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase',
+        color: at.brass, background: brassTint, border: `1.5px solid ${brassEdgeSoft}`,
+        borderRadius: '40px', padding: '9px 16px', cursor: 'pointer',
+      }}>
+        My entry
+      </button>
+    </div>
   )
 }
 
-// ── Actor card ────────────────────────────────────────────────────────────
-function ActorCard({ actor, entry, user, onSaved, watch }) {
-  const [open, setOpen] = useState(false)
-  const [value, setValue] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [saveError, setSaveError] = useState(false)
+// ═══════════════════════════════════════════════════════════════════════════
+// Habitat section (one domain)
+// ═══════════════════════════════════════════════════════════════════════════
 
-  const tier = entry?.tier || 'found'
-  const met = tier !== 'found'
-  const note = entry?.note || null
-  const desc = actor.short_description || actor.description || null
-  const orgHref = `/org/${actor.slug || actor.id}`
-  const canCapture = !!user && !note
-
-  async function save() {
-    const trimmed = value.trim()
-    if (!trimmed || saving) return
-    setSaving(true)
-    setSaveError(false)
-    const { error } = await supabase
-      .from('actor_field_notes')
-      .insert({ user_id: user.id, actor_id: actor.id, note: trimmed })
-    setSaving(false)
-    if (error) { setSaveError(true); return }
-    setOpen(false)
-    setValue('')
-    onSaved(actor.id, trimmed)
-  }
-
+function HabitatSection({ domain, met, unmetCount, guide, codes, onOpen }) {
+  const navigate = useNavigate()
+  const total = met.length + unmetCount
+  const teasers = Math.min(2, unmetCount)
   return (
-    <div
-      onClick={canCapture && !met && !open ? () => setOpen(true) : undefined}
-      style={{
-        background: at.object,
-        border: `1px solid ${at.verdigrisEdge}`,
-        borderRadius: '8px',
-        padding: '12px 14px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-        cursor: canCapture && !met && !open ? 'pointer' : 'default',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-        <TierMark tier={tier} />
-        <Link
-          to={orgHref}
-          onClick={e => e.stopPropagation()}
-          style={{
-            ...atText.heading,
-            fontSize: '15px',
-            fontWeight: 500,
-            textDecoration: 'none',
-            color: at.text,
-          }}
-        >
-          {actor.name}
-        </Link>
+    <section style={{ marginTop: '26px' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '12px' }}>
+        <span style={{ ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: domain.color }}>
+          {domain.label}
+        </span>
+        <span style={{ ...bodyFont, fontSize: '13px', color: at.ghost }}>
+          {EPITHET[domain.slug] || ''}
+        </span>
+        <span aria-hidden="true" style={{ flex: 1, height: '3px', borderTop: `1px solid ${domain.color}`, borderBottom: `1px solid ${domain.color}`, opacity: 0.3 }} />
+        <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.1em', color: at.ghost }}>
+          {met.length} of {total} collected
+        </span>
       </div>
 
-      {/* Tier state, in words — private to the viewer (BP-12). Only ever the
-          state, never a count or threshold. */}
-      {met && TIER_LABEL[tier] && (
-        <div style={{ ...atText.chrome, fontSize: '13px', letterSpacing: '0.14em',
-          color: (tier === 'allied' || tier === 'companion') ? at.brass : at.verdigris }}>
-          {TIER_LABEL[tier]}
-        </div>
-      )}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(176px, 1fr))', gap: '12px' }}>
+        {met.map(a => (
+          <GuideCard key={a.id} actor={a} entry={guide.get(a.id)} code={codes.get(a.id)} domain={domain} onOpen={() => onOpen(a)} />
+        ))}
+        {Array.from({ length: teasers }).map((_, i) => (
+          <UnmetCard key={`u${i}`} domain={domain}
+            more={i === teasers - 1 && unmetCount > teasers ? unmetCount - teasers : 0}
+            onClick={() => navigate('/explore')} />
+        ))}
+        <ScoutCard onClick={() => navigate('/add')} />
+      </div>
+    </section>
+  )
+}
 
-      {/* Follow — the quiet tier, a Watch action right from the guide grid. */}
-      {user && watch && (
-        <button
-          type="button"
-          onClick={e => { e.stopPropagation(); watch.onFollow(actor.id, actor.name) }}
-          style={{
-            ...atText.chrome, fontSize: '13px', letterSpacing: '0.12em',
-            alignSelf: 'flex-start', cursor: 'pointer',
-            background: 'transparent',
-            color: watch.isWatching('actor', actor.id) ? at.verdigris : at.ghost,
-            border: watch.isWatching('actor', actor.id)
-              ? `1px solid ${at.verdigrisEdge}`
-              : `1px dashed ${at.verdigrisEdge}`,
-            borderRadius: '14px', padding: '4px 12px',
-          }}
-        >
-          {watch.isWatching('actor', actor.id) ? '● Following' : '+ Follow'}
-        </button>
-      )}
+// ═══════════════════════════════════════════════════════════════════════════
+// One collected card
+// ═══════════════════════════════════════════════════════════════════════════
 
-      {desc && (
-        <div style={{ ...atText.caption, lineHeight: 1.5, color: at.meta }}>
-          {desc}
-        </div>
-      )}
+function ScaleDots({ scale }) {
+  const lit = SCALE_BUCKET[scale] || 0
+  if (!lit) return null
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', ...mono, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase', color: at.meta }}>
+      {SCALE_SHORT[scale] || scale}
+      <span style={{ display: 'inline-flex', gap: '3px' }}>
+        {[1, 2, 3, 4, 5].map(i => (
+          <i key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: i <= lit ? at.brass : 'rgba(38,36,32,0.16)' }} />
+        ))}
+      </span>
+    </span>
+  )
+}
 
-      {note && (
+function Ladder({ tier }) {
+  const rank = LADDER.indexOf(tier)
+  return (
+    <span style={{ display: 'inline-flex', gap: '5px' }}>
+      {LADDER.map((t, i) => (
+        <i key={t} style={{
+          width: '9px', height: '9px', borderRadius: '50%', boxSizing: 'border-box',
+          background: i < rank ? at.brass : i === rank && rank > 0 ? shade(at.brass, 0.15) : 'transparent',
+          border: i <= rank && rank > 0 ? 'none' : `1.5px solid rgba(38,36,32,0.28)`,
+          boxShadow: i === rank && rank > 0 ? `0 0 0 3px ${brassTint}` : 'none',
+        }} />
+      ))}
+    </span>
+  )
+}
+
+function GuideCard({ actor, entry, code, domain, onOpen }) {
+  const champ = !!entry?.isChampion
+  const species = actor.tagline || actor.short_description || null
+  const met = fmtMet(entry?.firstMetAt)
+  const color = domain?.color || at.verdigris
+  return (
+    <div role="button" tabIndex={0} onClick={onOpen}
+      onKeyDown={e => { if (e.key === 'Enter') onOpen() }}
+      style={{
+        position: 'relative', borderRadius: '12px', padding: '16px 14px 12px', cursor: 'pointer',
+        display: 'flex', flexDirection: 'column', gap: '7px', overflow: 'hidden',
+        background: champ
+          ? 'linear-gradient(130deg, #fffdf9, #f8f1e4 40%, #fffdf9 70%, #f5edde)'
+          : at.object,
+        border: champ ? `1px solid ${brassEdgeSoft}` : `1px solid ${at.verdigrisEdge}`,
+        boxShadow: champ ? '0 6px 18px rgba(169,116,63,0.13)' : 'none',
+      }}>
+      {/* domain colour band */}
+      <span aria-hidden="true" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: champ ? `linear-gradient(90deg, ${color}, ${at.brass}, ${color})` : color }} />
+      {/* champion corner ribbon */}
+      {champ && (
         <>
-          {/* Italic is correct here — the note is the user's own words. */}
-          <div style={{ ...atText.userVoice, fontSize: '14px' }}>
-            {note}
-          </div>
-          <Link
-            to={orgHref}
-            style={{ ...atText.chrome, textDecoration: 'none', color: at.verdigris }}
-          >
-            → their page
-          </Link>
+          <span aria-hidden="true" style={{ position: 'absolute', top: 0, right: 0, borderStyle: 'solid', borderWidth: '0 34px 34px 0', borderColor: `transparent ${at.brass} transparent transparent` }} />
+          <span aria-hidden="true" style={{ position: 'absolute', top: '3px', right: '3px', color: '#fff', fontSize: '13px', zIndex: 1 }}>★</span>
         </>
       )}
+      <span style={{ position: 'absolute', top: '10px', right: champ ? '40px' : '12px', ...mono, fontSize: '13px', letterSpacing: '0.1em', color: at.ghost }}>
+        Nº {String(code?.dex || 0).padStart(3, '0')}
+      </span>
 
-      {!note && !open && (
-        user ? (
-          <button
-            type="button"
-            onClick={e => { e.stopPropagation(); setOpen(true) }}
-            style={{
-              ...atText.chrome,
-              background: 'transparent',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-              textAlign: 'left',
-              color: at.verdigris,
-            }}
-          >
-            → add
-          </button>
-        ) : (
-          <Link
-            to="/login"
-            style={{ ...atText.chrome, textDecoration: 'none', color: at.verdigris }}
-          >
-            Sign in to keep your guide
-          </Link>
-        )
+      <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+        <span style={{
+          width: '38px', height: '38px', borderRadius: '50%', display: 'grid', placeItems: 'center', flexShrink: 0,
+          fontFamily: display.fontFamily, fontWeight: 600, fontSize: '16px', color: '#fff',
+          background: sealGradient(color), boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.5)',
+        }}>
+          {String(actor.name || '?').charAt(0).toUpperCase()}
+        </span>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ ...display, fontWeight: 600, fontSize: '17px', lineHeight: 1.08, color: at.text }}>{actor.name}</div>
+          <div style={{ ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: at.ghost }}>{code?.code}</div>
+        </div>
+      </div>
+
+      {species && (
+        <div style={{ ...bodyFont, fontStyle: 'italic', fontSize: '13px', color: at.ghost, lineHeight: 1.35 }}>{species}</div>
       )}
 
-      {open && !note && (
-        <div
-          onClick={e => e.stopPropagation()}
-          style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
-        >
-          <textarea
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            rows={2}
-            autoFocus
-            placeholder="Who are they? One line, your words."
-            style={{
-              ...atText.body,
-              fontSize: '14px',
-              lineHeight: 1.5,
-              color: at.text,
-              background: at.ground,
-              border: `1px solid ${at.verdigrisEdge}`,
-              borderRadius: '6px',
-              padding: '8px 10px',
-              resize: 'vertical',
-              outline: 'none',
-            }}
-          />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <button
-              type="button"
-              onClick={save}
-              disabled={!value.trim() || saving}
-              style={{
-                ...atText.chrome,
-                color: value.trim() ? at.ground : at.ghost,
-                background: value.trim() ? at.verdigris : 'transparent',
-                border: `1px solid ${value.trim() ? at.verdigris : at.verdigrisEdge}`,
-                borderRadius: '16px',
-                padding: '5px 14px',
-                cursor: value.trim() && !saving ? 'pointer' : 'not-allowed',
-              }}
-            >
-              {saving ? 'Saving…' : 'Add to my guide'}
-            </button>
-            <button
-              type="button"
-              onClick={() => { setOpen(false); setSaveError(false) }}
-              style={{
-                ...atText.chrome,
-                background: 'transparent',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
-                color: at.ghost,
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-          {saveError && (
-            <div style={{ ...atText.caption, color: '#C97064' }}>
-              Could not save. Try again.
-            </div>
-          )}
+      <ScaleDots scale={actor.scale} />
+
+      {entry?.note && (
+        <div style={{
+          ...bodyFont, fontStyle: 'italic', fontSize: '13px', color: at.meta, lineHeight: 1.5, paddingBottom: '2px',
+          background: 'repeating-linear-gradient(to bottom, transparent 0 17px, rgba(38,36,32,0.055) 17px 18px)',
+        }}>
+          {entry.note}
         </div>
       )}
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
+        <span style={{ ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: (entry?.tier === 'allied' || entry?.tier === 'companion') ? at.brass : at.meta }}>
+          {TIER_LABEL[entry?.tier] || 'Found'}
+        </span>
+        <Ladder tier={entry?.tier || 'found'} />
+      </div>
+
+      {met && (
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', gap: '6px', paddingTop: '6px', marginTop: '1px',
+          borderTop: '1px dotted rgba(38,36,32,0.18)',
+          ...mono, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: at.ghost,
+        }}>
+          <span>First met · {met}</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Not-yet-met silhouette + scout
+// ═══════════════════════════════════════════════════════════════════════════
+
+function UnmetCard({ domain, more, onClick }) {
+  return (
+    <div role="button" tabIndex={0} onClick={onClick}
+      onKeyDown={e => { if (e.key === 'Enter') onClick() }}
+      style={{
+        position: 'relative', borderRadius: '12px', padding: '16px 14px 12px', cursor: 'pointer',
+        display: 'flex', flexDirection: 'column', gap: '7px', overflow: 'hidden',
+        background: at.ground, border: '1px dashed rgba(38,36,32,0.22)',
+      }}>
+      <span aria-hidden="true" style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'rgba(38,36,32,0.10)' }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+        <span style={{
+          width: '38px', height: '38px', borderRadius: '50%', display: 'grid', placeItems: 'center', flexShrink: 0,
+          fontFamily: display.fontFamily, fontWeight: 600, fontSize: '16px', color: 'rgba(255,255,255,0.35)',
+          background: 'radial-gradient(circle at 36% 30%, #4a463e, #24221d 72%)',
+          boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.10)',
+        }}>?</span>
+        <div>
+          <div style={{ ...display, fontWeight: 600, fontSize: '17px', lineHeight: 1.08, color: 'rgba(38,36,32,0.38)' }}>Not yet met</div>
+          <div style={{ ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: 'rgba(38,36,32,0.3)' }}>? ? ? ?</div>
+        </div>
+      </div>
+      <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase', color: at.ghost, marginTop: 'auto' }}>
+        ◌ {more > 0 ? `${more + 1} more in this habitat` : 'In this habitat'} → explore
+      </div>
+    </div>
+  )
+}
+
+function ScoutCard({ onClick }) {
+  return (
+    <div role="button" tabIndex={0} onClick={onClick}
+      onKeyDown={e => { if (e.key === 'Enter') onClick() }}
+      style={{
+        borderRadius: '10px', padding: '16px 14px', cursor: 'pointer',
+        display: 'flex', flexDirection: 'column', gap: '8px', justifyContent: 'center',
+        background: brassTint, border: `1.5px dashed ${brassEdgeSoft}`,
+        backgroundImage: 'radial-gradient(rgba(169,116,63,0.13) 1px, transparent 1.5px)', backgroundSize: '12px 12px',
+      }}>
+      <span style={{ width: '34px', height: '34px', borderRadius: '50%', background: at.brass, color: '#fff', display: 'grid', placeItems: 'center', fontSize: '20px', fontFamily: display.fontFamily }}>+</span>
+      <span style={{ ...display, fontWeight: 600, fontSize: '17px', color: at.text, lineHeight: 1.1 }}>Add an org</span>
+      <span style={{ ...atText.caption, lineHeight: 1.45 }}>Not on NextUs yet? Add them to your guide and to the map in one move.</span>
+      <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: at.brass }}>↳ we’ll let them know</span>
+    </div>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Specimen overlay
+// ═══════════════════════════════════════════════════════════════════════════
+
+function SpecimenOverlay({ actor, entry, code, domain, user, isChampion, capMsg, onChampion, onNoteSaved, onClose }) {
+  const [noteDraft, setNoteDraft] = useState(entry?.note || '')
+  const [noteEditing, setNoteEditing] = useState(!entry?.note)
+  const [noteBusy, setNoteBusy] = useState(false)
+  const [noteErr, setNoteErr] = useState(false)
+
+  const [sug, setSug] = useState(null)          // my existing suggestion row
+  const [sugDraft, setSugDraft] = useState('')
+  const [sugEditing, setSugEditing] = useState(false)
+  const [sugBusy, setSugBusy] = useState(false)
+
+  const color = domain?.color || at.verdigris
+  const tier = entry?.tier || 'found'
+  const rank = LADDER.indexOf(tier)
+  const horizon = DOMAIN_HORIZON_GOALS[domain?.slug] || null
+
+  useEffect(() => {
+    let cancelled = false
+    async function loadSug() {
+      if (!user || actor.mission_statement) return
+      const { data } = await supabase
+        .from('actor_mission_suggestions')
+        .select('id, suggestion')
+        .eq('user_id', user.id)
+        .eq('actor_id', actor.id)
+        .maybeSingle()
+      if (!cancelled && data) { setSug(data); setSugDraft(data.suggestion) }
+    }
+    loadSug()
+    return () => { cancelled = true }
+  }, [user, actor.id, actor.mission_statement])
+
+  async function saveNote() {
+    const trimmed = noteDraft.trim()
+    if (!trimmed || noteBusy || !user) return
+    setNoteBusy(true); setNoteErr(false)
+    const isNew = !entry?.note
+    const { error } = await supabase
+      .from('actor_field_notes')
+      .upsert({ user_id: user.id, actor_id: actor.id, note: trimmed, updated_at: new Date().toISOString() }, { onConflict: 'user_id,actor_id' })
+    setNoteBusy(false)
+    if (error) { setNoteErr(true); return }
+    setNoteEditing(false)
+    onNoteSaved(actor.id, trimmed, isNew)
+  }
+
+  async function saveSuggestion() {
+    const trimmed = sugDraft.trim()
+    if (!trimmed || sugBusy || !user) return
+    setSugBusy(true)
+    const { data, error } = await supabase
+      .from('actor_mission_suggestions')
+      .upsert({ user_id: user.id, actor_id: actor.id, suggestion: trimmed, updated_at: new Date().toISOString() }, { onConflict: 'user_id,actor_id' })
+      .select('id, suggestion')
+      .maybeSingle()
+    setSugBusy(false)
+    if (!error) { setSug(data || { suggestion: trimmed }); setSugEditing(false) }
+  }
+
+  const slotStyle = { border: `1px solid ${at.verdigrisEdge}`, borderRadius: '11px', padding: '10px 13px', marginBottom: '9px', background: at.ground }
+  const slotLbl = { ...mono, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: at.brass, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }
+  const slotVal = { ...bodyFont, fontSize: '13.5px', color: at.text, lineHeight: 1.5 }
+
+  return (
+    <div onClick={onClose} style={{
+      position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(38,36,32,0.45)',
+      display: 'grid', placeItems: 'center', padding: '20px', overflowY: 'auto',
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        width: '380px', maxWidth: '100%', maxHeight: '92dvh', overflowY: 'auto',
+        background: at.object, borderRadius: '18px', position: 'relative',
+        border: `2px solid ${isChampion ? brassEdgeSoft : at.verdigrisEdge}`,
+        boxShadow: '0 22px 50px rgba(38,36,32,0.3)',
+      }}>
+        {/* plate */}
+        <div style={{
+          height: '132px', position: 'relative', display: 'grid', placeItems: 'center',
+          background: `radial-gradient(110% 80% at 28% 12%, rgba(255,255,255,0.28), transparent 55%), ${sealGradient(color)}`,
+        }}>
+          <span style={{ position: 'absolute', top: '12px', left: '14px', ...mono, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.9)' }}>
+            Nº {String(code?.dex || 0).padStart(3, '0')} · {code?.code}
+          </span>
+          {isChampion && (
+            <span style={{
+              position: 'absolute', top: '12px', right: '14px', ...mono, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase',
+              color: '#3a2c10', background: 'linear-gradient(150deg, #ecd9b4, #c99e5e)', borderRadius: '3px', padding: '3px 9px 2px',
+              boxShadow: '0 2px 6px rgba(38,36,32,0.25)',
+            }}>★ Champion</span>
+          )}
+          <span style={{
+            width: '72px', height: '72px', borderRadius: '50%', display: 'grid', placeItems: 'center',
+            fontFamily: display.fontFamily, fontWeight: 600, fontSize: '30px', color: '#fff',
+            background: 'rgba(255,255,255,0.14)', boxShadow: 'inset 0 0 0 3px rgba(255,255,255,0.5), 0 4px 14px rgba(38,36,32,0.2)',
+          }}>
+            {String(actor.name || '?').charAt(0).toUpperCase()}
+          </span>
+          <button type="button" onClick={onClose} aria-label="Close" style={{
+            position: 'absolute', bottom: '10px', right: '12px', border: 'none', cursor: 'pointer',
+            width: '26px', height: '26px', borderRadius: '50%', background: 'rgba(255,255,255,0.25)', color: '#fff', fontSize: '14px', lineHeight: 1,
+          }}>×</button>
+        </div>
+
+        <div style={{ padding: '16px 20px 20px' }}>
+          <h3 style={{ ...display, fontWeight: 400, fontSize: '25px', color: at.text, lineHeight: 1.05, margin: 0 }}>{actor.name}</h3>
+          {(actor.tagline || actor.short_description) && (
+            <div style={{ ...bodyFont, fontStyle: 'italic', fontSize: '13px', color: at.ghost, margin: '3px 0 10px' }}>
+              {actor.tagline || actor.short_description}
+            </div>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 12px', flexWrap: 'wrap' }}>
+            {domain && (
+              <span style={{ ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#fff', background: color, borderRadius: '4px', padding: '3px 9px 2px' }}>
+                {domain.label}
+              </span>
+            )}
+            <ScaleDots scale={actor.scale} />
+          </div>
+
+          {/* mission slot */}
+          {actor.mission_statement ? (
+            <div style={slotStyle}>
+              <div style={slotLbl}><span>Their mission</span><span style={{ color: at.ghost, letterSpacing: '0.08em' }}>their words</span></div>
+              <div style={slotVal}>{actor.mission_statement}</div>
+            </div>
+          ) : sug && !sugEditing ? (
+            <div style={{ ...slotStyle, background: at.object }}>
+              <div style={slotLbl}>
+                <span>Mission — suggested by you</span>
+                <button type="button" onClick={() => setSugEditing(true)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', ...mono, fontSize: '13px', letterSpacing: '0.08em', textTransform: 'uppercase', color: at.ghost }}>edit</button>
+              </div>
+              <div style={slotVal}>{sug.suggestion}</div>
+            </div>
+          ) : user ? (
+            <div style={{ ...slotStyle, borderStyle: 'dashed', background: brassTint }}>
+              <div style={slotLbl}><span>Their mission</span><span style={{ color: at.ghost, letterSpacing: '0.08em' }}>not stated yet</span></div>
+              {!sugEditing ? (
+                <div style={{ ...slotVal, color: at.ghost, cursor: 'pointer' }} onClick={() => setSugEditing(true)}>
+                  No mission on file. In a sentence, how would you put what they do? <span style={{ color: at.brass }}>Suggest one →</span>
+                </div>
+              ) : (
+                <div>
+                  <textarea value={sugDraft} onChange={e => setSugDraft(e.target.value)} rows={2} autoFocus
+                    placeholder="One sentence — what are they moving toward?"
+                    style={{ ...bodyFont, fontSize: '13.5px', lineHeight: 1.5, color: at.text, background: at.object, border: `1px solid ${at.verdigrisEdge}`, borderRadius: '6px', padding: '8px 10px', width: '100%', boxSizing: 'border-box', resize: 'vertical', outline: 'none' }} />
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
+                    <button type="button" onClick={saveSuggestion} disabled={!sugDraft.trim() || sugBusy}
+                      style={{ ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#fff', background: at.brass, border: 'none', borderRadius: '14px', padding: '6px 14px', cursor: 'pointer' }}>
+                      {sugBusy ? 'Offering…' : 'Offer it'}
+                    </button>
+                    <button type="button" onClick={() => setSugEditing(false)}
+                      style={{ ...mono, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: at.ghost, background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                      Cancel
+                    </button>
+                  </div>
+                  <div style={{ ...atText.caption, marginTop: '6px' }}>
+                    Offered to the org to confirm or refine — they’re pinged that someone took the time.
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : null}
+
+          {/* horizon slot */}
+          {horizon && (
+            <div style={slotStyle}>
+              <div style={slotLbl}><span>The horizon they move under</span></div>
+              <div style={slotVal}>{horizon}</div>
+            </div>
+          )}
+
+          {/* relationship chain */}
+          <div style={{ background: brassTint, border: `1px solid ${at.verdigrisEdge}`, borderRadius: '12px', padding: '11px 14px', margin: '2px 0 10px' }}>
+            <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: at.ghost }}>Your relationship</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '9px' }}>
+              {LADDER.map((t, i) => (
+                <span key={t} style={{ display: 'contents' }}>
+                  {i > 0 && <span aria-hidden="true" style={{ fontSize: '13px', color: brassEdgeSoft, padding: '0 2px', marginBottom: '14px' }}>→</span>}
+                  <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+                    <i style={{
+                      width: '9px', height: '9px', borderRadius: '50%', boxSizing: 'border-box',
+                      background: i < rank ? at.brass : i === rank && rank > 0 ? shade(at.brass, 0.15) : 'transparent',
+                      border: i <= rank && rank > 0 ? 'none' : '1.5px solid rgba(38,36,32,0.28)',
+                      boxShadow: i === rank && rank > 0 ? `0 0 0 3px ${brassTint}` : 'none',
+                    }} />
+                    <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.04em', textTransform: 'uppercase', color: i <= rank && rank > 0 ? at.brass : at.ghost, fontWeight: i === rank ? 600 : 400, whiteSpace: 'nowrap' }}>
+                      {TIER_LABEL[t]}
+                    </span>
+                  </span>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* field note */}
+          {user && (
+            !noteEditing && entry?.note ? (
+              <>
+                <p style={{
+                  ...bodyFont, fontStyle: 'italic', fontSize: '14.5px', color: at.text, lineHeight: 1.65,
+                  padding: '10px 14px 6px', borderLeft: `2px solid ${at.brass}`,
+                  background: `repeating-linear-gradient(to bottom, transparent 0 23px, rgba(38,36,32,0.06) 23px 24px), ${brassTint}`,
+                  borderRadius: '0 10px 10px 0', margin: '0 0 4px',
+                }}>
+                  {entry.note}
+                </p>
+                <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase', color: at.ghost, marginBottom: '12px', display: 'flex', gap: '10px' }}>
+                  <span>Your field note · private</span>
+                  <button type="button" onClick={() => { setNoteDraft(entry.note); setNoteEditing(true) }}
+                    style={{ border: 'none', background: 'transparent', cursor: 'pointer', ...mono, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase', color: at.verdigris, padding: 0 }}>
+                    edit
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div style={{ marginBottom: '12px' }}>
+                <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: at.brass, marginBottom: '5px' }}>
+                  {entry?.note ? 'Edit your field note' : 'Your field note — writing one collects them'}
+                </div>
+                <textarea value={noteDraft} onChange={e => setNoteDraft(e.target.value)} rows={2}
+                  placeholder="Who are they? One line, your words."
+                  style={{ ...bodyFont, fontSize: '14px', lineHeight: 1.5, color: at.text, background: at.ground, border: `1px solid ${at.verdigrisEdge}`, borderRadius: '6px', padding: '8px 10px', width: '100%', boxSizing: 'border-box', resize: 'vertical', outline: 'none' }} />
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '6px' }}>
+                  <button type="button" onClick={saveNote} disabled={!noteDraft.trim() || noteBusy}
+                    style={{
+                      ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase',
+                      color: noteDraft.trim() ? '#fff' : at.ghost,
+                      background: noteDraft.trim() ? at.verdigris : 'transparent',
+                      border: `1px solid ${noteDraft.trim() ? at.verdigris : at.verdigrisEdge}`,
+                      borderRadius: '14px', padding: '6px 14px', cursor: noteDraft.trim() && !noteBusy ? 'pointer' : 'not-allowed',
+                    }}>
+                    {noteBusy ? 'Saving…' : entry?.note ? 'Save' : 'Add to my guide'}
+                  </button>
+                  {entry?.note && (
+                    <button type="button" onClick={() => setNoteEditing(false)}
+                      style={{ ...mono, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: at.ghost, background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                      Cancel
+                    </button>
+                  )}
+                </div>
+                {noteErr && <div style={{ ...atText.caption, color: '#8A3030', marginTop: '5px' }}>Could not save. Try again.</div>}
+              </div>
+            )
+          )}
+
+          {/* actions */}
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <Link to={`/org/${actor.slug || actor.id}`} style={{
+              ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase',
+              color: '#fff', background: at.verdigris, borderRadius: '40px', padding: '9px 15px', textDecoration: 'none',
+            }}>
+              See where you can help ›
+            </Link>
+            {user && (
+              <button type="button" onClick={onChampion} style={{
+                ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase',
+                color: isChampion ? '#fff' : at.brass,
+                background: isChampion ? at.brass : brassTint,
+                border: `1.5px solid ${brassEdgeSoft}`, borderRadius: '40px', padding: '9px 15px', cursor: 'pointer',
+              }}>
+                {isChampion ? '★ A champion' : '★ Champion'}
+              </button>
+            )}
+          </div>
+          {capMsg && <div style={{ ...atText.caption, color: '#8A3030', marginTop: '8px' }}>{capMsg}</div>}
+        </div>
+      </div>
     </div>
   )
 }

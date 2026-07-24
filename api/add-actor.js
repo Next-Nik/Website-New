@@ -27,11 +27,15 @@
 export const config = { maxDuration: 60 }
 
 const { createClient } = require('@supabase/supabase-js')
+const { Resend } = require('resend')
 
 const supabase = createClient(
   process.env.SUPABASE_URL || 'https://tphbpwzozkskytoichho.supabase.co',
   process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
 )
+
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
+const BASE_URL = process.env.NEXTUS_BASE_URL || 'https://nextus.world'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -116,6 +120,107 @@ function buildPayload(data, { isExtra, represents, userId, aiUrl }) {
       input_mode:      'public_add',
       label:           data.label,
     } : null,
+  }
+}
+
+// Extract the contact email from the actor's links array.
+// Looks for link_type='email' first, then contact_form, calendly, phone.
+// Returns the URL string or null.
+function extractContactEmail(data) {
+  const links = arr(data._aiLinks).length ? arr(data._aiLinks) : arr(data.links)
+  // Prefer email link, then contact_form, calendly, phone
+  const email = links.find(l => l.link_type === 'email')
+  if (email) return email.url
+  const contactForm = links.find(l => l.link_type === 'contact_form')
+  if (contactForm) return contactForm.url
+  const calendly = links.find(l => l.link_type === 'calendly')
+  if (calendly) return calendly.url
+  const phone = links.find(l => l.link_type === 'phone')
+  if (phone) return phone.url
+  return null
+}
+
+// Send a cold invite email to an org that was just added to the platform.
+// This is a non-blocking operation — failures don't affect the response.
+async function sendColdInvite(actorName, actorSlug, actorId, contactUrl) {
+  if (!resend || !contactUrl) return // Resend not configured or no contact info
+  try {
+    // If contactUrl is a mailto: or tel: link, extract the email/phone
+    let toEmail = contactUrl
+    if (contactUrl.startsWith('mailto:')) toEmail = contactUrl.slice(7).split('?')[0]
+    if (contactUrl.startsWith('tel:')) return // Skip phone numbers, can't send email
+
+    // Only send to email addresses, not contact forms or URLs
+    if (!toEmail.includes('@')) return
+
+    const claimUrl = `${BASE_URL}/org/${actorSlug || actorId}/claim`
+    const profileUrl = `${BASE_URL}/org/${actorSlug || actorId}`
+
+    const html = `
+      <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; padding: 48px 28px; color: #0F1523; background: #FAFAF7;">
+
+        <p style="font-size: 13px; letter-spacing: 0.20em; color: #A8721A; text-transform: uppercase; margin: 0 0 32px; font-family: 'Cormorant SC', Georgia, serif;">
+          NextUs · The Atlas
+        </p>
+
+        <h1 style="font-size: 30px; font-weight: 300; margin: 0 0 20px; line-height: 1.15; color: #0F1523;">
+          Someone believes in what you're doing.
+        </h1>
+
+        <p style="font-size: 16px; line-height: 1.7; color: rgba(15,21,35,0.72); margin: 0 0 18px;">
+          ${actorName} has been added to NextUs, an Atlas of people, organisations, and projects building the future across seven civilisational domains. Someone in our community added you because they believe in your work.
+        </p>
+
+        <p style="font-size: 16px; line-height: 1.7; color: rgba(15,21,35,0.72); margin: 0 0 28px;">
+          You can see your profile here:
+          <a href="${profileUrl}" style="color: #A8721A;">${profileUrl}</a>
+        </p>
+
+        <div style="background: rgba(200,146,42,0.06); border: 1.5px solid rgba(200,146,42,0.35); border-radius: 10px; padding: 22px 24px; margin: 0 0 28px;">
+          <p style="font-size: 14px; font-family: 'Cormorant SC', Georgia, serif; letter-spacing: 0.16em; color: #A8721A; text-transform: uppercase; margin: 0 0 10px;">
+            Claiming your profile lets you
+          </p>
+          <ul style="font-size: 15px; line-height: 1.75; color: rgba(15,21,35,0.72); margin: 0; padding: 0 0 0 18px;">
+            <li>Add your mission, what you're working on now, and your offers</li>
+            <li>Name the Horizon Goal your work moves toward</li>
+            <li>Connect with challenges, asks, and people aligned with your work</li>
+            <li>Control what your profile shows — the community-seeded floor stays, you add depth</li>
+          </ul>
+        </div>
+
+        <a href="${claimUrl}"
+          style="display: inline-block; background: #C8922A; color: #FFFFFF; text-decoration: none;
+                 font-family: 'Cormorant SC', Georgia, serif; font-size: 14px; letter-spacing: 0.16em;
+                 text-transform: uppercase; padding: 14px 32px; border-radius: 40px;">
+          Claim this profile →
+        </a>
+
+        <p style="font-size: 13px; line-height: 1.65; color: rgba(15,21,35,0.45); margin: 32px 0 0;">
+          If this entry contains incorrect information, you can dispute it directly from the profile page.
+          If you believe this email was sent in error, you can ignore it — no action is needed.
+        </p>
+
+        <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(200,146,42,0.18);">
+          <p style="font-size: 13px; color: rgba(15,21,35,0.40); margin: 0;">
+            NextUs · The Person and the Planet. Built for both, building both.<br />
+            <a href="${BASE_URL}" style="color: rgba(15,21,35,0.40);">nextus.world</a>
+          </p>
+        </div>
+
+      </div>
+    `
+
+    await resend.emails.send({
+      from: 'NextUs <hello@nextus.world>',
+      to: toEmail,
+      subject: `${actorName} is on NextUs — claim your profile`,
+      html,
+    })
+
+    console.log(`[add-actor] Cold invite sent to ${toEmail} for ${actorName}`)
+  } catch (err) {
+    console.error(`[add-actor] Cold invite failed for ${actorName}:`, err.message)
+    // Don't block the response — this is a best-effort notification
   }
 }
 
@@ -271,6 +376,21 @@ module.exports = async function handler(req, res) {
     }
   } catch (err) {
     warnings.push(`Problem-chain proposals skipped (${err?.message})`)
+  }
+
+  // ── Cold invites — send "you've been added" email if contact found. Never blocks. ──
+  try {
+    for (const actor of allActors) {
+      const contactUrl = extractContactEmail(actor.data)
+      if (contactUrl) {
+        // Fire and forget — don't await, don't block on failures
+        sendColdInvite(actor.name, results.find(r => r.id === actor.id)?.slug, actor.id, contactUrl)
+          .catch(err => console.error(`[add-actor] Cold invite send failed: ${err.message}`))
+      }
+    }
+  } catch (err) {
+    console.error(`[add-actor] Cold invite phase failed: ${err.message}`)
+    // Don't add to warnings — this is fully optional
   }
 
   return res.status(200).json({ ok: true, results, warnings })

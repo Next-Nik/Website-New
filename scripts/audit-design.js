@@ -79,6 +79,7 @@ const ITALIC_WHITELIST = [
   'lib/designTokens.js', // the userVoice preset definition itself (fnText.userVoice / atText.userVoice)
   'self-explorer/SelfExplorer.module.css', // .overviewGoal / .idleItemMission — user's own goal/mission text
   'app/pages/Search.jsx', // {actor.tagline} — the actor's own self-authored tagline
+  'app/pages/FieldGuide.jsx', // {actor.tagline}/{entry.note} — actor's own tagline + the user's own field note (epithets de-italicised)
   'ProfileIAStatements.jsx', // {statement} — the user's own I Am statement
   'ProfileIdentityStrip.jsx', // {primaryIAStatement} — the user's own I Am statement
   'SprintSlate.jsx', // {dd[domains[0]].goal} — the user's own target-sprint goal

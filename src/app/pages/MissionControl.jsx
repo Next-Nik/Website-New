@@ -1142,7 +1142,7 @@ export default function MissionControl() {
 
   const pathCards = isCiv
     ? [
-        { kicker: 'Your Guide', title: 'Find the way', blurb: 'Guidance for the route from here to there.', cta: 'Open the guide', img: 'mc-im3', onClick: () => navigate('/guide') },
+        { kicker: 'Your Guide', title: 'The company you keep', blurb: 'Collect the organisations you meet, learn who they are, find where you can help.', cta: 'Open your field guide', img: 'mc-im3', onClick: () => navigate('/guide') },
         { kicker: 'Search', title: 'Find anything', blurb: 'People, orgs, missions, moments across the planet.', cta: 'Search', img: 'mc-im4', onClick: () => navigate('/search') },
       ]
     : [

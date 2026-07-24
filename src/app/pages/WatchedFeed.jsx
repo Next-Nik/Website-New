@@ -12,12 +12,19 @@
 //
 // Chronological, no engagement weighting. Same Load-More mechanic as the
 // main Feed. Empty states are Tuned-In-list-specific.
+//
+// Field Guide v3 (July 2026): champions first. Within the loaded page,
+// items from the user's champions (actor_champions) surface in a
+// "★ Your champions" band above everyone else. Sort, not filter —
+// nothing is hidden, and within each band order stays chronological.
 
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { SiteFooter } from '../../components/SiteFooter'
 import { useViewerContext } from '../hooks/useViewerContext'
 import { useWatch } from '../hooks/useWatch'
+import { useChampions } from '../hooks/useChampions'
 import { useFocusFeed } from '../hooks/useFocusFeed'
 import { useActiveFocus } from '../hooks/useActiveFocus'
 import { MAX_PAGES } from '../hooks/useFeed'
@@ -31,6 +38,7 @@ export default function WatchedFeed() {
   const { data: viewerCtx, loading: ctxLoading } = useViewerContext()
   const { count: watchCount } = useWatch()
   const { hasFocus } = useActiveFocus()
+  const { isChampion } = useChampions()
   const {
     items,
     loading: feedLoading,
@@ -40,6 +48,17 @@ export default function WatchedFeed() {
     loadMore,
   } = useFocusFeed('watched', viewerCtx)
   const loading = ctxLoading || feedLoading
+
+  // Champions first — a band on top, chronology preserved inside each band.
+  const { championItems, restItems } = useMemo(() => {
+    const championItems = []
+    const restItems = []
+    for (const item of items) {
+      if (item?.actor?.id && isChampion(item.actor.id)) championItems.push(item)
+      else restItems.push(item)
+    }
+    return { championItems, restItems }
+  }, [items, isChampion])
 
   if (!ctxLoading && !viewerCtx) {
     return <NotSignedIn />
@@ -130,8 +149,19 @@ export default function WatchedFeed() {
 
         {!loading && items.length > 0 && (
           <>
+            {championItems.length > 0 && (
+              <>
+                <FeedBand label="★ Your champions" />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '28px' }}>
+                  {championItems.map(item => (
+                    <FeedItem key={`${item.type}-${item.id}`} item={item} />
+                  ))}
+                </div>
+                {restItems.length > 0 && <FeedBand label="Everyone you follow" />}
+              </>
+            )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {items.map(item => (
+              {restItems.map(item => (
                 <FeedItem key={`${item.type}-${item.id}`} item={item} />
               ))}
             </div>
@@ -143,6 +173,20 @@ export default function WatchedFeed() {
       </div>
 
       <SiteFooter />
+    </div>
+  )
+}
+
+// Band header — "★ Your champions" / "Everyone you follow".
+function FeedBand({ label }) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: '10px', margin: '0 0 14px',
+      ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
+      textTransform: 'uppercase', color: gold,
+    }}>
+      <span>{label}</span>
+      <span aria-hidden="true" style={{ flex: 1, height: '1px', background: 'rgba(15,21,35,0.12)' }} />
     </div>
   )
 }

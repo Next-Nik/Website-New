@@ -57,12 +57,17 @@ async function selectIn(supabase, table, columns, column, ids) {
 
 /**
  * loadGuideState(supabase, userId)
- *   → Map<actorId, { tier, note }>
+ *   → Map<actorId, { tier, note, isChampion, firstMetAt }>
  *
  * tier ∈ 'known' | 'following' | 'allied' | 'companion'. Actors with no
  * entry are 'found' (not met). `note` is the user's own field note text
  * when one exists (kept even when a higher tier overrides 'known', so
  * the page can render the note alongside the tier mark); null otherwise.
+ *
+ * `isChampion` is ORTHOGONAL to the tier ladder: it marks membership of
+ * the capped champions ring (actor_champions), not a rung. `firstMetAt`
+ * is the earliest timestamp across the user's note / watch / champion
+ * rows — the "first met" stamp on the guide card; null when unknown.
  */
 export async function loadGuideState(supabase, userId) {
   const state = new Map()
@@ -72,23 +77,33 @@ export async function loadGuideState(supabase, userId) {
     if (!actorId) return
     const prev = state.get(actorId)
     if (!prev) {
-      state.set(actorId, { tier, note: null })
+      state.set(actorId, { tier, note: null, isChampion: false, firstMetAt: null })
     } else if (TIER_RANK[tier] > TIER_RANK[prev.tier]) {
       prev.tier = tier
     }
+  }
+
+  const stampMet = (actorId, iso) => {
+    if (!iso) return
+    const entry = state.get(actorId)
+    if (!entry) return
+    const t = new Date(iso).getTime()
+    if (Number.isNaN(t)) return
+    if (entry.firstMetAt == null || t < entry.firstMetAt) entry.firstMetAt = t
   }
 
   // ── known: a field note exists ──────────────────────────────────────
   try {
     const { data, error } = await supabase
       .from('actor_field_notes')
-      .select('actor_id, note')
+      .select('actor_id, note, created_at')
       .eq('user_id', userId)
     if (error) throw error
     for (const row of data || []) {
       lift(row.actor_id, 'known')
       const entry = state.get(row.actor_id)
       if (entry) entry.note = row.note
+      stampMet(row.actor_id, row.created_at)
     }
   } catch {
     // Table missing or unreadable — skip the source.
@@ -98,13 +113,34 @@ export async function loadGuideState(supabase, userId) {
   try {
     const { data, error } = await supabase
       .from('nextus_user_watches')
-      .select('entity_id')
+      .select('entity_id, watched_at')
       .eq('user_id', userId)
       .eq('entity_type', 'actor')
     if (error) throw error
-    for (const row of data || []) lift(row.entity_id, 'following')
+    for (const row of data || []) {
+      lift(row.entity_id, 'following')
+      stampMet(row.entity_id, row.watched_at)
+    }
   } catch {
     // Skip.
+  }
+
+  // ── champions: capped ring membership (orthogonal to tier) ─────────
+  try {
+    const { data, error } = await supabase
+      .from('actor_champions')
+      .select('actor_id, created_at')
+      .eq('user_id', userId)
+    if (error) throw error
+    for (const row of data || []) {
+      // A champion is at least met: lift to known if brand new to the map.
+      lift(row.actor_id, 'known')
+      const entry = state.get(row.actor_id)
+      if (entry) entry.isChampion = true
+      stampMet(row.actor_id, row.created_at)
+    }
+  } catch {
+    // Table not migrated yet — guide renders without champions.
   }
 
   // ── allied / companion: action rows via calls ───────────────────────
