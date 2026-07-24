@@ -1,9 +1,17 @@
 // src/lib/imageDownscale.js
 //
 // Resize and compress an image File in the browser before it ever uploads, so
-// we never store a 10MB original. Caps the long edge, re-encodes to WebP (or
-// JPEG where WebP isn't available), and returns a data URL ready to send.
-// SVGs pass through untouched — they're already small and vector.
+// we never store a 10MB original. Caps the long edge, re-encodes to JPEG, and
+// returns a data URL ready to send. SVGs pass through untouched — they're
+// already small and vector.
+//
+// JPEG, DELIBERATELY NOT WebP (July 2026): encoding depends on the
+// UPLOADER's browser but decoding happens on every VISITOR's browser.
+// Chrome encodes WebP; older iPhone/iPad Safari cannot decode it — which
+// made founder card photos render on Chrome desktop / Pixel but come up
+// blank on iPads and iPhones. JPEG at these settings is a few percent
+// larger and decodes everywhere. Do not switch back to WebP without a
+// server-side fallback for Safari.
 
 function fileToDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -51,13 +59,9 @@ export async function downscaleImage(file, { maxEdge = 1600, quality = 0.82 } = 
   ctx.fillRect(0, 0, width, height)
   ctx.drawImage(img, 0, 0, width, height)
 
-  let type = 'image/webp'
-  let dataUrl = canvas.toDataURL(type, quality)
-  if (!dataUrl.startsWith('data:image/webp')) {
-    type = 'image/jpeg'
-    dataUrl = canvas.toDataURL(type, quality)
-  }
-  return { dataUrl, type, ext: type === 'image/webp' ? 'webp' : 'jpg' }
+  const type = 'image/jpeg'   // universal decode — see header comment
+  const dataUrl = canvas.toDataURL(type, quality)
+  return { dataUrl, type, ext: 'jpg' }
 }
 
 // Same downscale, but returns an uploadable Blob instead of a data URL — for

@@ -88,7 +88,7 @@ export default function CardPhoto({
     if (!f.type.startsWith('image/')) { setErr('Images only'); return }
     setBusy(true); setErr(null)
     try {
-      // Downscale in the browser first (long edge 1600px, WebP) so a full-size
+      // Downscale in the browser first (long edge 1600px, JPEG) so a full-size
       // phone photo becomes a couple hundred KB — the bucket rejected raw
       // originals with "object exceeded the maximum allowed size".
       const { blob, ext, type } = await downscaleImageToBlob(f, { maxEdge: 1600, quality: 0.82 })
