@@ -60,51 +60,79 @@ export function FieldGuidePage() {
       setLoadError(false)
       try {
 
-      // The seven civ domains, in position order. Colours come from
-      // CIV_DOMAINS (single source of truth), DB colour as fallback.
+      // ── Taxonomy (domains + subdomains) ─────────────────────────────────
+      // Used ONLY to group and colour the actor grid. A failure here must
+      // NOT blank the Atlas — the actors are the content. On error we log
+      // the real cause and fall back to an ungrouped view ("Elsewhere in
+      // the Atlas"). Colours come from CIV_DOMAINS (single source of truth),
+      // DB colour as fallback.
+      let allDomains = []
       const { data: domainRows, error: domainErr } = await supabase
         .from('nextus_domains')
         .select('id, slug, name, color, position')
         .eq('domain_kind', 'civ')
         .order('position')
       if (cancelled) return
-      if (domainErr) throw domainErr
-      const allDomains = (domainRows || []).map(d => ({
-        ...d,
-        color: CIV_COLOUR_BY_SLUG[d.slug] || d.color || at.verdigris,
-      }))
+      if (domainErr) {
+        console.error('[FieldGuide] domains query failed — falling back to an ungrouped Atlas:', domainErr)
+      } else {
+        allDomains = (domainRows || []).map(d => ({
+          ...d,
+          color: CIV_COLOUR_BY_SLUG[d.slug] || d.color || at.verdigris,
+        }))
+      }
       setDomains(allDomains)
 
-      // All subdomains for those domains, one batched query.
+      // All subdomains for those domains, one batched query. Also non-fatal.
       const domainIds = allDomains.map(d => d.id)
       if (domainIds.length > 0) {
-        const { data: subRows } = await supabase
+        const { data: subRows, error: subErr } = await supabase
           .from('nextus_subdomains')
           .select('id, domain_id, slug, name, position')
           .in('domain_id', domainIds)
           .order('position')
         if (cancelled) return
-        setSubdomains(subRows || [])
+        if (subErr) {
+          console.error('[FieldGuide] subdomains query failed — grouping at domain level only:', subErr)
+          setSubdomains([])
+        } else {
+          setSubdomains(subRows || [])
+        }
       } else {
         setSubdomains([])
       }
 
-      // Every live actor in the Atlas.
-      const { data: actorRows } = await supabase
+      // ── Actors — the actual Atlas content ───────────────────────────────
+      // THIS is the query whose failure genuinely means "could not load the
+      // Atlas." Its error was previously swallowed (data destructured, error
+      // dropped), so a real failure surfaced as an empty map with no signal.
+      // Surface it, and only here do we hard-fail the page.
+      const { data: actorRows, error: actorErr } = await supabase
         .from('nextus_actors')
         .select('id, slug, name, short_description, description, domains, subdomains')
         .eq('status', 'live')
         .order('name')
         .limit(1000)
       if (cancelled) return
+      if (actorErr) {
+        console.error('[FieldGuide] actors query failed — cannot load the Atlas:', actorErr)
+        throw actorErr
+      }
       setActors(actorRows || [])
 
-      // The viewer's guide state (empty map when signed out).
-      const state = await loadGuideState(supabase, user?.id)
-      if (cancelled) return
-      setGuide(state)
+      // The viewer's guide state (empty map when signed out). Already
+      // defensive internally, but never let it blank a loaded Atlas.
+      try {
+        const state = await loadGuideState(supabase, user?.id)
+        if (cancelled) return
+        setGuide(state)
+      } catch (guideErr) {
+        console.error('[FieldGuide] guide state failed — showing the Atlas without tier marks:', guideErr)
+        if (!cancelled) setGuide(new Map())
+      }
 
       } catch (e) {
+        console.error('[FieldGuide] Atlas load failed:', e)
         if (!cancelled) setLoadError(true)
       } finally {
         if (!cancelled) setLoading(false)

@@ -1150,7 +1150,7 @@ export default function MissionControl() {
 
   const nextCards = isCiv
     ? [
-        { kicker: 'Planet Sprint', title: 'Join a sprint', blurb: 'A focused push on a real-world goal.', cta: 'Find a sprint', img: 'mc-im8', onClick: () => openCivPanel('missions') },
+        { kicker: 'Earth Challenge', title: 'Join the Earth Challenge', blurb: 'The planet-scale sprint, live now — a focused push on a real-world goal.', cta: 'Enter the Challenge', img: 'mc-im8', onClick: () => navigate('/earth') },
         { kicker: 'My Org', title: 'Our organisation', blurb: 'Rally a team behind the work.', cta: 'Open My Org', img: 'mc-im4', onClick: () => setOrgOpen(true) },
         { kicker: 'Add Org', title: 'Start something', blurb: 'Bring a new organisation onto the map.', cta: 'Add an org', img: 'mc-im2', onClick: () => navigate('/add') },
       ]
