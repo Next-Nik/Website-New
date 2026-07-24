@@ -22,6 +22,7 @@ import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../../../hooks/useSupabase'
 import { saveCopy, clearCopy, useSiteCopyMeta } from '../../../lib/siteCopy'
 import { downscaleImageToBlob } from '../../../lib/imageDownscale'
+import { useEditMode } from '../../context/EditModeContext'
 
 const clamp = (n) => Math.max(0, Math.min(100, n))
 
@@ -51,6 +52,7 @@ export default function CardPhoto({
   children,
 }) {
   const { refresh } = useSiteCopyMeta()
+  const { editing } = useEditMode()   // founder is editing copy → card must not navigate
   const fileRef = useRef(null)
   const imgRef = useRef(null)
   const natRef = useRef({ w: 0, h: 0 })   // photo's natural pixel size
@@ -173,6 +175,8 @@ export default function CardPhoto({
 
   function handleCardClick() {
     if (moving) return          // in reposition mode a click shouldn't navigate
+    if (editing) return         // founder editing copy — a click on the card (or the
+                                // padding around an EditableText field) must not navigate
     onOpen?.()
   }
 
