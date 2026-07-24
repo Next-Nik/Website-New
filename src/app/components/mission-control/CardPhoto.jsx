@@ -75,6 +75,46 @@ export default function CardPhoto({
     im.src = imgUrl
   }, [imgUrl])
 
+  // ── Self-healing WebP repair (July 2026) ──────────────────────────────
+  // Photos uploaded during the brief WebP-encoding window don't decode on
+  // older iPhone/iPad Safari. The founder's own browser CAN decode them —
+  // so when the founder loads a card whose stored photo is .webp, quietly
+  // fetch it, re-encode to JPEG, upload the twin, and repoint the copy
+  // key. Crop position is preserved (same image, same framing). Runs at
+  // most once per card per mount; visitors are never involved.
+  const repairRef = useRef(false)
+  useEffect(() => {
+    if (!isFounder || !imgUrl || repairRef.current) return
+    if (!/\.webp(\?|#|$)/i.test(imgUrl)) return
+    repairRef.current = true
+    let cancelled = false
+    ;(async () => {
+      try {
+        const resp = await fetch(imgUrl)
+        if (!resp.ok) throw new Error(`fetch ${resp.status}`)
+        const webpBlob = await resp.blob()
+        const file = new File([webpBlob], 'repair.webp', { type: 'image/webp' })
+        const { blob, ext, type } = await downscaleImageToBlob(file, { maxEdge: 1600, quality: 0.82 })
+        if (cancelled) return
+        const path = `cards/${imgId.replace(/[^a-z0-9.-]+/gi, '-')}-${Date.now()}.${ext}`
+        const { error: upErr } = await supabase.storage
+          .from('site-images')
+          .upload(path, blob, { upsert: true, contentType: type })
+        if (upErr) throw upErr
+        const ok = await saveCopy(imgId, path)
+        if (!ok) throw new Error('saveCopy failed')
+        // NOTE: posId is deliberately NOT cleared — same photo, same crop.
+        await refresh()
+        console.info(`[CardPhoto] repaired ${imgId}: webp → ${ext}`)
+      } catch (e) {
+        // Non-fatal: the card keeps its webp until the next founder visit.
+        console.warn(`[CardPhoto] webp repair failed for ${imgId}:`, e?.message)
+        repairRef.current = false
+      }
+    })()
+    return () => { cancelled = true }
+  }, [imgUrl, isFounder, imgId, refresh])
+
   // When the saved position changes (after we persist a drag, or the photo
   // is swapped), drop any live override so we read the saved value.
   useEffect(() => { liveRef.current = null; setLive(null) }, [pos, imgUrl])
