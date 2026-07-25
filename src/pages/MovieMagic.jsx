@@ -109,6 +109,49 @@ const FRAMEWORKS = {
       'Embraces a Worse Lie', 'Destroyed by the Lie',
     ],
   },
+  storycircle: {
+    label: 'Story Circle',
+    credit: 'Dan Harmon · 8 steps',
+    blurb: 'The monomyth compressed: descend into want, pay for it, come home changed.',
+    lanes: [
+      'You · Comfort Zone', 'Need · Something Is Missing', 'Go · Unfamiliar Situation',
+      'Search · Adaptation', 'Find · What They Wanted', 'Take · Pay the Price',
+      'Return · Back to the Familiar', 'Change · Having Changed',
+    ],
+  },
+  positive: {
+    label: 'Positive Change Arc',
+    credit: 'after K.M. Weiland · 6 stages',
+    blurb: 'The lie loses its grip stage by stage until the truth is lived, not just seen.',
+    lanes: [
+      'Believes the Lie', 'The Lie Is Challenged', 'Glimpses the Truth',
+      'Fights for the Truth', 'Embraces the Truth', 'Lives the Truth',
+    ],
+  },
+  disillusionment: {
+    label: 'Disillusionment Arc',
+    credit: 'after K.M. Weiland · 5 stages',
+    blurb: 'A positive arc with a bitter aftertaste: the truth wins and it hurts.',
+    lanes: [
+      'Believes the Lie', 'Encounters the Truth', 'Resists the Bleak Truth',
+      'Accepts the Truth', 'Lives Sadder and Wiser',
+    ],
+  },
+  redemption: {
+    label: 'Redemption Arc',
+    credit: 'Working framework (ours) · 7 stages',
+    blurb: 'Drafted here since no canonical version exists. Revise freely.',
+    lanes: [
+      'The Crime', 'The Haunting', 'The Catalyst of Conscience',
+      'The Confession', 'The Amends', 'The Cost', 'The Grace',
+    ],
+  },
+  grief: {
+    label: 'Grief Arc',
+    credit: 'after Kübler-Ross · 5 stages',
+    blurb: 'For characters shaped by loss. Stages loop and interleave in life · pin accordingly.',
+    lanes: ['Denial', 'Anger', 'Bargaining', 'Depression', 'Acceptance'],
+  },
   custom: {
     label: 'Custom stages',
     credit: 'You define the lanes',
@@ -807,11 +850,22 @@ function MovieMagicWorkspace({ user }) {
             ✎ {sc.name}
           </button>
         ))}
+        <button
+          className={'mm-tab weave' + (state.focus === 'weave' ? ' active' : '')}
+          onClick={() => setState((s) => ({ ...s, focus: 'weave' }))}
+        >
+          ◈ Weave
+        </button>
         <button className="mm-tab new" onClick={() => setNewBoardOpen(true)}>+ New board</button>
         <button className="mm-tab new" onClick={() => setNameModal({ kind: 'script' })}>+ New script</button>
       </nav>
 
-      {showScript ? (
+      {state.focus === 'weave' ? (
+        <WeaveView
+          boards={projectBoards}
+          onOpenBoard={(id) => setState((s) => ({ ...s, activeBoardId: id, focus: 'board' }))}
+        />
+      ) : showScript ? (
         <ScriptView
           script={script}
           boards={projectBoards}
@@ -1393,6 +1447,103 @@ function ImportModal({ onMerge, onClose }) {
   )
 }
 
+/* The Weave · every journey against the same act ruler. The story
+   spine renders on Syd Field's proportions; each character's stages
+   divide the same width evenly, so where a stage falls under the
+   ruler suggests where that stage should land in the acts. */
+function WeaveView({ boards, onOpenBoard }) {
+  const storyBoards = boards.filter((b) => b.kind === 'story')
+  const charBoards = boards.filter((b) => b.kind === 'character')
+  const [spineId, setSpineId] = useState(storyBoards[0] ? storyBoards[0].id : null)
+  const spine = storyBoards.find((b) => b.id === spineId) || storyBoards[0]
+
+  const cellTitle = (notes) => notes.map((n) => '· ' + (n.title || 'Untitled beat')).join('\n')
+
+  return (
+    <main style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '10px 18px 24px', minHeight: 0 }}>
+      <div style={S.boardHeader}>
+        <div>
+          <h1 style={S.boardTitle}>The Weave</h1>
+          <div style={S.boardSub}>Every journey against the same act ruler</div>
+        </div>
+        {storyBoards.length > 1 && (
+          <select className="mm-select" value={spine ? spine.id : ''} onChange={(e) => setSpineId(e.target.value)}>
+            {storyBoards.map((b) => (
+              <option key={b.id} value={b.id}>Spine · {b.name}</option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      <div className="mm-weave-scroll">
+        <div className="mm-weave-grid">
+          {/* act ruler */}
+          <div className="mm-weave-row ruler">
+            <div className="mm-weave-name" />
+            <div className="mm-weave-cells">
+              {SYD_FIELD_LANES.map((lane, i) => (
+                <div key={i} className={'mm-weave-ruler-cell ' + lane.type}>{lane.name}</div>
+              ))}
+            </div>
+          </div>
+
+          {/* story spine */}
+          {spine && (
+            <div className="mm-weave-row">
+              <button className="mm-weave-name" onClick={() => onOpenBoard(spine.id)}>
+                {spine.name}
+                <span className="mm-weave-kind">story spine</span>
+              </button>
+              <div className="mm-weave-cells">
+                {SYD_FIELD_LANES.map((lane, i) => (
+                  <div key={i} className={'mm-weave-cell ' + lane.type} title={cellTitle(spine.laneNotes[i])}>
+                    {spine.laneNotes[i].length > 0 && <span className="mm-weave-count">{spine.laneNotes[i].length}</span>}
+                    {spine.laneNotes[i].slice(0, 2).map((n) => (
+                      <div key={n.id} className="mm-weave-beat">{n.title || 'Untitled beat'}</div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* one row per character */}
+          {charBoards.map((b) => {
+            const lanes = lanesForBoard(b)
+            const meta = FRAMEWORKS[b.framework]
+            return (
+              <div className="mm-weave-row" key={b.id}>
+                <button className="mm-weave-name" onClick={() => onOpenBoard(b.id)}>
+                  {b.name}
+                  <span className="mm-weave-kind">{meta ? meta.label : 'Custom'}</span>
+                </button>
+                <div className="mm-weave-cells">
+                  {lanes.map((lane, i) => (
+                    <div key={i} className="mm-weave-cell even" title={lane.name + '\n' + cellTitle(b.laneNotes[i])}>
+                      <div className="mm-weave-stage">{lane.name}</div>
+                      {b.laneNotes[i].length > 0 && <span className="mm-weave-count">{b.laneNotes[i].length}</span>}
+                      {b.laneNotes[i].slice(0, 1).map((n) => (
+                        <div key={n.id} className="mm-weave-beat">{n.title || 'Untitled beat'}</div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+
+          {charBoards.length === 0 && (
+            <p className="mm-weave-empty">
+              No character journeys yet · use + New board, choose Character journey, and each
+              character gets their own wall. They all appear here, woven against the acts.
+            </p>
+          )}
+        </div>
+      </div>
+    </main>
+  )
+}
+
 /* Deleting a story is guarded twice: a downloadable backup and a
    type-the-name confirmation. The last remaining story cannot go. */
 function DeleteStoryModal({ project, boards, scripts, canDelete, onBackup, onDelete, onClose }) {
@@ -1581,6 +1732,42 @@ const CSS_TEXT = `
   .mm-tab.active { background: #F4EFDF; color: #2F3E46; font-weight: 700; }
   .mm-tab.character { border-top: 3px solid #E5CFFF; }
   .mm-tab.script { border-top: 3px solid #BDEBD6; font-family: 'Courier Prime','Courier New',monospace; }
+  .mm-tab.weave { border-top: 3px solid #FFD9A8; }
+
+  .mm-weave-scroll { flex: 1; overflow: auto; }
+  .mm-weave-grid { min-width: 980px; display: flex; flex-direction: column; gap: 10px; }
+  .mm-weave-row { display: flex; gap: 8px; align-items: stretch; }
+  .mm-weave-name {
+    width: 150px; flex-shrink: 0; text-align: left; border: none; cursor: pointer;
+    background: rgba(255,255,255,.07); color: #E7E2D6; border-radius: 8px; padding: 8px 10px;
+    font-family: inherit; font-size: 13.5px; font-weight: 700; line-height: 1.25;
+  }
+  .mm-weave-name:hover { background: rgba(255,255,255,.14); }
+  .mm-weave-kind { display: block; font-weight: 500; font-size: 13px; opacity: .62; margin-top: 2px; }
+  .mm-weave-cells { flex: 1; display: flex; gap: 4px; }
+  .mm-weave-ruler-cell {
+    background: #E9DFC5; color: #4A4237; border-radius: 4px; padding: 5px 6px;
+    font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; text-align: center;
+  }
+  .mm-weave-ruler-cell.act { flex: 2 1 0; }
+  .mm-weave-ruler-cell.hinge { flex: 1 1 0; background: repeating-linear-gradient(45deg,#E9DFC5,#E9DFC5 8px,#D9C88F 8px,#D9C88F 16px); }
+  .mm-weave-cell {
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.07);
+    border-radius: 4px; padding: 5px 6px; min-height: 46px; position: relative; overflow: hidden;
+  }
+  .mm-weave-cell.act { flex: 2 1 0; }
+  .mm-weave-cell.hinge { flex: 1 1 0; border-style: dashed; border-color: rgba(254,243,162,.35); }
+  .mm-weave-cell.even { flex: 1 1 0; }
+  .mm-weave-stage { font-size: 13px; opacity: .6; line-height: 1.2; margin-bottom: 3px; }
+  .mm-weave-count {
+    position: absolute; top: 4px; right: 5px; background: rgba(254,243,162,.25);
+    border-radius: 999px; padding: 0 6px; font-size: 13px;
+  }
+  .mm-weave-beat {
+    font-family: 'Chalkboard SE','Segoe Print',cursive; font-size: 13px; color: #F4EFDF;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .mm-weave-empty { opacity: .72; font-size: 13.5px; max-width: 520px; }
   .mm-tab.new { background: transparent; border: 1px dashed rgba(255,255,255,.35); border-radius: 6px; }
   .mm-tab.new:hover { background: rgba(255,255,255,.08); }
 
