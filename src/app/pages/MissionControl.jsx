@@ -66,6 +66,8 @@ import AddOverlay                 from '../components/AddOverlay'
 import FocusPanelContent          from '../components/FocusPanelContent'
 import { useActiveFocus }         from '../hooks/useActiveFocus'
 import { useCivDomainScores }     from '../hooks/useDomainIndicators'
+import { useGuideGlance }         from '../hooks/useGuideGlance'
+import { guideCollageSrc }        from '../lib/guideCollage'
 import { resolvePurposePiece }    from '../util/purposePiece'
 
 import HorizonStateGauge   from '../components/mission-control/HorizonStateGauge'
@@ -1129,6 +1131,28 @@ export default function MissionControl() {
         { kicker: 'NextU', title: 'Who you’re becoming', blurb: 'Your seven domains, growing towards the horizon.', cta: 'Open NextU', img: 'mc-im5', onClick: () => navigate('/nextu') },
       ]
 
+  // The Field Guide card's no-photo art: the viewer's own collection drawn as
+  // a sheet of specimen cards (v3 mockup §01). Null until they've collected
+  // something, and null for signed-out visitors — the card then shows its
+  // ordinary gradient, and a founder-set photo still overrides both.
+  const guideGlance = useGuideGlance(data.user?.id)
+  const guideCollage = useMemo(
+    () => {
+      // Belt and braces. This runs during render, and the only error boundary
+      // in the app wraps <BrowserRouter> (App.jsx) — so anything thrown here
+      // takes down every route, and its Refresh button lands back on Mission
+      // Control and throws again. A decorative card image must never be able
+      // to do that: on any failure the card falls back to its gradient.
+      try {
+        return guideCollageSrc(guideGlance)
+      } catch (e) {
+        console.error('[MissionControl] guide collage failed:', e)
+        return null
+      }
+    },
+    [guideGlance],
+  )
+
   const nextCards = isCiv
     ? [
         { kicker: 'Earth Challenge', title: 'Join the Earth Challenge', blurb: 'The planet-scale sprint, live now — a focused push on a real-world goal.', cta: 'Enter the Challenge', img: 'mc-im8', onClick: () => navigate('/earth') },
@@ -1142,7 +1166,7 @@ export default function MissionControl() {
 
   const pathCards = isCiv
     ? [
-        { kicker: 'Your Guide', title: 'The company you keep', blurb: 'Collect the organisations you meet, learn who they are, find where you can help.', cta: 'Open your field guide', img: 'mc-im3', onClick: () => navigate('/guide') },
+        { kicker: 'Your Guide', title: 'The company you keep', blurb: 'Collect the organisations you meet, learn who they are, find where you can help.', cta: 'Open your field guide', img: 'mc-im3', fallbackSrc: guideCollage, onClick: () => navigate('/guide') },
         { kicker: 'Search', title: 'Find anything', blurb: 'People, orgs, missions, moments across the planet.', cta: 'Search', img: 'mc-im4', onClick: () => navigate('/search') },
       ]
     : [
@@ -1171,6 +1195,7 @@ export default function MissionControl() {
         imgUrl={imgUrl}
         pos={pos}
         fallbackClass={c.img}
+        fallbackSrc={c.fallbackSrc}
         isFounder={isFounderUser}
         label={c.title}
         onOpen={c.onClick}

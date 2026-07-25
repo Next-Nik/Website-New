@@ -101,6 +101,14 @@ function fmtMet(ts) {
   return `${day} ${mon} ’${yr}`
 }
 
+// The logbox spells the year out — a ledger line, not a card stamp.
+function fmtLogDate(ts) {
+  if (!ts) return null
+  const d = new Date(ts)
+  if (Number.isNaN(d.getTime())) return null
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
 // Fire-and-forget warm ping (server verifies + throttles).
 async function firePing(actorId, kind) {
   try {
@@ -116,6 +124,73 @@ async function firePing(actorId, kind) {
 
 const brassTint = 'rgba(169,116,63,0.07)'
 const brassEdgeSoft = 'rgba(169,116,63,0.35)'
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Loading the Atlas
+// ═══════════════════════════════════════════════════════════════════════════
+
+const ACTOR_PAGE = 1000
+
+const ACTOR_COLS =
+  'id, slug, name, tagline, short_description, description, domains, scale, mission_statement, profile_owner'
+
+// "That column doesn't exist" — migration 179 hasn't run — as distinct from
+// any other failure. 42703 is Postgres undefined_column, PGRST204 is
+// PostgREST's unknown-column code.
+function isMissingColumn(error) {
+  if (!error) return false
+  if (error.code === '42703' || error.code === 'PGRST204') return true
+  return /column .* does not exist|could not find the .* column/i.test(error.message || '')
+}
+
+// Every live actor, in name order, paged. v3 used a flat .limit(1000): past a
+// thousand live actors the habitat totals ("5 of 11 collected") and the
+// not-yet-met counts silently under-reported, with nothing on screen to say
+// so. Paging keeps the counts honest as the Atlas grows.
+//
+// `band_code` (migration 179) is requested on the first attempt and dropped
+// if the column isn't there yet, so a database still on 178 renders codes
+// from the client-side fallback instead of failing the whole page.
+async function fetchLiveActors(supabase) {
+  let withBandCode = true
+  const rows = []
+
+  for (let from = 0; ; from += ACTOR_PAGE) {
+    const cols = withBandCode ? `${ACTOR_COLS}, band_code` : ACTOR_COLS
+    const { data, error } = await supabase
+      .from('nextus_actors')
+      .select(cols)
+      .eq('status', 'live')
+      // `id` is the tiebreaker, and it is not optional. Offset paging over a
+      // non-unique sort key has no defined order for equal names, and each
+      // page is a separate query — so two orgs sharing a name either side of a
+      // page boundary could come back in both pages (duplicate React keys,
+      // inflated "x of y collected") or in neither (an org silently absent
+      // from the guide). Duplicate names are entirely possible in an Atlas fed
+      // by a public /add flow.
+      .order('name')
+      .order('id')
+      .range(from, from + ACTOR_PAGE - 1)
+
+    if (error) {
+      // Only a missing band_code column earns a retry — that's the pre-179
+      // case. Retrying on any error would let one blip drop the whole load
+      // onto client-derived codes, which would then collide with the
+      // persisted codes already read from earlier pages.
+      if (withBandCode && isMissingColumn(error)) {
+        withBandCode = false
+        from -= ACTOR_PAGE       // `continue` runs the increment; net zero
+        continue
+      }
+      throw error
+    }
+
+    rows.push(...(data || []))
+    if (!data || data.length < ACTOR_PAGE) break
+  }
+
+  return rows
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Page
@@ -143,14 +218,8 @@ export function FieldGuidePage() {
     async function load() {
       setLoading(true); setLoadError(false)
       try {
-        const { data: actorRows, error: actorErr } = await supabase
-          .from('nextus_actors')
-          .select('id, slug, name, tagline, short_description, description, domains, scale, mission_statement, profile_owner')
-          .eq('status', 'live')
-          .order('name')
-          .limit(1000)
+        const actorRows = await fetchLiveActors(supabase)
         if (cancelled) return
-        if (actorErr) throw actorErr
         setActors(actorRows || [])
 
         try {
@@ -184,16 +253,31 @@ export function FieldGuidePage() {
     return () => { cancelled = true }
   }, [user?.id, reloadKey])
 
-  // Stable Nº and banding codes across the whole live Atlas (name order).
+  // Banding codes, actorId → 'REGE 1'.
+  //
+  // v3 also carried a dex number (Nº 012) derived from alphabetical position.
+  // That is gone (decision, 25 July): a number implies a fixed place in a
+  // series, and this one moved every time an unrelated org was added — so it
+  // promised a permanence it could not keep. Organisations are listed
+  // alphabetically and carry no number. The champions ring is the ordered
+  // thing, and the user orders it.
+  //
+  // The code itself stays: it identifies without ranking. Read from
+  // nextus_actors.band_code where migration 179 has run, where it was
+  // assigned once and never reshuffled. The client-side derivation below is
+  // the pre-179 fallback and shares bandRoot() with the SQL function — its
+  // collision counter is only correct across the full name-ordered set,
+  // which is why persisting it was worth a migration.
   const codes = useMemo(() => {
     const byId = new Map()
     const seen = new Map()
-    actors.forEach((a, i) => {
+    for (const a of actors) {
+      if (a.band_code) { byId.set(a.id, a.band_code); continue }
       const root = bandRoot(a.name)
       const n = (seen.get(root) || 0) + 1
       seen.set(root, n)
-      byId.set(a.id, { dex: i + 1, code: `${root} ${n}` })
-    })
+      byId.set(a.id, `${root} ${n}`)
+    }
     return byId
   }, [actors])
 
@@ -232,6 +316,28 @@ export function FieldGuidePage() {
     [metActors, guide],
   )
 
+  // Widest reach first — the sort you use to see how far your company
+  // actually carries. Ties fall back to name so the order is stable.
+  const scaleList = useMemo(
+    () => [...metActors].sort((x, y) => {
+      const d = (SCALE_BUCKET[y.scale] || 0) - (SCALE_BUCKET[x.scale] || 0)
+      return d !== 0 ? d : String(x.name || '').localeCompare(String(y.name || ''))
+    }),
+    [metActors],
+  )
+
+  // Closest relationship first: Companion down to Found.
+  const tierList = useMemo(
+    () => [...metActors].sort((x, y) => {
+      const d = LADDER.indexOf(guide.get(y.id)?.tier || 'found')
+              - LADDER.indexOf(guide.get(x.id)?.tier || 'found')
+      return d !== 0 ? d : String(x.name || '').localeCompare(String(y.name || ''))
+    }),
+    [metActors, guide],
+  )
+
+  const flatList = sort === 'scale' ? scaleList : sort === 'tier' ? tierList : recentList
+
   const championActors = useMemo(
     () => champs.champions
       .map(c => actors.find(a => a.id === c.actor_id))
@@ -246,15 +352,30 @@ export function FieldGuidePage() {
   }
 
   // ── Local mutations ──────────────────────────────────────────────────────
-  function handleNoteSaved(actorId, note, isNew) {
+  function handleNoteSaved(actorId, note, isNew, prov = {}) {
+    const { metWhere = null, metVia = null } = prov
     setGuide(prev => {
       const next = new Map(prev)
       const entry = next.get(actorId)
-      if (entry) next.set(actorId, { ...entry, note, tier: entry.tier === 'found' ? 'known' : entry.tier })
-      else next.set(actorId, { tier: 'known', note, isChampion: false, firstMetAt: Date.now() })
+      if (entry) next.set(actorId, { ...entry, note, metWhere, metVia, tier: entry.tier === 'found' ? 'known' : entry.tier })
+      else next.set(actorId, { tier: 'known', note, isChampion: false, firstMetAt: Date.now(), metWhere, metVia })
       return next
     })
     if (isNew) firePing(actorId, 'added_to_guide')
+  }
+
+  // Move a champion one place within the ring AS RENDERED. The displayed list
+  // can be a subset of the stored ring (an org that self-removes leaves its
+  // champion row behind, migration 166), so the new order is computed from
+  // championActors — what the user is actually looking at — and handed to the
+  // hook whole, rather than asking it to swap by index into the stored list.
+  async function handleChampionMove(actorId, delta) {
+    const ids = championActors.map(a => a.id)
+    const from = ids.indexOf(actorId)
+    const to = from + delta
+    if (from < 0 || to < 0 || to >= ids.length) return
+    ;[ids[from], ids[to]] = [ids[to], ids[from]]
+    await champs.reorder(ids)
   }
 
   async function handleChampionToggle(actorId) {
@@ -339,6 +460,8 @@ export function FieldGuidePage() {
               capMsg={capMsg}
               domainOf={domainOf}
               onOpen={(a) => setOpenActor(a)}
+              canOrder={champs.canOrder}
+              onMove={handleChampionMove}
             />
 
             {/* ── My org banner ── */}
@@ -349,7 +472,7 @@ export function FieldGuidePage() {
             {/* ── Sort ── */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '4px 0 6px', flexWrap: 'wrap' }}>
               <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase', color: at.ghost }}>Sort</span>
-              {[['domain', 'Domain'], ['recent', 'Recently met']].map(([k, label]) => (
+              {[['domain', 'Domain'], ['scale', 'Scale'], ['tier', 'Tier'], ['recent', 'Recently met']].map(([k, label]) => (
                 <button key={k} type="button" onClick={() => setSort(k)}
                   style={{
                     ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.08em',
@@ -380,7 +503,7 @@ export function FieldGuidePage() {
               ))
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(176px, 1fr))', gap: '12px', marginTop: '18px' }}>
-                {recentList.map(a => (
+                {flatList.map(a => (
                   <GuideCard key={a.id} actor={a} entry={guide.get(a.id)} code={codes.get(a.id)} domain={domainOf(a)} onOpen={() => setOpenActor(a)} />
                 ))}
                 <ScoutCard onClick={() => navigate('/add')} />
@@ -409,6 +532,10 @@ export function FieldGuidePage() {
       {/* ── Specimen overlay ── */}
       {openActor && (
         <SpecimenOverlay
+          // Keyed per actor: the overlay seeds its note and Where/Via drafts
+          // from `entry` on mount, so reusing the instance for a different
+          // specimen would carry one org's draft onto another's card.
+          key={openActor.id}
           actor={openActor}
           entry={guide.get(openActor.id) || null}
           code={codes.get(openActor.id)}
@@ -431,8 +558,29 @@ export function FieldGuidePage() {
 // Champions ring
 // ═══════════════════════════════════════════════════════════════════════════
 
-function ChampionsRing({ championActors, count, cap, capMsg, domainOf, onOpen }) {
+// The champions ring — the one place in the guide where sequence carries
+// meaning, and the only ordering the user sets by hand. Organisations
+// themselves are alphabetical and unnumbered; a ring is a considered order,
+// so it gets an explicit arrange mode rather than a drag surface: real
+// buttons, keyboard-reachable, no pointer gymnastics on a phone.
+function ChampionsRing({ championActors, count, cap, capMsg, domainOf, onOpen, canOrder, onMove }) {
   const empty = Math.max(0, cap - count)
+  const [arranging, setArranging] = useState(false)
+  const canArrange = canOrder && championActors.length > 1
+
+  // Leaving arrange mode when the ring empties out avoids a stuck state.
+  useEffect(() => {
+    if (arranging && championActors.length < 2) setArranging(false)
+  }, [arranging, championActors.length])
+
+  const arrowStyle = (enabled) => ({
+    ...mono, fontSize: '13px', lineHeight: 1, padding: '2px 5px', cursor: enabled ? 'pointer' : 'not-allowed',
+    color: enabled ? at.brass : at.ghost,
+    background: enabled ? brassTint : 'transparent',
+    border: `1px solid ${enabled ? brassEdgeSoft : at.verdigrisEdge}`,
+    borderRadius: '4px',
+  })
+
   return (
     <div style={{
       position: 'relative', borderRadius: '14px', padding: '16px 18px', marginBottom: '16px',
@@ -441,14 +589,21 @@ function ChampionsRing({ championActors, count, cap, capMsg, domainOf, onOpen })
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '10px' }}>
         <span style={{ ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: at.brass }}>★ Your champions</span>
-        <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: at.ghost }}>{count} of {cap} · capped</span>
+        <span style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+          {canArrange && (
+            <button type="button" onClick={() => setArranging(v => !v)}
+              style={{ ...mono, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase', color: at.verdigris, background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}>
+              {arranging ? 'Done' : 'Arrange'}
+            </button>
+          )}
+          <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: at.ghost }}>{count} of {cap} · capped</span>
+        </span>
       </div>
-      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
-        {championActors.map(a => {
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+        {championActors.map((a, i) => {
           const d = domainOf(a)
-          return (
-            <button key={a.id} type="button" onClick={() => onOpen(a)} title={a.name}
-              style={{ position: 'relative', border: 'none', background: 'transparent', padding: 0, cursor: 'pointer' }}>
+          const seal = (
+            <>
               <span style={{
                 width: '42px', height: '42px', borderRadius: '50%', display: 'grid', placeItems: 'center',
                 fontFamily: display.fontFamily, fontWeight: 600, fontSize: '17px', color: '#fff',
@@ -458,10 +613,32 @@ function ChampionsRing({ championActors, count, cap, capMsg, domainOf, onOpen })
                 {String(a.name || '?').charAt(0).toUpperCase()}
               </span>
               <span aria-hidden="true" style={{ position: 'absolute', top: '-7px', right: '-3px', fontSize: '13px', color: at.brass }}>★</span>
-            </button>
+            </>
+          )
+
+          if (!arranging) {
+            return (
+              <button key={a.id} type="button" onClick={() => onOpen(a)} title={a.name}
+                style={{ position: 'relative', border: 'none', background: 'transparent', padding: 0, cursor: 'pointer' }}>
+                {seal}
+              </button>
+            )
+          }
+
+          return (
+            <span key={a.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+              <span style={{ position: 'relative', display: 'inline-block' }} title={a.name}>{seal}</span>
+              <span style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
+                <button type="button" disabled={i === 0} onClick={() => onMove(a.id, -1)}
+                  aria-label={`Move ${a.name} earlier`} style={arrowStyle(i > 0)}>‹</button>
+                <span style={{ ...mono, fontSize: '13px', color: at.ghost, minWidth: '12px', textAlign: 'center' }}>{i + 1}</span>
+                <button type="button" disabled={i === championActors.length - 1} onClick={() => onMove(a.id, 1)}
+                  aria-label={`Move ${a.name} later`} style={arrowStyle(i < championActors.length - 1)}>›</button>
+              </span>
+            </span>
           )
         })}
-        {Array.from({ length: empty }).map((_, i) => (
+        {!arranging && Array.from({ length: empty }).map((_, i) => (
           <span key={`e${i}`} aria-hidden="true" style={{
             width: '42px', height: '42px', borderRadius: '50%',
             border: `1.5px dashed ${brassEdgeSoft}`, display: 'grid', placeItems: 'center',
@@ -473,6 +650,8 @@ function ChampionsRing({ championActors, count, cap, capMsg, domainOf, onOpen })
         The five to ten impact-makers you orbit most. We become the average of the company we
         keep, so choose these on purpose. Their moves rise to the top of your{' '}
         <Link to="/tuned-in" style={{ color: at.verdigris }}>Tuned In</Link> feed.
+        {canArrange && !arranging && ' The order is yours — arrange them however you hold them.'}
+        {arranging && ' Nearest first. Nothing here is scored; this is just the order you keep them in.'}
       </div>
       {capMsg && (
         <div style={{ ...atText.caption, color: '#8A3030', marginTop: '8px' }}>{capMsg}</div>
@@ -551,7 +730,7 @@ function HabitatSection({ domain, met, unmetCount, guide, codes, onOpen }) {
           <GuideCard key={a.id} actor={a} entry={guide.get(a.id)} code={codes.get(a.id)} domain={domain} onOpen={() => onOpen(a)} />
         ))}
         {Array.from({ length: teasers }).map((_, i) => (
-          <UnmetCard key={`u${i}`} domain={domain}
+          <UnmetCard key={`u${i}`}
             more={i === teasers - 1 && unmetCount > teasers ? unmetCount - teasers : 0}
             onClick={() => navigate('/explore')} />
         ))}
@@ -622,10 +801,6 @@ function GuideCard({ actor, entry, code, domain, onOpen }) {
           <span aria-hidden="true" style={{ position: 'absolute', top: '3px', right: '3px', color: '#fff', fontSize: '13px', zIndex: 1 }}>★</span>
         </>
       )}
-      <span style={{ position: 'absolute', top: '10px', right: champ ? '40px' : '12px', ...mono, fontSize: '13px', letterSpacing: '0.1em', color: at.ghost }}>
-        Nº {String(code?.dex || 0).padStart(3, '0')}
-      </span>
-
       <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
         <span style={{
           width: '38px', height: '38px', borderRadius: '50%', display: 'grid', placeItems: 'center', flexShrink: 0,
@@ -636,7 +811,7 @@ function GuideCard({ actor, entry, code, domain, onOpen }) {
         </span>
         <div style={{ minWidth: 0 }}>
           <div style={{ ...display, fontWeight: 600, fontSize: '17px', lineHeight: 1.08, color: at.text }}>{actor.name}</div>
-          <div style={{ ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: at.ghost }}>{code?.code}</div>
+          <div style={{ ...mono, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: at.ghost }}>{code}</div>
         </div>
       </div>
 
@@ -669,6 +844,9 @@ function GuideCard({ actor, entry, code, domain, onOpen }) {
           ...mono, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: at.ghost,
         }}>
           <span>First met · {met}</span>
+          {/* The life-list's When / Where pair. Only where it was recorded —
+              an encounter with no provenance shows the date alone. */}
+          {entry?.metWhere && <span>via {entry.metWhere}</span>}
         </div>
       )}
     </div>
@@ -679,7 +857,9 @@ function GuideCard({ actor, entry, code, domain, onOpen }) {
 // Not-yet-met silhouette + scout
 // ═══════════════════════════════════════════════════════════════════════════
 
-function UnmetCard({ domain, more, onClick }) {
+// A not-yet-met slot carries no domain colour on purpose — an unmet specimen
+// is a silhouette, and the habitat is already named in the running head above.
+function UnmetCard({ more, onClick }) {
   return (
     <div role="button" tabIndex={0} onClick={onClick}
       onKeyDown={e => { if (e.key === 'Enter') onClick() }}
@@ -736,6 +916,11 @@ function SpecimenOverlay({ actor, entry, code, domain, user, isChampion, capMsg,
   const [noteBusy, setNoteBusy] = useState(false)
   const [noteErr, setNoteErr] = useState(false)
 
+  // The logbook's Where / Via — the user's own words, like the location
+  // column in a birder's journal. Optional: a blank pair still collects.
+  const [whereDraft, setWhereDraft] = useState(entry?.metWhere || '')
+  const [viaDraft, setViaDraft] = useState(entry?.metVia || '')
+
   const [sug, setSug] = useState(null)          // my existing suggestion row
   const [sugDraft, setSugDraft] = useState('')
   const [sugEditing, setSugEditing] = useState(false)
@@ -745,6 +930,7 @@ function SpecimenOverlay({ actor, entry, code, domain, user, isChampion, capMsg,
   const tier = entry?.tier || 'found'
   const rank = LADDER.indexOf(tier)
   const horizon = DOMAIN_HORIZON_GOALS[domain?.slug] || null
+  const logDate = fmtLogDate(entry?.firstMetAt)
 
   useEffect(() => {
     let cancelled = false
@@ -767,13 +953,34 @@ function SpecimenOverlay({ actor, entry, code, domain, user, isChampion, capMsg,
     if (!trimmed || noteBusy || !user) return
     setNoteBusy(true); setNoteErr(false)
     const isNew = !entry?.note
-    const { error } = await supabase
+
+    const metWhere = whereDraft.trim() || null
+    const metVia = viaDraft.trim() || null
+    const base = {
+      user_id: user.id, actor_id: actor.id, note: trimmed,
+      updated_at: new Date().toISOString(),
+    }
+    const opts = { onConflict: 'user_id,actor_id' }
+
+    // Provenance columns arrive with migration 179. If they aren't there,
+    // save the note anyway — losing the collect act over an optional
+    // location line would be the wrong trade.
+    let stored = true
+    let { error } = await supabase
       .from('actor_field_notes')
-      .upsert({ user_id: user.id, actor_id: actor.id, note: trimmed, updated_at: new Date().toISOString() }, { onConflict: 'user_id,actor_id' })
+      .upsert({ ...base, met_where: metWhere, met_via: metVia }, opts)
+    if (error) {
+      stored = false
+      ;({ error } = await supabase.from('actor_field_notes').upsert(base, opts))
+    }
+
     setNoteBusy(false)
     if (error) { setNoteErr(true); return }
     setNoteEditing(false)
-    onNoteSaved(actor.id, trimmed, isNew)
+    // Only report provenance the database actually took. Passing it after the
+    // stripped-down retry would show a Where/Via in the logbox that quietly
+    // disappears on the next reload.
+    onNoteSaved(actor.id, trimmed, isNew, stored ? { metWhere, metVia } : {})
   }
 
   async function saveSuggestion() {
@@ -810,7 +1017,7 @@ function SpecimenOverlay({ actor, entry, code, domain, user, isChampion, capMsg,
           background: `radial-gradient(110% 80% at 28% 12%, rgba(255,255,255,0.28), transparent 55%), ${sealGradient(color)}`,
         }}>
           <span style={{ position: 'absolute', top: '12px', left: '14px', ...mono, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.9)' }}>
-            Nº {String(code?.dex || 0).padStart(3, '0')} · {code?.code}
+            {code}
           </span>
           {isChampion && (
             <span style={{
@@ -847,6 +1054,46 @@ function SpecimenOverlay({ actor, entry, code, domain, user, isChampion, capMsg,
             )}
             <ScaleDots scale={actor.scale} />
           </div>
+
+          {/* ── The log box ──────────────────────────────────────────────
+              The birder's logbook entry, ruled: when you first crossed
+              paths, where you were, and what it was. Where and Via are
+              recorded at collect time (migration 179); encounters that
+              predate provenance, or that happened by watching rather than
+              by writing a note, show the date and say plainly that the
+              rest wasn't kept. The guide does not reconstruct a "where"
+              from a timestamp. */}
+          {logDate && (
+            <div style={{
+              border: '1px solid rgba(38,36,32,0.22)', borderRadius: '2px',
+              background: at.object, marginBottom: '11px',
+            }}>
+              {[
+                ['First met', logDate],
+                ['Where', entry?.metWhere],
+                ['Via', entry?.metVia],
+              ].filter(([, v]) => v).map(([label, value], i, rows) => (
+                <div key={label} style={{
+                  display: 'flex',
+                  borderBottom: i === rows.length - 1 ? 'none' : '1px solid rgba(38,36,32,0.14)',
+                }}>
+                  <span style={{
+                    ...mono, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase',
+                    color: at.ghost, padding: '5px 8px 4px', flex: '0 0 84px',
+                    borderRight: '1px solid rgba(38,36,32,0.14)',
+                  }}>{label}</span>
+                  <span style={{ ...bodyFont, fontSize: '13px', color: at.text, padding: '4px 9px', flex: 1 }}>
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+          {logDate && !entry?.metWhere && !entry?.metVia && (
+            <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.1em', color: at.ghost, margin: '-6px 0 12px' }}>
+              Where and how weren’t recorded for this one.
+            </div>
+          )}
 
           {/* mission slot */}
           {actor.mission_statement ? (
@@ -951,6 +1198,27 @@ function SpecimenOverlay({ actor, entry, code, domain, user, isChampion, capMsg,
                 <textarea value={noteDraft} onChange={e => setNoteDraft(e.target.value)} rows={2}
                   placeholder="Who are they? One line, your words."
                   style={{ ...bodyFont, fontSize: '14px', lineHeight: 1.5, color: at.text, background: at.ground, border: `1px solid ${at.verdigrisEdge}`, borderRadius: '6px', padding: '8px 10px', width: '100%', boxSizing: 'border-box', resize: 'vertical', outline: 'none' }} />
+
+                {/* Where / Via — the logbook's location columns. Optional,
+                    and the user's own words: a birder writes their own
+                    location, the app doesn't stamp one on for them. Left
+                    blank, the logbox simply carries the date. */}
+                <div style={{ display: 'flex', gap: '8px', marginTop: '6px', flexWrap: 'wrap' }}>
+                  {[
+                    ['Where', whereDraft, setWhereDraft, 'The Map · Nature rail'],
+                    ['Via', viaDraft, setViaDraft, 'What crossed your path'],
+                  ].map(([label, value, setValue, placeholder]) => (
+                    <label key={label} style={{ flex: '1 1 150px', minWidth: 0 }}>
+                      <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: at.ghost, display: 'block', marginBottom: '3px' }}>
+                        {label}
+                      </span>
+                      <input type="text" value={value} onChange={e => setValue(e.target.value)}
+                        placeholder={placeholder}
+                        style={{ ...bodyFont, fontSize: '13px', color: at.text, background: at.ground, border: `1px solid ${at.verdigrisEdge}`, borderRadius: '6px', padding: '6px 9px', width: '100%', boxSizing: 'border-box', outline: 'none' }} />
+                    </label>
+                  ))}
+                </div>
+
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '6px' }}>
                   <button type="button" onClick={saveNote} disabled={!noteDraft.trim() || noteBusy}
                     style={{

@@ -36,6 +36,15 @@ const COMPANION_MIN_SPAN_DAYS = 60
 // Supabase .in() is happiest with bounded lists; chunk defensively.
 const IN_CHUNK = 200
 
+// "That column doesn't exist" — migration 179 hasn't run — as distinct from
+// any other failure. 42703 is Postgres undefined_column, PGRST204 is
+// PostgREST's unknown-column code.
+function isMissingColumn(error) {
+  if (!error) return false
+  if (error.code === '42703' || error.code === 'PGRST204') return true
+  return /column .* does not exist|could not find the .* column/i.test(error.message || '')
+}
+
 function chunk(list, size = IN_CHUNK) {
   const out = []
   for (let i = 0; i < list.length; i += size) out.push(list.slice(i, i + size))
@@ -57,7 +66,7 @@ async function selectIn(supabase, table, columns, column, ids) {
 
 /**
  * loadGuideState(supabase, userId)
- *   → Map<actorId, { tier, note, isChampion, firstMetAt }>
+ *   → Map<actorId, { tier, note, isChampion, firstMetAt, metVia, metWhere }>
  *
  * tier ∈ 'known' | 'following' | 'allied' | 'companion'. Actors with no
  * entry are 'found' (not met). `note` is the user's own field note text
@@ -68,6 +77,13 @@ async function selectIn(supabase, table, columns, column, ids) {
  * the capped champions ring (actor_champions), not a rung. `firstMetAt`
  * is the earliest timestamp across the user's note / watch / champion
  * rows — the "first met" stamp on the guide card; null when unknown.
+ *
+ * `metWhere` and `metVia` are the encounter's provenance — the surface the
+ * user was on and what specifically crossed their path — recorded on the
+ * field note at collect time (migration 179). Both null for encounters that
+ * predate provenance, and for anyone met by watching or championing rather
+ * than by writing a note. The logbox omits what it does not know; it never
+ * reconstructs a "where" from a timestamp.
  */
 export async function loadGuideState(supabase, userId) {
   const state = new Map()
@@ -93,16 +109,39 @@ export async function loadGuideState(supabase, userId) {
   }
 
   // ── known: a field note exists ──────────────────────────────────────
+  // Provenance (met_via / met_where, migration 179) feeds the ruled
+  // Date / Where / Via logbox on the specimen card. Requested in a first
+  // attempt and dropped on error, so a database still on 178 keeps its
+  // field notes instead of losing the whole source to a missing column.
   try {
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('actor_field_notes')
-      .select('actor_id, note, created_at')
+      .select('actor_id, note, created_at, met_via, met_where')
       .eq('user_id', userId)
-    if (error) throw error
+
+    // Retry stripped-down ONLY when the columns are genuinely absent. Any
+    // other error is thrown so it lands in the catch below as a single
+    // failure, instead of firing a second doomed round trip against the same
+    // table and burying the cause.
+    if (error && isMissingColumn(error)) {
+      const fallback = await supabase
+        .from('actor_field_notes')
+        .select('actor_id, note, created_at')
+        .eq('user_id', userId)
+      if (fallback.error) throw fallback.error
+      data = fallback.data
+    } else if (error) {
+      throw error
+    }
+
     for (const row of data || []) {
       lift(row.actor_id, 'known')
       const entry = state.get(row.actor_id)
-      if (entry) entry.note = row.note
+      if (entry) {
+        entry.note = row.note
+        entry.metVia = row.met_via || null
+        entry.metWhere = row.met_where || null
+      }
       stampMet(row.actor_id, row.created_at)
     }
   } catch {

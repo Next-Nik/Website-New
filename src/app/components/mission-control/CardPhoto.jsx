@@ -145,6 +145,7 @@ export default function CardPhoto({
   imgUrl,
   pos,
   fallbackClass,
+  fallbackSrc,
   isFounder,
   label,
   onOpen,
@@ -168,8 +169,16 @@ export default function CardPhoto({
 
   // A photo that 404s or fails to decode falls back to the gradient, not to
   // a blank frame. One less way for this card to present as empty.
+  //
+  // `fallbackSrc` lets a card supply its own no-photo art instead of the flat
+  // gradient — used by the Field Guide card, which draws the viewer's own
+  // collection as a sheet of specimen cards (see lib/guideCollage.js). It must
+  // be a data URI or URL for THIS SAME <img>, never markup: the one rule this
+  // file cannot give up is a single rendering path for every state. A
+  // founder-set photo still wins over it, and if it's null we're back to the
+  // gradient, so no card can lose its art by supplying one.
   const showPhoto = !!imgUrl && !failed
-  const src = showPhoto ? imgUrl : gradientSrc(fallbackClass)
+  const src = showPhoto ? imgUrl : (fallbackSrc || gradientSrc(fallbackClass))
 
   // A new URL deserves a fresh attempt.
   useEffect(() => { setFailed(false) }, [imgUrl])
@@ -356,7 +365,18 @@ export default function CardPhoto({
               natRef.current = { w: el.naturalWidth || 0, h: el.naturalHeight || 0 }
             }}
             onError={() => { if (showPhoto) setFailed(true) }}
-            style={{ objectPosition: showPhoto ? effectivePos : 'center' }}
+            style={{
+              objectPosition: showPhoto ? effectivePos : 'center',
+              // Card-supplied fallback art fills the frame instead of being
+              // cropped to cover it. The frame is 150px tall on a fluid
+              // width, so its aspect ratio swings from about 1.6 to 4.0 and
+              // `cover` would crop a composition differently at every
+              // breakpoint. Filling hands the aspect decision to the SVG's
+              // own preserveAspectRatio, which centres the artwork and
+              // bleeds its background — see lib/guideCollage.js. Photos and
+              // the flat gradient keep `cover` from the stylesheet.
+              ...(!showPhoto && fallbackSrc ? { objectFit: 'fill' } : null),
+            }}
           />
           <span className="mc-card-scrim" aria-hidden="true" />
         </div>
