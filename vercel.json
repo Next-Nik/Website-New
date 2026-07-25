@@ -49,6 +49,14 @@
       "destination": "/api/nextsteps-path"
     },
     {
+      "source": "/api/nextsteps-route",
+      "destination": "/api/nextsteps-route"
+    },
+    {
+      "source": "/api/nextsteps-route-draft",
+      "destination": "/api/nextsteps-route-draft"
+    },
+    {
       "source": "/api/nextsteps-actors-sample",
       "destination": "/api/nextsteps-actors-sample"
     },

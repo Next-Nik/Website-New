@@ -1,59 +1,68 @@
-// NEXTUS: NEXTSTEPS — The Navigation Tool
+// NEXTUS: NEXTSTEPS — The Path Tool
 // src/tools/nextsteps/NextSteps.jsx
 //
-// The five phases of NextSteps run inside this one route. Phases:
-//   1. Arrival         — one warm orienting line, one open input
-//   2. Reflection      — the three-beat reframe runs (or board-mirror for diffuse)
-//   3. Domain Landing  — toward-sentence anchored in domain, Horizon Goal,
-//                        "not first, not alone" signal; Track created here
-//   4. Path            — 2–3 ordered Steps, each routable
-//   5. Loop            — the returning surface: existing tracks, advancement
+// "NextSteps is the tool that turns caring into a path."
+// (Foundation: docs/NextSteps_Conceptual_Foundation_v2_0_1.md)
 //
-// The phase the person lands in depends on:
-//   - No tracks for this user        → Phase 1 (Arrival)
-//   - One or more tracks exist       → Phase 5 (Loop) with option to start new
-//   - A specific track in URL state  → that track's current phase (3, 4, or 5)
+// ─── A NOTE ON THE WORD "PHASE" ──────────────────────────────────────────────
+// In v2.0 "phase" became a load-bearing domain object: one node in the ordered
+// ROUTE between a person's Now and their Horizon, defined by its exit condition
+// and never by time. This file used to call its own screens "phases" too, which
+// would now collide with the real thing in every file and every conversation.
+// The screens are STAGES, and they live in ./stages/. Phase means the route
+// object and nothing else.
+// ─────────────────────────────────────────────────────────────────────────────
 //
-// (Foundation: docs/NextSteps_Conceptual_Foundation_v1_1.md)
+// The stages, all inside this one route:
+//   1. Arrival     — one warm orienting line, one open input
+//   2. Reflection  — the three-beat reframe runs (or board-mirror for diffuse)
+//   3. Landing     — toward-sentence anchored in a domain; the Track is created
+//   4. Route       — the AI drafts the phases; the PERSON ratifies them
+//   5. Path        — the steps inside the current phase; the walking
+//   6. Loop        — the returning surface: your tracks, advanced
+//
+// Stage 4 is new in v2.0 and it is the one that closes the handstand gap. The
+// platform already knew the Horizon, the Now, and the next step, and had
+// nothing to say about the middle. The route is the middle.
 
 import { useState, useEffect } from 'react'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { ROUTES } from '../../constants/routes'
-import { ArrivalReflection } from './phases/ArrivalReflection'
-import { DomainLanding } from './phases/DomainLanding'
-import { PathView } from './phases/PathView'
-import { TrackLoop } from './phases/TrackLoop'
+import { ArrivalReflection } from './stages/ArrivalReflection'
+import { DomainLanding } from './stages/DomainLanding'
+import { RouteDraft } from './stages/RouteDraft'
+import { PathView } from './stages/PathView'
+import { TrackLoop } from './stages/TrackLoop'
 import { serif, body, sc } from '../../lib/designTokens'
 import { authedFetch } from '../../lib/actorCallsClient'
 
 export function NextStepsPage() {
   const { user, loading } = useAuth()
 
-  // Phase machine state
-  // 'loading'       — figuring out where to land
-  // 'arrival'       — Phase 1+2 conversation (the ArrivalReflection component
-  //                   handles both internally; reflection lands when the
-  //                   structured payload arrives)
-  // 'landing'       — Phase 3, after a fresh Reflection
-  // 'path'          — Phase 4, viewing or generating the path
-  // 'loop'          — Phase 5, the returning surface
-  const [phase, setPhase] = useState('loading')
+  // Stage machine:
+  //   'loading'  — figuring out where to land
+  //   'arrival'  — the conversation (arrival + reflection are one component)
+  //   'landing'  — the domain landing, after a fresh Reflection
+  //   'route'    — the drafted route, awaiting the person's ratification
+  //   'path'     — the steps inside the current phase
+  //   'loop'     — the returning surface
+  const [stage, setStage] = useState('loading')
 
-  // The active Track (when in Phase 3, 4, or returning to one from Phase 5)
   const [activeTrack, setActiveTrack] = useState(null)
-
-  // All the user's Tracks (drives the Loop view)
+  const [phases, setPhases] = useState([])
+  const [routeNote, setRouteNote] = useState(null)
+  const [drafting, setDrafting] = useState(false)
+  const [draftError, setDraftError] = useState(null)
   const [tracks, setTracks] = useState([])
 
-  // Initial routing: where does this person land?
   useEffect(() => {
     if (loading) return
     if (!user) {
       // Unauthenticated: jump into Arrival anyway. NextSteps is meant to be
-      // approachable to the no-form-no-function person; we'll prompt for
-      // sign-up at Track-creation time.
-      setPhase('arrival')
+      // approachable to the no-form-no-function person; we prompt for sign-up
+      // at Track-creation time.
+      setStage('arrival')
       return
     }
     loadTracks()
@@ -65,25 +74,16 @@ export function NextStepsPage() {
       if (!res.ok) throw new Error(`load tracks ${res.status}`)
       const { tracks: list } = await res.json()
       setTracks(list || [])
-      // If the user has tracks, land in the Loop. Otherwise, Arrival.
-      if (list && list.length > 0) {
-        setPhase('loop')
-      } else {
-        setPhase('arrival')
-      }
+      setStage(list && list.length > 0 ? 'loop' : 'arrival')
     } catch (err) {
       console.error('NextSteps loadTracks error:', err)
-      setPhase('arrival')
+      setStage('arrival')
     }
   }
 
-  // Called by ArrivalReflection when the Reflection lands (Phase 2 complete).
-  // Creates the Track and advances to Phase 3 (Domain Landing).
+  // Reflection landed (stage 2 complete). Create the Track, go to the Landing.
   async function handleReflectionLanding(reflection, originalConcern) {
     if (!user) {
-      // Unauthenticated user — kick to login with a return-to.
-      // Better: hold the reflection in session and replay after auth.
-      // For now, save to sessionStorage and route to login.
       sessionStorage.setItem(
         'nextsteps_pending_reflection',
         JSON.stringify({ reflection, originalConcern })
@@ -108,51 +108,98 @@ export function NextStepsPage() {
       if (!res.ok) throw new Error(`create track ${res.status}`)
       const { track } = await res.json()
 
-      // Attach the reframe_text to the in-memory track for the Domain
-      // Landing screen to show (we don't persist reframe_text on the
-      // Track table; it lives in the chat transcript).
       setActiveTrack({ ...track, _reframe_text: reflection.reframe_text, _closing: reflection.closing })
-      setPhase('landing')
+      setPhases([])
+      setStage('landing')
     } catch (err) {
       console.error('NextSteps reflection landing error:', err)
-      alert('Something went wrong creating your track. Please try again.')
+      setDraftError('Something went wrong creating your track. Please try again.')
     }
   }
 
-  // Phase 3 → Phase 4: user accepts the domain landing, we generate the path.
+  // Landing → Route. The drafting act (§2.5). What comes back is explicitly a
+  // proposal: nothing is current, and nothing is theirs, until they ratify it.
   async function handleAcceptLanding() {
     if (!activeTrack) return
-    setPhase('path')
+    setStage('route')
+    await draftRoute(activeTrack.id)
   }
 
-  // Phase 5 → Phase 3/4: user opens an existing track from the Loop.
+  async function draftRoute(trackId) {
+    setDrafting(true)
+    setDraftError(null)
+    try {
+      const res = await authedFetch('/api/nextsteps-route-draft', {
+        method: 'POST',
+        body: JSON.stringify({ track_id: trackId }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        // A route whose exit conditions did not come out checkable is refused,
+        // not softened. Better a retry than a phase that ends on a feeling.
+        throw new Error(data.error || 'Could not sketch the route.')
+      }
+      setPhases(data.phases || [])
+      setRouteNote(data.route_note || null)
+    } catch (err) {
+      console.error('NextSteps draftRoute error:', err)
+      setDraftError(err.message || 'Could not sketch the route.')
+    } finally {
+      setDrafting(false)
+    }
+  }
+
+  // Ratified. The route is the person's own artifact from here on.
+  function handleRatified(ratifiedPhases) {
+    setPhases(ratifiedPhases || [])
+    setActiveTrack((t) => (t ? { ...t, route_state: 'ratified', _steps: [] } : t))
+    setStage('path')
+  }
+
+  // Loop → an existing Track. Where it lands depends on how far the route got.
   async function handleOpenTrack(trackId) {
     try {
-      const res = await fetch(`/api/nextsteps-track?id=${trackId}`)
+      const res = await authedFetch(`/api/nextsteps-track?id=${trackId}`)
       if (!res.ok) throw new Error(`open track ${res.status}`)
-      const { track, steps } = await res.json()
-      setActiveTrack({ ...track, _steps: steps })
-      // If the track has steps, go to path view. Otherwise it's still planning.
-      setPhase(steps && steps.length > 0 ? 'path' : 'landing')
+      const { track, phases: trackPhases, steps } = await res.json()
+      setActiveTrack({ ...track, _steps: steps || [] })
+      setPhases(trackPhases || [])
+      setRouteNote(null)
+
+      if (track.route_state === 'ratified') {
+        setStage('path')
+      } else if (track.route_state === 'drafted' && (trackPhases || []).length > 0) {
+        // A draft they never ratified. It comes back as a draft, because an
+        // unratified route is a suggestion and has to keep saying so.
+        setStage('route')
+      } else if (steps && steps.length > 0) {
+        // A track from before the route layer. It keeps working exactly as it
+        // did, with its steps intact and no route.
+        setStage('path')
+      } else {
+        setStage('landing')
+      }
     } catch (err) {
       console.error('NextSteps open track error:', err)
     }
   }
 
-  // Phase 5: user wants to start a new track.
   function handleStartNew() {
     setActiveTrack(null)
-    setPhase('arrival')
+    setPhases([])
+    setRouteNote(null)
+    setStage('arrival')
   }
 
-  // Back to Loop from a Track view.
   async function handleBackToLoop() {
     setActiveTrack(null)
+    setPhases([])
+    setRouteNote(null)
     await loadTracks()
-    setPhase('loop')
+    setStage('loop')
   }
 
-  if (loading || phase === 'loading') {
+  if (loading || stage === 'loading') {
     return (
       <div className="page-shell">
         <Nav activePath="nextsteps" />
@@ -167,32 +214,63 @@ export function NextStepsPage() {
     <div className="page-shell" style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav activePath="nextsteps" />
 
-      <NextStepsHeader phase={phase} hasOtherTracks={tracks.length > 0} onBackToLoop={handleBackToLoop} />
+      <NextStepsHeader stage={stage} hasOtherTracks={tracks.length > 0} onBackToLoop={handleBackToLoop} />
 
-      <div className={`nextsteps-stage${phase === 'arrival' ? ' nextsteps-stage--chat' : ''}`}>
-        {phase === 'arrival' && (
+      <div className={`nextsteps-stage${stage === 'arrival' ? ' nextsteps-stage--chat' : ''}`}>
+        {stage === 'arrival' && (
           <ArrivalReflection
             user={user}
             onReflectionLanded={handleReflectionLanding}
           />
         )}
 
-        {phase === 'landing' && activeTrack && (
+        {stage === 'landing' && activeTrack && (
           <DomainLanding
             track={activeTrack}
             onAccept={handleAcceptLanding}
           />
         )}
 
-        {phase === 'path' && activeTrack && (
+        {stage === 'route' && activeTrack && (
+          <>
+            {drafting && (
+              <p className="ns-drafting">
+                Sketching the stages between where you are and where you said you are going…
+              </p>
+            )}
+
+            {!drafting && draftError && (
+              <div className="ns-draft-fail">
+                <p className="ns-draft-fail-text">{draftError}</p>
+                <button type="button" className="ns-draft-retry" onClick={() => draftRoute(activeTrack.id)}>
+                  Try again
+                </button>
+              </div>
+            )}
+
+            {!drafting && !draftError && phases.length > 0 && (
+              <RouteDraft
+                track={activeTrack}
+                phases={phases}
+                routeNote={routeNote}
+                onRatified={handleRatified}
+                onBack={tracks.length > 0 ? handleBackToLoop : null}
+              />
+            )}
+          </>
+        )}
+
+        {stage === 'path' && activeTrack && (
           <PathView
             track={activeTrack}
             user={user}
+            phases={phases}
+            onPhasesChanged={setPhases}
             onBackToLoop={handleBackToLoop}
           />
         )}
 
-        {phase === 'loop' && (
+        {stage === 'loop' && (
           <TrackLoop
             tracks={tracks}
             onOpenTrack={handleOpenTrack}
@@ -256,6 +334,35 @@ export function NextStepsPage() {
           gap: 6px;
         }
         .ns-back:hover { text-decoration: underline; }
+        .ns-drafting {
+          font-family: 'Lora', Georgia, serif;
+          font-size: 1.05rem;
+          line-height: 1.6;
+          color: rgba(38,36,32,0.68);
+          text-align: center;
+          padding: 60px 0;
+          margin: 0;
+        }
+        .ns-draft-fail { padding: 32px 0; text-align: center; }
+        .ns-draft-fail-text {
+          font-family: 'Lora', Georgia, serif;
+          font-size: 1.02rem;
+          line-height: 1.6;
+          color: rgba(38,36,32,0.78);
+          margin: 0 0 18px;
+        }
+        .ns-draft-retry {
+          background: #4c6b45;
+          color: #FFFFFF;
+          border: none;
+          border-radius: 10px;
+          padding: 12px 24px;
+          font-family: 'Cormorant SC', Georgia, serif;
+          font-size: 0.85rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          cursor: pointer;
+        }
         @media (max-width: 640px) {
           .ns-title { font-size: 2.1rem; }
           .ns-subtitle { font-size: 0.98rem; }
@@ -267,12 +374,13 @@ export function NextStepsPage() {
   )
 }
 
-function NextStepsHeader({ phase, hasOtherTracks, onBackToLoop }) {
+function NextStepsHeader({ stage, hasOtherTracks, onBackToLoop }) {
   const showBack =
-    hasOtherTracks && (phase === 'arrival' || phase === 'landing' || phase === 'path')
+    hasOtherTracks &&
+    (stage === 'arrival' || stage === 'landing' || stage === 'route' || stage === 'path')
 
   // On arrival the conversation IS the entry point — no header narration.
-  if (phase === 'arrival') {
+  if (stage === 'arrival') {
     return showBack ? (
       <div className="ns-header ns-header--minimal">
         <button className="ns-back" onClick={onBackToLoop} type="button">
@@ -290,9 +398,10 @@ function NextStepsHeader({ phase, hasOtherTracks, onBackToLoop }) {
         </button>
       )}
       <p className="ns-subtitle">
-        {phase === 'landing' && 'Here is what your caring is for.'}
-        {phase === 'path'    && 'Your path. Short, ordered, real.'}
-        {phase === 'loop'    && "The work you're walking."}
+        {stage === 'landing' && 'Here is what your caring is for.'}
+        {stage === 'route'   && 'The whole journey, on one page. Yours to change.'}
+        {stage === 'path'    && 'The stage you are in, and the work inside it.'}
+        {stage === 'loop'    && "The work you're walking."}
       </p>
     </div>
   )

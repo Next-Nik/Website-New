@@ -81,15 +81,33 @@ ROUTE TYPES:
                  route_target: null (no internal target).
 
 ═══════════════════════════════════════════════════════════════════════════
-THE SIZING PRINCIPLE
+THE SIZING PRINCIPLE — A STEP IS SIZED TO ITS PHASE
 ═══════════════════════════════════════════════════════════════════════════
+
+If this Track has a ratified route you will be given THE CURRENT PHASE below:
+its name, the work it describes, and its exit condition.
+
+When a current phase is given, that phase is the whole of your remit.
+
+  - Every step you write is work INSIDE that phase. Not before it, not after
+    it, not a shortcut past it.
+  - The exit condition is what the steps serve. Ask of every step: does doing
+    this move the person closer to being able to answer that exit condition
+    "yes"? If not, it does not belong in this phase.
+  - Do NOT write steps for later phases. Those get drawn when the person
+    arrives at them, because walking changes the terrain.
+  - Do NOT restate the exit condition as a step. The exit is the evidence that
+    the phase is done. A step is a thing you do.
+  - Never say how long the phase might take. A phase has an exit condition,
+    not a due date, and there is no such thing as being behind.
 
 Treat people as capable and smart. NO dummy steps. NO huge cognitive leaps.
 
 A step is well-sized when:
   - It is concrete enough that the person knows what to actually do.
   - It is achievable inside a reasonable Target Stretch window.
-  - It moves them measurably toward the toward-sentence.
+  - It moves them measurably toward the current phase's exit condition, or
+    toward the toward-sentence when there is no route yet.
   - It honours the person's developmental position (see below).
 
 A step is BADLY sized when:
@@ -282,7 +300,7 @@ async function getPurposePieceCoords(userId) {
 
 // Build the user-message payload for the model: the Track context, the
 // candidate Atlas shortlist, and the developmental-navigation inputs.
-function buildPathRequest(track, ppCoords, actors) {
+function buildPathRequest(track, ppCoords, actors, phase, priorSteps) {
   const ppBlock = ppCoords
     ? `PURPOSE PIECE COORDINATES (use these to size the path to this person):
 - Archetype: ${ppCoords.archetype || '—'}
@@ -306,12 +324,39 @@ ${actors
   .join('\n\n')}`
     : `CANDIDATE ATLAS ACTORS: none currently live in this domain. The path must rely on tool, nextmarket, or facilitated routes only. Do NOT invent an Atlas actor.`;
 
+  // The phase block is the difference between "here are some good next steps"
+  // and "here is the work of the stage you are actually standing in."
+  const phaseBlock = phase
+    ? `THE CURRENT PHASE — this is your remit, and nothing outside it is:
+
+  Phase ${phase.position}: ${phase.name}
+  The work:        ${phase.work}
+  EXIT CONDITION:  ${phase.exit_condition}
+
+  The person is in this phase until that exit condition is true. Every step you
+  write is work inside it, serving that exit. Say nothing about how long it
+  will take.${
+    priorSteps && priorSteps.length
+      ? `
+
+  STEPS ALREADY TAKEN IN THIS PHASE (do not repeat them, build from them):
+${priorSteps
+  .map((s) => `    ${s.position}. [${s.state}] ${s.description}`)
+  .join('\n')}`
+      : ''
+  }`
+    : `NO ROUTE ON THIS TRACK YET. There is no current phase, so size the steps
+against the toward-sentence directly, as before. (This is a Track created
+before the route layer existed, or one whose owner has not sketched a route.)`;
+
   return `THE TRACK:
 - Original concern (the person's own words): "${track.original_concern}"
 - Toward sentence: ${track.toward_sentence || '(not yet captured)'}
 - Domain(s):       ${(track.domains || []).join(', ')}
 - Scale:           ${track.scale}
 - Horizon Goal:    ${track.horizon_goal || '(not snapshotted)'}
+
+${phaseBlock}
 
 ${ppBlock}
 
@@ -374,6 +419,28 @@ module.exports = async (req, res) => {
     return res.status(404).json({ error: 'Track not found' });
   }
 
+  // 1b. The current phase. Steps live inside a phase now, so the phase is the
+  // frame the whole generation runs in. A track with no route (legacy, or not
+  // yet sketched) simply has no current phase and falls back to v1.1 behaviour.
+  const { data: phase } = await supabase
+    .from('nextsteps_phases')
+    .select('*')
+    .eq('track_id', track_id)
+    .eq('state', 'current')
+    .maybeSingle();
+
+  // Steps already written in this phase, so a re-read appends rather than
+  // repeats. This is the loop: step done → phase re-read → next step appended.
+  let priorSteps = [];
+  if (phase) {
+    const { data: existing } = await supabase
+      .from('nextsteps_steps')
+      .select('position, description, state')
+      .eq('phase_id', phase.id)
+      .order('position', { ascending: true });
+    priorSteps = existing || [];
+  }
+
   // 2. Pull developmental-navigation inputs
   const ppCoords = await getPurposePieceCoords(userId || track.user_id);
 
@@ -382,7 +449,7 @@ module.exports = async (req, res) => {
 
   // 4. Generate the path
   const systemPrompt = NORTH_STAR_IDENTITY + '\n\n' + PATH_PROMPT;
-  const userMsg = buildPathRequest(track, ppCoords, actors);
+  const userMsg = buildPathRequest(track, ppCoords, actors, phase, priorSteps);
 
   try {
     const response = await anthropic.messages.create({
@@ -401,19 +468,26 @@ module.exports = async (req, res) => {
       });
     }
 
-    // 5. Persist the steps + flip the Track to 'active'
-    const stepRows = path.steps.map((s) => ({
+    // 5. Persist the steps + flip the Track to 'active'.
+    // Steps are appended after whatever this phase already holds, so a re-read
+    // extends the path inside the phase instead of colliding on position.
+    const offset = priorSteps.length;
+    const stepRows = path.steps.map((s, i) => ({
       track_id,
-      position: s.position,
+      phase_id: phase ? phase.id : null,
+      position: offset + i + 1,
       description: s.description,
       route_type: s.route_type,
       route_target: s.route_target,
       state: 'suggested',
     }));
 
-    const { error: insertErr } = await supabase
+    // .select() so the response carries real row ids. Without them the UI has
+    // no step_id to PATCH and "Take this step" cannot record anything.
+    const { data: insertedSteps, error: insertErr } = await supabase
       .from('nextsteps_steps')
-      .insert(stepRows);
+      .insert(stepRows)
+      .select('*');
 
     if (insertErr) {
       console.error('NextSteps step insert error:', insertErr);
@@ -429,8 +503,9 @@ module.exports = async (req, res) => {
 
     return res.json({
       track_id,
+      phase_id:  phase ? phase.id : null,
       path_note: path.path_note || null,
-      steps: stepRows,
+      steps: (insertedSteps || stepRows).sort((a, b) => a.position - b.position),
     });
   } catch (err) {
     console.error('NextSteps path generation error:', err);

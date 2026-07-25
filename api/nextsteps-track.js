@@ -137,7 +137,12 @@ module.exports = async (req, res) => {
     const { id } = req.query || {};
 
     if (id) {
-      // Single track with its steps
+      // Single track with its route and its steps.
+      // A track is one person's verbatim concern in their own words. Reading
+      // one is gated on owning it, the same as every write below already is.
+      const sessionUserId = await resolveUserId(req);
+      if (!sessionUserId) return res.status(401).json({ error: 'Sign-in required' });
+
       const { data: track, error: tErr } = await supabase
         .from('nextsteps_tracks')
         .select('*')
@@ -146,12 +151,24 @@ module.exports = async (req, res) => {
       if (tErr || !track) {
         return res.status(404).json({ error: 'Track not found' });
       }
-      const { data: steps } = await supabase
-        .from('nextsteps_steps')
-        .select('*')
-        .eq('track_id', id)
-        .order('position', { ascending: true });
-      return res.json({ track, steps: steps || [] });
+      if (track.user_id !== sessionUserId) {
+        return res.status(403).json({ error: 'Not your track' });
+      }
+
+      const [{ data: phases }, { data: steps }] = await Promise.all([
+        supabase
+          .from('nextsteps_phases')
+          .select('*')
+          .eq('track_id', id)
+          .order('position', { ascending: true }),
+        supabase
+          .from('nextsteps_steps')
+          .select('*')
+          .eq('track_id', id)
+          .order('position', { ascending: true }),
+      ]);
+
+      return res.json({ track, phases: phases || [], steps: steps || [] });
     }
 
     // A track list is personal reflection data — only the session's own

@@ -70,6 +70,8 @@ export const ROUTES = {
     nextStepsChat:           '/tools/nextsteps/api/chat',
     nextStepsTrack:          '/api/nextsteps-track',
     nextStepsPath:           '/api/nextsteps-path',
+    nextStepsRoute:          '/api/nextsteps-route',
+    nextStepsRouteDraft:     '/api/nextsteps-route-draft',
     nextStepsActorsSample:   '/api/nextsteps-actors-sample',
     nextStepsTagActor:       '/api/nextsteps-tag-actor',
     mapChat:                 '/tools/map/api/chat',
