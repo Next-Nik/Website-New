@@ -21,6 +21,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Navigate } from 'react-router-dom'
 import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
+import { ScriptView, SCRIPT_CSS } from './MovieMagicScript'
 
 /* ── constants ────────────────────────────────────────────── */
 
@@ -169,6 +170,9 @@ const seedState = () => {
     boards,
     activeProjectId: projectId,
     activeBoardId: boards[0].id,
+    scripts: [],
+    activeScriptId: null,
+    focus: 'board',
   }
 }
 
@@ -221,6 +225,35 @@ const downloadFountain = (projectName, board) => {
   URL.revokeObjectURL(url)
 }
 
+const downloadScriptFountain = (projectName, script) => {
+  const blob = new Blob([script.text || ''], { type: 'text/plain;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${slugify(projectName)}-${slugify(script.name)}.fountain`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+/* numbered beat list · built for the Claude round trip: number the
+   wall, hand the list over, paste back formatted pages */
+const buildNumberedBeats = (projectName, board) => {
+  const lanes = lanesForBoard(board)
+  const lines = [`${projectName} · ${board.name} · numbered beats`, '']
+  let n = 0
+  lanes.forEach((lane, i) => {
+    for (const note of board.laneNotes[i]) {
+      n++
+      const detail = note.detail ? ` · ${note.detail.replace(/\n+/g, ' ')}` : ''
+      lines.push(`${n}. [${lane.name}] ${(note.title || 'Untitled beat').replace(/\n+/g, ' ')}${detail}`)
+    }
+  })
+  if (n === 0) lines.push('(no beats pinned)')
+  return lines.join('\n')
+}
+
 /* ── page ─────────────────────────────────────────────────── */
 
 export function MovieMagicPage() {
@@ -249,6 +282,9 @@ function MovieMagicWorkspace({ user }) {
   const [nameModal, setNameModal] = useState(null)
   const [inboxOpen, setInboxOpen] = useState(false)
   const [printBoardId, setPrintBoardId] = useState(null)
+  const [importOpen, setImportOpen] = useState(false)
+  const [replaceOpen, setReplaceOpen] = useState(false)
+  const [beatsCopied, setBeatsCopied] = useState(false)
   const [drag, setDrag] = useState(null)
   const saveTimer = useRef(null)
   const loaded = useRef(false)
@@ -265,6 +301,10 @@ function MovieMagicWorkspace({ user }) {
       if (cancelled) return
       let next = null
       if (!error && data && data.state && data.state.projects) next = data.state
+      if (next) {
+        if (!Array.isArray(next.scripts)) next.scripts = []
+        if (!next.focus) next.focus = 'board'
+      }
       if (!next) {
         next = seedState()
         await supabase.from('movie_magic').upsert({
@@ -308,6 +348,9 @@ function MovieMagicWorkspace({ user }) {
   const project = state && state.projects.find((p) => p.id === state.activeProjectId)
   const projectBoards = state ? state.boards.filter((b) => b.projectId === state.activeProjectId) : []
   const board = state && state.boards.find((b) => b.id === state.activeBoardId)
+  const projectScripts = state && state.scripts ? state.scripts.filter((sc) => sc.projectId === state.activeProjectId) : []
+  const script = state && state.scripts ? state.scripts.find((sc) => sc.id === state.activeScriptId) : null
+  const showScript = state && state.focus === 'script' && script
   const inboxCount = project && project.inbox ? project.inbox.length : 0
 
   /* mutations */
@@ -410,6 +453,121 @@ function MovieMagicWorkspace({ user }) {
     })
   }
 
+  /* import: merge a structured payload of boards and beats into a story */
+  const mergeImport = (payload) => {
+    const summary = { boardsCreated: 0, beatsAdded: 0, unplaced: 0 }
+    setState((s) => {
+      let next = { ...s, projects: s.projects.slice(), boards: s.boards.map((b) => ({ ...b, laneNotes: b.laneNotes.map((l) => l.slice()) })) }
+      let proj = payload.story
+        ? next.projects.find((p) => p.name.toLowerCase() === String(payload.story).toLowerCase())
+        : next.projects.find((p) => p.id === next.activeProjectId)
+      if (!proj) {
+        proj = { id: uid(), name: String(payload.story), inbox: [] }
+        next.projects.push(proj)
+      }
+      for (const spec of payload.boards || []) {
+        if (!spec || !spec.name) continue
+        let board = next.boards.find(
+          (b) => b.projectId === proj.id && b.name.toLowerCase() === String(spec.name).toLowerCase()
+        )
+        if (!board) {
+          board = spec.kind === 'character'
+            ? makeCharacterBoard(proj.id, String(spec.name), FRAMEWORKS[spec.framework] ? spec.framework : 'hero', spec.customLanes || [])
+            : makeStoryBoard(proj.id, String(spec.name))
+          next.boards.push(board)
+          summary.boardsCreated++
+        }
+        const lanes = lanesForBoard(board)
+        for (const beat of spec.beats || []) {
+          if (!beat || !beat.title) continue
+          let idx = -1
+          if (beat.lane !== undefined && beat.lane !== null) {
+            const asNum = Number(beat.lane)
+            if (Number.isInteger(asNum) && asNum >= 0 && asNum < lanes.length) idx = asNum
+            else idx = lanes.findIndex((l) => l.name.toLowerCase() === String(beat.lane).toLowerCase())
+          }
+          if (idx < 0) { idx = 0; summary.unplaced++ }
+          const color = NOTE_COLORS.some((c) => c.id === beat.color) ? beat.color : NOTE_COLORS[idx % NOTE_COLORS.length].id
+          board.laneNotes[idx].push({ id: uid(), title: String(beat.title), detail: beat.detail ? String(beat.detail) : '', color })
+          summary.beatsAdded++
+        }
+      }
+      next.activeProjectId = proj.id
+      const firstBoard = next.boards.find((b) => b.projectId === proj.id)
+      if (!next.boards.find((b) => b.id === next.activeBoardId && b.projectId === proj.id) && firstBoard) {
+        next.activeBoardId = firstBoard.id
+      }
+      return next
+    })
+    return summary
+  }
+
+  /* numbered beats to clipboard, download fallback */
+  const copyNumberedBeats = async (b) => {
+    const text = buildNumberedBeats(project ? project.name : '', b)
+    try {
+      await navigator.clipboard.writeText(text)
+      setBeatsCopied(true)
+      setTimeout(() => setBeatsCopied(false), 1400)
+    } catch (e) {
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const el = document.createElement('a')
+      el.href = url
+      el.download = `${slugify(project ? project.name : 'story')}-${slugify(b.name)}-beats.txt`
+      document.body.appendChild(el)
+      el.click()
+      document.body.removeChild(el)
+      URL.revokeObjectURL(url)
+    }
+  }
+
+  /* scripts */
+  const patchScript = useCallback((scriptId, fn) => {
+    setState((s) => ({ ...s, scripts: s.scripts.map((sc) => (sc.id === scriptId ? fn(sc) : sc)) }))
+  }, [])
+
+  const addScript = (name) => {
+    setState((s) => {
+      const sc = { id: uid(), projectId: s.activeProjectId, name, text: '', snapshots: [] }
+      return { ...s, scripts: [...s.scripts, sc], activeScriptId: sc.id, focus: 'script' }
+    })
+  }
+
+  const snapshotScript = (scriptId, label) => {
+    patchScript(scriptId, (sc) => ({
+      ...sc,
+      snapshots: [
+        { id: uid(), ts: Date.now(), label: label || `Draft · ${new Date().toLocaleString()}`, text: sc.text || '' },
+        ...(sc.snapshots || []),
+      ].slice(0, 20),
+    }))
+  }
+
+  const restoreSnapshot = (scriptId, snapId) => {
+    patchScript(scriptId, (sc) => {
+      const snap = (sc.snapshots || []).find((x) => x.id === snapId)
+      if (!snap) return sc
+      return {
+        ...sc,
+        snapshots: [
+          { id: uid(), ts: Date.now(), label: `Before restore · ${new Date().toLocaleString()}`, text: sc.text || '' },
+          ...(sc.snapshots || []),
+        ].slice(0, 20),
+        text: snap.text,
+      }
+    })
+  }
+
+  const deleteScript = (scriptId) => {
+    setState((s) => ({
+      ...s,
+      scripts: s.scripts.filter((sc) => sc.id !== scriptId),
+      activeScriptId: s.activeScriptId === scriptId ? null : s.activeScriptId,
+      focus: s.activeScriptId === scriptId ? 'board' : s.focus,
+    }))
+  }
+
   /* inbox */
   const addInboxItem = (text) => {
     patchProject(project.id, (p) => ({
@@ -459,7 +617,7 @@ function MovieMagicWorkspace({ user }) {
 
   return (
     <div style={S.app} className="mm-app">
-      <style>{CSS_TEXT}</style>
+      <style>{CSS_TEXT + SCRIPT_CSS}</style>
 
       <header style={S.topbar}>
         <div style={S.brand}>
@@ -486,6 +644,7 @@ function MovieMagicWorkspace({ user }) {
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </select>
+          <button className="mm-btn ghost" onClick={() => setImportOpen(true)}>Import</button>
           <button className="mm-btn ghost" onClick={() => setInboxOpen(true)}>
             Inbox{inboxCount ? ` (${inboxCount})` : ''}
           </button>
@@ -508,19 +667,46 @@ function MovieMagicWorkspace({ user }) {
           <button
             key={b.id}
             className={'mm-tab' + (b.id === state.activeBoardId ? ' active' : '') + (b.kind === 'character' ? ' character' : '')}
-            onClick={() => setState((s) => ({ ...s, activeBoardId: b.id }))}
+            onClick={() => setState((s) => ({ ...s, activeBoardId: b.id, focus: 'board' }))}
           >
             {b.kind === 'character' ? '◐ ' : ''}{b.name}
           </button>
         ))}
+        {projectScripts.map((sc) => (
+          <button
+            key={sc.id}
+            className={'mm-tab script' + (showScript && sc.id === state.activeScriptId ? ' active' : '')}
+            onClick={() => setState((s) => ({ ...s, activeScriptId: sc.id, focus: 'script' }))}
+          >
+            ✎ {sc.name}
+          </button>
+        ))}
         <button className="mm-tab new" onClick={() => setNewBoardOpen(true)}>+ New board</button>
+        <button className="mm-tab new" onClick={() => setNameModal({ kind: 'script' })}>+ New script</button>
       </nav>
 
-      {board ? (
+      {showScript ? (
+        <ScriptView
+          script={script}
+          boards={projectBoards}
+          colors={NOTE_COLORS}
+          onChangeText={(text) => patchScript(script.id, (sc) => ({ ...sc, text }))}
+          onRename={() => setNameModal({ kind: 'renameScript', scriptId: script.id })}
+          onDelete={() => {
+            if (window.confirm(`Delete the script "${script.name}" and its snapshots? This cannot be undone.`)) deleteScript(script.id)
+          }}
+          onSnapshot={() => snapshotScript(script.id)}
+          onRestore={(snapId) => restoreSnapshot(script.id, snapId)}
+          onExport={() => downloadScriptFountain(project ? project.name : '', script)}
+          onReplace={() => setReplaceOpen(true)}
+        />
+      ) : board ? (
         <BoardView
           board={board}
           projectName={project ? project.name : ''}
           onExportPdf={() => setPrintBoardId(board.id)}
+          onCopyBeats={() => copyNumberedBeats(board)}
+          beatsCopied={beatsCopied}
           drag={drag}
           onAddNote={(laneIdx) => setEditor({ boardId: board.id, laneIdx, noteId: null })}
           onEditNote={(laneIdx, noteId) => setEditor({ boardId: board.id, laneIdx, noteId })}
@@ -569,13 +755,19 @@ function MovieMagicWorkspace({ user }) {
 
       {nameModal && (
         <NameModal
-          title={nameModal.kind === 'project' ? 'New story' : 'Rename board'}
-          placeholder={nameModal.kind === 'project' ? 'e.g. Golden Jedi' : 'Board name'}
-          initial={nameModal.kind === 'renameBoard' ? state.boards.find((b) => b.id === nameModal.boardId)?.name : ''}
-          submitLabel={nameModal.kind === 'project' ? 'Create story' : 'Rename'}
+          title={{ project: 'New story', script: 'New script', renameScript: 'Rename script', renameBoard: 'Rename board' }[nameModal.kind]}
+          placeholder={{ project: 'e.g. Golden Jedi', script: 'e.g. Episode I · draft', renameScript: 'Script name', renameBoard: 'Board name' }[nameModal.kind]}
+          initial={
+            nameModal.kind === 'renameBoard' ? state.boards.find((b) => b.id === nameModal.boardId)?.name
+            : nameModal.kind === 'renameScript' ? state.scripts.find((sc) => sc.id === nameModal.scriptId)?.name
+            : ''
+          }
+          submitLabel={{ project: 'Create story', script: 'Create script', renameScript: 'Rename', renameBoard: 'Rename' }[nameModal.kind]}
           onClose={() => setNameModal(null)}
           onSubmit={(name) => {
             if (nameModal.kind === 'project') addProject(name)
+            else if (nameModal.kind === 'script') addScript(name)
+            else if (nameModal.kind === 'renameScript') patchScript(nameModal.scriptId, (sc) => ({ ...sc, name }))
             else renameBoard(nameModal.boardId, name)
             setNameModal(null)
           }}
@@ -586,6 +778,25 @@ function MovieMagicWorkspace({ user }) {
         <PrintSheet
           project={project}
           board={state.boards.find((b) => b.id === printBoardId)}
+        />
+      )}
+
+      {replaceOpen && script && (
+        <ReplaceScriptModal
+          scriptName={script.name}
+          onReplace={(text) => {
+            snapshotScript(script.id, `Before replace · ${new Date().toLocaleString()}`)
+            patchScript(script.id, (sc) => ({ ...sc, text }))
+            setReplaceOpen(false)
+          }}
+          onClose={() => setReplaceOpen(false)}
+        />
+      )}
+
+      {importOpen && (
+        <ImportModal
+          onMerge={mergeImport}
+          onClose={() => setImportOpen(false)}
         />
       )}
 
@@ -603,7 +814,7 @@ function MovieMagicWorkspace({ user }) {
 
 /* ── board view ───────────────────────────────────────────── */
 
-function BoardView({ board, projectName, onExportPdf, drag, onAddNote, onEditNote, onGripDown, onGripMove, onGripUp, onRename, onDelete }) {
+function BoardView({ board, projectName, onExportPdf, onCopyBeats, beatsCopied, drag, onAddNote, onEditNote, onGripDown, onGripMove, onGripUp, onRename, onDelete }) {
   const lanes = lanesForBoard(board)
   const frameworkMeta = board.kind === 'character' ? FRAMEWORKS[board.framework] : null
 
@@ -621,6 +832,7 @@ function BoardView({ board, projectName, onExportPdf, drag, onAddNote, onEditNot
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="mm-btn ghost" onClick={() => downloadFountain(projectName, board)}>Export .fountain</button>
           <button className="mm-btn ghost" onClick={onExportPdf}>Export PDF</button>
+          <button className="mm-btn ghost" onClick={onCopyBeats}>{beatsCopied ? 'Copied ✓' : 'Copy beats'}</button>
           <button className="mm-btn ghost" onClick={onRename}>Rename</button>
           <button className="mm-btn ghost danger" onClick={onDelete}>Take down</button>
         </div>
@@ -958,6 +1170,114 @@ function PrintSheet({ project, board }) {
   )
 }
 
+/* Paste or upload a structured JSON of boards and beats · the merge
+   result is reported inline so nothing happens silently. */
+function ImportModal({ onMerge, onClose }) {
+  const [text, setText] = useState('')
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState(null)
+
+  const runImport = (raw) => {
+    setError(null)
+    setResult(null)
+    let payload
+    try {
+      payload = JSON.parse(raw)
+    } catch (e) {
+      setError('That is not valid JSON. Check for a missing bracket or trailing comma.')
+      return
+    }
+    if (!payload || !Array.isArray(payload.boards)) {
+      setError('Expected a payload with a "boards" array.')
+      return
+    }
+    const summary = onMerge(payload)
+    setResult(summary)
+  }
+
+  const onFile = (e) => {
+    const file = e.target.files && e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => { setText(String(reader.result)); runImport(String(reader.result)) }
+    reader.readAsText(file)
+  }
+
+  return (
+    <ModalShell title="Import beats" onClose={onClose}>
+      <p className="mm-help">
+        Paste an import file (or choose one) and its boards and beats merge into the wall.
+        Boards are matched by name or created. Nothing existing is deleted.
+      </p>
+      <label className="mm-label">Paste JSON</label>
+      <textarea
+        className="mm-input"
+        rows={7}
+        value={text}
+        placeholder={'{ "story": "Golden Jedi", "boards": [ { "name": "Episode I", "kind": "story", "beats": [ { "lane": "Act I · Setup", "title": "..." } ] } ] }'}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <label className="mm-label">Or choose a file</label>
+      <input type="file" accept=".json,application/json" onChange={onFile} style={{ marginBottom: 12, fontSize: 13 }} />
+
+      {error && <p className="mm-help" style={{ color: '#C0392B' }}>{error}</p>}
+      {result && (
+        <p className="mm-help" style={{ fontWeight: 600 }}>
+          Done · {result.beatsAdded} beat{result.beatsAdded === 1 ? '' : 's'} pinned
+          {result.boardsCreated ? ` · ${result.boardsCreated} board${result.boardsCreated === 1 ? '' : 's'} created` : ''}
+          {result.unplaced ? ` · ${result.unplaced} placed in the first column (lane not recognised)` : ''}
+        </p>
+      )}
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+        {result ? (
+          <button className="mm-btn primary" onClick={onClose}>Close</button>
+        ) : (
+          <button className="mm-btn primary" disabled={!text.trim()} onClick={() => runImport(text)}>
+            Merge into the wall
+          </button>
+        )}
+      </div>
+    </ModalShell>
+  )
+}
+
+/* Round-trip re-entry: paste or upload a .fountain to replace the
+   script text. A snapshot is taken first, so the old draft survives. */
+function ReplaceScriptModal({ scriptName, onReplace, onClose }) {
+  const [text, setText] = useState('')
+  const onFile = (e) => {
+    const file = e.target.files && e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setText(String(reader.result))
+    reader.readAsText(file)
+  }
+  return (
+    <ModalShell title={`Replace · ${scriptName}`} onClose={onClose}>
+      <p className="mm-help">
+        Paste the returned draft (or choose the .fountain file). The current text is
+        snapshotted automatically before being replaced, so nothing is lost.
+      </p>
+      <label className="mm-label">Paste Fountain</label>
+      <textarea
+        className="mm-input"
+        rows={8}
+        value={text}
+        placeholder={'INT. THRONE ROOM - NIGHT'}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <label className="mm-label">Or choose a file</label>
+      <input type="file" accept=".fountain,.txt,text/plain" onChange={onFile} style={{ marginBottom: 12, fontSize: 13 }} />
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <button className="mm-btn primary" disabled={!text.trim()} onClick={() => onReplace(text)}>
+          Snapshot current and replace
+        </button>
+      </div>
+    </ModalShell>
+  )
+}
+
 /* ── styles ───────────────────────────────────────────────── */
 
 const NOTE_FONT = `'Chalkboard SE','Segoe Print','Bradley Hand',cursive`
@@ -1067,6 +1387,7 @@ const CSS_TEXT = `
   }
   .mm-tab.active { background: #F4EFDF; color: #2F3E46; font-weight: 700; }
   .mm-tab.character { border-top: 3px solid #E5CFFF; }
+  .mm-tab.script { border-top: 3px solid #BDEBD6; font-family: 'Courier Prime','Courier New',monospace; }
   .mm-tab.new { background: transparent; border: 1px dashed rgba(255,255,255,.35); border-radius: 6px; }
   .mm-tab.new:hover { background: rgba(255,255,255,.08); }
 
