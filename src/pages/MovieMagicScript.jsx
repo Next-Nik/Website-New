@@ -115,10 +115,100 @@ export function beatToFountain(note) {
   return '\n' + lines.join('\n') + '\n\n'
 }
 
+/* manual element formatting: transform the line at the caret into
+   the chosen screenplay element using Fountain markup. Pure, so it
+   is testable and undoable (it goes through the normal text state). */
+export function applyLineFormat(text, caret, kind) {
+  const t = text || ''
+  if (kind === 'pagebreak') {
+    const insert = '\n===\n\n'
+    return { text: t.slice(0, caret) + insert + t.slice(caret), caret: caret + insert.length }
+  }
+  let start = t.lastIndexOf('\n', Math.max(0, caret - 1)) + 1
+  let end = t.indexOf('\n', caret)
+  if (end === -1) end = t.length
+  const line = t.slice(start, end)
+  const stripped = line.trim()
+    .replace(/^(INT\.?\/EXT\.?|INT\.?|EXT\.?|EST\.?)\s*/i, '')
+    .replace(/^[#=.>@]+\s*/, '')
+    .replace(/^\(|\)$/g, '')
+    .replace(/^\[\[|\]\]$/g, '')
+  let next = line
+  switch (kind) {
+    case 'int': next = 'INT. ' + stripped.toUpperCase(); break
+    case 'ext': next = 'EXT. ' + stripped.toUpperCase(); break
+    case 'character': next = stripped.toUpperCase(); break
+    case 'paren': next = stripped ? `(${stripped.replace(/^\(|\)$/g, '')})` : '()'; break
+    case 'transition': {
+      const up = stripped.toUpperCase()
+      next = up === '' ? 'CUT TO:' : (up.endsWith('TO:') || up.endsWith(':') ? up : up + ' TO:')
+      break
+    }
+    case 'section': next = '# ' + stripped; break
+    case 'synopsis': next = '= ' + stripped; break
+    case 'note': next = stripped ? `[[${stripped}]]` : '[[]]'; break
+    default: return { text: t, caret }
+  }
+  let out = t.slice(0, start) + next + t.slice(end)
+  let newCaret = start + next.length
+  if (kind === 'character') {
+    // a cue needs a blank line above to be read as a cue
+    const before = t.slice(0, start)
+    if (start > 0 && !/\n\s*\n$/.test(before)) {
+      out = before + '\n' + next + t.slice(end)
+      newCaret = start + 1 + next.length
+    }
+  }
+  if (kind === 'note' && !stripped) newCaret = newCaret - 2
+  if (kind === 'paren' && !stripped) newCaret = newCaret - 1
+  return { text: out, caret: newCaret }
+}
+
+/* insert a character cue at the caret, with the blank line a cue
+   needs above it, leaving the caret on the fresh dialogue line */
+export function insertCueAt(text, caret, name) {
+  const t = text || ''
+  const before = t.slice(0, caret)
+  const needsGap = before.length > 0 && !/\n\s*\n$/.test(before)
+  const atLineStart = before.length === 0 || before.endsWith('\n')
+  const prefix = (atLineStart ? '' : '\n') + (needsGap ? '\n' : '')
+  const fragment = prefix + name.toUpperCase() + '\n'
+  return { text: before + fragment + t.slice(caret), caret: caret + fragment.length }
+}
+
+/* quick cue scan for autofill: caps line with a blank line above,
+   not a slugline, parentheticals stripped */
+const CUE_SCAN = /^[A-Z0-9][A-Z0-9 .'\-]{0,38}$/
+export function harvestCues(text) {
+  const names = new Set()
+  const lines = (text || '').split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim().replace(/\s*\(.*\)\s*$/, '')
+    if (!line || line !== line.toUpperCase()) continue
+    if (i > 0 && lines[i - 1].trim() !== '') continue
+    if (SLUG_RE.test(line) || TRANS_RE.test(line)) continue
+    if (!CUE_SCAN.test(line)) continue
+    names.add(line)
+  }
+  return [...names]
+}
+
+const FORMAT_BUTTONS = [
+  { kind: 'int', label: 'INT.' },
+  { kind: 'ext', label: 'EXT.' },
+  { kind: 'character', label: 'Character' },
+  { kind: 'paren', label: '(Paren)' },
+  { kind: 'transition', label: 'Transition' },
+  { kind: 'section', label: '# Section' },
+  { kind: 'synopsis', label: '= Synopsis' },
+  { kind: 'note', label: '[[Note]]' },
+  { kind: 'pagebreak', label: 'Page break' },
+]
+
 /* ── the Script Room view ────────────────────────────────── */
 
 export function ScriptView({
-  script, boards, colors,
+  script, boards, projectScripts, colors,
   onChangeText, onRename, onDelete,
   onSnapshot, onRestore, onExport, onReplace,
 }) {
@@ -131,6 +221,22 @@ export function ScriptView({
   const parsed = useMemo(() => parseFountain(script.text || ''), [script.text])
   const stats = useMemo(() => scriptStats(parsed), [parsed])
   const scenes = useMemo(() => parsed.filter((el) => el.type === 'slug' || el.type === 'section'), [parsed])
+
+  /* cast autofill: character boards + cues used across this story's
+     scripts. Other scripts' cues are memoised on their texts only,
+     so typing here does not rescan them. */
+  const otherScripts = projectScripts || []
+  const otherCues = useMemo(
+    () => harvestCues(otherScripts.filter((sc) => sc.id !== script.id).map((sc) => sc.text || '').join('\n\n')),
+    [otherScripts.map((sc) => sc.id + ':' + (sc.text || '').length).join('|'), script.id]
+  )
+  const castOptions = useMemo(() => {
+    const names = new Set()
+    boards.filter((b) => b.kind === 'character').forEach((b) => names.add(b.name.toUpperCase()))
+    stats.cast.forEach((c) => names.add(c.name))
+    otherCues.forEach((n) => names.add(n))
+    return [...names].sort()
+  }, [boards, stats.cast, otherCues])
 
   const jumpToLine = (lineIdx) => {
     const ta = taRef.current
@@ -215,6 +321,45 @@ export function ScriptView({
         </aside>
 
         {mode === 'write' ? (
+          <div className="mm-editor-col">
+            <div className="mm-format-bar">
+              {FORMAT_BUTTONS.map((fb) => (
+                <button
+                  key={fb.kind}
+                  className="mm-format-btn"
+                  title={fb.kind === 'character' ? 'Caps the line and clears space above it' : undefined}
+                  onClick={() => {
+                    const ta = taRef.current
+                    const caret = ta ? ta.selectionStart : (script.text || '').length
+                    const { text, caret: c } = applyLineFormat(script.text || '', caret, fb.kind)
+                    onChangeText(text)
+                    if (ta) requestAnimationFrame(() => { ta.focus(); ta.setSelectionRange(c, c) })
+                  }}
+                >
+                  {fb.label}
+                </button>
+              ))}
+              {castOptions.length > 0 && (
+                <select
+                  className="mm-format-btn mm-cast-pick"
+                  value=""
+                  onChange={(e) => {
+                    const name = e.target.value
+                    if (!name) return
+                    const ta = taRef.current
+                    const caret = ta ? ta.selectionStart : (script.text || '').length
+                    const { text, caret: c } = insertCueAt(script.text || '', caret, name)
+                    onChangeText(text)
+                    if (ta) requestAnimationFrame(() => { ta.focus(); ta.setSelectionRange(c, c) })
+                  }}
+                >
+                  <option value="">Cast…</option>
+                  {castOptions.map((n) => (
+                    <option key={n} value={n}>{n}</option>
+                  ))}
+                </select>
+              )}
+            </div>
           <textarea
             ref={taRef}
             className="mm-script-editor"
@@ -223,6 +368,7 @@ export function ScriptView({
             onChange={(e) => onChangeText(e.target.value)}
             spellCheck={false}
           />
+          </div>
         ) : (
           <div className="mm-script-preview">
             {parsed.map((el, i) => {
@@ -336,6 +482,16 @@ export const SCRIPT_CSS = `
   .mm-cast-name { font-weight: 600; }
   .mm-cast-meta { opacity: .65; }
 
+  .mm-editor-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .mm-format-bar { display: flex; gap: 6px; flex-wrap: wrap; }
+  .mm-format-btn {
+    border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.07);
+    color: #E7E2D6; border-radius: 6px; padding: 5px 10px; cursor: pointer;
+    font-family: 'Courier Prime','Courier New',monospace; font-size: 13px;
+  }
+  .mm-format-btn:hover { background: rgba(255,255,255,.15); }
+  .mm-cast-pick { appearance: auto; max-width: 160px; }
+  .mm-cast-pick option { color: #24313A; }
   .mm-script-editor {
     flex: 1; min-width: 0; resize: none; border-radius: 8px;
     background: #FBF8EF; color: #22292E; border: 1px solid rgba(255,255,255,.1);

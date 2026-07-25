@@ -254,6 +254,42 @@ const buildNumberedBeats = (projectName, board) => {
   return lines.join('\n')
 }
 
+/* union-merge two wall states after a save conflict: collections
+   combine by id (local wins on the same id, remote-only survives),
+   scalars and focus follow local. Nothing either side made is lost. */
+const unionById = (localArr, remoteArr) => {
+  const seen = new Set((localArr || []).map((x) => x.id))
+  return [...(localArr || []), ...(remoteArr || []).filter((x) => !seen.has(x.id))]
+}
+const unionMerge = (local, remote) => ({
+  ...local,
+  projects: unionById(local.projects, remote.projects),
+  boards: unionById(local.boards, remote.boards),
+  scripts: unionById(local.scripts || [], remote.scripts || []),
+})
+
+/* full story backup, shaped so Import can restore it whole */
+const buildStoryBackup = (project, boards, scripts) => {
+  return JSON.stringify({
+    story: project.name,
+    exported: new Date().toISOString(),
+    boards: boards.map((b) => ({
+      name: b.name,
+      kind: b.kind,
+      framework: b.framework || undefined,
+      customLanes: b.customLanes || undefined,
+      beats: lanesForBoard(b).flatMap((lane, i) =>
+        b.laneNotes[i].map((n) => ({
+          lane: lane.name, title: n.title, detail: n.detail || undefined, color: n.color,
+        }))
+      ),
+    })),
+    scripts: scripts.map((sc) => ({
+      name: sc.name, text: sc.text || '', snapshots: (sc.snapshots || []).slice(0, 20),
+    })),
+  }, null, 2)
+}
+
 /* ── page ─────────────────────────────────────────────────── */
 
 export function MovieMagicPage() {
@@ -285,9 +321,12 @@ function MovieMagicWorkspace({ user }) {
   const [importOpen, setImportOpen] = useState(false)
   const [replaceOpen, setReplaceOpen] = useState(false)
   const [beatsCopied, setBeatsCopied] = useState(false)
+  const [deleteStoryOpen, setDeleteStoryOpen] = useState(false)
   const [drag, setDrag] = useState(null)
   const saveTimer = useRef(null)
   const loaded = useRef(false)
+  const lastSyncRef = useRef(null)   // server updated_at we last agreed on
+  const stateRef = useRef(null)      // latest state for event handlers
 
   /* load */
   useEffect(() => {
@@ -295,23 +334,28 @@ function MovieMagicWorkspace({ user }) {
     ;(async () => {
       const { data, error } = await supabase
         .from('movie_magic')
-        .select('state')
+        .select('state, updated_at')
         .eq('user_id', user.id)
         .maybeSingle()
       if (cancelled) return
       let next = null
-      if (!error && data && data.state && data.state.projects) next = data.state
+      if (!error && data && data.state && data.state.projects) {
+        next = data.state
+        lastSyncRef.current = data.updated_at
+      }
       if (next) {
         if (!Array.isArray(next.scripts)) next.scripts = []
         if (!next.focus) next.focus = 'board'
       }
       if (!next) {
         next = seedState()
+        const ts = new Date().toISOString()
         await supabase.from('movie_magic').upsert({
           user_id: user.id,
           state: next,
-          updated_at: new Date().toISOString(),
+          updated_at: ts,
         })
+        lastSyncRef.current = ts
       }
       loaded.current = true
       setState(next)
@@ -319,21 +363,79 @@ function MovieMagicWorkspace({ user }) {
     return () => { cancelled = true }
   }, [user.id])
 
-  /* save (debounced) */
+  /* save (debounced, conflict-safe): the update only lands if the row
+     still carries the updated_at we last saw. If another tab or device
+     saved meanwhile, we fetch theirs, union-merge, and save the merge,
+     so a stale tab can never erase work made elsewhere. */
   useEffect(() => {
+    stateRef.current = state
     if (!state || !loaded.current) return
     setSyncStatus('syncing')
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(async () => {
-      const { error } = await supabase.from('movie_magic').upsert({
+      const ts = new Date().toISOString()
+      const { data, error } = await supabase
+        .from('movie_magic')
+        .update({ state, updated_at: ts })
+        .eq('user_id', user.id)
+        .eq('updated_at', lastSyncRef.current)
+        .select('updated_at')
+      if (error) { setSyncStatus('error'); return }
+      if (data && data.length) {
+        lastSyncRef.current = data[0].updated_at
+        setSyncStatus('synced')
+        return
+      }
+      // conflict: someone else saved since we loaded
+      const { data: remote, error: fetchErr } = await supabase
+        .from('movie_magic')
+        .select('state, updated_at')
+        .eq('user_id', user.id)
+        .maybeSingle()
+      if (fetchErr || !remote) { setSyncStatus('error'); return }
+      const merged = remote.state && remote.state.projects
+        ? unionMerge(stateRef.current, remote.state)
+        : stateRef.current
+      const ts2 = new Date().toISOString()
+      const { error: upErr } = await supabase.from('movie_magic').upsert({
         user_id: user.id,
-        state,
-        updated_at: new Date().toISOString(),
+        state: merged,
+        updated_at: ts2,
       })
-      setSyncStatus(error ? 'error' : 'synced')
+      if (upErr) { setSyncStatus('error'); return }
+      lastSyncRef.current = ts2
+      loaded.current = false
+      setState(merged)
+      loaded.current = true
+      setSyncStatus('synced')
     }, 600)
     return () => saveTimer.current && clearTimeout(saveTimer.current)
   }, [state, user.id])
+
+  /* returning to a tab: if the server moved on while we were away and
+     we have nothing pending, adopt the newer state instead of holding
+     a stale copy that would conflict later. */
+  useEffect(() => {
+    const onVisible = async () => {
+      if (document.visibilityState !== 'visible') return
+      if (!loaded.current || saveTimer.current === null) { /* fallthrough */ }
+      const { data } = await supabase
+        .from('movie_magic')
+        .select('state, updated_at')
+        .eq('user_id', user.id)
+        .maybeSingle()
+      if (!data || !data.state || !data.state.projects) return
+      if (data.updated_at === lastSyncRef.current) return
+      const local = stateRef.current
+      const merged = local ? unionMerge(local, data.state) : data.state
+      lastSyncRef.current = data.updated_at
+      loaded.current = false
+      setState(merged)
+      loaded.current = true
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [user.id])
 
   /* print-to-PDF: render the sheet, invoke the system dialog, reset after */
   useEffect(() => {
@@ -424,9 +526,16 @@ function MovieMagicWorkspace({ user }) {
       if (s.projects.length <= 1) return s
       const projects = s.projects.filter((p) => p.id !== projectId)
       const boards = s.boards.filter((b) => b.projectId !== projectId)
+      const scripts = (s.scripts || []).filter((sc) => sc.projectId !== projectId)
       const nextProject = projects[0]
       const nextBoard = boards.find((b) => b.projectId === nextProject.id)
-      return { ...s, projects, boards, activeProjectId: nextProject.id, activeBoardId: nextBoard ? nextBoard.id : null }
+      return {
+        ...s, projects, boards, scripts,
+        activeProjectId: nextProject.id,
+        activeBoardId: nextBoard ? nextBoard.id : null,
+        activeScriptId: null,
+        focus: 'board',
+      }
     })
   }
 
@@ -457,7 +566,7 @@ function MovieMagicWorkspace({ user }) {
   const mergeImport = (payload) => {
     const summary = { boardsCreated: 0, beatsAdded: 0, unplaced: 0 }
     setState((s) => {
-      let next = { ...s, projects: s.projects.slice(), boards: s.boards.map((b) => ({ ...b, laneNotes: b.laneNotes.map((l) => l.slice()) })) }
+      let next = { ...s, projects: s.projects.slice(), scripts: (s.scripts || []).slice(), boards: s.boards.map((b) => ({ ...b, laneNotes: b.laneNotes.map((l) => l.slice()) })) }
       let proj = payload.story
         ? next.projects.find((p) => p.name.toLowerCase() === String(payload.story).toLowerCase())
         : next.projects.find((p) => p.id === next.activeProjectId)
@@ -491,6 +600,19 @@ function MovieMagicWorkspace({ user }) {
           board.laneNotes[idx].push({ id: uid(), title: String(beat.title), detail: beat.detail ? String(beat.detail) : '', color })
           summary.beatsAdded++
         }
+      }
+      for (const spec of payload.scripts || []) {
+        if (!spec || !spec.name) continue
+        const exists = next.scripts.find(
+          (sc) => sc.projectId === proj.id && sc.name.toLowerCase() === String(spec.name).toLowerCase()
+        )
+        if (exists) continue
+        next.scripts = [...next.scripts, {
+          id: uid(), projectId: proj.id, name: String(spec.name),
+          text: spec.text ? String(spec.text) : '',
+          snapshots: Array.isArray(spec.snapshots) ? spec.snapshots.slice(0, 20) : [],
+        }]
+        summary.scriptsAdded = (summary.scriptsAdded || 0) + 1
       }
       next.activeProjectId = proj.id
       const firstBoard = next.boards.find((b) => b.projectId === proj.id)
@@ -636,7 +758,13 @@ function MovieMagicWorkspace({ user }) {
               const pid = e.target.value
               setState((s) => {
                 const first = s.boards.find((b) => b.projectId === pid)
-                return { ...s, activeProjectId: pid, activeBoardId: first ? first.id : null }
+                return {
+                  ...s,
+                  activeProjectId: pid,
+                  activeBoardId: first ? first.id : null,
+                  activeScriptId: null,
+                  focus: 'board',
+                }
               })
             }}
           >
@@ -652,9 +780,7 @@ function MovieMagicWorkspace({ user }) {
           {state.projects.length > 1 && (
             <button
               className="mm-btn ghost danger"
-              onClick={() => {
-                if (window.confirm(`Delete the whole story "${project.name}" and all its boards?`)) deleteProject(project.id)
-              }}
+              onClick={() => setDeleteStoryOpen(true)}
             >
               Delete story
             </button>
@@ -689,6 +815,7 @@ function MovieMagicWorkspace({ user }) {
         <ScriptView
           script={script}
           boards={projectBoards}
+          projectScripts={projectScripts}
           colors={NOTE_COLORS}
           onChangeText={(text) => patchScript(script.id, (sc) => ({ ...sc, text }))}
           onRename={() => setNameModal({ kind: 'renameScript', scriptId: script.id })}
@@ -790,6 +917,29 @@ function MovieMagicWorkspace({ user }) {
             setReplaceOpen(false)
           }}
           onClose={() => setReplaceOpen(false)}
+        />
+      )}
+
+      {deleteStoryOpen && project && (
+        <DeleteStoryModal
+          project={project}
+          boards={projectBoards}
+          scripts={projectScripts}
+          canDelete={state.projects.length > 1}
+          onBackup={() => {
+            const json = buildStoryBackup(project, projectBoards, projectScripts)
+            const blob = new Blob([json], { type: 'application/json' })
+            const url = URL.createObjectURL(blob)
+            const el = document.createElement('a')
+            el.href = url
+            el.download = `${slugify(project.name)}-backup.json`
+            document.body.appendChild(el)
+            el.click()
+            document.body.removeChild(el)
+            URL.revokeObjectURL(url)
+          }}
+          onDelete={() => { deleteProject(project.id); setDeleteStoryOpen(false) }}
+          onClose={() => setDeleteStoryOpen(false)}
         />
       )}
 
@@ -1225,6 +1375,7 @@ function ImportModal({ onMerge, onClose }) {
         <p className="mm-help" style={{ fontWeight: 600 }}>
           Done · {result.beatsAdded} beat{result.beatsAdded === 1 ? '' : 's'} pinned
           {result.boardsCreated ? ` · ${result.boardsCreated} board${result.boardsCreated === 1 ? '' : 's'} created` : ''}
+          {result.scriptsAdded ? ` · ${result.scriptsAdded} script${result.scriptsAdded === 1 ? '' : 's'} restored` : ''}
           {result.unplaced ? ` · ${result.unplaced} placed in the first column (lane not recognised)` : ''}
         </p>
       )}
@@ -1238,6 +1389,48 @@ function ImportModal({ onMerge, onClose }) {
           </button>
         )}
       </div>
+    </ModalShell>
+  )
+}
+
+/* Deleting a story is guarded twice: a downloadable backup and a
+   type-the-name confirmation. The last remaining story cannot go. */
+function DeleteStoryModal({ project, boards, scripts, canDelete, onBackup, onDelete, onClose }) {
+  const [typed, setTyped] = useState('')
+  const beatCount = boards.reduce((n, b) => n + b.laneNotes.reduce((m, l) => m + l.length, 0), 0)
+  const snapCount = scripts.reduce((n, sc) => n + (sc.snapshots || []).length, 0)
+  const match = typed.trim() === project.name
+
+  return (
+    <ModalShell title={`Delete · ${project.name}`} onClose={onClose}>
+      {!canDelete ? (
+        <p className="mm-help">This is your only story. Create another before deleting this one.</p>
+      ) : (
+        <>
+          <p className="mm-help">
+            This permanently deletes {boards.length} board{boards.length === 1 ? '' : 's'}, {beatCount} beat{beatCount === 1 ? '' : 's'}, {scripts.length} script{scripts.length === 1 ? '' : 's'} and {snapCount} snapshot{snapCount === 1 ? '' : 's'}. It cannot be undone from inside Movie Magic.
+          </p>
+          <button className="mm-btn primary" style={{ width: '100%', marginBottom: 12 }} onClick={onBackup}>
+            Download backup first
+          </button>
+          <p className="mm-help">
+            The backup restores through Import · boards, beats and scripts included.
+          </p>
+          <label className="mm-label">Type the story name to confirm</label>
+          <input
+            className="mm-input"
+            value={typed}
+            placeholder={project.name}
+            onChange={(e) => setTyped(e.target.value)}
+          />
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
+            <button className="mm-btn ghost" onClick={onClose}>Keep it</button>
+            <button className="mm-btn primary" disabled={!match} onClick={onDelete}>
+              Delete forever
+            </button>
+          </div>
+        </>
+      )}
     </ModalShell>
   )
 }
