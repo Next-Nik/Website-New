@@ -294,41 +294,30 @@ function CareProtocolWorkspace({ user }) {
   }, [persist])
 
   /* Manual save — a real button, not just a badge to trust. §13/§14 made
-     the passive autosave indicator visible and legible; the direct request
-     underneath both of those reports and the "Noticed" detour turned out to
-     be simpler than either: an actual button to press, with its own
-     confirmation, not an ambient status elsewhere on the page. This doesn't
-     replace the debounced autosave above — that keeps running as the
-     safety net if the founder never touches this button at all — it just
-     gives an explicit, deliberate action for whoever doesn't want to trust
-     the passive signal.
-     manualSave is its own state, separate from syncStatus, because the
-     button's feedback is about the button being pressed, not a running
-     description of background sync — "Save" -> "Saving…" -> "✓ Saved"
-     (which then reverts to "Save" after a couple of seconds) or "Try
-     again" (which does not auto-revert, so a real failure stays visible
-     until either another attempt succeeds or the next edit re-triggers
-     autosave). */
-  const [manualSave, setManualSave] = useState('idle') // idle | saving | done | error
-  const manualSaveResetRef = useRef(null)
-
-  const saveNow = useCallback(async () => {
+     the passive autosave indicator visible and legible; the "Noticed"
+     detour (§15/§16) answered a different complaint entirely. The actual,
+     repeated, plainly-stated request was simpler than either: an actual
+     button to press, with its own confirmation, wherever the founder is
+     actually looking for one — which turned out to be the bottom of each
+     section, not the topbar alone (§17 shipped one in the topbar only;
+     §18 is the correction — see <SaveButton> below, rendered once per
+     section in IntakeTab, all wired to this same action).
+     This doesn't replace the debounced autosave above — that keeps
+     running as the safety net regardless of whether any button is ever
+     pressed — it just gives an explicit, deliberate action, repeated
+     everywhere it's expected, for whoever doesn't want to trust the
+     passive signal.
+     triggerSave is deliberately thin: flush any pending debounce, save
+     immediately, report back true/false. Each <SaveButton> instance owns
+     its own Save -> Saving… -> ✓ Saved / Try again display state locally
+     (see the component), so clicking Save at the bottom of one section
+     doesn't make every other section's button flash "✓ Saved" too — only
+     the one actually pressed. */
+  const triggerSave = useCallback(async () => {
     if (saveTimer.current) { clearTimeout(saveTimer.current); saveTimer.current = null }
-    if (manualSaveResetRef.current) { clearTimeout(manualSaveResetRef.current); manualSaveResetRef.current = null }
-    setManualSave('saving')
     setSyncStatus('syncing')
-    const ok = await persist(stateRef.current)
-    if (ok) {
-      setManualSave('done')
-      manualSaveResetRef.current = setTimeout(() => setManualSave('idle'), 2200)
-    } else {
-      setManualSave('error')
-    }
+    return persist(stateRef.current)
   }, [persist])
-
-  useEffect(() => () => {
-    if (manualSaveResetRef.current) clearTimeout(manualSaveResetRef.current)
-  }, [])
 
   const setResponse = useCallback((id, value) => {
     setState((s) => ({ ...s, responses: { ...s.responses, [id]: value } }))
@@ -584,27 +573,15 @@ function CareProtocolWorkspace({ user }) {
           >
             {syncStatus === 'synced' ? '● Saved' : syncStatus === 'syncing' ? '○ Saving…' : '⚠ Not saved'}
           </span>
-          {/* The actual manual save button. Autosave (above) keeps running
-              regardless — this doesn't replace it, so nothing is lost if
-              it's never pressed — but pressing it flushes immediately and
-              gives its own direct confirmation on the button itself,
-              rather than asking the founder to notice and trust a status
-              chip elsewhere. See saveNow() for the state machine. */}
-          <button
-            type="button"
-            onClick={saveNow}
-            disabled={manualSave === 'saving'}
-            style={{
-              ...mono, fontSize: '13px', letterSpacing: '0.08em', fontWeight: 600,
-              padding: '5px 14px', borderRadius: '2px',
-              cursor: manualSave === 'saving' ? 'default' : 'pointer',
-              background: manualSave === 'done' ? fn.moss : manualSave === 'error' ? fn.clay : 'transparent',
-              color: manualSave === 'done' || manualSave === 'error' ? fn.object : fn.ink,
-              border: `1px solid ${manualSave === 'done' ? fn.moss : manualSave === 'error' ? fn.clay : fn.rule}`,
-            }}
-          >
-            {manualSave === 'saving' ? 'Saving…' : manualSave === 'done' ? '✓ Saved' : manualSave === 'error' ? 'Try again' : 'Save'}
-          </button>
+          {/* The manual save button — also repeated at the bottom of every
+              section in IntakeTab (§18); this topbar copy stays too, since
+              it's reachable from anywhere regardless of scroll position.
+              Autosave (above) keeps running regardless — this doesn't
+              replace it, so nothing is lost if it's never pressed — but
+              pressing any instance flushes immediately and gives its own
+              direct confirmation on that button, rather than asking the
+              founder to notice and trust a status chip elsewhere. */}
+          <SaveButton onSave={triggerSave} />
         </div>
         <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.12em', color: fn.ghost }}>
           HIDDEN · FOUNDER ONLY
@@ -647,6 +624,7 @@ function CareProtocolWorkspace({ user }) {
             completionMap={completionMap}
             runComputation={runComputation}
             computing={computing}
+            onSaveNow={triggerSave}
           />
         )}
 
@@ -682,7 +660,7 @@ function CareProtocolWorkspace({ user }) {
 
 /* ── intake ───────────────────────────────────────────────── */
 
-function IntakeTab({ state, setState, setResponse, engine, completionMap, runComputation, computing }) {
+function IntakeTab({ state, setState, setResponse, engine, completionMap, runComputation, computing, onSaveNow }) {
   const [placeQuery, setPlaceQuery] = useState('')
   const [placeResults, setPlaceResults] = useState([])
   const [searching, setSearching] = useState(false)
@@ -938,6 +916,15 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
             </div>
           </div>
         )}
+
+        {/* §18 — a Save button at the bottom of this section too, not just
+            the topbar. Same underlying save as everywhere else (there's one
+            profile row, not one per section); its own local confirmation. */}
+        {onSaveNow && (
+          <div style={{ marginTop: space.lg }}>
+            <SaveButton onSave={onSaveNow} />
+          </div>
+        )}
       </Panel>
 
       {/* Steps 2-4 — the core instruments */}
@@ -955,6 +942,11 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
             reflections={reflections}
             onReflect={reflectOn}
           />
+          {onSaveNow && (
+            <div style={{ marginTop: space.lg }}>
+              <SaveButton onSave={onSaveNow} />
+            </div>
+          )}
         </Panel>
       ))}
 
@@ -983,6 +975,11 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
             </div>
           </details>
         ))}
+        {onSaveNow && (
+          <div style={{ marginTop: space.lg }}>
+            <SaveButton onSave={onSaveNow} />
+          </div>
+        )}
       </Panel>
     </div>
   )
@@ -1217,6 +1214,55 @@ function Panel({ eyebrow, note, status, children }) {
       {note && <p style={{ ...fnText.caption, color: fn.ghost, margin: `0 0 ${space.lg}` }}>{note}</p>}
       {children}
     </section>
+  )
+}
+
+/* The manual save button. One reusable component, rendered from several
+   places at once (the topbar, and — §18 — the bottom of every section in
+   IntakeTab): "each section should have the save button" was the actual,
+   plainly-stated request, after a topbar-only button (§17) went unnoticed
+   by someone who was, reasonably, looking at the bottom of the section
+   they'd just finished, not the top of the page.
+   Every instance calls the same underlying save (there is one profile row,
+   not one per section — "saving a section" really means "saving
+   everything," same as autosave already does), but each instance owns its
+   own local confirmation state, so pressing Save under one section doesn't
+   make a different, untouched section's button light up "✓ Saved" too —
+   only the one actually pressed reflects what just happened. */
+function SaveButton({ onSave }) {
+  const [status, setStatus] = useState('idle') // idle | saving | done | error
+  const resetRef = useRef(null)
+
+  useEffect(() => () => { if (resetRef.current) clearTimeout(resetRef.current) }, [])
+
+  const handleClick = async () => {
+    if (resetRef.current) { clearTimeout(resetRef.current); resetRef.current = null }
+    setStatus('saving')
+    const ok = await onSave()
+    if (ok) {
+      setStatus('done')
+      resetRef.current = setTimeout(() => setStatus('idle'), 2200)
+    } else {
+      setStatus('error')
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={status === 'saving'}
+      style={{
+        ...mono, fontSize: '13px', letterSpacing: '0.08em', fontWeight: 600,
+        padding: '5px 14px', borderRadius: '2px',
+        cursor: status === 'saving' ? 'default' : 'pointer',
+        background: status === 'done' ? fn.moss : status === 'error' ? fn.clay : 'transparent',
+        color: status === 'done' || status === 'error' ? fn.object : fn.ink,
+        border: `1px solid ${status === 'done' ? fn.moss : status === 'error' ? fn.clay : fn.rule}`,
+      }}
+    >
+      {status === 'saving' ? 'Saving…' : status === 'done' ? '✓ Saved' : status === 'error' ? 'Try again' : 'Save'}
+    </button>
   )
 }
 

@@ -801,3 +801,76 @@ clicks — confirmed the full `Save → Saving… → ✓ Saved → (2.2s) → S
 `Save → Saving… → Try again` (stays) cycles land correctly, and confirmed
 no horizontal overflow at a 360px phone width. See the delivered
 screenshots.
+
+The next report was "this isn't showing up on my phone or computer" —
+plus a repo re-diffed against the delivered files, byte-for-byte identical,
+same as every round before it. Chased a Vercel branch-mismatch theory
+next, since correct code that's genuinely deployed and still doesn't
+render is otherwise inexplicable — asked for the live URL to check the
+served bundle directly rather than keep verifying the same zip a fourth
+time. That got pushed back on fairly: the branch was already confirmed
+correct on the reporting end, and the ask read as putting the problem back
+on the person reporting it rather than pursuing it. Fair — re-centred on
+proving the actual page, not just its source, by rendering the real
+exported `CareProtocolPage` component standalone (mocked login, mocked
+database, not a recreation of its JSX) and confirming the button appears
+with zero errors. It did.
+
+That resolved it without needing the URL: "no, saw nothing at all" turned
+out to mean nothing had been noticed at the one place the button existed
+— the topbar — because the actual, specific, mental model in mind the
+whole time was different: fill in a block of questions, hit Save right
+there at the bottom of that block, see it land, move to the next block.
+Once described plainly, obvious in hindsight; not visible from a bug
+report alone.
+
+---
+
+## 18. A save button at the bottom of every section
+
+Direct correction: the manual save button (§17) landed in the one place
+that was never actually being looked at — the founder was, reasonably,
+checking the bottom of the section they'd just finished, not the top of
+the page. "Each section should have the save button" was the actual
+design the whole time.
+
+**What changed.** Pulled the topbar's inline button + its local state out
+into a standalone `SaveButton({ onSave })` component, and render an
+instance at the bottom of every section in `IntakeTab` — Step 1 (birth
+data), each core instrument panel (Steps 2–4), and the optional "Deepen"
+panel — plus the original one in the topbar, which stays, since it's
+reachable regardless of scroll position. Six buttons in total on a fully
+answered form, all calling the same underlying save.
+
+**Why one shared action but independent buttons.** There's one profile row
+per founder, not one per section — "saving section 3" and "saving
+everything" are the same write, exactly like autosave already treats it.
+So every `SaveButton` instance calls the identical `triggerSave()` in the
+parent (a thin wrapper: flush any pending debounce, call `persist()`,
+report back true/false). But each instance keeps its own local
+`Save → Saving… → ✓ Saved / Try again` state, deliberately not shared
+global state — pressing Save under Step 2 shouldn't make Step 4's
+untouched button flash "✓ Saved" too. Confirmed this in a live test: click
+one section's button, and only that one transitions; the other five stay
+on "Save" throughout, then the clicked one alone reverts after ~2.2s.
+
+**Verification note.** The first pass at this test used a Playwright
+locator that excluded button text containing "Saving" — which meant the
+moment the clicked button actually started saving, it stopped matching its
+own selector, and the locator's `nth()` silently reassigned to a different
+button entirely. Looked exactly like the click doing nothing. Root-caused
+by switching to a stable element handle instead of a re-querying locator.
+Worth naming because it's the same class of mistake as several rounds in
+this build's history: the thing under test was fine; the way it was being
+observed wasn't holding still.
+
+Verified: parses clean; the full 25 + 5 + 30 test suite passes unchanged;
+design audit zero new violations; production build clean. Rendered the
+real exported `CareProtocolPage` (not a recreation) with a mocked login
+and a stateful in-memory mock of the `care_profiles` table (so the actual
+conflict-detection branch in `persist()` is exercised honestly rather than
+always looking like a conflict against a naive always-null mock) —
+confirmed six Save buttons render, clicking one drives only that one
+through the full state cycle, the other five stay untouched throughout,
+and the clicked one alone reverts after 2.2s. See the delivered
+screenshot.
