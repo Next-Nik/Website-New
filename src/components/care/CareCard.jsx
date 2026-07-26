@@ -172,9 +172,26 @@ function EvidenceChip({ tier }) {
 
 /* ── the card ─────────────────────────────────────────────── */
 
+const STALE_AFTER_MS = 14 * 86400000
+
 export default function CareCard({ card, showRightNow = true, qrDataUrl = null, width = CARD_WIDTH }) {
-  if (!card) return null
-  const { header, wired, symbols, fills, attach, rightNow, footer } = card
+  // A share row's `card` column defaults to '{}', and an older snapshot may
+  // predate a section. Default every branch rather than destructuring blind.
+  if (!card || !card.header) return null
+  const {
+    header,
+    wired = { pending: true, convergences: [], tensions: [] },
+    symbols = [],
+    fills = [],
+    attach = {},
+    rightNow = {},
+    footer = {},
+  } = card
+
+  // Derived at render, never stored — see the note in cardModel.js.
+  const rightNowStale = rightNow.updatedAt
+    ? Date.now() - new Date(rightNow.updatedAt).getTime() > STALE_AFTER_MS
+    : false
 
   return (
     <article
@@ -198,7 +215,7 @@ export default function CareCard({ card, showRightNow = true, qrDataUrl = null, 
         <h1 style={{ ...display, fontSize: '30px', fontWeight: 500, color: fn.ink, margin: 0, lineHeight: 1.1 }}>
           {header.name}
         </h1>
-        {header.placements.length > 0 && (
+        {header.placements?.length > 0 && (
           <div
             style={{
               ...mono,
@@ -325,7 +342,7 @@ export default function CareCard({ card, showRightNow = true, qrDataUrl = null, 
       {showRightNow && rightNow.text && (
         <Section tone="clay" eyebrow={`RIGHT NOW${rightNow.updatedAt ? ` · ${String(rightNow.updatedAt).slice(0, 10)}` : ''}`}>
           <p style={{ ...fnText.body, margin: 0, color: fn.ink }}>{rightNow.text}</p>
-          {rightNow.stale && (
+          {rightNowStale && (
             <p style={{ ...fnText.caption, color: fn.ghost, margin: `${space.sm} 0 0` }}>
               This part has not been updated in a while.
             </p>

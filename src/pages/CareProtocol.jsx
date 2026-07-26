@@ -5,7 +5,7 @@
 //
 // UI gate mirrors the Movie Magic / AdminConsole founder check (tolerant of
 // either metadata source so the founder cannot be locked out). Real
-// enforcement is RLS in sql/180_care_protocol.sql, which requires app_metadata
+// enforcement is RLS in sql/181_care_protocol.sql, which requires app_metadata
 // only.
 //
 // Four surfaces behind one page: Intake, Protocol (the editable working view),
@@ -79,15 +79,24 @@ function CareProtocolWorkspace({ user }) {
   const [synthesising, setSynthesising] = useState(false)
   const [synthError, setSynthError] = useState(null)
   const [share, setShare] = useState(null)
+  const [shareError, setShareError] = useState(null)
   const [qrDataUrl, setQrDataUrl] = useState(null)
+  const [loadError, setLoadError] = useState(null)
   const saveTimer = useRef(null)
-  const loaded = useRef(false)
+  const loaded = useRef(false)          // armed only after a SUCCESSFUL load
+  const lastSyncRef = useRef(null)      // the server updated_at we last agreed on
+  const stateRef = useRef(null)         // latest state, for timers and unmount
+  const engineRef = useRef(null)        // read inside persist without redepending
 
   /* engine — dynamic import keeps the ephemeris out of the main bundle */
   useEffect(() => {
     let cancelled = false
     import('../lib/care/index')
-      .then((mod) => { if (!cancelled) setEngine(mod) })
+      .then((mod) => {
+        if (cancelled) return
+        engineRef.current = mod
+        setEngine(mod)
+      })
       .catch((err) => { if (!cancelled) setEngineError(err?.message || 'Engine failed to load') })
     return () => { cancelled = true }
   }, [])
@@ -102,11 +111,29 @@ function CareProtocolWorkspace({ user }) {
         .eq('user_id', user.id)
         .maybeSingle()
       if (cancelled) return
-      if (error || !data) {
+
+      // A READ FAILURE IS NOT AN EMPTY PROFILE. Treating the two the same was
+      // a profile-destroying bug: a transient 502, an expired JWT at page
+      // load, or an aborted fetch on a backgrounded tab would install the
+      // empty state, and the debounced save would then upsert it over the real
+      // row 700ms later — wiping birth data, every quiz response, and the paid
+      // synthesis, with no interaction from the user at all. maybeSingle()
+      // already reports "no row yet" as {data: null, error: null}, so an error
+      // here is always a genuine failure. Refuse to load, and never arm the
+      // saver.
+      if (error) {
+        setLoadError(error.message || 'Could not read your profile')
+        return
+      }
+
+      if (!data) {
+        lastSyncRef.current = null
         loaded.current = true
         setState({ ...EMPTY, displayName: user.email?.split('@')[0] || '' })
         return
       }
+
+      lastSyncRef.current = data.updated_at
       loaded.current = true
       setState({
         displayName: data.display_name || '',
@@ -131,51 +158,133 @@ function CareProtocolWorkspace({ user }) {
     return () => { cancelled = true }
   }, [user.id, user.email])
 
-  /* load any existing share link */
+  /* load any existing share link. Ordered + limit(1) rather than maybeSingle()
+     so that a duplicate row — which the unique index now prevents, but which
+     may already exist from before it — degrades to "show the newest" instead
+     of erroring and leaving the panel permanently offering "create". */
   useEffect(() => {
     let cancelled = false
     ;(async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('care_shares')
         .select('token, is_live, show_right_now, revoked_at, view_count')
         .eq('user_id', user.id)
         .is('revoked_at', null)
-        .maybeSingle()
-      if (!cancelled && data) setShare(data)
+        .order('created_at', { ascending: false })
+        .limit(1)
+      if (cancelled) return
+      if (error) { setShareError(error.message); return }
+      if (data && data.length) setShare(data[0])
     })()
     return () => { cancelled = true }
   }, [user.id])
 
-  /* save, debounced */
+  /* save, debounced and conflict-safe.
+     Mirrors the pattern already proven in MovieMagic: the write only lands if
+     the row still carries the updated_at we last agreed on. If another tab or
+     device saved in the meantime we fetch theirs, merge, and write the merge —
+     so a stale tab can never silently erase work done elsewhere. */
+  const persist = useCallback(async (snapshot) => {
+    if (!snapshot) return
+    const stamp = new Date().toISOString()
+    const row = {
+      user_id: user.id,
+      display_name: snapshot.displayName || null,
+      card_number: snapshot.cardNumber || 1,
+      birth_date: snapshot.birth.date || null,
+      birth_time: snapshot.birth.unknownTime ? null : (snapshot.birth.time || null),
+      birth_place: snapshot.birth.place || null,
+      birth_lat: snapshot.birth.lat,
+      birth_lon: snapshot.birth.lon,
+      birth_unknown_time: Boolean(snapshot.birth.unknownTime),
+      chart: snapshot.chart || {},
+      human_design: snapshot.humanDesign || {},
+      extras: snapshot.extras || {},
+      responses: snapshot.responses || {},
+      synthesis: snapshot.synthesis || {},
+      right_now: snapshot.rightNow || {},
+      engine_version: engineRef.current?.ENGINE_VERSION || null,
+      updated_at: stamp,
+    }
+
+    // First write of a brand-new row: nothing to conflict with.
+    if (!lastSyncRef.current) {
+      const { error } = await supabase.from('care_profiles').upsert(row)
+      if (error) { setSyncStatus('error'); return }
+      lastSyncRef.current = stamp
+      setSyncStatus('synced')
+      return
+    }
+
+    const { data, error } = await supabase
+      .from('care_profiles')
+      .update(row)
+      .eq('user_id', user.id)
+      .eq('updated_at', lastSyncRef.current)
+      .select('updated_at')
+
+    if (error) { setSyncStatus('error'); return }
+    if (data && data.length) {
+      lastSyncRef.current = data[0].updated_at
+      setSyncStatus('synced')
+      return
+    }
+
+    // Conflict: somebody else saved since we loaded. Take theirs as the base
+    // and lay ours on top, unioning the response map rather than replacing it,
+    // so answers given on the other device survive.
+    const { data: remote, error: fetchErr } = await supabase
+      .from('care_profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle()
+    if (fetchErr || !remote) { setSyncStatus('error'); return }
+
+    const merged = {
+      ...row,
+      responses: { ...(remote.responses || {}), ...(row.responses || {}) },
+      // Keep whichever "Right now" was written most recently.
+      right_now:
+        new Date(remote.right_now?.updatedAt || 0) > new Date(row.right_now?.updatedAt || 0)
+          ? remote.right_now
+          : row.right_now,
+      // Never let an empty local value clobber a populated remote one.
+      chart: hasKeys(row.chart) ? row.chart : remote.chart,
+      human_design: hasKeys(row.human_design) ? row.human_design : remote.human_design,
+      extras: hasKeys(row.extras) ? row.extras : remote.extras,
+      synthesis: hasKeys(row.synthesis) ? row.synthesis : remote.synthesis,
+      updated_at: new Date().toISOString(),
+    }
+    const { error: mergeErr } = await supabase.from('care_profiles').upsert(merged)
+    if (mergeErr) { setSyncStatus('error'); return }
+    lastSyncRef.current = merged.updated_at
+    setSyncStatus('synced')
+  }, [user.id])
+
   useEffect(() => {
+    stateRef.current = state
     if (!state || !loaded.current) return
     setSyncStatus('syncing')
     if (saveTimer.current) clearTimeout(saveTimer.current)
-    saveTimer.current = setTimeout(async () => {
-      const row = {
-        user_id: user.id,
-        display_name: state.displayName || null,
-        card_number: state.cardNumber || 1,
-        birth_date: state.birth.date || null,
-        birth_time: state.birth.unknownTime ? null : (state.birth.time || null),
-        birth_place: state.birth.place || null,
-        birth_lat: state.birth.lat,
-        birth_lon: state.birth.lon,
-        birth_unknown_time: Boolean(state.birth.unknownTime),
-        chart: state.chart || {},
-        human_design: state.humanDesign || {},
-        extras: state.extras || {},
-        responses: state.responses || {},
-        synthesis: state.synthesis || {},
-        right_now: state.rightNow || {},
-        engine_version: engine?.ENGINE_VERSION || null,
-        updated_at: new Date().toISOString(),
-      }
-      const { error } = await supabase.from('care_profiles').upsert(row)
-      setSyncStatus(error ? 'error' : 'synced')
+    saveTimer.current = setTimeout(() => {
+      saveTimer.current = null
+      persist(stateRef.current)
     }, 700)
-    return () => saveTimer.current && clearTimeout(saveTimer.current)
-  }, [state, user.id, engine])
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current)
+    }
+  }, [state, persist])
+
+  /* Flush a pending save on unmount. Without this the last 700ms of typing is
+     silently dropped whenever the founder navigates away — including on a
+     token refresh, which unmounts the workspace via the auth gate. */
+  useEffect(() => () => {
+    if (saveTimer.current) {
+      clearTimeout(saveTimer.current)
+      saveTimer.current = null
+      persist(stateRef.current)
+    }
+  }, [persist])
 
   const setResponse = useCallback((id, value) => {
     setState((s) => ({ ...s, responses: { ...s.responses, [id]: value } }))
@@ -197,7 +306,15 @@ function CareProtocolWorkspace({ user }) {
         latitude: Number(state.birth.lat),
         longitude: Number(state.birth.lon),
       })
-      setState((s) => ({ ...s, ...computed }))
+      // Drop any existing synthesis. It was written against the OLD chart, and
+      // silently keeping it means correcting a wrong birth time leaves the card
+      // showing new placements above a portrait derived from the old ones —
+      // wrong output presented with full confidence.
+      setState((s) => ({
+        ...s,
+        ...computed,
+        synthesis: s.chart && s.synthesis ? null : s.synthesis,
+      }))
     } catch (err) {
       setEngineError(err?.message || 'Computation failed')
     } finally {
@@ -280,6 +397,11 @@ function CareProtocolWorkspace({ user }) {
       })
       const body = await res.json()
       if (!res.ok) throw new Error(body?.error || `Synthesis failed (${res.status})`)
+      // Never accept a degraded response into the card. The endpoint falls back
+      // to returning raw model output when its JSON will not parse, and that
+      // raw output would otherwise be rendered as the "How I'm wired" prose,
+      // saved, and copied into the public snapshot.
+      if (body.degraded) throw new Error('The model returned something unusable. Try again.')
       setState((s) => ({ ...s, synthesis: body }))
       setTab('card')
     } catch (err) {
@@ -289,36 +411,69 @@ function CareProtocolWorkspace({ user }) {
     }
   }, [engine, state])
 
-  /* share link */
+  /* share link. Every one of these reports its errors — a silently swallowed
+     failure here reads to the founder as success, and a revoke that looks like
+     it worked but did not is the worst possible version of that. */
   const createShare = useCallback(async () => {
-    if (!card) return
+    if (!card || share) return
+    setShareError(null)
     const token = makeToken()
     const { error } = await supabase.from('care_shares').insert({
       token,
       user_id: user.id,
-      card: publicCard(card),
+      card: publicCard(card, true),
       is_live: true,
       show_right_now: true,
     })
-    if (!error) setShare({ token, is_live: true, show_right_now: true, revoked_at: null, view_count: 0 })
-  }, [card, user.id])
+    if (error) { setShareError(error.message || 'Could not create the link'); return }
+    setShare({ token, is_live: true, show_right_now: true, revoked_at: null, view_count: 0 })
+  }, [card, share, user.id])
 
   const refreshShare = useCallback(async () => {
     if (!share?.token || !card) return
-    await supabase
+    setShareError(null)
+    const { error } = await supabase
       .from('care_shares')
-      .update({ card: publicCard(card), updated_at: new Date().toISOString() })
+      .update({ card: publicCard(card, share.show_right_now), updated_at: new Date().toISOString() })
       .eq('token', share.token)
-  }, [share?.token, card])
+    if (error) setShareError(error.message || 'Could not update the snapshot')
+  }, [share, card])
 
   const revokeShare = useCallback(async () => {
     if (!share?.token) return
-    await supabase
+    setShareError(null)
+    const { data, error } = await supabase
       .from('care_shares')
       .update({ revoked_at: new Date().toISOString(), is_live: false })
       .eq('token', share.token)
+      .select('token')
+    if (error || !data || !data.length) {
+      setShareError(error?.message || 'Revoke did not take effect. The link is still live.')
+      return
+    }
     setShare(null)
   }, [share?.token])
+
+  // A failed read is a hard stop, not an empty profile. Nothing is editable and
+  // the saver is never armed, so a transient outage cannot overwrite the row.
+  if (loadError) {
+    return (
+      <div style={S.loadingWrap}>
+        <div style={{ maxWidth: '420px', textAlign: 'center', padding: space.xl }}>
+          <div style={{ ...fnText.eyebrow, marginBottom: space.md }}>COULD NOT LOAD</div>
+          <p style={{ ...fnText.body, color: fn.ink, margin: `0 0 ${space.lg}` }}>
+            Your protocol is still on the server · it has not been changed. Nothing
+            will be saved until it loads cleanly, so reload rather than re-entering
+            anything.
+          </p>
+          <p style={{ ...fnText.caption, color: fn.ghost, margin: `0 0 ${space.lg}` }}>{loadError}</p>
+          <button type="button" onClick={() => window.location.reload()} style={S.solidBtn}>
+            Reload
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   if (!state) {
     return (
@@ -335,7 +490,7 @@ function CareProtocolWorkspace({ user }) {
           <span aria-hidden="true">◍</span>
           <span>Care Protocol</span>
           <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.12em', color: fn.ghost }}>
-            {syncStatus === 'synced' ? '● synced' : syncStatus === 'syncing' ? '○ saving…' : '⚠ retrying'}
+            {syncStatus === 'synced' ? '● synced' : syncStatus === 'syncing' ? '○ saving…' : '⚠ not saved'}
           </span>
         </div>
         <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.12em', color: fn.ghost }}>
@@ -363,6 +518,13 @@ function CareProtocolWorkspace({ user }) {
           </div>
         )}
 
+        {syncStatus === 'error' && (
+          <div style={S.notice}>
+            <strong style={{ color: fn.clay }}>Not saved.</strong> The last change did
+            not reach the server. Keep this tab open · the next edit will try again.
+          </div>
+        )}
+
         {tab === 'intake' && (
           <IntakeTab
             state={state}
@@ -385,6 +547,7 @@ function CareProtocolWorkspace({ user }) {
             synthesising={synthesising}
             synthError={synthError}
             share={share}
+            shareError={shareError}
             createShare={createShare}
             refreshShare={refreshShare}
             revokeShare={revokeShare}
@@ -597,7 +760,7 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
 
 function ProtocolTab({
   state, setState, card, engine, runSynthesis, synthesising, synthError,
-  share, createShare, refreshShare, revokeShare,
+  share, shareError, createShare, refreshShare, revokeShare,
 }) {
   const detail = card?.detail
   const shareUrl = share ? `${window.location.origin}/care/${share.token}` : null
@@ -685,8 +848,11 @@ function ProtocolTab({
 
       <Panel
         eyebrow="SHARE LINK"
-        note="Public routes are built but dark. The card renders for you; anonymous readers get nothing until care_public_enabled() is flipped in SQL."
+        note="Public reads go through the care_card_by_token function, which is dark until care_public_enabled() is flipped in SQL. The card renders for you; nobody else can reach it yet."
       >
+        {shareError && (
+          <p style={{ ...fnText.caption, color: fn.clay, margin: `0 0 ${space.md}` }}>{shareError}</p>
+        )}
         {share ? (
           <>
             <p style={{ ...mono, fontSize: '13px', color: fn.meta, wordBreak: 'break-all', margin: `0 0 ${space.md}` }}>
@@ -837,20 +1003,30 @@ function makeToken() {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('')
 }
 
+// Does this jsonb-bound object actually carry anything?
+function hasKeys(value) {
+  return Boolean(value) && typeof value === 'object' && Object.keys(value).length > 0
+}
+
 // Strip the card down to what a public reader may see. Belt and braces: the
 // snapshot column should never have carried anything else, but the shape is
 // enforced here rather than assumed.
-function publicCard(card) {
-  return {
+//
+// showRightNow omits the section from the STORED JSON rather than hiding it at
+// render time. Hiding it in the renderer left the text sitting in the snapshot
+// for anyone who read the raw response.
+function publicCard(card, showRightNow = true) {
+  const out = {
     header: card.header,
     wired: card.wired,
     symbols: card.symbols,
     fills: card.fills,
     attach: card.attach,
-    rightNow: card.rightNow,
     footer: card.footer,
     evidenceMix: card.evidenceMix,
   }
+  if (showRightNow) out.rightNow = card.rightNow
+  return out
 }
 
 /* ── styles ───────────────────────────────────────────────── */

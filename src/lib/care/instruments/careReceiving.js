@@ -123,8 +123,13 @@ export function rankedCareModes(scores) {
       ...mode,
       value: scores[`care_${mode.key}`]?.value ?? 0,
       keeper: Boolean(scores[`care_${mode.key}`]?.keeper),
+      answered: scores[`care_${mode.key}`] !== undefined,
     }))
-    .filter((mode) => mode.value > 0)
+    // Filter on ANSWERED, not on value. A deliberate "barely registers" scores
+    // 0 and was being dropped from the card entirely, rendering identically to
+    // a question the person never reached — which loses real signal, since
+    // "this one does nothing for me" is worth a partner knowing.
+    .filter((mode) => mode.answered)
     .sort((a, b) => b.value - a.value || Number(b.keeper) - Number(a.keeper))
 }
 

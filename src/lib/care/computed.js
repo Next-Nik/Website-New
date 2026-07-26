@@ -52,10 +52,21 @@ function liChunFor(year) {
   return new Date((lo + hi) / 2)
 }
 
-export function chineseZodiac(birth) {
-  const birthUTC = Date.UTC(birth.year, birth.month - 1, birth.day)
+/**
+ * @param {object} birth      { year, month (1-indexed), day, ... }
+ * @param {Date}  [birthUTC]  the true birth instant.
+ *
+ * Li Chun falls mid-to-late day UTC, so comparing it against midnight of the
+ * birth date pushed EVERY birth on the crossing day into the previous animal
+ * year. Compare against the real instant. When a caller genuinely has only a
+ * date, midday is the least-wrong fallback rather than midnight.
+ */
+export function chineseZodiac(birth, birthUTC) {
+  const instant = birthUTC instanceof Date
+    ? birthUTC.getTime()
+    : Date.UTC(birth.year, birth.month - 1, birth.day, 12)
   const liChun = liChunFor(birth.year)
-  const effectiveYear = birthUTC < liChun.getTime() ? birth.year - 1 : birth.year
+  const effectiveYear = instant < liChun.getTime() ? birth.year - 1 : birth.year
 
   // 1984 was Wood Rat: stem index 0, branch index 0.
   const branch = ((effectiveYear - 1984) % 12 + 12) % 12
@@ -95,11 +106,14 @@ function reduceNumber(n) {
 }
 
 export function numerology(birth) {
-  // Reduce each component before summing — the standard method, and the one
-  // that preserves master numbers correctly.
-  const parts = [birth.month, birth.day, birth.year].map((p) =>
-    reduceNumber(String(p).split('').reduce((a, d) => a + Number(d), 0)),
-  )
+  // Reduce each component, then sum, then reduce again — the standard method.
+  //
+  // Each component must go through reduceNumber DIRECTLY. Digit-summing first
+  // and reducing afterwards destroys master numbers before the master check
+  // can see them: month 11 became 2, so 1988-11-03 returned life path 4 rather
+  // than master 22. reduceNumber already digit-sums in a loop and tests for a
+  // master at every stage, which is exactly the behaviour wanted here.
+  const parts = [birth.month, birth.day, birth.year].map((p) => reduceNumber(Number(p)))
   const lifePath = reduceNumber(parts.reduce((a, b) => a + b, 0))
   return { lifePath, note: LIFE_PATH_NOTES[lifePath] || null }
 }

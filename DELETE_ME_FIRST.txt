@@ -1,0 +1,17 @@
+This drop is built against your newest zip (WebsiteNewmain_37), which still had
+the ORIGINAL pre-review care-protocol files plus a real migration-number
+collision (sql/180_care_protocol.sql alongside sql/180_nextsteps_phases.sql).
+
+Before applying: delete sql/180_care_protocol.sql. It's replaced by
+sql/181_care_protocol.sql, which is a superset — it includes every fix from
+the review (the token-scoped RPC replacing the unsafe anon policy, the unique
+index on live shares, etc.) — not just a renumbering.
+
+If sql/180_care_protocol.sql was already run in Supabase: run 181 too. It's
+idempotent and additionally drops the old anon read policy on care_shares,
+which is what closes the security hole described in docs/care-protocol.md §8.
+
+Everything else here is unchanged from the fixes already reviewed. Your Deck
+rework in MovieMagic.jsx and the Wheel/domain-copy work elsewhere were left
+completely untouched — App.jsx and MovieMagic.jsx only had their sql/180 -> 181
+comment references updated (one line each), verified by diff before packaging.

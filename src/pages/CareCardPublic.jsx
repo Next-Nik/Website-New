@@ -2,17 +2,20 @@
 //
 // The public Care Card route: /care/:token
 //
-// BUILT BUT DARK. The route, the query, the renderer and the empty states are
-// all real, but sql/180's care_public_enabled() returns false, so RLS hands an
-// anonymous reader nothing. The founder, matched by the owner policy, still
-// gets their own row — which means the exact public rendering can be tested
-// end to end without anything being publicly readable.
+// BUILT BUT DARK. The route, the renderer and the empty states are all real,
+// but sql/181's care_public_enabled() returns false, so the read returns
+// nothing to anyone. To go live: replace that function with `select true`.
 //
-// To go live: replace care_public_enabled() with `select true`. No change here.
+// Reads go through the care_card_by_token RPC, NOT a table select. This is a
+// security boundary, not a style choice: a row-level policy cannot scope a
+// read to the single token the caller presented, because the token filter is
+// the client's to choose and the client can omit it. A table policy would
+// therefore let anyone with the publishable key enumerate every live card.
+// The RPC takes the token as an argument, so holding the token is the only
+// way to name a row. See the note above the function in sql/181.
 //
-// This page reads care_shares only. It never touches care_profiles, so birth
-// time and coordinates are structurally out of reach rather than merely
-// filtered out.
+// It never touches care_profiles, so birth time and coordinates are
+// structurally out of reach rather than merely filtered out.
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
@@ -29,14 +32,13 @@ export function CareCardPublicPage() {
     let cancelled = false
     ;(async () => {
       if (!token) { setStatus('missing'); return }
-      const { data, error } = await supabase
-        .from('care_shares')
-        .select('card, show_right_now, is_live, revoked_at')
-        .eq('token', token)
-        .maybeSingle()
+      const { data, error } = await supabase.rpc('care_card_by_token', { p_token: token })
       if (cancelled) return
       if (error) { setStatus('error'); return }
-      if (!data || !data.is_live || data.revoked_at) { setStatus('missing'); return }
+      // The function returns null for: sharing switched off, unknown token,
+      // revoked, or not live. All four are indistinguishable to the reader by
+      // design — a probe learns nothing about which tokens exist.
+      if (!data || !data.card) { setStatus('missing'); return }
       setRow(data)
       setStatus('ready')
     })()

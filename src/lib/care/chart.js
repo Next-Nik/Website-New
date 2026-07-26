@@ -42,9 +42,14 @@ export const BODIES = [
   'jupiter', 'saturn', 'uranus', 'neptune', 'pluto',
 ]
 
-// Accra sits at UTC+0 in every era the tz database covers, with no daylight
-// saving ever. Using it as the anchor lets us hand Origin a UTC wall clock and
-// get that exact instant back, which is what the design-date search needs.
+// Origin insists on a location and derives a timezone offset from it, but the
+// design-date search needs a bare UTC instant. Accra is the closest thing to a
+// permanent UTC+0 anchor — but it is NOT actually offset-free in every era:
+// Africa/Accra ran +00:20 each September to December from 1920 to 1942, and
+// LMT (+00:00:52) before 1918. Trusting it blindly puts pre-1943 charts twenty
+// minutes out, which is enough to move a gate line. So horoscopeAtUTC measures
+// the offset the library actually applied and corrects for it, which makes the
+// anchor exact in every era rather than merely usually.
 const UTC_ANCHOR = { latitude: 5.55, longitude: -0.2 }
 
 function buildOrigin({ year, month, date, hour, minute, second = 0, latitude, longitude }) {
@@ -60,10 +65,8 @@ function buildOrigin({ year, month, date, hour, minute, second = 0, latitude, lo
   })
 }
 
-// A horoscope for an exact UTC instant, location-independent. Used for the
-// planetary longitudes that human design needs at the design moment.
-export function horoscopeAtUTC(instant) {
-  const origin = buildOrigin({
+function originForUTCWallClock(instant) {
+  return buildOrigin({
     year: instant.getUTCFullYear(),
     month: instant.getUTCMonth(),
     date: instant.getUTCDate(),
@@ -72,6 +75,21 @@ export function horoscopeAtUTC(instant) {
     second: instant.getUTCSeconds(),
     ...UTC_ANCHOR,
   })
+}
+
+// A horoscope for an exact UTC instant, location-independent. Used for the
+// planetary longitudes that human design needs at the design moment.
+//
+// Self-correcting: build once, measure whatever offset the anchor's timezone
+// history applied, and if it is not zero, rebuild with the input shifted back
+// by exactly that amount. One correction pass is sufficient because the offset
+// is constant across the tiny shift it induces.
+export function horoscopeAtUTC(instant) {
+  let origin = originForUTCWallClock(instant)
+  const drift = new Date(origin.utcTimeFormatted).getTime() - instant.getTime()
+  if (drift !== 0) {
+    origin = originForUTCWallClock(new Date(instant.getTime() - drift))
+  }
   return new Horoscope({ origin, houseSystem: 'placidus', zodiac: 'tropical' })
 }
 
@@ -94,12 +112,15 @@ export function degreeInSign(longitude) {
 }
 
 export function formatPosition(longitude) {
-  const deg = degreeInSign(longitude)
-  const whole = Math.floor(deg)
-  const minutes = Math.round((deg - whole) * 60)
-  // Guard the 59.6' rounding case so we never print 12°60'.
-  const carry = minutes === 60
-  return `${signOf(longitude)} ${carry ? whole + 1 : whole}°${String(carry ? 0 : minutes).padStart(2, '0')}'`
+  // Round to whole arcminutes FIRST, then derive the sign from the rounded
+  // value. Deriving the sign first and carrying afterwards prints impossible
+  // positions at a cusp: 29.9999° would round up and render "Aries 30°00'"
+  // rather than "Taurus 0°00'", and 359.9999° would render "Pisces 30°00'".
+  const norm = (((longitude % 360) + 360) % 360)
+  const totalMinutes = Math.round(norm * 60) % (360 * 60)
+  const sign = SIGNS[Math.floor(totalMinutes / (30 * 60))]
+  const within = totalMinutes % (30 * 60)
+  return `${sign} ${Math.floor(within / 60)}°${String(within % 60).padStart(2, '0')}'`
 }
 
 /**

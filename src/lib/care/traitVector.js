@@ -27,17 +27,23 @@ function entry(dimension, value, { confidence = 1, source, tier, label = null, d
 // Astrology contributes as elemental and modal weighting rather than as a
 // pile of sign names. "Water-heavy" is something the synthesis can actually
 // reason against alongside a measured anxiety score; "Cancer moon" is not.
+// EVERY accessor below is guarded per-section rather than by one truthiness
+// check at the top. These objects arrive from jsonb columns that default to
+// '{}', and could have been written by an older engine version, so "the object
+// exists" does not imply "the shape is complete". An unguarded destructure here
+// took down the whole card, because buildCard calls this for its evidence mix.
 function fromAstrology(chart) {
   if (!chart) return []
   const out = []
-  const { elements, modalities } = chart.balance
-  for (const [element, value] of Object.entries(elements)) {
+  const elements = chart.balance?.elements
+  const modalities = chart.balance?.modalities
+  for (const [element, value] of Object.entries(elements || {})) {
     out.push(entry(`element_${element}`, value, {
       source: 'astrology', tier: 'mythic', confidence: 0.6,
       label: `${element.charAt(0).toUpperCase()}${element.slice(1)} weighting`,
     }))
   }
-  for (const [modality, value] of Object.entries(modalities)) {
+  for (const [modality, value] of Object.entries(modalities || {})) {
     out.push(entry(`modality_${modality}`, value, {
       source: 'astrology', tier: 'mythic', confidence: 0.6,
       label: `${modality.charAt(0).toUpperCase()}${modality.slice(1)} weighting`,
@@ -45,7 +51,8 @@ function fromAstrology(chart) {
   }
   // The big three as qualitative markers, carried for the synthesis prompt.
   for (const key of ['sun', 'moon', 'rising']) {
-    const sign = chart.big3[key].sign
+    const sign = chart.big3?.[key]?.sign
+    if (!sign) continue
     out.push(entry(`placement_${key}`, 100, {
       source: 'astrology', tier: 'mythic', confidence: 1,
       label: `${key.charAt(0).toUpperCase()}${key.slice(1)} in ${sign}`,
@@ -57,20 +64,26 @@ function fromAstrology(chart) {
 
 function fromHumanDesign(hd) {
   if (!hd) return []
-  const out = [
-    entry('hd_definition_density', (hd.definedCentres.length / 9) * 100, {
+  const out = []
+  const defined = Array.isArray(hd.definedCentres) ? hd.definedCentres : null
+  const open = Array.isArray(hd.openCentres) ? hd.openCentres : []
+
+  if (defined) {
+    out.push(entry('hd_definition_density', (defined.length / 9) * 100, {
       source: 'human_design', tier: 'mythic', confidence: 0.6,
-      label: `${hd.definedCentres.length} of 9 centres defined`,
-      detail: { defined: hd.definedCentres, open: hd.openCentres, definition: hd.definition },
-    }),
-  ]
-  out.push(entry('hd_type', 100, {
-    source: 'human_design', tier: 'mythic', confidence: 1,
-    label: hd.type, detail: { profile: hd.profile, authority: hd.authority },
-  }))
+      label: `${defined.length} of 9 centres defined`,
+      detail: { defined, open, definition: hd.definition },
+    }))
+  }
+  if (hd.type) {
+    out.push(entry('hd_type', 100, {
+      source: 'human_design', tier: 'mythic', confidence: 1,
+      label: hd.type, detail: { profile: hd.profile, authority: hd.authority },
+    }))
+  }
   // Open centres are the practically useful part: they are where a person
   // amplifies whatever is in the room, which is real partner-facing guidance.
-  for (const centre of hd.openCentres) {
+  for (const centre of open) {
     out.push(entry(`hd_open_${centre}`, 100, {
       source: 'human_design', tier: 'mythic', confidence: 0.5,
       label: `Open ${centre}`,
@@ -142,34 +155,36 @@ export function scoresByInstrument(responses) {
 
 /** Which instruments have actually been completed, and how far. */
 export function completion(responses) {
+  const filled = (id) => {
+    const value = (responses || {})[id]
+    return value !== undefined && value !== null && value !== ''
+  }
   const map = {}
   for (const instrument of INSTRUMENTS) {
     const ids = instrument.items.map((i) => i.id)
-    const answered = ids.filter((id) => {
-      const value = (responses || {})[id]
-      return value !== undefined && value !== null && value !== ''
-    }).length
+    // Completeness is measured against REQUIRED items only. Counting an item
+    // explicitly marked optional meant the open-question step could never show
+    // as done, so its progress dot could never light.
+    const requiredIds = instrument.items.filter((i) => !i.optional).map((i) => i.id)
+    const answered = ids.filter(filled).length
     map[instrument.id] = {
       answered,
       total: ids.length,
-      complete: answered === ids.length,
-      // Free-text instruments count as done once the required item is filled.
+      required: requiredIds.length,
+      complete: requiredIds.every(filled),
       started: answered > 0,
     }
   }
   return map
 }
 
-/** A compact digest of the vector for the synthesis prompt. */
+/** A compact digest of the vector, grouped by evidence tier. */
 export function vectorDigest(vector) {
   const byTier = { measured: [], mapped: [], mythic: [] }
   for (const item of vector) {
-    const tier = byTier[item.evidence_tier] || byTier.mythic
-    tier.push(
-      item.detail?.sign || item.label !== item.dimension
-        ? `${item.label} (${item.value})`
-        : `${item.dimension}: ${item.value}`,
-    )
+    const bucket = byTier[item.evidence_tier] || byTier.mythic
+    const named = item.label && item.label !== item.dimension
+    bucket.push(named ? `${item.label} (${item.value})` : `${item.dimension}: ${item.value}`)
   }
   return byTier
 }

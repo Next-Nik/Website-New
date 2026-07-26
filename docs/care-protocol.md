@@ -1,7 +1,7 @@
 # Care Protocol — build note and validation record
 
 **Status:** v1 built, hidden inside NextUs. Founder-only.
-**Migration:** `sql/180_care_protocol.sql`
+**Migration:** `sql/181_care_protocol.sql`
 **Entry point:** the `◍ Care Protocol` button in the Movie Magic topbar. The
 route is unlinked from all navigation.
 
@@ -17,7 +17,7 @@ route is unlinked from all navigation.
 | Hidden working page | `src/pages/CareProtocol.jsx` → `/care-protocol` |
 | Public card route (dark) | `src/pages/CareCardPublic.jsx` → `/care/:token` |
 | Synthesis endpoint | `api/care-synthesis.js` |
-| Tables and RLS | `sql/180_care_protocol.sql` |
+| Tables and RLS | `sql/181_care_protocol.sql` |
 
 Nothing in `src/lib/care/` imports from the NextUs app, Supabase, or React —
 design tokens are touched only by the renderer. Placement stays a question of
@@ -35,12 +35,24 @@ design tokens are touched only by the renderer. Placement stays a question of
 3. **Endpoint.** `api/care-synthesis.js` verifies the bearer token server-side
    and rejects anyone whose `app_metadata.role` is not `founder`.
 
-**The public route is built but dark.** `care_public_enabled()` returns
-`false`, so the anon read policy currently grants nothing. The founder still
-matches the owner policy, so the exact public rendering is testable end to end
-while nothing is publicly readable.
+**The public route is built but dark**, and goes through a `security definer`
+function rather than a table policy. `care_card_by_token(p_token text)` takes
+the token as an argument and returns the card only when
+`care_public_enabled()` is true; there is deliberately **no anon select policy
+on `care_shares`**.
 
-To go live, one statement:
+This is a correction, and it matters. A row-level policy of the form
+`using (care_public_enabled() and is_live and revoked_at is null)` reads like
+"anyone may fetch a card by token", but it does not mean that. RLS evaluates a
+predicate per row and cannot see the caller's `?token=eq.…` filter — that
+filter is the *client's* choice, and the client can simply omit it. Such a
+policy would have let anyone holding the publishable key enumerate every live
+card: names, portraits, attachment scores, "Right now" notes and owner UUIDs.
+The token would have stopped being a capability the moment sharing was
+switched on. Passing the token as a function argument makes possession of it
+the only way to name a row.
+
+To go live, still one statement:
 
 ```sql
 create or replace function public.care_public_enabled()
@@ -188,3 +200,100 @@ Product name · care-symbol tone calibration (currently five symbols chosen per
 person from a library of twelve) · whether "Right now" is visible by default on
 a shared card (currently a per-share `show_right_now` flag, defaulting on) ·
 whether the licensing audit happens before or after v1 ships.
+
+---
+
+## 8. Corrections made in review
+
+The first drop was reviewed against the merged tree. Everything below was found
+and fixed; each has a regression test that fails against the original code.
+
+### Security
+
+- **Public read went through a table policy that could not scope by token.**
+  Replaced with the `care_card_by_token` security-definer function. See §2 —
+  this was the most serious defect in the drop, and the original file's comment
+  claiming the policy was "already correct" was actively misleading.
+- **`show_right_now` was applied at render time only**, so the note still sat
+  in the stored snapshot JSON for anyone reading the raw response. The flag now
+  omits the section from the snapshot itself, and the RPC strips it server-side
+  as well.
+
+### Data loss
+
+- **A failed profile read installed the empty state, and the debounced save
+  then wrote it over the real row.** A transient 502, an expired JWT at page
+  load, or an aborted fetch on a backgrounded tab would have wiped birth data,
+  every response, and the paid synthesis, with no user interaction at all. A
+  read error is now a hard stop: nothing is editable and the saver is never
+  armed. `maybeSingle()` already distinguishes "no row yet" from a failure.
+- **Whole-row last-write-wins across devices.** Adopted the conflict-safe
+  pattern already proven in `MovieMagic.jsx`: the write only lands if the row
+  still carries the `updated_at` we last saw, and on conflict the remote row is
+  fetched and merged (responses unioned, newest "Right now" kept, empty local
+  values never clobbering populated remote ones).
+- **A pending save was discarded on unmount**, losing the last 700 ms of
+  typing on navigate-away — including on a token refresh, which unmounts the
+  workspace through the auth gate. Now flushed.
+- **Duplicate share rows.** A double-click created a second live row, after
+  which the loader's `.maybeSingle()` errored and the UI offered "create"
+  forever while the orphans stayed live and unreachable. Added a partial unique
+  index, and the loader now takes the newest rather than erroring.
+- **Share create/refresh/revoke swallowed their errors**, so a revoke that
+  silently failed looked successful. All three now report.
+
+### Wrong output
+
+- **Sign-boundary formatting.** `29.9999°` printed `Aries 30°00'` rather than
+  `Taurus 0°00'`. Rounding now happens before the sign is derived.
+- **Chinese zodiac on the Li Chun day.** The crossing instant was compared
+  against midnight of the birth date, so *every* birth on that day got the
+  previous animal. Now compared against the true birth instant.
+- **Numerology destroyed master numbers.** Components were digit-summed before
+  the master check could see them, so 1988-11-03 returned life path 4 instead
+  of master 22 — directly contradicting the comment above it.
+- **The Accra UTC anchor is not offset-free in every era.** `Africa/Accra` ran
+  +00:20 each September–December from 1920 to 1942, putting pre-1943 charts
+  twenty minutes out — enough to move a gate line. `horoscopeAtUTC` now
+  measures the offset the library actually applied and corrects for it.
+  Verified to zero difference against an independent wartime-London route.
+- **`confidence` was computed everywhere and consulted nowhere.** One stray tap
+  on item 1 of 50 produced a confident-looking extraversion of 0 and pushed
+  "Line dry" onto the care strip. Symbol selection is now gated on confidence.
+- **A deliberate "barely registers" vanished from the card**, rendering
+  identically to a question never reached. Ranking now filters on answered.
+- **Staleness was frozen into the share snapshot**, so a partner reading a
+  six-month-old card would never see the one warning that section exists to
+  give. Now derived at render.
+- **A recompute left the old synthesis attached to the new chart.** Correcting
+  a wrong birth time showed new placements above a portrait built from the old
+  ones. The synthesis is now cleared on recompute.
+- **A degraded synthesis response was rendered as the portrait.** When the
+  model's JSON would not parse, the endpoint returned raw output with
+  `degraded: true`, nothing read the flag, and literal JSON went onto the card
+  and into the snapshot. Now rejected.
+- **Optional items blocked completion**, so the open-question step's progress
+  dot could never light.
+
+### Robustness
+
+- `buildCard` and `buildTraitVector` threw on a partially-populated `chart` or
+  `human_design` — reachable from the `'{}'::jsonb` column default or from
+  engine-version drift. Every accessor is now guarded per-section, and
+  `CareCard` defaults each destructured section.
+
+### Housekeeping
+
+- **Migration renumbered 180 → 181.** The NextSteps route layer landed
+  `180_nextsteps_phases.sql` in the same window. No object names collide, so
+  running both is safe, but two files claiming 180 breaks the convention.
+
+### Known and deliberately unchanged
+
+The UI founder gate accepts `user_metadata.role`, which a signed-in user can
+set on themselves. This is the existing house pattern, copied verbatim from
+`MovieMagic.jsx` and `AdminConsole.jsx`, and the repo's own comments say it is
+deliberate so the founder cannot be locked out. RLS and the synthesis endpoint
+both require `app_metadata`, so **no data is readable or writable** through it
+— the exposure is the page shell of an unreleased internal tool. Worth a
+repo-wide decision rather than a unilateral change here.

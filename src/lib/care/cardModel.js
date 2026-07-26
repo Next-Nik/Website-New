@@ -22,12 +22,15 @@ import { doshaReading } from './instruments/dosha'
  * rather than recomputing per render.
  */
 export function computeFromBirth(birth) {
+  const birthUTC = birthInstantUTC(birth)
   const chart = computeChart(birth)
-  const humanDesign = computeHumanDesign(birthInstantUTC(birth))
+  const humanDesign = computeHumanDesign(birthUTC)
   return {
     chart,
     humanDesign,
-    extras: { chinese: chineseZodiac(birth), numerology: numerology(birth) },
+    // chineseZodiac needs the true instant, not the calendar date — Li Chun
+    // falls mid-day UTC and the boundary is otherwise always wrong.
+    extras: { chinese: chineseZodiac(birth, birthUTC), numerology: numerology(birth) },
     computedAt: new Date().toISOString(),
   }
 }
@@ -61,19 +64,27 @@ function chooseSymbols(profile, scores) {
   const hd = profile.humanDesign
   const attach = attachmentReading(scores.ecr_rs || {})
   const big5 = scores.ipip50 || {}
+  const elements = profile.chart?.balance?.elements
+
+  // A score is only allowed to steer the card if enough of its instrument was
+  // actually answered. Scores normalise over ANSWERED items, so one stray tap
+  // on item 1 of 50 produced a confident-looking extraversion of 0 and pushed
+  // "Line dry" onto the strip. confidence was computed everywhere and consulted
+  // nowhere; this is the gate it existed for.
+  const solid = (score, floor = 0.6) => score && score.confidence >= floor && score.value !== undefined
 
   // Emotional authority: no truth in the moment. That is the "do not rush the
   // cycle" instruction almost exactly.
   if (hd?.authority === 'Emotional') add('no_rush')
   if (hd?.type === 'Projector' || hd?.type === 'Reflector') add('lay_flat')
   if (hd?.type === 'Manifestor') add('no_force')
-  if (attach?.avoidance.band === 'high') add('no_force')
-  if (attach?.anxiety.band === 'high') add('warmth')
-  if (big5.emotional_stability && big5.emotional_stability.value < 40) add('slow_heat')
-  if (big5.extraversion && big5.extraversion.value < 35) add('line_dry')
-  if (big5.agreeableness && big5.agreeableness.value > 70) add('wash_separately')
-  if (profile.chart?.balance.elements.fire >= 35) add('iron_low')
-  if (profile.chart?.balance.elements.water >= 35) add('air')
+  if (attach?.avoidance?.band === 'high') add('no_force')
+  if (attach?.anxiety?.band === 'high') add('warmth')
+  if (solid(big5.emotional_stability) && big5.emotional_stability.value < 40) add('slow_heat')
+  if (solid(big5.extraversion) && big5.extraversion.value < 35) add('line_dry')
+  if (solid(big5.agreeableness) && big5.agreeableness.value > 70) add('wash_separately')
+  if (elements && elements.fire >= 35) add('iron_low')
+  if (elements && elements.water >= 35) add('air')
 
   for (const fallback of ['warmth', 'no_force', 'air', 'slow_heat', 'no_rush']) add(fallback)
   return picked.map((key) => SYMBOL_BY_KEY[key])
@@ -90,15 +101,18 @@ export function buildCard(profile) {
   const hd = profile.humanDesign
   const chart = profile.chart
 
+  // Guard on the nested shape, not just on the object. A jsonb column defaults
+  // to '{}', and an older engine version could have written a partial chart —
+  // either would throw here on a bare truthiness check.
   const placements = []
-  if (chart) {
+  if (chart?.big3?.sun && chart.big3.moon && chart.big3.rising) {
     placements.push(
       `${chart.big3.sun.sign} sun`,
       `${chart.big3.moon.sign} moon`,
       `${chart.big3.rising.sign} rising`,
     )
   }
-  if (hd) placements.push(hd.shorthand)
+  if (hd?.shorthand) placements.push(hd.shorthand)
 
   const attachment = attachmentReading(scores.ecr_rs || {})
   const dosha = doshaReading(scores.dosha || {})
@@ -134,12 +148,15 @@ export function buildCard(profile) {
       : { userLine: profile.responses?.open_line?.trim() || null },
 
     // 6 — Right now: the only clay section, the living part of the card.
+    //
+    // Staleness is deliberately NOT computed here. A share link stores a
+    // snapshot of this object, so a boolean baked in at snapshot time would be
+    // frozen false forever — and a partner reading a six-month-old card would
+    // never see the one warning that section exists to give. The renderer
+    // derives it from updatedAt at display time instead.
     rightNow: {
       text: profile.rightNow?.text || null,
       updatedAt: profile.rightNow?.updatedAt || null,
-      stale: profile.rightNow?.updatedAt
-        ? Date.now() - new Date(profile.rightNow.updatedAt).getTime() > 14 * 86400000
-        : false,
     },
 
     // 7 — Footer
