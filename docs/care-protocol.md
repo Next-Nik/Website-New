@@ -521,3 +521,33 @@ happened" gap, closed with feedback, not a change to what gets computed or
 how. Verified: the file parses clean, builds clean, and the full 25 + 5 + 30
 test suite (regression, hostile-input, transits) all still pass unchanged —
 nothing here touches computation, so none of them were expected to move.
+
+---
+
+## 13. The save indicator was invisible while scrolled
+
+Reported directly, live on a phone, partway through the intake questionnaire:
+"there doesn't seem to be an enter or save button after the birth information
+and so I don't know if any of this is being registered."
+
+There was never supposed to be a save button — the whole design is a
+debounced autosave (700ms after the last change, conflict-safe, flushed on
+unmount — §8) precisely so nobody has to think about saving. And the
+mechanism was working correctly the whole time: every state change already
+flips a `syncStatus` flag through `syncing` → `synced` (or `error`), rendered
+as `○ saving…` / `● synced` / `⚠ not saved` in the page's topbar. The actual
+bug was narrower and purely visual: that topbar was a normal, non-sticky
+block. The moment a founder scrolls a screen or two into a multi-step
+questionnaire on a phone, it scrolls out of view — and from there, nothing
+on screen says whether anything is happening at all. Not a missing feature;
+a status indicator that existed but couldn't be seen when it mattered.
+
+Fixed with one property: `position: sticky; top: 0` on the topbar in
+`CareProtocol.jsx`, so `● synced` / `○ saving…` / `⚠ not saved` stays pinned
+to the top of the viewport through the entire scroll, on every tab, not just
+Step 1. No change to the save logic itself — the mechanism was already
+correct; only its visibility was fixed.
+
+Verified: the file parses and builds clean, and the full 25 + 5 + 30 test
+suite (regression, hostile-input, transits) all still pass unchanged —
+nothing here touches computation or persistence logic, only layout.

@@ -1136,11 +1136,21 @@ const S = {
     display: 'flex', alignItems: 'center', justifyContent: 'center',
   },
   loadingTape: { ...mono, fontSize: '13px', letterSpacing: '0.2em', color: fn.ghost },
+  // Sticky, deliberately. The sync indicator inside it ("● synced" /
+  // "○ saving…" / "⚠ not saved") is the only feedback that anything typed
+  // into a long intake form is actually reaching the server — there is no
+  // per-field "saved" confirmation and no explicit save button by design
+  // (the whole point of the debounced autosave). A static topbar scrolls out
+  // of view the moment a founder is a screen or two into Step 2, and from
+  // there there is nothing on screen to say whether any of it registered.
+  // Reported directly: "there doesn't seem to be an enter or save button...
+  // so I don't know if any of this is being registered."
   topbar: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
     gap: space.lg, flexWrap: 'wrap',
     padding: `${space.lg} ${space.xl}`, borderBottom: `1px solid ${fn.rule}`,
     background: fn.object,
+    position: 'sticky', top: 0, zIndex: 5,
   },
   brand: {
     display: 'flex', alignItems: 'center', gap: space.md,
