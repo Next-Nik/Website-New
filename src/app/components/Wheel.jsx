@@ -14,14 +14,22 @@
 //   + rings      → graded reference rings, Pass/Fail line emphasised at 5
 //   + severity   → dots coloured by grade (getScoreColor) instead of hue
 //   + interactive→ tap a spoke to read its tier
+//   + teaching   → tap a label to read what the domain MEANS. Controlled by
+//                  the parent (selected / mirrored / onSelect) rather than
+//                  local state, because the signed-out home puts two wheels
+//                  either side of ONE shared reveal slot and only one domain
+//                  can be open at a time. Renders no card of its own — the
+//                  parent owns that surface.
 //
 // Scores are 0–10 on the canonical horizon scale (horizonScale.js).
 //
 // Chrome 148 law: no style= props on any SVG element — presentation
 // attributes only. Event handlers (onClick) are not styles and are fine.
+// className is not a style prop either; the teaching label rules live in
+// global.css under .wheel-teach-label.
 // ─────────────────────────────────────────────────────────────
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useRef, useLayoutEffect } from 'react'
 import { getScoreColor, TIER_MAP, LABEL_MAP, SIGNATURE_MAP } from '../../constants/horizonScale'
 
 // Robust scale lookup — exact point, else nearest half-step, else rounded.
@@ -80,6 +88,9 @@ export default function Wheel({
   rings = true,
   severity = false,
   interactive = false,
+  teaching = false,      // label-as-affordance mode; parent owns the panel
+  selected = null,       // controlled: domain key currently open (teaching)
+  mirrored = null,       // controlled: the fractal counterpart to mark faintly
   onSelect = null,
   notes = {},            // per-domain { nowNote?, goalText? } for the detail card
 }) {
@@ -192,6 +203,74 @@ export default function Wheel({
     if (onSelect) onSelect(doms[i].key)
   }
 
+  // Teaching mode is controlled by the parent — resolve its keys to indices.
+  // Toggling (click the open domain to close it) is the parent's call, since
+  // it is the one holding state across both wheels.
+  const teachSel = teaching && selected != null ? doms.findIndex(d => d.key === selected) : -1
+  const teachMir = teaching && mirrored != null ? doms.findIndex(d => d.key === mirrored) : -1
+  // "Something is open" — on the OTHER wheel, that arrives as `mirrored`
+  // rather than `selected`. Both count, otherwise the wheel that doesn't
+  // hold the selection stays at full strength and the mirror mark is lost
+  // in a row of seven equally loud labels.
+  const teachOpen = teachSel >= 0 || teachMir >= 0
+
+  function teachSelect(i) {
+    if (onSelect) onSelect(doms[i].key)
+  }
+  function teachKey(e, i) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); teachSelect(i) }
+  }
+  // Don't take focus on mouse-down: keeps the focus ring for keyboard users
+  // only, while click still fires normally.
+  function noFocusOnClick(e) { e.preventDefault() }
+
+  // ── Teaching label rules ───────────────────────────────────────────────
+  // The "there is more here" cue under each label is drawn as a real <line>
+  // rather than CSS text-decoration, because Blink ignores
+  // text-decoration-style / -thickness / -underline-offset on SVG <text> —
+  // `underline dotted` silently computes to a solid, tight underline, which
+  // turns seven quiet labels into seven things that look like links.
+  //
+  // So: measure each label and draw the rule ourselves. Re-measured after
+  // webfonts land, since Lora is loaded async and Georgia's metrics differ
+  // enough to leave the rules visibly short.
+  const labelRefs = useRef({})
+  const [labelW, setLabelW] = useState({})
+
+  useLayoutEffect(() => {
+    if (!teaching) return
+    let cancelled = false
+
+    function measure() {
+      if (cancelled) return
+      const next = {}
+      let changed = false
+      for (const [idx, node] of Object.entries(labelRefs.current)) {
+        if (!node) continue
+        let w = 0
+        try { w = node.getComputedTextLength() } catch { w = 0 }
+        next[idx] = w
+        if (Math.abs((labelW[idx] ?? -1) - w) > 0.5) changed = true
+      }
+      if (changed) setLabelW(next)
+    }
+
+    measure()
+    // Fonts may not be resolved on first paint.
+    if (typeof document !== 'undefined' && document.fonts?.ready) {
+      document.fonts.ready.then(measure).catch(() => {})
+    }
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [teaching, doms, size])
+
+  // Rule endpoints follow the label's own text-anchor.
+  function ruleX(l, w) {
+    if (l.anchor === 'start')  return l.x
+    if (l.anchor === 'end')    return l.x - w
+    return l.x - w / 2
+  }
+
   const svg = (
     <svg
       width={VB}
@@ -257,11 +336,21 @@ export default function Wheel({
         <circle cx={nowWeb.verts[sel].x} cy={nowWeb.verts[sel].y} r="9" fill="none" stroke={dark ? '#fff' : INK} strokeWidth="1.25" strokeOpacity="0.55" />
       )}
 
+      {/* Teaching: the open domain, and its counterpart on the other wheel.
+          The mirror ring is dashed and quieter — it is a pointer, not a
+          second selection. */}
+      {teaching && teachSel >= 0 && nowWeb?.verts[teachSel] && (
+        <circle cx={nowWeb.verts[teachSel].x} cy={nowWeb.verts[teachSel].y} r="9" fill="none" stroke={dark ? '#fff' : INK} strokeWidth="1.25" strokeOpacity="0.55" />
+      )}
+      {teaching && teachMir >= 0 && nowWeb?.verts[teachMir] && (
+        <circle cx={nowWeb.verts[teachMir].x} cy={nowWeb.verts[teachMir].y} r="9" fill="none" stroke={GOLD} strokeWidth="1" strokeOpacity="0.5" strokeDasharray="2 3" />
+      )}
+
       {/* Hub */}
       <circle cx={cx} cy={cy} r={size * 0.05} fill={GOLD} />
 
-      {/* Interactive hit targets (transparent) */}
-      {interactive && geo.labels.map((l, i) => {
+      {/* Interactive / teaching hit targets (transparent) */}
+      {(interactive || teaching) && geo.labels.map((l, i) => {
         const a = angleFor(i)
         return (
           <circle
@@ -271,28 +360,69 @@ export default function Wheel({
             r="20"
             fill="transparent"
             cursor="pointer"
-            onClick={() => selectSpoke(i)}
+            onClick={() => (teaching ? teachSelect(i) : selectSpoke(i))}
           />
         )
       })}
 
-      {/* Domain labels — last so they sit above everything */}
-      {geo.labels.map(l => (
-        <text
-          key={`lab-${l.key}`}
-          x={l.x} y={l.y}
-          textAnchor={l.anchor}
-          dominantBaseline="middle"
-          fontFamily={LORA}
-          fontSize={13}
-          letterSpacing="0.06em"
-          fill={interactive && sel === l.idx ? GOLD_DK : (dark ? labelFill : l.hex)}
-          cursor={interactive ? 'pointer' : undefined}
-          onClick={interactive ? () => selectSpoke(l.idx) : undefined}
-        >
-          {l.name}
-        </text>
-      ))}
+      {/* Teaching rules — drawn under the labels they belong to. Dotted while
+          closed (a cue, not a link), solid under the domain being read. */}
+      {teaching && geo.labels.map(l => {
+        const w = labelW[l.idx]
+        if (!w) return null
+        const isSel = teachSel === l.idx
+        const isMir = teachMir === l.idx
+        const x1 = ruleX(l, w)
+        const y  = l.y + 9
+        return (
+          <line
+            key={`rule-${l.key}`}
+            x1={x1} x2={x1 + w} y1={y} y2={y}
+            stroke={isSel || isMir ? (dark ? labelFill : l.hex) : (dark ? labelFill : l.hex)}
+            strokeWidth={isSel ? 1.5 : 1}
+            strokeOpacity={isSel ? 0.9 : isMir ? 0.6 : teachOpen ? 0.14 : 0.32}
+            strokeDasharray={isSel ? undefined : '1 2'}
+            pointerEvents="none"
+          />
+        )
+      })}
+
+      {/* Domain labels — last so they sit above everything.
+          In teaching mode the label IS the affordance: the rule above marks it
+          as readable, an open domain goes bold, and the rest step back so the
+          one being read is unambiguous. */}
+      {geo.labels.map(l => {
+        const isSel = teaching && teachSel === l.idx
+        const isMir = teaching && teachMir === l.idx
+        const cls = teaching
+          ? `wheel-teach-label${teachOpen && !isSel && !isMir ? ' is-dim' : ''}`
+          : undefined
+        return (
+          <text
+            key={`lab-${l.key}`}
+            ref={teaching ? (n => { labelRefs.current[l.idx] = n }) : undefined}
+            x={l.x} y={l.y}
+            textAnchor={l.anchor}
+            dominantBaseline="middle"
+            fontFamily={LORA}
+            fontSize={13}
+            fontWeight={isSel ? 600 : undefined}
+            letterSpacing="0.06em"
+            fill={interactive && sel === l.idx ? GOLD_DK : (dark ? labelFill : l.hex)}
+            className={cls}
+            cursor={interactive ? 'pointer' : undefined}
+            tabIndex={teaching ? 0 : undefined}
+            role={teaching ? 'button' : undefined}
+            aria-pressed={teaching ? isSel : undefined}
+            aria-label={teaching ? `${l.name} — what this means` : undefined}
+            onMouseDown={teaching ? noFocusOnClick : undefined}
+            onKeyDown={teaching ? e => teachKey(e, l.idx) : undefined}
+            onClick={teaching ? () => teachSelect(l.idx) : (interactive ? () => selectSpoke(l.idx) : undefined)}
+          >
+            {l.name}
+          </text>
+        )
+      })}
 
       {/* Placement marker */}
       {placeMark && (

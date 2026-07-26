@@ -25,6 +25,8 @@ export const SELF_DOMAINS = [
 
 // Now-only personal wheel. Headed/interactive/severity are opt-in via the
 // shared instrument when the Map adopts it; First Light stays now-only.
-export function WheelSVG({ scores, size = 200 }) {
-  return <Wheel domains={SELF_DOMAINS} now={scores} size={size} />
+// Extra props pass straight through, so a caller can switch on teaching mode
+// without this adapter needing to know what teaching mode is.
+export function WheelSVG({ scores, size = 200, ...rest }) {
+  return <Wheel domains={SELF_DOMAINS} now={scores} size={size} {...rest} />
 }

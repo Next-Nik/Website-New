@@ -48,12 +48,23 @@ export const COPY_GROUPS = [
         default: 'Get clear on where you are going, then where you are, then plot the way there. NextUs, building the future, now.' },
 
       // Fractal wheels · caption (moved-down original hero copy)
+      // Also the resting state of the domain reveal slot — it is what shows
+      // under the wheels until a visitor opens a domain.
       { id: 'home.hero.domains', label: 'Wheels · framing line',
         default: 'Your life and the world run on seven mirrored domains. Similar at both scales, not identical.' },
       { id: 'home.hero.builton', label: 'Wheels · built on that', multiline: true,
         default: "NextUs is built on that. A clear picture of where you stand, a direction for where you're going, and the people already building the future you want to live in. One set of tools, two scales: your life, and your world." },
       { id: 'home.hero.twosides', label: 'Wheels · two sides', multiline: true,
         default: 'NextUs is a website with two sides: tools to get your own life where you want it, and a map of the people and organisations building a better world · so you can join them.' },
+
+      // The seven, in a sentence each
+      // Only the section furniture is editable here. The fourteen domain lines
+      // themselves live in src/constants/domainCopy.js and civDomainCopy.js,
+      // which are the single source of truth for domain teaching copy across
+      // every surface — duplicating them into this registry is how they drift.
+      { id: 'home.seven.eyebrow', label: 'Seven · eyebrow', default: 'THE SEVEN, IN A SENTENCE EACH' },
+      { id: 'home.seven.lede',    label: 'Seven · lede',
+        default: 'Same seven shapes, two scales. Similar, not identical.' },
 
       // Two doors
       { id: 'home.doors.eyebrow',     label: 'Two doors · eyebrow', default: 'THE PERSON AND THE PLANET · BUILT FOR BOTH, BUILDING BOTH' },

@@ -16,7 +16,7 @@
 
 import Wheel from '../Wheel'
 
-export default function WorldWheel({ dimensions, current = {}, placement = null, size = 320, dark = false }) {
+export default function WorldWheel({ dimensions, current = {}, placement = null, size = 320, dark = false, ...rest }) {
   return (
     <Wheel
       domains={dimensions}
@@ -24,6 +24,7 @@ export default function WorldWheel({ dimensions, current = {}, placement = null,
       placement={placement}
       size={size}
       dark={dark}
+      {...rest}
     />
   )
 }

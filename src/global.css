@@ -514,3 +514,31 @@ button {
   .input-area textarea { font-size: 1.125rem !important; }
   .nav-links a       { font-size: 13px !important; }
 }
+
+/* ─── Wheel · teaching labels ───────────────────────────────────
+ * <Wheel teaching> makes the domain label itself the affordance —
+ * no info icons bolted onto the rim, which at 170px would bury the
+ * instrument under fourteen 16px circles.
+ *
+ * The dotted rule under each label is NOT text-decoration. Blink
+ * ignores text-decoration-style / -thickness / -underline-offset on
+ * SVG <text>: `underline dotted` computes to a solid, tight underline
+ * and seven quiet labels start reading as seven links. Wheel.jsx
+ * measures each label and draws a real <line> instead.
+ * ──────────────────────────────────────────────────────────────── */
+.wheel-teach-label {
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.wheel-teach-label:hover { opacity: 0.62; }
+.wheel-teach-label:focus-visible {
+  outline: 1.5px solid var(--moss);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+/* Everything that is not the open domain or its counterpart steps back. */
+.wheel-teach-label.is-dim { opacity: 0.45; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel-teach-label { transition: none; }
+}

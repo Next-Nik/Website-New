@@ -24,8 +24,11 @@ import { serif, body, sc } from '../lib/designTokens'
 import { Copy } from '../components/Copy'
 import { useCopy } from '../lib/siteCopy'
 import { supabase }    from '../hooks/useSupabase'
-import { WheelSVG }    from '../app/components/WheelSVG'
+import { WheelSVG, SELF_DOMAINS } from '../app/components/WheelSVG'
 import WorldWheel      from '../app/components/mission-control/WorldWheel'
+import { DOMAIN_COPY }       from '../constants/domainCopy'
+import { CIV_DOMAIN_COPY }   from '../constants/civDomainCopy'
+import { SELF_TO_ATLAS_MAP } from '../app/constants/domains'
 
 const gold      = '#3c5637'   // fn.moss (dark) — heritage bridge name kept, value moved
 const goldBdr   = 'rgba(76,107,69,0.55)'
@@ -38,40 +41,232 @@ const inkFaint  = 'rgba(38,36,32,0.68)'
 const HERO_SELF_SCORES = {
   path: 7, spark: 6, body: 5, finances: 6, connection: 8, inner_game: 5, signal: 6,
 }
+// Canonical slugs (see CIV_DOMAINS in app/constants/domains.js). The hero
+// previously inlined short forms — 'human', 'finance', 'tech' — which was
+// harmless while the wheel was decorative and silently breaks any lookup
+// keyed on a domain the moment it isn't.
+//
+// The colours here are deliberately the personal-side palette rather than the
+// muted CIV_DOMAINS one: on this page the two wheels are making the argument
+// that they are the same shape at two scales, and shared hue is half of that
+// argument. Every civ surface behind the login keeps the muted palette.
 const HERO_CIV_DIMS = [
-  { slug: 'vision',  label: 'Vision',      color: '#6B1F2E' },
-  { slug: 'human',   label: 'Human Being', color: '#E8722E' },
-  { slug: 'nature',  label: 'Nature',      color: '#2A8C4F' },
-  { slug: 'finance', label: 'Economy',     color: '#E8B92E' },
-  { slug: 'society', label: 'Society',     color: '#D63838' },
-  { slug: 'legacy',  label: 'Legacy',      color: '#2767B8' },
-  { slug: 'tech',    label: 'Technology',  color: '#6B3FA8' },
+  { slug: 'vision',          label: 'Vision',      color: '#6B1F2E' },
+  { slug: 'human-being',     label: 'Human Being', color: '#E8722E' },
+  { slug: 'nature',          label: 'Nature',      color: '#2A8C4F' },
+  { slug: 'finance-economy', label: 'Economy',     color: '#E8B92E' },
+  { slug: 'society',         label: 'Society',     color: '#D63838' },
+  { slug: 'legacy',          label: 'Legacy',      color: '#2767B8' },
+  { slug: 'technology',      label: 'Technology',  color: '#6B3FA8' },
 ]
 const HERO_CIV_SCORES = {
-  vision: 4, human: 6, nature: 4, finance: 5, society: 5, legacy: 5, tech: 7,
+  vision: 4, 'human-being': 6, nature: 4, 'finance-economy': 5,
+  society: 5, legacy: 5, technology: 7,
 }
+
+// ── The fractal pairing ──────────────────────────────────────
+// SELF_TO_ATLAS_MAP is keyed 'inner-game'; the wheel's SELF_DOMAINS is keyed
+// 'inner_game'. Normalise once here rather than papering over it at each call.
+const selfKeyToMapKey = k => k.replace(/_/g, '-')
+const MIRROR_OF_SELF = Object.fromEntries(
+  SELF_DOMAINS.map(d => [d.key, SELF_TO_ATLAS_MAP[selfKeyToMapKey(d.key)]]).filter(([, v]) => v)
+)
+const MIRROR_OF_CIV = Object.fromEntries(
+  Object.entries(MIRROR_OF_SELF).map(([self, civ]) => [civ, self])
+)
+const civLabel  = slug => HERO_CIV_DIMS.find(d => d.slug === slug)?.label
+const selfLabel = key  => SELF_DOMAINS.find(d => d.key === key)?.name
+const civHex    = slug => HERO_CIV_DIMS.find(d => d.slug === slug)?.color
+const selfHex   = key  => SELF_DOMAINS.find(d => d.key === key)?.hex
 
 // ── Fractal hero visual — the two wheels, one geometry ───────
 // Slow alternating emphasis between the personal and world wheel,
 // joined by a single line. Static side-by-side when the user
 // prefers reduced motion (handled in CSS).
-function FractalWheels() {
+//
+// The labels are the teaching affordance. A stranger arrives at this page
+// being told their life runs on seven domains named Path, Spark and Signal,
+// and is given no way to find out what any of those words mean before being
+// asked to log in. Selecting a label answers that in place.
+//
+// One shared reveal slot serves both wheels, so selection lives here rather
+// than inside either <Wheel>, and only one domain is ever open.
+function FractalWheels({ open, onSelect }) {
+  const selfOpen = open?.scale === 'self'  ? open.key : null
+  const civOpen  = open?.scale === 'world' ? open.key : null
+  const selfMirror = civOpen  ? MIRROR_OF_CIV[civOpen]   : null
+  const civMirror  = selfOpen ? MIRROR_OF_SELF[selfOpen] : null
+
   return (
-    <div className="fractal-wheels" aria-hidden="true">
+    <div className={`fractal-wheels${open ? ' is-engaged' : ''}`}>
       <div className="fractal-wheel fractal-wheel--self">
-        <WheelSVG scores={HERO_SELF_SCORES} size={170} />
+        <WheelSVG
+          scores={HERO_SELF_SCORES}
+          size={170}
+          teaching
+          selected={selfOpen}
+          mirrored={selfMirror}
+          onSelect={key => onSelect('self', key)}
+        />
         <span className="fractal-wheel-label" style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: inkFaint }}>
           YOUR LIFE
         </span>
       </div>
       <div className="fractal-link" />
       <div className="fractal-wheel fractal-wheel--world">
-        <WorldWheel dimensions={HERO_CIV_DIMS} current={HERO_CIV_SCORES} size={206} />
+        <WorldWheel
+          dimensions={HERO_CIV_DIMS}
+          current={HERO_CIV_SCORES}
+          size={206}
+          teaching
+          selected={civOpen}
+          mirrored={civMirror}
+          onSelect={key => onSelect('world', key)}
+        />
         <span className="fractal-wheel-label" style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: inkFaint }}>
           YOUR WORLD
         </span>
       </div>
     </div>
+  )
+}
+
+// ── The shared reveal slot ───────────────────────────────────
+// Sits under both wheels and holds one of two things: the framing line that
+// already lived here, or the definition of whichever domain is open. Opening a
+// domain moves nothing else on the page — a hero that jumps when you touch it
+// reads as broken.
+//
+// No score, tier or signature is shown. The wheel shapes are illustrative
+// (HERO_*_SCORES above); telling a stranger "you are at 7" off invented data
+// would be the one genuinely dishonest thing this page could do.
+//
+// Every card is rendered, all fifteen layers stacked in one grid cell, with
+// only the active one visible. That is what makes "nothing moves" true rather
+// than approximately true: the slot is always as tall as its own tallest
+// child, so no min-height has to be guessed and kept in sync. A reserved
+// magic number had Human Being and Society overflowing by ~15px at 390px
+// wide, which is exactly the class of bug this structure cannot have.
+//
+// Hidden layers use visibility: hidden, so they are out of the tab order and
+// out of the accessibility tree, and are marked aria-hidden besides.
+const REVEAL_ENTRIES = [
+  ...SELF_DOMAINS.map(d => ({
+    scale: 'self', key: d.key, hue: d.hex, entry: DOMAIN_COPY[d.key],
+    scaleLabel: 'Your life', mirrorName: civLabel(MIRROR_OF_SELF[d.key]),
+  })),
+  ...HERO_CIV_DIMS.map(d => ({
+    scale: 'world', key: d.slug, hue: d.color, entry: CIV_DOMAIN_COPY[d.slug],
+    scaleLabel: 'Your world', mirrorName: selfLabel(MIRROR_OF_CIV[d.slug]),
+  })),
+].filter(e => e.entry)
+
+function DomainReveal({ open, onClose }) {
+  return (
+    <div className="domain-reveal" aria-live="polite">
+      {/* Resting state — the framing line that already lived under the wheels */}
+      <div className={`domain-reveal-layer${open ? '' : ' is-shown'}`} aria-hidden={!!open}>
+        <p style={{ ...serif, fontSize: 'clamp(18px,2vw,24px)', fontWeight: 400, color: ink, lineHeight: 1.3, margin: 0, textAlign: 'center' }}>
+          <Copy id="home.hero.domains" />
+        </p>
+      </div>
+
+      {REVEAL_ENTRIES.map(({ scale, key, hue, entry, scaleLabel, mirrorName }) => {
+        const isShown = !!open && open.scale === scale && open.key === key
+        return (
+          <div
+            key={`${scale}-${key}`}
+            className={`domain-reveal-layer domain-reveal-card${isShown ? ' is-shown' : ''}`}
+            aria-hidden={!isShown}
+          >
+            <div className="domain-reveal-head">
+              <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.16em', textTransform: 'uppercase', color: hue }}>
+                {entry.title}
+              </span>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', textTransform: 'uppercase', color: inkFaint }}>
+                {scaleLabel}
+              </span>
+              {mirrorName && (
+                <span className="domain-reveal-mirror" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: gold }}>
+                  Mirrors · {mirrorName}
+                </span>
+              )}
+            </div>
+            <p style={{ ...body, fontSize: '15px', lineHeight: 1.65, color: 'rgba(38,36,32,0.82)', margin: '0 0 8px' }}>
+              {entry.gloss}
+            </p>
+            <p style={{ ...body, fontSize: '15px', lineHeight: 1.55, color: gold, margin: 0 }}>
+              {entry.question}
+            </p>
+            <button
+              type="button"
+              onClick={onClose}
+              className="domain-reveal-close"
+              tabIndex={isShown ? 0 : -1}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em' }}
+            >
+              CLOSE
+            </button>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── The seven, in a sentence each ────────────────────────────
+// The wheels answer "what is Spark?" for anyone who clicks. This answers it
+// for everyone else — which, on a signed-out front door, is most people. It
+// also puts the taxonomy on the page as real text rather than as SVG labels.
+function SevenEach() {
+  const rows = (items) => items.map(({ key, name, hex, line }) => (
+    <div key={key} className="seven-row">
+      <span className="seven-dot" style={{ background: hex }} />
+      <span>
+        <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', textTransform: 'uppercase', color: hex, display: 'block', marginBottom: '2px' }}>
+          {name}
+        </span>
+        <span style={{ ...body, fontSize: '14px', lineHeight: 1.55, color: inkFaint, display: 'block' }}>
+          {line}
+        </span>
+      </span>
+    </div>
+  ))
+
+  return (
+    <section style={{
+      maxWidth: '1100px',
+      margin: '0 auto',
+      padding: 'clamp(40px,5vw,64px) clamp(20px,5vw,40px)',
+      borderTop: '1px solid rgba(38,36,32,0.10)',
+    }}>
+      <div style={{ textAlign: 'center', marginBottom: 'clamp(28px,3vw,40px)' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '12px' }}>
+          <Copy id="home.seven.eyebrow" />
+        </span>
+        <p style={{ ...serif, fontSize: 'clamp(18px,2vw,22px)', fontWeight: 400, color: ink, lineHeight: 1.4, maxWidth: '620px', margin: '0 auto' }}>
+          <Copy id="home.seven.lede" />
+        </p>
+      </div>
+      <div className="seven-cols">
+        <div>
+          <div className="seven-col-head" style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: gold }}>
+            Your life
+          </div>
+          {rows(SELF_DOMAINS.map(d => ({
+            key: d.key, name: d.name, hex: d.hex, line: DOMAIN_COPY[d.key]?.line,
+          })))}
+        </div>
+        <div>
+          <div className="seven-col-head" style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: gold }}>
+            Your world
+          </div>
+          {rows(HERO_CIV_DIMS.map(d => ({
+            key: d.slug, name: d.label, hex: d.color, line: CIV_DOMAIN_COPY[d.slug]?.line,
+          })))}
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -429,6 +624,23 @@ export function MarketingHomePage() {
   const t = useCopy()
   const PERSONAL_STEPS = buildPersonalSteps(t)
   const PLANET_STEPS   = buildPlanetSteps(t)
+
+  // Which domain the visitor has open, across both wheels. Held here rather
+  // than in either <Wheel> because the two wheels share one reveal slot.
+  // { scale: 'self' | 'world', key } — null when nothing is open.
+  const [openDomain, setOpenDomain] = useState(null)
+
+  function toggleDomain(scale, key) {
+    setOpenDomain(prev => (prev && prev.scale === scale && prev.key === key ? null : { scale, key }))
+  }
+
+  useEffect(() => {
+    if (!openDomain) return
+    function onKey(e) { if (e.key === 'Escape') setOpenDomain(null) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [openDomain])
+
   return (
     <div style={{ background: '#f3f0e9', minHeight: '100dvh' }}>
       <Nav />
@@ -476,11 +688,11 @@ export function MarketingHomePage() {
           <Copy id="home.hero.title2" />
         </p>
 
-        {/* Visual up front — the fractal wheels open the page */}
-        <FractalWheels />
-        <p style={{ ...serif, fontSize: 'clamp(18px,2vw,24px)', fontWeight: 400, color: ink, lineHeight: 1.3, maxWidth: '560px', margin: 'clamp(18px,2.2vw,28px) auto 0' }}>
-          <Copy id="home.hero.domains" />
-        </p>
+        {/* Visual up front — the fractal wheels open the page, and the labels
+            are readable. The framing line is now the reveal slot's resting
+            state rather than a separate paragraph under it. */}
+        <FractalWheels open={openDomain} onSelect={toggleDomain} />
+        <DomainReveal open={openDomain} onClose={() => setOpenDomain(null)} />
 
         {/* Argument — two columns so it reads wide, not tall */}
         <div className="mh-hero-2col">
@@ -520,6 +732,12 @@ export function MarketingHomePage() {
           <PillButton href="/tools"><Copy id="home.hero.cta" /></PillButton>
         </div>
       </section>
+
+      {/* ── The seven, in a sentence each ────────── */}
+      {/* Directly under the hero, because it is the answer to the question the
+          hero has just raised. Anyone who clicked a label already has it;
+          this is for everyone who didn't. */}
+      <SevenEach />
 
       {/* ── The Earth Challenge · front door ─────── */}
       <section style={{
@@ -771,15 +989,19 @@ export function MarketingHomePage() {
         /* ── Fractal hero wheels ─────────────────── */
         .fractal-wheels {
           display: flex;
-          align-items: center;
+          align-items: stretch;
           justify-content: center;
           gap: clamp(8px,2.5vw,32px);
           margin-top: clamp(28px,3.5vw,44px);
         }
+        /* Grid rather than flex-column: the two wheels are different sizes
+           (170 / 206), so a shared bottom row is what keeps YOUR LIFE and
+           YOUR WORLD sitting on one baseline. */
         .fractal-wheel {
-          display: flex;
-          flex-direction: column;
+          display: grid;
+          grid-template-rows: 1fr auto;
           align-items: center;
+          justify-items: center;
           gap: 4px;
         }
         .fractal-wheel-label {
@@ -790,12 +1012,20 @@ export function MarketingHomePage() {
           height: 1px;
           background: linear-gradient(90deg, rgba(76,107,69,0.15), rgba(76,107,69,0.6), rgba(76,107,69,0.15));
           flex-shrink: 0;
+          align-self: center;
           margin-bottom: 28px;
         }
         /* Slow alternating emphasis — one breath, ~14s */
         @media (prefers-reduced-motion: no-preference) {
           .fractal-wheel--self  { animation: fractalBreathA 14s ease-in-out infinite; }
           .fractal-wheel--world { animation: fractalBreathB 14s ease-in-out infinite; }
+          /* The breath is ambience for a decorative wheel. The moment someone
+             has a domain open they are reading it, and a wheel that fades to
+             45% under them is just a wheel that's hard to read. */
+          .fractal-wheels.is-engaged .fractal-wheel {
+            animation: none;
+            opacity: 1;
+          }
         }
         @keyframes fractalBreathA {
           0%, 100% { opacity: 1; }
@@ -816,6 +1046,83 @@ export function MarketingHomePage() {
             background: linear-gradient(180deg, rgba(76,107,69,0.15), rgba(76,107,69,0.6), rgba(76,107,69,0.15));
             margin-bottom: 0;
           }
+        }
+
+        /* ── Domain reveal slot ──────────────────── */
+        /* One slot, both wheels. Every layer occupies the same single grid
+           cell, so the slot is always exactly as tall as its tallest child and
+           opening a domain cannot move anything below it. No reserved
+           min-height to guess, and none to keep in sync when copy changes. */
+        .domain-reveal {
+          max-width: 620px;
+          margin: clamp(14px,2vw,22px) auto 0;
+          display: grid;
+          padding: 0 8px;
+        }
+        .domain-reveal-layer {
+          grid-area: 1 / 1;
+          align-self: center;
+          visibility: hidden;
+          opacity: 0;
+          transition: opacity 0.2s ease;
+        }
+        .domain-reveal-layer.is-shown {
+          visibility: visible;
+          opacity: 1;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .domain-reveal-layer { transition: none; }
+        }
+        .domain-reveal-card { text-align: left; }
+        .domain-reveal-head {
+          display: flex;
+          align-items: baseline;
+          gap: 10px;
+          flex-wrap: wrap;
+          padding-bottom: 8px;
+          margin-bottom: 10px;
+          border-bottom: 1px solid rgba(38,36,32,0.11);
+        }
+        .domain-reveal-mirror { margin-left: auto; }
+        .domain-reveal-close {
+          background: none;
+          border: none;
+          padding: 0;
+          margin-top: 10px;
+          cursor: pointer;
+          color: rgba(38,36,32,0.68);
+          transition: color 0.15s;
+        }
+        .domain-reveal-close:hover { color: #262420; }
+
+        /* ── The seven, in a sentence each ───────── */
+        .seven-cols {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: clamp(28px,5vw,64px);
+        }
+        .seven-col-head {
+          padding-bottom: 10px;
+          margin-bottom: 14px;
+          border-bottom: 1px solid rgba(76,107,69,0.30);
+        }
+        .seven-row {
+          display: flex;
+          gap: 12px;
+          align-items: flex-start;
+          padding: 9px 0;
+          border-bottom: 1px solid rgba(38,36,32,0.11);
+        }
+        .seven-row:last-child { border-bottom: none; }
+        .seven-dot {
+          width: 9px;
+          height: 9px;
+          border-radius: 50%;
+          flex-shrink: 0;
+          margin-top: 7px;
+        }
+        @media (max-width: 720px) {
+          .seven-cols { grid-template-columns: 1fr; gap: 32px; }
         }
 
         /* ── Proof-of-life strip ─────────────────── */
