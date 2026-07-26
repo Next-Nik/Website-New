@@ -1098,3 +1098,57 @@ engine seeded from the founder's own birth data — every panel present,
 houses rendered, gate names rendered, six temporary channels found for the
 test date, and the next full moon (2026-07-29) confirmed against the
 ephemeris.
+
+---
+
+## 23. The translation, and the care context — the intake starts playing out
+
+Two-part feedback on the Depth tab, both quoted because they define the
+feature: "it gives me almost the equivalent of code... I want all of this
+in case I want to explore more but mainly I want it translated to me by
+you. or more accurately by the version of you linked to this tool." And,
+deeper: "I also wanted to be informed by how I'm telling it I need to be
+cared for... if none of it plays out in the rest of the tool then it's
+just like being ignored by someone that I want love from."
+
+**The translation.** A new panel at the top of the Depth tab — "THE READ ·
+IN PLAIN LANGUAGE" — with one button: "Translate this for me." It sends
+the whole depth readout (placements with houses, balance, tightest
+aspects, the bodygraph, the cross, today's transits and events) to a new
+`depth` mode on `api/care-reflection.js`, which returns 3–5 short
+paragraphs: leading with what is genuinely distinctive in THIS chart,
+translating every term on contact, speaking the systems' own vocabulary
+confidently without dressing it as science, ending lightly on today. The
+tables all stay, unchanged, below it — kept for exploring, exactly as
+asked.
+
+**The care context.** The deeper fix. A new `buildCareContext()` assembles,
+from the founder's own answers: their top-ranked care modes and the one
+they'd keep above all others (rankedCareModes), what barely registers,
+their measured attachment position in plain language (attachmentReading),
+and their own written words (open_wish, open_line). That context now rides
+along on EVERY call to `api/care-reflection.js` — freetext reflections,
+section reflections, and the depth translation — where the prompts
+instruct: let this shape HOW you speak (tone, pacing, emphasis), never as
+content to recite back or show off that you know. Someone whose keeper is
+"undivided attention" gets a voice that doesn't rush; someone who ranked
+"spoken reassurance" high gets told things plainly rather than implied.
+The intake now plays out in the rest of the tool — which is the difference
+between being assessed by something and being filed by it.
+
+Boundaries that held: care context shapes manner, not content — section
+reflections still may not draw content from other sections, and the
+synthesis remains the only cross-system reading. Nothing new is persisted;
+the context is assembled fresh from saved answers at call time. The
+context block is capped server-side (2400 chars) so it can never crowd out
+the actual subject of a call.
+
+Verified: both files parse clean; all 96 tests (25 + 5 + 30 + 36) pass
+unchanged — no engine files were touched this round; design audit zero new
+violations; production build clean. Live harness on the real page, seeded
+with the founder's real birth data and a fully answered intake: the
+translate button drives loading → rendered paragraphs → "Read it again";
+the depth request verified to carry the chart summary (with houses), the
+bodygraph, today, AND the care context containing the keeper, the measured
+attachment bands, and the founder's own words; a section Save verified to
+now carry the same context. See the delivered screenshot.

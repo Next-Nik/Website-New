@@ -702,7 +702,12 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ prompt: item.text, text: trimmed, displayName: state.displayName }),
+        body: JSON.stringify({
+          prompt: item.text,
+          text: trimmed,
+          displayName: state.displayName,
+          careContext: buildCareContext(engine, state),
+        }),
       })
       const body = await res.json()
       if (!res.ok || !body?.reflection) throw new Error(body?.error || `Reflection failed (${res.status})`)
@@ -723,7 +728,7 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
       console.error('[care-reflection] reflection failed:', err?.message || err)
       setReflections((r) => ({ ...r, [item.id]: { status: 'error' } }))
     }
-  }, [state?.displayName])
+  }, [engine, state])
 
   // §21 — section reflections. The beats, as stated directly and missed
   // for several rounds: "I answer the questions, I hit save, there's some
@@ -756,7 +761,11 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ section: payload, displayName: state.displayName }),
+        body: JSON.stringify({
+          section: payload,
+          displayName: state.displayName,
+          careContext: buildCareContext(engine, state),
+        }),
       })
       const body = await res.json()
       if (!res.ok || !body?.reflection) throw new Error(body?.error || `Reflection failed (${res.status})`)
@@ -766,7 +775,7 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
       console.error('[care-reflection] section reflection failed:', err?.message || err)
       setSectionReflections((r) => ({ ...r, [sectionKey]: { status: 'error' } }))
     }
-  }, [state?.displayName])
+  }, [engine, state])
 
   // Payload builders. Return null when a section has nothing to reflect on
   // yet — Save still works, there's just no reading to give.
@@ -1323,6 +1332,72 @@ function DepthTab({ engine, state }) {
     return () => clearTimeout(id)
   }, [engine, chart, hd])
 
+  // §23 — the translation. The tables below are the readout; this is the
+  // tool reading them aloud. Reported directly: "it gives me almost the
+  // equivalent of code... I want all of this in case I want to explore
+  // more but mainly I want it translated to me by you."
+  const [translation, setTranslation] = useState({ status: 'idle' })
+
+  const translateDepth = async () => {
+    if (!engine || !chart?.placements) return
+    const L = []
+    L.push('— The natal chart —')
+    for (const [k, p] of Object.entries(chart.placements)) {
+      L.push(`${BODY_LABELS[k]}: ${p.formatted}${p.house ? `, house ${p.house}` : ''}${p.retrograde ? ', retrograde' : ''}`)
+    }
+    L.push(`Ascendant ${chart.ascendant.formatted} · Midheaven ${chart.midheaven.formatted}`)
+    if (chart.balance) {
+      L.push(`Element balance: ${Object.entries(chart.balance.elements).map(([k, v]) => `${k} ${v}%`).join(', ')}`)
+      L.push(`Modality balance: ${Object.entries(chart.balance.modalities).map(([k, v]) => `${k} ${v}%`).join(', ')}`)
+    }
+    if (aspects.length) {
+      L.push(`Tightest natal aspects: ${aspects.slice(0, 10).map((a) => `${a.a} ${a.name} ${a.b} (${a.orb}° orb)`).join('; ')}`)
+    }
+    if (hd) {
+      L.push('— Human design —')
+      L.push(`${hd.shorthand} · ${hd.authority} authority · ${hd.definition} definition`)
+      L.push(`Defined centres: ${(hd.definedCentres || []).join(', ')} · open: ${(hd.openCentres || []).join(', ')}`)
+      L.push(`Channels: ${(hd.channels || []).map((ch) => `${ch} (${engine.CHANNEL_NAMES[ch] || '—'})`).join('; ')}`)
+      if (cross) {
+        L.push(`Incarnation cross: ${cross.angle} — ${cross.personalitySun.gate}/${cross.personalityEarth.gate} | ${cross.designSun.gate}/${cross.designEarth.gate} (${cross.personalitySun.name} / ${cross.personalityEarth.name} over ${cross.designSun.name} / ${cross.designEarth.name})`)
+      }
+    }
+    if (daily && !daily.failed) {
+      L.push(`— Today (${daily.date}) —`)
+      if (daily.aspects.length) {
+        L.push(`Transits to their chart: ${daily.aspects.slice(0, 8).map((a) => `transiting ${a.transiting} ${a.name} natal ${a.natal} (${a.orb}°)`).join('; ')}`)
+      }
+      if (daily.humanDesign.temporaryChannels.length) {
+        L.push(`Temporary HD channels today: ${daily.humanDesign.temporaryChannels.map((c) => `${c.channel} ${c.channelName || ''}`).join('; ')}`)
+      }
+      L.push(`Coming up: full moon ${daily.events.nextFullMoon || '—'}, new moon ${daily.events.nextNewMoon || '—'}${daily.events.retrogradesEnding.length ? `, retrogrades ending: ${daily.events.retrogradesEnding.map((r) => `${BODY_LABELS[r.body]} ${r.endsOn || 'beyond horizon'}`).join(', ')}` : ''}`)
+    }
+
+    setTranslation({ status: 'loading' })
+    try {
+      const { data: sessionData } = await supabase.auth.getSession()
+      const token = sessionData?.session?.access_token
+      const res = await fetch('/api/care-reflection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          depth: { summary: L.join('\n') },
+          displayName: state.displayName,
+          careContext: buildCareContext(engine, state),
+        }),
+      })
+      const body = await res.json()
+      if (!res.ok || !body?.reflection) throw new Error(body?.error || `Translation failed (${res.status})`)
+      setTranslation({ status: 'done', text: body.reflection })
+    } catch (err) {
+      console.error('[care-reflection] depth translation failed:', err?.message || err)
+      setTranslation({ status: 'error' })
+    }
+  }
+
   if (!chart?.placements) {
     return (
       <Panel eyebrow="DEPTH" note="The full chart and bodygraph, behind the card's summary.">
@@ -1338,6 +1413,53 @@ function DepthTab({ engine, state }) {
 
   return (
     <div>
+      {/* §23 — the plain-language read, first. The tables stay below for
+          exploring; this is what they say. */}
+      <Panel
+        eyebrow="THE READ · IN PLAIN LANGUAGE"
+        note="Everything below, translated. The tables stay for exploring — this is the tool reading them to you."
+      >
+        <button
+          type="button"
+          onClick={translateDepth}
+          disabled={translation.status === 'loading'}
+          style={translation.status === 'loading' ? S.disabledBtn : S.solidBtn}
+        >
+          {translation.status === 'loading'
+            ? 'Reading…'
+            : translation.status === 'done'
+              ? 'Read it again'
+              : 'Translate this for me'}
+        </button>
+        {!daily && translation.status === 'idle' && (
+          <p style={{ ...fnText.caption, color: fn.ghost, margin: `${space.sm} 0 0` }}>
+            Still reading today's sky — translate now for the chart alone, or
+            give it a moment to include today.
+          </p>
+        )}
+        {translation.status === 'error' && (
+          <p style={{ ...fnText.caption, color: fn.ghost, margin: `${space.sm} 0 0` }}>
+            The translation didn't load that time — the tables below are unaffected.
+          </p>
+        )}
+        {translation.status === 'done' && (
+          <div
+            style={{
+              marginTop: space.md,
+              padding: `${space.md} ${space.lg}`,
+              background: fn.mossTint,
+              borderLeft: `2px solid ${fn.mossEdge}`,
+              borderRadius: '2px',
+            }}
+          >
+            {translation.text.split(/\n\n+/).map((para, i) => (
+              <p key={i} style={{ ...fnText.body, color: fn.ink, margin: i === 0 ? 0 : `${space.md} 0 0` }}>
+                {para}
+              </p>
+            ))}
+          </div>
+        )}
+      </Panel>
       {/* The full natal chart */}
       <Panel
         eyebrow="THE FULL CHART · MYTHIC"
@@ -1760,6 +1882,41 @@ function describeScores(instrument, responses) {
     }
     return parts.join(' · ')
   })
+}
+
+/* §23 — how the founder has said they need to be cared for, assembled from
+   their own answers and threaded into every AI voice in the tool (freetext
+   reflections, section reflections, the depth translation). The intake is
+   not just data collection: a tool that asks "how do you need care?" and
+   then speaks to the person as if it never read the answer is doing the
+   exact thing the intake exists to prevent. Reported in nearly those
+   words: "if none of it plays out in the rest of the tool then it's just
+   like being ignored by someone that I want love from."
+   Returns null until there are answers to build from — the voices simply
+   speak unshaped until then. Never throws: care context is how the tool
+   speaks, and a failure to assemble it must never block what it says. */
+function buildCareContext(engine, state) {
+  if (!engine || !state) return null
+  const lines = []
+  try {
+    const scores = engine.scoresByInstrument(state.responses || {})
+    const ranked = engine.rankedCareModes(scores.care_receiving || {})
+    if (ranked.length) {
+      const top = ranked.slice(0, 3).map((m) => `${m.label}${m.keeper ? ' — the one they would keep above all others' : ''}`)
+      lines.push(`What lands as care, by their own ranking: ${top.join('; ')}.`)
+      const low = ranked.filter((m) => m.value <= 25).map((m) => m.label)
+      if (low.length) lines.push(`Barely registers for them: ${low.join(', ')}.`)
+    }
+    const attach = engine.attachmentReading(scores.ecr_rs || {})
+    if (attach) {
+      lines.push(`Attachment (measured): anxiety ${attach.anxiety.band}, avoidance ${attach.avoidance.band}. ${attach.anxiety.line}`)
+    }
+  } catch (_) { /* context is a nicety, never a blocker */ }
+  const wish = (state.responses?.open_wish || '').trim()
+  const oneLine = (state.responses?.open_line || '').trim()
+  if (wish) lines.push(`What they wish people knew about caring for them, in their own words: "${wish}"`)
+  if (oneLine) lines.push(`The one line they chose to carry in their own voice: "${oneLine}"`)
+  return lines.length ? lines.join('\n') : null
 }
 
 function Field({ label, children, grow }) {
