@@ -158,8 +158,21 @@ export function computeChart(birth) {
       degree: degreeInSign(lon),
       formatted: formatPosition(lon),
       retrograde: Boolean(h.CelestialBodies[key]?.isRetrograde),
+      // Which house the body falls in, straight from the library's own
+      // Placidus assignment (§22 — the Depth view). Additive: charts saved
+      // before this field existed simply lack it, and the Depth view says
+      // "recompute to see houses" rather than guessing.
+      house: h.CelestialBodies[key]?.House?.id ?? null,
     }
   }
+
+  // The twelve Placidus house cusps (§22). Cusp 1 is the ascendant, cusp 10
+  // the midheaven — kept as a plain array of longitudes so the stored chart
+  // stays a serializable value, not a library object.
+  const houses = (h.Houses || []).map((house) => {
+    const lon = house.ChartPosition?.StartPosition?.Ecliptic?.DecimalDegrees
+    return { id: house.id, longitude: lon, sign: signOf(lon), formatted: formatPosition(lon) }
+  })
 
   const ascLon = longitudeOf(h, 'ascendant') ?? h.Ascendant.ChartPosition.Ecliptic.DecimalDegrees
   const mcLon = h.Midheaven.ChartPosition.Ecliptic.DecimalDegrees
@@ -174,6 +187,7 @@ export function computeChart(birth) {
     local: origin.localTimeFormatted,
     julianDate: origin.julianDate,
     placements,
+    houses,
     ascendant: point(ascLon),
     midheaven: point(mcLon),
     northNode: point(nodeLon),

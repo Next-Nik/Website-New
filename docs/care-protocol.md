@@ -1027,3 +1027,74 @@ computed scores, and the evidence tier; the panel rendered through
 loading → done under the pressed button; re-saving unchanged answers made
 no second call; saving an untouched section saved fine with no call. See
 the delivered screenshot.
+
+---
+
+## 22. Depth — the full chart, the full bodygraph, the full day
+
+Two requests in one round: confirm the daily read (§11's Today's Sky) is
+actually working — it is; v47 carries it byte-identical, all 30 transit
+tests pass against that exact tree, and it renders live for the current
+date — and expand the astrology and human design capabilities. Scope chosen
+explicitly: full natal chart, richer daily read, element/modality balance,
+full bodygraph detail, richer HD daily — all of it in a new founder-only
+Depth tab, with the shareable card staying lean.
+
+**New engine module, `src/lib/care/depth.js`** — derived entirely from the
+already-validated engines (chart.js, humanDesign.js, transits.js), never
+computed in parallel to them:
+
+- `GATE_NAMES` (64) and `CHANNEL_NAMES` (36) — standard keynote names,
+  verified complete against the wheel's own gate/channel tables.
+- `TYPE_KEYNOTES` — signature and not-self theme for all five types.
+- `incarnationCross()` / `crossAngle()` — the four cross gates
+  (personality Sun/Earth over design Sun/Earth) with names, plus the angle
+  derived from profile (7 right-angle, 4/1 juxtaposition, 4 left-angle).
+  Deliberately NOT the traditional proper cross names — those vary by
+  school, and inventing them would be fabrication, not computation.
+- `natalAspects()` — every classical aspect among the ten bodies plus
+  ascendant and midheaven, using the SAME aspectBetween and orbs as the
+  daily transit engine, so an aspect means one thing everywhere.
+- `computeDepthDaily()` — the richer daily read: the whole transiting sky
+  formatted, transiting personal planets (Sun→Mars only — a Pluto transit
+  is a months-long story and calling it "today" would be dishonest)
+  aspected against all natal planets + ascendant, all thirteen transiting
+  HD activations and every temporary channel they form with natal gates
+  (channels already fully natal are excluded — nothing about them is
+  temporary), and upcoming events: next new and full moon
+  (bracket-and-bisect on Sun–Moon elongation) and when current
+  retrogrades end (coarse scan + bisect, honestly capped).
+
+**`chart.js`, additive only:** placements now carry `house` (the library's
+own Placidus assignment) and the chart carries the 12 `houses` cusps.
+Validated against Obama's published chart: Sun 6th, Moon 4th, cusp 1 ≡
+ascendant, cusp 10 ≡ midheaven, and every body's assignment re-verified by
+manual cusp containment. Charts saved before this field existed simply
+lack it — the Depth tab recomputes a display copy from birth data rather
+than nagging, and the stored row updates on the next real recompute.
+
+**The Depth tab** (`DepthTab` in CareProtocol.jsx): five panels, all
+labelled mythic — the full chart with houses and angles, element/modality
+balance bars, natal aspects tightest-first (moss = harmonious, clay =
+tense), the bodygraph in full (both activation columns with every gate
+named, channels with names, the incarnation cross, strategy / signature /
+not-self / authority guidance), and Today in Depth (the sky, aspects to
+the natal chart, HD weather with temporary channels in plain sentences,
+and Coming Up). The daily read computes after first paint behind a
+"reading the sky…" line, since the events search walks the ephemeris
+forward. Not on the card, not in any share snapshot.
+
+Verified: new 36-test depth suite (houses vs published chart + manual
+containment, aspect re-verification through aspectBetween, name-table
+completeness against the wheel, cross structure and angle mapping, daily
+invariants, and the events cross-checked against raw ephemeris state —
+elongation really is ~0°/180° on the found dates, retro flags really flip
+on the found day); the original 25 + 5 + 30 suite passes unchanged —
+including the full regression suite over the modified chart.js; design
+audit zero new violations (one false positive from naming a Date variable
+`at`, which the audit tracks as a token object — renamed the variable);
+production build clean; and the real page rendered live with the real
+engine seeded from the founder's own birth data — every panel present,
+houses rendered, gate names rendered, six temporary channels found for the
+test date, and the next full moon (2026-07-29) confirmed against the
+ephemeris.

@@ -33,6 +33,7 @@ const TABS = [
   { id: 'intake', label: 'Intake' },
   { id: 'protocol', label: 'Protocol' },
   { id: 'card', label: 'Card' },
+  { id: 'depth', label: 'Depth' },
   { id: 'roster', label: 'Roster' },
 ]
 
@@ -644,6 +645,8 @@ function CareProtocolWorkspace({ user }) {
           </div>
         )}
 
+        {tab === 'depth' && <DepthTab engine={engine} state={state} />}
+
         {tab === 'roster' && <RosterTab engine={engine} completionMap={completionMap} />}
       </main>
     </div>
@@ -1220,6 +1223,314 @@ function ProtocolTab({
           <button type="button" onClick={createShare} disabled={!card} style={card ? S.solidBtn : S.disabledBtn}>
             Create share link
           </button>
+        )}
+      </Panel>
+    </div>
+  )
+}
+
+/* ── depth ────────────────────────────────────────────────── */
+
+// §22 — the full read behind the card. Founder-only by placement (this tab
+// only exists inside the gated workspace) and deliberately NOT part of the
+// shareable card or its public snapshot: the card stays lean; this is where
+// the whole chart and the whole bodygraph live. Everything rendered here is
+// mythic-tier and labelled as such — same honesty rule as the roster.
+const BODY_LABELS = {
+  sun: 'Sun', moon: 'Moon', mercury: 'Mercury', venus: 'Venus', mars: 'Mars',
+  jupiter: 'Jupiter', saturn: 'Saturn', uranus: 'Uranus', neptune: 'Neptune',
+  pluto: 'Pluto', earth: 'Earth', northnode: 'North Node', southnode: 'South Node',
+}
+
+const ASPECT_GLYPH = { conjunction: '☌', sextile: '﹡', square: '□', trine: '△', opposition: '☍' }
+
+function aspectColor(bucket) {
+  return bucket === 'tense' ? fn.clay : bucket === 'harmonious' ? fn.moss : fn.ink
+}
+
+function DepthRow({ k, v, accent }) {
+  return (
+    <div style={{ display: 'flex', gap: space.md, marginBottom: '5px', flexWrap: 'wrap' }}>
+      <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.1em', color: fn.ghost, minWidth: '110px' }}>
+        {k.toUpperCase()}
+      </span>
+      <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.06em', color: accent || fn.ink, flex: 1 }}>
+        {v}
+      </span>
+    </div>
+  )
+}
+
+function BalanceBar({ label, pct }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: space.md, marginBottom: '5px' }}>
+      <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.1em', color: fn.ghost, minWidth: '110px' }}>
+        {label.toUpperCase()}
+      </span>
+      <div style={{ flex: 1, height: '8px', background: fn.ground, borderRadius: '2px', overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', background: fn.moss }} />
+      </div>
+      <span style={{ ...mono, fontSize: '13px', color: fn.meta, minWidth: '38px', textAlign: 'right' }}>
+        {pct}%
+      </span>
+    </div>
+  )
+}
+
+function DepthTab({ engine, state }) {
+  // Charts saved before houses existed lack them; the birth data is still
+  // here, so recompute a display copy rather than telling the founder to go
+  // re-press a button. Not written back — the stored chart updates on the
+  // next real "Recompute chart".
+  const chart = useMemo(() => {
+    if (!engine || !state?.chart) return state?.chart || null
+    if (state.chart.houses?.length) return state.chart
+    if (state.birth?.date && state.birth?.lat != null) {
+      try {
+        const birth = engine.birthFromParts(
+          state.birth.date,
+          state.birth.unknownTime ? '12:00' : (state.birth.time || '12:00'),
+          state.birth.lat,
+          state.birth.lon,
+        )
+        return engine.computeChart(birth)
+      } catch (_) { return state.chart }
+    }
+    return state.chart
+  }, [engine, state?.chart, state?.birth])
+
+  const hd = state?.humanDesign
+  const aspects = useMemo(
+    () => (engine && chart?.placements ? engine.natalAspects(chart) : []),
+    [engine, chart],
+  )
+  const cross = useMemo(
+    () => (engine && hd ? engine.incarnationCross(hd) : null),
+    [engine, hd],
+  )
+
+  // The daily read is the expensive piece (the upcoming-events search walks
+  // the ephemeris forward), so it computes after first paint behind a
+  // loading line instead of blocking the tab switch.
+  const [daily, setDaily] = useState(null)
+  useEffect(() => {
+    if (!engine || !chart?.placements) return undefined
+    setDaily(null)
+    const id = setTimeout(() => {
+      try { setDaily(engine.computeDepthDaily(chart, hd, new Date())) }
+      catch (err) { console.error('[care-depth] daily read failed:', err); setDaily({ failed: true }) }
+    }, 30)
+    return () => clearTimeout(id)
+  }, [engine, chart, hd])
+
+  if (!chart?.placements) {
+    return (
+      <Panel eyebrow="DEPTH" note="The full chart and bodygraph, behind the card's summary.">
+        <p style={{ ...fnText.body, color: fn.meta, margin: 0 }}>
+          Compute your chart in the Intake tab first — everything here is read
+          from it.
+        </p>
+      </Panel>
+    )
+  }
+
+  const houses = chart.houses?.length ? chart.houses : null
+
+  return (
+    <div>
+      {/* The full natal chart */}
+      <Panel
+        eyebrow="THE FULL CHART · MYTHIC"
+        note="All ten placements with houses, plus the angles and nodes. The card carries only the top three; this is the whole sky at your birth."
+      >
+        {Object.entries(chart.placements).map(([key, p]) => (
+          <DepthRow
+            key={key}
+            k={BODY_LABELS[key]}
+            v={`${p.formatted}${p.house ? ` · house ${p.house}` : ''}${p.retrograde ? '  ℞' : ''}`}
+          />
+        ))}
+        <div style={{ height: space.md }} />
+        <DepthRow k="Ascendant" v={chart.ascendant.formatted} />
+        <DepthRow k="Midheaven" v={chart.midheaven.formatted} />
+        <DepthRow k="North Node" v={chart.northNode.formatted} />
+        <DepthRow k="South Node" v={chart.southNode.formatted} />
+        {!houses && (
+          <p style={{ ...fnText.caption, color: fn.ghost, margin: `${space.md} 0 0` }}>
+            Houses will appear after the next "Recompute chart" in Intake.
+          </p>
+        )}
+      </Panel>
+
+      {/* Element and modality balance */}
+      {chart.balance && (
+        <Panel
+          eyebrow="BALANCE · MYTHIC"
+          note="Element and modality weighting across the whole chart. Sun, Moon and Ascendant count double, per convention."
+        >
+          {Object.entries(chart.balance.elements).map(([el, pct]) => (
+            <BalanceBar key={el} label={el} pct={pct} />
+          ))}
+          <div style={{ height: space.md }} />
+          {Object.entries(chart.balance.modalities).map(([m, pct]) => (
+            <BalanceBar key={m} label={m} pct={pct} />
+          ))}
+        </Panel>
+      )}
+
+      {/* Natal aspects */}
+      <Panel
+        eyebrow="NATAL ASPECTS · MYTHIC"
+        note="Every classical aspect in the birth chart, tightest first. Same orbs as the daily sky, so an aspect means the same thing everywhere."
+      >
+        {aspects.map((a) => (
+          <DepthRow
+            key={`${a.a}-${a.b}-${a.name}`}
+            k={`${BODY_LABELS[a.a] || a.a} ${ASPECT_GLYPH[a.name] || ''} ${BODY_LABELS[a.b] || a.b}`}
+            v={`${a.name} · ${a.orb}° orb`}
+            accent={aspectColor(a.bucket)}
+          />
+        ))}
+        {!aspects.length && (
+          <p style={{ ...fnText.caption, color: fn.ghost, margin: 0 }}>No aspects within orb.</p>
+        )}
+      </Panel>
+
+      {/* The full bodygraph */}
+      {hd && (
+        <Panel
+          eyebrow="BODYGRAPH IN FULL · MYTHIC"
+          note="Both activation columns — personality (conscious, black) and design (unconscious, red) — with every gate named."
+        >
+          <div style={{ display: 'flex', gap: space.xl, flexWrap: 'wrap' }}>
+            {[['personality', 'PERSONALITY · CONSCIOUS'], ['design', 'DESIGN · UNCONSCIOUS']].map(([side, label]) => (
+              <div key={side} style={{ flex: '1 1 280px' }}>
+                <div style={{ ...fnText.eyebrow, marginBottom: space.md }}>{label}</div>
+                {hd[side] && Object.entries(hd[side]).map(([body, activation]) => (
+                  <DepthRow
+                    key={body}
+                    k={BODY_LABELS[body] || body}
+                    v={`${activation.gate}.${activation.line} · ${engine.GATE_NAMES[activation.gate]}`}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+
+          <div style={{ height: space.lg }} />
+          <div style={{ ...fnText.eyebrow, marginBottom: space.md }}>CHANNELS</div>
+          {(hd.channels || []).map((ch) => (
+            <DepthRow key={ch} k={ch} v={engine.CHANNEL_NAMES[ch] || '—'} />
+          ))}
+
+          {cross && (
+            <>
+              <div style={{ height: space.lg }} />
+              <div style={{ ...fnText.eyebrow, marginBottom: space.md }}>INCARNATION CROSS</div>
+              <DepthRow k="Angle" v={cross.angle || '—'} />
+              <DepthRow
+                k="Gates"
+                v={`${cross.personalitySun.gate}/${cross.personalityEarth.gate} | ${cross.designSun.gate}/${cross.designEarth.gate}`}
+              />
+              <p style={{ ...fnText.caption, color: fn.ghost, margin: `${space.sm} 0 0` }}>
+                {cross.personalitySun.name} / {cross.personalityEarth.name} over{' '}
+                {cross.designSun.name} / {cross.designEarth.name} · personality Sun/Earth
+                over design Sun/Earth. The four gates are the cross; traditional
+                proper names for each combination vary by school.
+              </p>
+            </>
+          )}
+
+          <div style={{ height: space.lg }} />
+          <div style={{ ...fnText.eyebrow, marginBottom: space.md }}>LIVING IT</div>
+          <DepthRow k="Strategy" v={engine.TYPE_GUIDANCE[hd.type]?.strategy || '—'} />
+          <DepthRow k="Signature" v={engine.TYPE_KEYNOTES[hd.type]?.signature || '—'} accent={fn.moss} />
+          <DepthRow k="Not-self" v={engine.TYPE_KEYNOTES[hd.type]?.notSelf || '—'} accent={fn.clay} />
+          <p style={{ ...fnText.caption, color: fn.meta, margin: `${space.sm} 0 0` }}>
+            {engine.AUTHORITY_GUIDANCE[hd.authority]}
+          </p>
+        </Panel>
+      )}
+
+      {/* Today, in depth */}
+      <Panel
+        eyebrow="TODAY IN DEPTH · MYTHIC"
+        note="The whole transiting sky against your chart — the card's Today's Sky keeps the headline; this is the full page."
+      >
+        {!daily && (
+          <p style={{ ...fnText.caption, color: fn.ghost, margin: 0 }}>reading the sky…</p>
+        )}
+        {daily?.failed && (
+          <p style={{ ...fnText.caption, color: fn.ghost, margin: 0 }}>
+            The daily read didn't load that time — everything above is unaffected.
+          </p>
+        )}
+        {daily && !daily.failed && (
+          <>
+            <div style={{ ...fnText.eyebrow, marginBottom: space.md }}>THE SKY · {daily.date}</div>
+            {Object.entries(daily.sky).map(([key, s]) => (
+              <DepthRow key={key} k={BODY_LABELS[key]} v={`${s.formatted}${s.retrograde ? '  ℞' : ''}`} />
+            ))}
+
+            <div style={{ height: space.lg }} />
+            <div style={{ ...fnText.eyebrow, marginBottom: space.md }}>ASPECTS TO YOUR CHART</div>
+            {daily.aspects.map((a) => (
+              <DepthRow
+                key={`${a.transiting}-${a.natal}-${a.name}`}
+                k={`${BODY_LABELS[a.transiting]} ${ASPECT_GLYPH[a.name] || ''} natal ${BODY_LABELS[a.natal] || a.natal}`}
+                v={`${a.name} · ${a.orb}° orb`}
+                accent={aspectColor(a.bucket)}
+              />
+            ))}
+            {!daily.aspects.length && (
+              <p style={{ ...fnText.caption, color: fn.ghost, margin: 0 }}>
+                No personal-planet aspects within orb today.
+              </p>
+            )}
+
+            {hd && (
+              <>
+                <div style={{ height: space.lg }} />
+                <div style={{ ...fnText.eyebrow, marginBottom: space.md }}>HUMAN DESIGN WEATHER</div>
+                {Object.entries(daily.humanDesign.activations).map(([body, activation]) => (
+                  <DepthRow
+                    key={body}
+                    k={BODY_LABELS[body] || body}
+                    v={`gate ${activation.gate}.${activation.line} · ${engine.GATE_NAMES[activation.gate]}`}
+                  />
+                ))}
+                <div style={{ height: space.md }} />
+                {daily.humanDesign.temporaryChannels.length ? (
+                  daily.humanDesign.temporaryChannels.map((c) => (
+                    <p key={c.channel} style={{ ...fnText.caption, color: fn.meta, margin: `0 0 ${space.sm}` }}>
+                      Today's gate {c.transitingGate} ({BODY_LABELS[c.transitingBodies[0]] || c.transitingBodies[0]})
+                      completes the {c.channel} channel{c.channelName ? ` — ${c.channelName}` : ''} with your
+                      natal gate {c.natalGate}. Temporary: it lifts when the transit moves on.
+                    </p>
+                  ))
+                ) : (
+                  <p style={{ ...fnText.caption, color: fn.ghost, margin: 0 }}>
+                    No temporary channels today — the sky isn't bridging anything new in your chart.
+                  </p>
+                )}
+              </>
+            )}
+
+            <div style={{ height: space.lg }} />
+            <div style={{ ...fnText.eyebrow, marginBottom: space.md }}>COMING UP</div>
+            {daily.events.nextFullMoon && <DepthRow k="Full moon" v={daily.events.nextFullMoon} />}
+            {daily.events.nextNewMoon && <DepthRow k="New moon" v={daily.events.nextNewMoon} />}
+            {daily.events.retrogradesEnding.map((r) => (
+              <DepthRow
+                key={r.body}
+                k={`${BODY_LABELS[r.body]} ℞`}
+                v={r.endsOn ? `direct on ${r.endsOn}` : 'stays retrograde beyond this horizon'}
+              />
+            ))}
+            {!daily.events.retrogradesEnding.length && (
+              <DepthRow k="Retrogrades" v="none among the personal and social planets" />
+            )}
+          </>
         )}
       </Panel>
     </div>
