@@ -15,6 +15,9 @@ import { body, sc, at } from '../../lib/designTokens'
 import { getMyHorizonDeclaration } from '../lib/horizonDeclaration'
 import ShareArtifactButton from './ShareArtifactButton'
 import { platformUrl } from '../lib/shareArtifact'
+import { logActivity } from './pulse/logActivity'
+import { claimMilestone } from '../lib/milestones'
+import Bloom from './Bloom'
 
 const MAX_LINE = 280
 
@@ -27,6 +30,9 @@ export default function MomentCapture({ challengeId, domain, onCaptured }) {
   const [done, setDone]     = useState(false)
   const [err, setErr]       = useState(null)
   const [horizonLine, setHorizonLine] = useState(null)
+  // The first thing a person ever puts into the world here. Once per person,
+  // forever — claimed in milestones_seen, so it cannot fire a second time.
+  const [firstEver, setFirstEver] = useState(false)
   const fileRef = useRef(null)
 
   // The viewer's declared horizon, if any — so the saved state can read the
@@ -68,6 +74,14 @@ export default function MomentCapture({ challengeId, domain, onCaptured }) {
       })
       setDone(true)
       if (onCaptured) onCaptured(moment)
+
+      // The pulse learns a moment landed. Anonymous by construction — the
+      // activity table has no user column, and the line itself is never
+      // copied there (180).
+      logActivity({ eventType: 'moment_posted', subjectType: 'challenge', domain: domain || null })
+
+      // …and if this was their first ever, that is worth stopping for.
+      claimMilestone('first_moment').then(first => { if (first) setFirstEver(true) })
     } catch (e) {
       setErr(e.message || 'Could not save that. Try again.')
     } finally {
@@ -78,6 +92,10 @@ export default function MomentCapture({ challengeId, domain, onCaptured }) {
   if (done) {
     return (
       <div style={{ marginTop: '10px' }}>
+        {firstEver && (
+          <Bloom kind="first_moment" ctx={{ horizonLine, domain: domain || null }}
+            onClose={() => setFirstEver(false)} />
+        )}
         {horizonLine && (
           <div style={{ marginBottom: '6px' }}>
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',

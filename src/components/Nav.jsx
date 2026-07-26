@@ -70,6 +70,18 @@ export function Nav({ activePath, hideHamburger = false }) {
                 <span>Daily Tools</span>
               </Link>
             )}
+            {/* The daily surface — the desktop door, matching the Today tab on
+                mobile. Signed-in only: there is nothing in the room to reach
+                until you are part of it. */}
+            {user && (
+              <Link to="/today" className="nav-practice" title="What people did today" onClick={closeMobile}>
+                <svg width="15" height="15" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="M11 6.5V11L14 13" />
+                </svg>
+                <span>Today</span>
+              </Link>
+            )}
             {user && (
               <Link to="/search" className="nav-search-icon" title="Search the Atlas" onClick={closeMobile}>
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">

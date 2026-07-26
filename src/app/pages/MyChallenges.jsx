@@ -17,10 +17,14 @@ import MomentCapture  from '../components/MomentCapture'
 import TendedThing    from '../components/TendedThing'
 import Grove          from '../components/Grove'
 import ShareArtifactButton from '../components/ShareArtifactButton'
+import SparkGive      from '../components/SparkGive'
+import Bloom          from '../components/Bloom'
 import { getTendedThing, tendThing } from '../lib/tendedThing'
 import { getMyHorizonDeclaration } from '../lib/horizonDeclaration'
 import { platformUrl } from '../lib/shareArtifact'
 import { recordHorizonAction } from '../lib/horizonActions'
+import { claimMilestone, milestoneForCheckIn } from '../lib/milestones'
+import { logActivity } from '../components/pulse/logActivity'
 
 const GOLD_C = at.verdigris
 const hair   = `1px solid ${at.verdigrisEdge}`
@@ -104,6 +108,9 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark, horizonLine }) {
   // The tended thing — this person's living thing for this challenge (BP-11).
   const [tended, setTended]       = useState(null)
   const [returned, setReturned]   = useState(null)   // { strandId, others } — real data back from the check-in
+  // The loud moment, when one is owed. Claimed in the database first
+  // (milestones_seen), so it fires exactly once and never on a refetch.
+  const [bloom, setBloom]         = useState(null)   // { kind, ctx } | null
 
   const [localComplete, setLocalComplete] = useState(false)
   const [finishing,  setFinishing]  = useState(false)
@@ -129,6 +136,9 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark, horizonLine }) {
           reflection_attributed: consent && attributed,
         })
       setLocalComplete(true); setFinishing(false)
+      // Finishing outranks every other milestone, and ends in a door.
+      const first = await claimMilestone('run_complete', String(p.call_id || ''))
+      if (first) setBloom({ kind: 'run_complete', ctx: { title: p.title, domain: p.domain || null, horizonLine } })
     } catch {}
     setSavingDone(false)
   }
@@ -170,11 +180,40 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark, horizonLine }) {
       if (willBeDone) {
         const d = await r.json().catch(() => null)
         if (r.ok && d && typeof d.others_today === 'number') setReturned({ strandId, others: d.others_today })
-        // A real act grows the tended thing — check-ins are its only food (BP-11).
-        if (r.ok) tendThing(p.call_id).then(t => { if (t) setTended(t) })
-        // …and accrues to the horizon-actions ledger (BP-18). Fire-and-forget:
-        // a ledger miss must never disturb the check-in itself.
-        if (r.ok) recordHorizonAction({ kind: 'drive', source: 'checkin', domain: p.domain || null })
+        if (r.ok) {
+          const prevStage = tended?.stage ?? 0
+          // A real act grows the tended thing — check-ins are its only food (BP-11).
+          const t = await tendThing(p.call_id)
+          if (t) setTended(t)
+
+          // The pulse learns that a practice was kept. Anonymous by
+          // construction — the activity table has no user column, so the
+          // subject is the challenge, never the person (180).
+          logActivity({
+            eventType: 'check_in', subjectType: 'challenge',
+            subjectId: p.call_id || null, subjectName: p.title || null,
+            subjectSlug: p.slug || null, domain: p.domain || null,
+          })
+
+          // …and accrues to the horizon-actions ledger (BP-18). Fire-and-forget:
+          // a ledger miss must never disturb the check-in itself.
+          recordHorizonAction({ kind: 'drive', source: 'checkin', domain: p.domain || null })
+
+          // Is a loud moment owed? Claim it first — the unique index in
+          // milestones_seen is what makes two tabs produce one bloom.
+          const days = new Set(p.done_dates || []); days.add(todayKey())
+          const m = milestoneForCheckIn({
+            challengeId: p.call_id,
+            prevStage,
+            stage: t?.stage,
+            streak: currentStreak(Array.from(days)),
+            complete: false,
+          })
+          if (m) {
+            const first = await claimMilestone(m.kind, m.ref)
+            if (first) setBloom({ kind: m.kind, ctx: { title: p.title, stage: t?.stage, domain: p.domain || null } })
+          }
+        }
       } else {
         setReturned(prev => (prev && prev.strandId === strandId ? null : prev))
       }
@@ -190,6 +229,11 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark, horizonLine }) {
 
   return (
     <div style={{ background: at.object, border: hair, borderRadius: '14px', padding: '24px 26px', marginBottom: '20px' }}>
+      {/* The loud moment, when one is owed. Rendered from the card so it can
+          carry this practice's own particulars, and dismissed back into the day. */}
+      {bloom && (
+        <Bloom kind={bloom.kind} ctx={{ horizonLine, ...bloom.ctx }} onClose={() => setBloom(null)} />
+      )}
       {/* Title + byline */}
       <div style={{ marginBottom: '16px' }}>
         {p.slug ? (
@@ -251,9 +295,17 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark, horizonLine }) {
         paddingBottom: '18px', borderBottom: hair }}>
         <TendedThing stage={tended?.stage ?? 0} lastTendedAt={tended?.last_tended_at || null} size="md" />
         <div style={{ ...body, fontSize: '14px', color: at.ghost, lineHeight: 1.5, maxWidth: '280px' }}>
-          Your living thing, lit from the fire the day you joined. It grows each time you show up · and only rests when you&rsquo;re away.
+          Your living thing, started the day you took this on. It grows each time you show up · and only rests when you&rsquo;re away.
         </div>
       </div>
+
+      {/* Pass a spark · one person, one line about why them (item 5). Sits with
+          the practice it belongs to, because that is what is being handed over. */}
+      {!complete && (
+        <div style={{ marginBottom: '18px' }}>
+          <SparkGive challengeId={p.call_id} challengeTitle={p.title} domain={p.domain || null} />
+        </div>
+      )}
 
       {/* Mint the progress view as a shareable image (BP-7): where things
           stand · the step taken · the horizon. */}
@@ -311,12 +363,17 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark, horizonLine }) {
                     </button>
                   )}
                 </div>
+                {/* The returned line. One quiet line of real data, and nothing
+                    else — no flame vocabulary, no encouragement, no number the
+                    server did not actually count. When nobody else has been out
+                    today it falls back to the day-count and the author rather
+                    than claiming company that may not exist. */}
                 {done && returned && returned.strandId === s.id && (
                   <FadeIn style={{ ...body, fontSize: '14px', color: at.ghost, marginTop: '10px', lineHeight: 1.5 }}>
                     Day {dayNo} of {window}
-                    {returned.others > 0 && (
-                      <> &middot; {returned.others} {returned.others === 1 ? 'other' : 'others'} did this today</>
-                    )}
+                    {returned.others > 0
+                      ? <> &middot; {returned.others} {returned.others === 1 ? 'other' : 'others'} did this today</>
+                      : author ? <> &middot; offered by {author}</> : null}
                   </FadeIn>
                 )}
                 {done && (

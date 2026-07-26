@@ -102,6 +102,11 @@ const ITALIC_WHITELIST = [
   'app/pages/TrailPage.jsx', // BP-16 · {horizon_text} — the walker's own declared horizon
   'app/pages/BoardPage.jsx', // BP-16 · {moment.line} on the path layer — the walker's own words
   'app/pages/NorthStar.jsx', // BP-18 · {horizon} + North Star synthesis — the person's own words
+  // ── Social half of the loop (July 2026) ──
+  'app/components/MomentsReviewQueue.jsx', // {r.moment.line} + {m.line} — the poster's own words, in the founder queue
+  'app/components/FeaturedTop.jsx', // {m.line} at the top of Today + in the consent request — the owner's own words
+  'app/components/Bloom.jsx', // {ctx.horizonLine} step-toward on a milestone — the person's own declared horizon
+  'app/pages/SparkReceive.jsx', // {spark.line} — the giver's own line about why them, rendered verbatim
 ]
 
 // Files where heritage gold is legal (Master Spec §4). Keep this

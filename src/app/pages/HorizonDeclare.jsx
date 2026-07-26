@@ -13,6 +13,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { fn, space } from '../../lib/designTokens'
+import Bloom from '../components/Bloom'
+import { claimMilestone } from '../lib/milestones'
 import {
   getMyHorizonDeclaration,
   saveHorizonDeclaration,
@@ -39,6 +41,7 @@ export default function HorizonDeclarePage() {
   const [busy, setBusy]         = useState(false)
   const [err, setErr]           = useState(null)
   const [justDeclared, setJustDeclared] = useState(false)
+  const [bloom, setBloom] = useState(false)
   const [communal, setCommunal] = useState(false)
 
   useEffect(() => {
@@ -61,6 +64,11 @@ export default function HorizonDeclarePage() {
       const saved = await saveHorizonDeclaration(line)
       setExisting(saved)
       setJustDeclared(true)
+      // Saying where you are going is the biggest thing a person does here and
+      // it has been passing in silence. Once per person, ever (182) — the same
+      // bloom grammar as the challenge side, rendered on the personal rail.
+      const first = await claimMilestone('horizon_named')
+      if (first) setBloom(true)
     } catch (e) {
       setErr(e.message || 'Could not save that just now.')
     } finally {
@@ -80,6 +88,11 @@ export default function HorizonDeclarePage() {
   return (
     <div style={{ minHeight: '100dvh', background: fn.ground }}>
       <Nav />
+      {bloom && (
+        <Bloom kind="horizon_named" tone="personal"
+          ctx={{ horizonLine: (existing && existing.line) || line }}
+          onClose={() => setBloom(false)} />
+      )}
       <div style={{ maxWidth: '640px', margin: '0 auto',
         padding: 'clamp(72px, 12vw, 120px) clamp(20px, 5vw, 40px) 120px' }}>
 

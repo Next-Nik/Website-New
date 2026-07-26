@@ -19,6 +19,9 @@ import { momentImageUrl, reportMoment } from '../../lib/momentCapture'
 import { getMyHorizonDeclaration } from '../lib/horizonDeclaration'
 import ShareArtifactButton from '../components/ShareArtifactButton'
 import { platformUrl } from '../lib/shareArtifact'
+import PulseLines, { usePulseLines } from '../components/pulse/PulseLines'
+import { FeaturedTop, FeaturedConsent } from '../components/FeaturedTop'
+import { getFeaturedToday, getMyPendingAsk } from '../lib/featured'
 
 function startOfTodayISO() {
   const d = new Date()
@@ -118,6 +121,23 @@ function MomentCard({ moment, onReported, isMine, horizonLine }) {
   )
 }
 
+// The pulse interleaves between cards so the room reads as moving, not as a
+// wall of photographs. On a thin day the ticker carries the page on its own —
+// that is what makes "dignified when sparse" true rather than aspirational.
+// Two lines between every pair of cards; the remainder falls in at the end.
+function interleave(moments, lines, per = 2) {
+  const out = []
+  let li = 0
+  for (let i = 0; i < moments.length; i += per) {
+    out.push({ kind: 'cards', items: moments.slice(i, i + per) })
+    if (li < lines.length) {
+      out.push({ kind: 'pulse', items: lines.slice(li, li + 2) })
+      li += 2
+    }
+  }
+  return out
+}
+
 export function DailySurfacePage() {
   const { user } = useAuth()
   const [moments, setMoments] = useState([])
@@ -125,6 +145,9 @@ export function DailySurfacePage() {
   const [error, setError] = useState(false)
   const [hidden, setHidden] = useState(() => new Set())
   const [horizonLine, setHorizonLine] = useState(null)
+  const [featured, setFeatured] = useState([])
+  const [pendingAsk, setPendingAsk] = useState(null)
+  const pulse = usePulseLines(24)
 
   const load = useCallback(async () => {
     setLoading(true); setError(false)
@@ -156,6 +179,17 @@ export function DailySurfacePage() {
     return () => { live = false }
   }, [user])
 
+  // What is at the top of the day, and whether anybody has asked this person
+  // about one of theirs. The ask is read where they already are: there is no
+  // notification system in scope and nothing here chases anyone.
+  useEffect(() => {
+    let live = true
+    getFeaturedToday().then(f => { if (live) setFeatured(f) })
+    if (user) getMyPendingAsk().then(m => { if (live) setPendingAsk(m) })
+    else setPendingAsk(null)
+    return () => { live = false }
+  }, [user])
+
   const visible = moments.filter(m => !hidden.has(m.id))
   const hero = { ...serif, fontWeight: 300, color: at.text }
 
@@ -171,6 +205,18 @@ export function DailySurfacePage() {
           What people did today, in their own words. It fills through the day and begins again tomorrow.
         </p>
 
+        {/* The request, if there is one. Above everything, because it is the
+            only thing on this page that is addressed to you personally. */}
+        {pendingAsk && (
+          <FeaturedConsent moment={pendingAsk} onAnswered={yes => {
+            setPendingAsk(null)
+            if (yes) getFeaturedToday().then(setFeatured)
+          }} />
+        )}
+
+        {/* One or two moments at the top, with their owners' permission. */}
+        <FeaturedTop moments={featured} />
+
         {loading && <p style={{ ...body, color: at.ghost }}>Loading today…</p>}
 
         {error && !loading && (
@@ -180,11 +226,16 @@ export function DailySurfacePage() {
           </div>
         )}
 
+        {/* Nothing has landed yet — but the room is still moving underneath,
+            and the ticker says so with real events rather than encouragement. */}
         {!loading && !error && visible.length === 0 && (
-          <div style={{ ...body, fontSize: '16px', color: at.ghost, lineHeight: 1.6, padding: '30px 0' }}>
-            Nothing yet today. The first moment lands here the moment someone checks in and adds a photo or a line.
-            {user && <> Yours could be the first — check in on <a href="/challenges" style={{ color: at.verdigris }}>a challenge</a> and add a moment.</>}
-          </div>
+          <>
+            <div style={{ ...body, fontSize: '16px', color: at.ghost, lineHeight: 1.6, padding: '30px 0 10px' }}>
+              Nothing yet today. The first moment lands here the moment someone checks in and adds a photo or a line.
+              {user && <> Yours could be the first — check in on <a href="/challenges" style={{ color: at.verdigris }}>a challenge</a> and add a moment.</>}
+            </div>
+            <PulseLines lines={pulse.lines} heading="Meanwhile, in the room" />
+          </>
         )}
 
         {!loading && !error && visible.length > 0 && (
@@ -192,14 +243,21 @@ export function DailySurfacePage() {
             <div style={{ ...body, fontSize: '13px', color: at.ghost, marginBottom: '18px' }}>
               {visible.length} {visible.length === 1 ? 'moment' : 'moments'} so far today.
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '18px' }}>
-              {visible.map(m => (
-                <MomentCard key={m.id} moment={m}
-                  isMine={!!user && m.user_id === user.id}
-                  horizonLine={horizonLine}
-                  onReported={id => setHidden(h => new Set(h).add(id))} />
-              ))}
-            </div>
+            {interleave(visible, pulse.lines).map((block, i) => (
+              block.kind === 'cards' ? (
+                <div key={`c${i}`} style={{ display: 'grid', alignItems: 'start',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '18px' }}>
+                  {block.items.map(m => (
+                    <MomentCard key={m.id} moment={m}
+                      isMine={!!user && m.user_id === user.id}
+                      horizonLine={horizonLine}
+                      onReported={id => setHidden(h => new Set(h).add(id))} />
+                  ))}
+                </div>
+              ) : (
+                <PulseLines key={`p${i}`} lines={block.items} />
+              )
+            ))}
           </>
         )}
       </div>

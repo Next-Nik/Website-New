@@ -27,6 +27,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '../../../hooks/useSupabase'
+import { tickerLine, relTime } from './tickerLine'
 
 const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body    = { fontFamily: "'Lora', Georgia, serif" }
@@ -99,33 +100,8 @@ export function usePulse() {
 }
 
 // ── ticker line copy ─────────────────────────────────────────
-const DOMAIN_NAMES = {
-  'human-being': 'Human Being', society: 'Society', nature: 'Nature',
-  technology: 'Technology', 'finance-economy': 'Economy',
-  legacy: 'Legacy', vision: 'Vision',
-}
-
-function tickerLine(a) {
-  const where = a.domain && DOMAIN_NAMES[a.domain] ? ` · ${DOMAIN_NAMES[a.domain]}` : ''
-  switch (a.event_type) {
-    case 'actor_added':     return `New on the map: ${a.subject_name || 'an actor'}${where}`
-    case 'practice_added':  return `A practice was contributed: ${a.subject_name || 'untitled'}${where}`
-    case 'tune_in':         return `Someone tuned in to ${a.subject_name || 'the work'}`
-    case 'need_posted':     return `${a.subject_name || 'An actor'} posted a need${where}`
-    case 'event_published': return `Event published: ${a.subject_name || ''}${where}`
-    case 'step_forward':    return `Someone stepped forward${a.subject_name ? ` for ${a.subject_name}` : ''}`
-    case 'listing_added':   return `New in NextMarket: ${a.subject_name || ''}`
-    default:                return a.detail || ''
-  }
-}
-
-function relTime(iso) {
-  const s = Math.max(1, Math.floor((Date.now() - new Date(iso).getTime()) / 1000))
-  if (s < 3600)        return `${Math.max(1, Math.floor(s / 60))}m ago`
-  if (s < 86400)       return `${Math.floor(s / 3600)}h ago`
-  if (s < 86400 * 7)   return `${Math.floor(s / 86400)}d ago`
-  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-}
+// Shared with the daily surface (PulseLines) so the platform never says the
+// same thing two different ways. See tickerLine.js for the privacy law.
 
 // ── pieces ───────────────────────────────────────────────────
 function Stat({ value, label, dark }) {

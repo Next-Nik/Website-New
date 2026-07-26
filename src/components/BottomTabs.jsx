@@ -36,6 +36,18 @@ function MoreIcon({ active }) {
   )
 }
 
+// Today · the daily surface. A day that fills and begins again — a ring with
+// the hand a little past the top, not a bell and not a badge.
+function TodayIcon({ active }) {
+  const c = active ? '#262420' : 'rgba(15,21,35,0.55)'
+  return (
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <circle cx="11" cy="11" r="8" stroke={c} strokeWidth="1.5" fill="none"/>
+      <path d="M11 6.5V11L14 13" stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    </svg>
+  )
+}
+
 function MoreMenu({ onClose }) {
   const lifeOSLinks = [
     { label: 'NextUs Self', path: '/tools', desc: 'Your life — seven domains' },
@@ -45,6 +57,8 @@ function MoreMenu({ onClose }) {
     { label: 'NextUs',         path: '/explore',        desc: 'Seven civilisational domains' },
     { label: 'Orgs and Individuals', path: '/feed',     desc: 'Who is doing the work' },
     { label: 'Map',            path: '/map',            desc: 'Where the work is happening' },
+    { label: 'Field Guide',    path: '/guide',          desc: 'How to read the work' },
+    { label: 'Your sparks',    path: '/sparks',         desc: 'Where what you passed on went' },
   ]
 
   const siteLinks = [
@@ -131,6 +145,7 @@ export function BottomTabs() {
     : null
 
   const isHome    = pathname === '/'
+  const isToday   = pathname.startsWith('/today')
   const isPlanet  = pathname.startsWith('/nextus') && !pathname.startsWith('/nextus-self')
   const isMore    = ['/work-with-nik', '/podcast', '/about', '/pricing']
     .some(p => pathname.startsWith(p))
@@ -142,6 +157,16 @@ export function BottomTabs() {
       icon:   <HomeIcon active={isHome} />,
       active: isHome,
       to:     '/',
+      action: null,
+    },
+    // The daily surface had no door anywhere in primary navigation. Nothing
+    // else in the social half matters until somebody can reach the room.
+    {
+      key:    'today',
+      label:  'Today',
+      icon:   <TodayIcon active={isToday} />,
+      active: isToday,
+      to:     '/today',
       action: null,
     },
     {
