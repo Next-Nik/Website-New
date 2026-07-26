@@ -930,3 +930,28 @@ confirm nothing was missed — the only remaining hits are historical quotes
 in this document and unrelated ordinary-English uses of "notice"/"noticed"
 (a generic `S.notice` alert-box style, "went unnoticed," etc.), which are
 correctly left alone.
+
+---
+
+## 20. The topbar Save button, removed
+
+Direct correction: "get rid of the save buttons at the top." §18 had put a
+Save button in both places — the topbar and the bottom of every section —
+reasoning that the topbar copy stayed useful since it's reachable
+regardless of scroll position. In practice it was just a second, unused
+button competing for attention with the one that actually gets pressed.
+
+Removed the `<SaveButton>` from the topbar entirely. The ambient autosave
+readout (`● Saved` / `○ Saving…` / `⚠ Not saved`, §14) stays in the topbar
+unchanged — that wasn't part of this request, and it's still the passive
+signal for the debounced autosave running underneath everything. The five
+section-level Save buttons from §18 (Step 1, each core instrument panel,
+the Deepen panel) are untouched — they were never in question, only the
+redundant sixth one at the top.
+
+Verified: parses clean; the full 25 + 5 + 30 test suite passes unchanged;
+design audit zero new violations; production build clean. Rendered the
+real `CareProtocolPage` again (mocked login, stateful mock database) and
+confirmed exactly five "Save" buttons remain — all at the bottom of their
+sections — and the topbar contains only the ambient status text, no
+button. See the delivered screenshot.

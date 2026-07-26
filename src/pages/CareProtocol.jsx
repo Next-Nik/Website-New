@@ -299,20 +299,20 @@ function CareProtocolWorkspace({ user }) {
      repeated, plainly-stated request was simpler than either: an actual
      button to press, with its own confirmation, wherever the founder is
      actually looking for one — which turned out to be the bottom of each
-     section, not the topbar alone (§17 shipped one in the topbar only;
-     §18 is the correction — see <SaveButton> below, rendered once per
-     section in IntakeTab, all wired to this same action).
-     This doesn't replace the debounced autosave above — that keeps
+     section, not the topbar (§17 shipped one in the topbar only; §18
+     added one per section; §20 removed the topbar one — it was redundant
+     once every section had its own, and it was never the one being used).
+     This doesn't replace the debounced autosave in the header — that keeps
      running as the safety net regardless of whether any button is ever
-     pressed — it just gives an explicit, deliberate action, repeated
-     everywhere it's expected, for whoever doesn't want to trust the
+     pressed — it just gives an explicit, deliberate action, repeated at
+     the bottom of every section, for whoever doesn't want to trust the
      passive signal.
      triggerSave is deliberately thin: flush any pending debounce, save
-     immediately, report back true/false. Each <SaveButton> instance owns
-     its own Save -> Saving… -> ✓ Saved / Try again display state locally
-     (see the component), so clicking Save at the bottom of one section
-     doesn't make every other section's button flash "✓ Saved" too — only
-     the one actually pressed. */
+     immediately, report back true/false. Each <SaveButton> instance (see
+     IntakeTab) owns its own Save -> Saving… -> ✓ Saved / Try again display
+     state locally, so clicking Save at the bottom of one section doesn't
+     make a different section's button flash "✓ Saved" too — only the one
+     actually pressed. */
   const triggerSave = useCallback(async () => {
     if (saveTimer.current) { clearTimeout(saveTimer.current); saveTimer.current = null }
     setSyncStatus('syncing')
@@ -555,13 +555,14 @@ function CareProtocolWorkspace({ user }) {
         <div style={S.brand}>
           <span aria-hidden="true">◍</span>
           <span>Care Protocol</span>
-          {/* The ambient autosave readout — kept as a passive background
-              signal for the safety net above (§8/§11 debounced save), and
-              still colour-coded (§14) so it doesn't blend into ambient
-              text. Originally the only save feedback that existed at all
-              (§13's note said so explicitly); a direct request made clear
-              that wasn't the actual ask — see the button beside it below,
-              which is. */}
+          {/* The ambient autosave readout — a passive background signal for
+              the safety net above (§8/§11 debounced save), colour-coded
+              (§14) so it doesn't blend into ambient text. This is the only
+              thing in the topbar now — §18 had also put a manual Save
+              button here, redundant with the one at the bottom of every
+              section; removed per direct request, since the section-level
+              buttons (still there — see IntakeTab) are the ones actually
+              being used. */}
           <span
             style={{
               ...mono, fontSize: '13px', letterSpacing: '0.08em', fontWeight: 600,
@@ -573,15 +574,6 @@ function CareProtocolWorkspace({ user }) {
           >
             {syncStatus === 'synced' ? '● Saved' : syncStatus === 'syncing' ? '○ Saving…' : '⚠ Not saved'}
           </span>
-          {/* The manual save button — also repeated at the bottom of every
-              section in IntakeTab (§18); this topbar copy stays too, since
-              it's reachable from anywhere regardless of scroll position.
-              Autosave (above) keeps running regardless — this doesn't
-              replace it, so nothing is lost if it's never pressed — but
-              pressing any instance flushes immediately and gives its own
-              direct confirmation on that button, rather than asking the
-              founder to notice and trust a status chip elsewhere. */}
-          <SaveButton onSave={triggerSave} />
         </div>
         <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.12em', color: fn.ghost }}>
           HIDDEN · FOUNDER ONLY
