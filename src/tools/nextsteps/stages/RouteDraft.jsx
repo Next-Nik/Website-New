@@ -23,7 +23,7 @@
 // really are deferring rather than owning, that shows up in the data and the
 // Evolution Protocol can act on it.
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { authedFetch } from '../../../lib/actorCallsClient'
 
 export function RouteDraft({ track, phases: initial, routeNote, onRatified, onBack }) {
@@ -31,6 +31,25 @@ export function RouteDraft({ track, phases: initial, routeNote, onRatified, onBa
   const [busy, setBusy]     = useState(false)
   const [error, setError]   = useState(null)
   const [touched, setTouched] = useState(false)
+  // Structural edits (reorder / add / cut) run against a unique
+  // (track_id, position) constraint, so two of them in flight at once collide
+  // and one silently loses, stranding a phase at a parked position. The
+  // controls are disabled while one is running.
+  const [moving, setMoving] = useState(false)
+
+  // What the server currently holds for each field. Comparing a blur against
+  // the `initial` prop instead meant that tabbing back through a field you had
+  // already edited counted as another edit every time. route_edits is the
+  // signal the Evolution Protocol reads to decide whether people are deferring
+  // rather than owning their route, so inflating it with tab-throughs would
+  // make that signal lie in the one direction that matters.
+  const saved = useRef(null)
+  if (saved.current === null) {
+    saved.current = {}
+    for (const p of initial || []) {
+      saved.current[p.id] = { name: p.name, work: p.work, exit_condition: p.exit_condition }
+    }
+  }
 
   // ── editing ────────────────────────────────────────────────────────────
   // Local state updates immediately; the save goes on blur. Typing never
@@ -40,17 +59,65 @@ export function RouteDraft({ track, phases: initial, routeNote, onRatified, onBa
   }
 
   async function saveField(phase, field, value) {
-    const original = (initial || []).find((p) => p.id === phase.id)
-    if (original && original[field] === value) return
-    if (!value || !value.trim()) return
-    setTouched(true)
+    const v = (value || '').trim()
+    const last = saved.current[phase.id] || {}
+    if (last[field] === v) return
+    // An empty field is not a save, and it is not an edit either. Put the last
+    // good text back rather than leaving the person looking at a blank they
+    // think is stored.
+    if (!v) {
+      setField(phase.id, field, last[field] ?? '')
+      return
+    }
     try {
-      await authedFetch('/api/nextsteps-route', {
+      const res = await authedFetch('/api/nextsteps-route', {
         method: 'PATCH',
-        body: JSON.stringify({ phase_id: phase.id, phase_update: { [field]: value.trim() } }),
+        body: JSON.stringify({ phase_id: phase.id, phase_update: { [field]: v } }),
       })
+      // fetch does not reject on 4xx or 5xx. Without this check a failed save
+      // was indistinguishable from a good one: the text stayed on screen, the
+      // footer said "Your changes are saved", and the words quietly reverted
+      // at ratification when the server rows came back.
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'That edit did not save.')
+      }
+      saved.current[phase.id] = { ...last, [field]: v }
+      setTouched(true)
+      setError(null)
     } catch (err) {
       console.error('NextSteps saveField error:', err)
+      setError('One of your edits did not save. Check the wording below before you ratify.')
+    }
+  }
+
+  // Every structural edit re-syncs from the server's own answer, and rolls the
+  // optimistic change back if the write did not land. Showing a phase as moved
+  // or gone when the database disagrees is worse than showing nothing, because
+  // the next thing the person does is ratify what they think they are looking at.
+  async function structural(optimistic, request, label) {
+    if (moving) return
+    setMoving(true)
+    const before = phases
+    if (optimistic) setPhases(optimistic)
+    try {
+      const res = await request()
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || `Could not ${label}.`)
+      if (Array.isArray(data.phases)) {
+        setPhases(data.phases)
+        for (const p of data.phases) {
+          saved.current[p.id] = { name: p.name, work: p.work, exit_condition: p.exit_condition }
+        }
+      }
+      setTouched(true)
+      setError(null)
+    } catch (err) {
+      console.error(`NextSteps ${label} error:`, err)
+      setPhases(before)
+      setError(err.message || `Could not ${label}. Nothing has changed.`)
+    } finally {
+      setMoving(false)
     }
   }
 
@@ -61,52 +128,32 @@ export function RouteDraft({ track, phases: initial, routeNote, onRatified, onBa
     const next = phases.slice()
     ;[next[idx], next[swap]] = [next[swap], next[idx]]
     const renumbered = next.map((p, i) => ({ ...p, position: i + 1 }))
-    setPhases(renumbered)
-    setTouched(true)
-    try {
-      const res = await authedFetch('/api/nextsteps-route', {
+    await structural(renumbered, () =>
+      authedFetch('/api/nextsteps-route', {
         method: 'POST',
         body: JSON.stringify({
           action: 'reorder',
           track_id: track.id,
           order: renumbered.map((p) => p.id),
         }),
-      })
-      const data = await res.json()
-      if (data.phases) setPhases(data.phases)
-    } catch (err) {
-      console.error('NextSteps reorder error:', err)
-    }
+      }), 'move that phase')
   }
 
   async function removePhase(phaseId) {
     if (phases.length <= 1) return
-    setTouched(true)
     const keep = phases.filter((p) => p.id !== phaseId).map((p, i) => ({ ...p, position: i + 1 }))
-    setPhases(keep)
-    try {
-      const res = await authedFetch(`/api/nextsteps-route?phase_id=${phaseId}`, { method: 'DELETE' })
-      const data = await res.json()
-      if (data.phases) setPhases(data.phases)
-    } catch (err) {
-      console.error('NextSteps removePhase error:', err)
-    }
+    await structural(keep, () =>
+      authedFetch(`/api/nextsteps-route?phase_id=${phaseId}`, { method: 'DELETE' }),
+      'cross that phase out')
   }
 
   async function addPhase(afterId) {
     if (phases.length >= 6) return
-    setTouched(true)
-    try {
-      const res = await authedFetch('/api/nextsteps-route', {
+    await structural(null, () =>
+      authedFetch('/api/nextsteps-route', {
         method: 'POST',
         body: JSON.stringify({ action: 'add', track_id: track.id, after: afterId }),
-      })
-      const data = await res.json()
-      if (data.phases) setPhases(data.phases)
-      else if (data.error) setError(data.error)
-    } catch (err) {
-      console.error('NextSteps addPhase error:', err)
-    }
+      }), 'add a phase')
   }
 
   async function ratify() {
@@ -182,19 +229,19 @@ export function RouteDraft({ track, phases: initial, routeNote, onRatified, onBa
               <div className="ns-draft-tools">
                 <button
                   type="button" className="ns-tool" onClick={() => reorder(p.id, -1)}
-                  disabled={i === 0} aria-label="Move this phase earlier"
+                  disabled={moving || i === 0} aria-label="Move this phase earlier"
                 >↑ Earlier</button>
                 <button
                   type="button" className="ns-tool" onClick={() => reorder(p.id, 1)}
-                  disabled={i === phases.length - 1} aria-label="Move this phase later"
+                  disabled={moving || i === phases.length - 1} aria-label="Move this phase later"
                 >↓ Later</button>
                 <button
                   type="button" className="ns-tool" onClick={() => addPhase(p.id)}
-                  disabled={phases.length >= 6}
+                  disabled={moving || phases.length >= 6}
                 >+ Add one after</button>
                 <button
                   type="button" className="ns-tool ns-tool-cut" onClick={() => removePhase(p.id)}
-                  disabled={phases.length <= 1}
+                  disabled={moving || phases.length <= 1}
                 >Cross out</button>
               </div>
             </div>
@@ -205,7 +252,7 @@ export function RouteDraft({ track, phases: initial, routeNote, onRatified, onBa
       {error && <p className="ns-draft-error">{error}</p>}
 
       <div className="ns-draft-foot">
-        <button type="button" className="ns-draft-ratify" onClick={ratify} disabled={busy}>
+        <button type="button" className="ns-draft-ratify" onClick={ratify} disabled={busy || moving}>
           {busy ? 'Saving your route…' : 'This is my route'}
         </button>
         <p className="ns-draft-foot-note">

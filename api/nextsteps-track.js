@@ -206,9 +206,41 @@ module.exports = async (req, res) => {
       if (!owned || owned.user_id !== sessionUserId) {
         return res.status(403).json({ error: 'Not your track' });
       }
+
+      // Whitelist, not mass-assign. This used to pass the raw body straight to
+      // .update(), which was merely untidy until migration 180 added
+      // route_authorship / route_published and the two RLS policies that grant
+      // PUBLIC read on any track where route_authorship='editorial' AND
+      // route_published=true. With an open update, any signed-in person could
+      // PATCH those two fields on their own track and publish their verbatim
+      // personal concern and their whole route to the world, and squat the
+      // one-editorial-route-per-domain index while they were at it.
+      //
+      // Route state is deliberately NOT here either: route_state, ratified_at
+      // and route_edits move only through /api/nextsteps-route, so that
+      // ratification stays something a person does and not a field a client
+      // can set.
+      const TRACK_EDITABLE = ['status', 'toward_sentence'];
+      const TRACK_STATUSES = ['planning', 'active', 'dormant', 'complete'];
+      const safeUpdate = {};
+      for (const key of TRACK_EDITABLE) {
+        if (track_update[key] === undefined) continue;
+        if (key === 'status') {
+          if (!TRACK_STATUSES.includes(track_update.status)) {
+            return res.status(400).json({ error: 'Unknown status.' });
+          }
+          safeUpdate.status = track_update.status;
+        } else if (typeof track_update[key] === 'string') {
+          safeUpdate[key] = track_update[key];
+        }
+      }
+      if (Object.keys(safeUpdate).length === 0) {
+        return res.status(400).json({ error: 'No updatable fields in that payload.' });
+      }
+
       const { error } = await supabase
         .from('nextsteps_tracks')
-        .update(track_update)
+        .update(safeUpdate)
         .eq('id', track_id);
       if (error) {
         console.error('NextSteps track update error:', error);

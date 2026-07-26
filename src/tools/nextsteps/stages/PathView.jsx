@@ -45,6 +45,14 @@ export function PathView({ track, user, onBackToLoop, phases: initialPhases = []
   // losing anything: the steps stay, the concern stays, the route is added.
   const hasNoRoute = phases.length === 0
 
+  // A route that has been walked to its end: phases exist, every one is
+  // cleared, none is current. This is NOT the same as having no route, and
+  // telling them apart matters. Without this distinction the component saw
+  // "no current phase", fell through to the legacy branch, found no steps,
+  // and generated a fresh unattached path onto a finished track, flipping it
+  // from complete back to active and destroying the completion.
+  const routeWalked = phases.length > 0 && !currentPhase
+
   // Only the steps of the phase the person is standing in. Steps from cleared
   // phases stay in the record but are not the work any more. Legacy tracks
   // (no route) have steps with phase_id null and show all of them.
@@ -60,7 +68,10 @@ export function PathView({ track, user, onBackToLoop, phases: initialPhases = []
 
   // The exit-condition check, opened by the person, never pushed at them.
   const [checking, setChecking] = useState(false)
-  const [cleared, setCleared] = useState(null)   // { next, complete } after a clear
+  const [clearError, setClearError] = useState(null)
+  const [cleared, setCleared] = useState(null)   // { complete } after a clear
+
+  const allStepsDone = steps.length > 0 && steps.every((s) => s.state === 'done')
 
   // If the current phase has no steps yet, generate the path inside it.
   // One generator, keyed on the phase, so clearing a phase and walking into the
@@ -69,32 +80,35 @@ export function PathView({ track, user, onBackToLoop, phases: initialPhases = []
   const generatedFor = useRef(new Set())
   useEffect(() => {
     if (cleared) return
+    // Never generate onto a finished route, and never onto a track whose route
+    // is drafted but not yet ratified.
+    if (routeWalked) return
     const key = currentPhase ? currentPhase.id : 'no-phase'
     if (generatedFor.current.has(key)) return
     if (steps && steps.length > 0) return
     generatedFor.current.add(key)
     generatePath()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPhase ? currentPhase.id : null, cleared])
+  }, [currentPhase ? currentPhase.id : null, cleared, routeWalked])
 
-  async function generatePath() {
+  // append=true is the re-read: the person finished everything in this phase
+  // and has not yet cleared it, so the path extends rather than restarts.
+  async function generatePath({ append = false } = {}) {
     setGenerating(true)
     setError(null)
     try {
-      const res = await fetch('/api/nextsteps-path', {
+      const res = await authedFetch('/api/nextsteps-path', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          track_id: track.id,
-          userId: user?.id ?? null,
-        }),
+        body: JSON.stringify({ track_id: track.id }),
       })
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}))
         throw new Error(errData.error || `path ${res.status}`)
       }
       const { steps: newSteps, path_note } = await res.json()
-      setSteps(newSteps || [])
+      // Merge, never replace, or a re-read would wipe the completed steps that
+      // earned it. The endpoint returns only the rows it just inserted.
+      setSteps((prev) => (append ? [...prev, ...(newSteps || [])] : (newSteps || [])))
       setPathNote(path_note || null)
     } catch (err) {
       console.error('NextSteps generatePath error:', err)
@@ -104,25 +118,30 @@ export function PathView({ track, user, onBackToLoop, phases: initialPhases = []
     }
   }
 
+  // One writer for both step-state changes. Both used to update the UI whether
+  // or not the write landed, so a 403 or a 500 left a step showing "Done"
+  // forever and the truth only reappeared on reload.
+  async function setStepState(step, state) {
+    const res = await authedFetch('/api/nextsteps-track', {
+      method: 'PATCH',
+      body: JSON.stringify({ step_id: step.id, step_update: { state } }),
+    })
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      throw new Error(data.error || 'That did not save.')
+    }
+    setSteps((prev) => prev.map((s) => (s.id === step.id ? { ...s, state } : s)))
+  }
+
   async function activateStep(step) {
     // Mark the step 'active'. In a full build, this also opens a Target
-    // Stretch on it. For now we flip state and surface a tooltip.
+    // Stretch on it. For now we flip state and follow the route.
     try {
-      await authedFetch('/api/nextsteps-track', {
-        method: 'PATCH',
-        body: JSON.stringify({
-          step_id: step.id,
-          step_update: { state: 'active' },
-        }),
-      })
-      setSteps((prev) =>
-        prev.map((s) => (s.id === step.id ? { ...s, state: 'active' } : s))
-      )
-
-      // Route the person to the step's destination.
+      await setStepState(step, 'active')
       followRoute(step)
     } catch (err) {
       console.error('NextSteps activateStep error:', err)
+      setError(err.message || 'Could not start that step.')
     }
   }
 
@@ -164,29 +183,36 @@ export function PathView({ track, user, onBackToLoop, phases: initialPhases = []
 
   async function markDone(step) {
     try {
-      await authedFetch('/api/nextsteps-track', {
-        method: 'PATCH',
-        body: JSON.stringify({
-          step_id: step.id,
-          step_update: { state: 'done' },
-        }),
-      })
-      setSteps((prev) =>
-        prev.map((s) => (s.id === step.id ? { ...s, state: 'done' } : s))
-      )
+      await setStepState(step, 'done')
       // A completed step is the trigger for the re-read. With a route in place
       // the re-read asks two questions, not one: is there another step in this
-      // phase, and is the phase itself finished? The second question is the
-      // person's to answer, so we open the check rather than deciding.
+      // phase, and is the phase itself finished? The second is the person's to
+      // answer, so we open the check rather than deciding it for them.
       if (currentPhase) setChecking(true)
     } catch (err) {
       console.error('NextSteps markDone error:', err)
+      setError(err.message || 'Could not mark that step done.')
     }
   }
 
+  // The other half of the re-read, and the half that was missing: when every
+  // step in the phase is done but the exit condition is not yet true, the path
+  // extends inside the phase. Without this the loop the architecture describes
+  // ("step done → phase re-read → next step appended") never actually closed
+  // from the UI, and a person who finished their steps had nothing to do but
+  // leave. The person asks for it rather than it appearing under them.
+  async function extendPath() {
+    await generatePath({ append: true })
+  }
+
   // The person has answered the exit condition true.
+  // A failure here writes to its own error slot, not the generation one. They
+  // used to share `error`, which meant a failed clear showed a screen whose
+  // only button ran generatePath and appended more steps to the phase the
+  // person was trying to leave.
   async function clearPhase() {
     if (!currentPhase) return
+    setClearError(null)
     try {
       const res = await authedFetch('/api/nextsteps-route', {
         method: 'POST',
@@ -206,7 +232,7 @@ export function PathView({ track, user, onBackToLoop, phases: initialPhases = []
       if (onPhasesChanged) onPhasesChanged(data.phases || [])
     } catch (err) {
       console.error('NextSteps clearPhase error:', err)
-      setError(err.message || 'Could not clear the phase.')
+      setClearError(err.message || 'Could not clear the phase. Nothing has changed.')
     }
   }
 
@@ -228,13 +254,24 @@ export function PathView({ track, user, onBackToLoop, phases: initialPhases = []
     )
   }
 
+  // An error screen with one button that might fail again is a room with no
+  // door. There is always a way back to the tracks from here now.
   if (error) {
     return (
       <div className="ns-path-error">
         <p>{error}</p>
-        <button type="button" className="ns-cta-primary" onClick={generatePath}>
-          Try again
-        </button>
+        <div className="ns-path-error-actions">
+          <button
+            type="button"
+            className="ns-cta-primary"
+            onClick={() => { generatedFor.current.delete(currentPhase ? currentPhase.id : 'no-phase'); generatePath() }}
+          >
+            Try again
+          </button>
+          <button type="button" className="ns-path-error-back" onClick={onBackToLoop}>
+            Back to your tracks
+          </button>
+        </div>
         <style>{`
           .ns-path-error {
             padding: 40px 24px;
@@ -243,6 +280,10 @@ export function PathView({ track, user, onBackToLoop, phases: initialPhases = []
             color: rgba(15,21,35,0.78);
           }
           .ns-path-error p { margin: 0 0 18px; }
+          .ns-path-error-actions {
+            display: flex; flex-wrap: wrap; gap: 16px;
+            align-items: center; justify-content: center;
+          }
           .ns-cta-primary {
             background: #4c6b45; color: #FFFFFF; border: none;
             border-radius: 10px; padding: 12px 24px;
@@ -250,6 +291,13 @@ export function PathView({ track, user, onBackToLoop, phases: initialPhases = []
             font-size: 0.85rem; letter-spacing: 0.14em;
             text-transform: uppercase; cursor: pointer;
           }
+          .ns-path-error-back {
+            background: none; border: none; padding: 0; cursor: pointer;
+            color: #262420;
+            font-family: 'Cormorant SC', Georgia, serif;
+            font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+          }
+          .ns-path-error-back:hover { text-decoration: underline; }
         `}</style>
       </div>
     )
@@ -285,6 +333,40 @@ export function PathView({ track, user, onBackToLoop, phases: initialPhases = []
               Walk the next phase
             </button>
           )}
+          <button type="button" className="ns-back-link" onClick={onBackToLoop}>
+            Back to your tracks
+          </button>
+        </div>
+        <PathStyles />
+      </div>
+    )
+  }
+
+  // A route already walked to its end, re-opened from the tracks list. It is
+  // a record now, not work. Nothing is generated here and nothing is restarted:
+  // this branch exists precisely so that re-opening a finished track cannot
+  // resurrect it.
+  if (routeWalked) {
+    return (
+      <div className="ns-path">
+        {track.toward_sentence && (
+          <div className="ns-path-toward">
+            <span className="ns-path-toward-eyebrow">For:</span>{' '}
+            <span className="ns-path-toward-text">{track.toward_sentence}</span>
+          </div>
+        )}
+
+        <div className="ns-cleared">
+          <p className="ns-cleared-lead">You walked this one all the way.</p>
+          <p className="ns-cleared-sub">
+            Every phase here was cleared because you said its exit condition was
+            true. It stays on the record exactly as you walked it.
+          </p>
+        </div>
+
+        <RouteRail phases={phases} />
+
+        <div className="ns-path-footer">
           <button type="button" className="ns-back-link" onClick={onBackToLoop}>
             Back to your tracks
           </button>
@@ -393,11 +475,32 @@ export function PathView({ track, user, onBackToLoop, phases: initialPhases = []
         ))}
       </ol>
 
+      {/* Every step done, exit condition not yet true. This is the re-read, and
+          it is the half of the loop that had no button. The phase is not over
+          just because its current steps are, so the path extends inside it. */}
+      {currentPhase && allStepsDone && !checking && (
+        <div className="ns-reread">
+          <p className="ns-reread-lead">
+            That is everything currently on this phase, and its exit condition is
+            not true yet.
+          </p>
+          <div className="ns-reread-actions">
+            <button type="button" className="ns-step-btn ns-step-btn-primary" onClick={extendPath}>
+              What is next in this phase
+            </button>
+            <button type="button" className="ns-step-btn ns-step-btn-ghost" onClick={() => setChecking(true)}>
+              Actually, it is true now
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* The exit-condition check. Offered, never pushed. The person is the
           only one who can answer it, and "not yet" is a completely ordinary
           answer that costs them nothing. */}
       {currentPhase && (
         <div className="ns-check">
+          {clearError && <p className="ns-check-error">{clearError}</p>}
           {!checking ? (
             <button type="button" className="ns-check-open" onClick={() => setChecking(true)}>
               Has this phase ended?
@@ -672,6 +775,30 @@ function PathStyles() {
           flex-wrap: wrap;
           gap: 10px;
           margin-top: 16px;
+        }
+
+        /* ── The re-read, when the phase's steps are done but it is not ── */
+        .ns-reread {
+          padding: 18px 20px;
+          background: #FFFFFF;
+          border: 1px solid rgba(38,36,32,0.20);
+          border-radius: 14px;
+        }
+        .ns-reread-lead {
+          font-family: 'Lora', Georgia, serif;
+          font-size: 1.04rem;
+          line-height: 1.55;
+          color: #0F1523;
+          margin: 0 0 14px;
+          max-width: 56ch;
+        }
+        .ns-reread-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+        .ns-check-error {
+          font-family: 'Lora', Georgia, serif;
+          font-size: 0.96rem;
+          line-height: 1.55;
+          color: #a9743f;
+          margin: 0 0 12px;
         }
 
         /* ── The retrofit offer, for a track older than the route layer ── */

@@ -403,10 +403,15 @@ module.exports = async (req, res) => {
   if (!track_id) {
     return res.status(400).json({ error: 'track_id required' });
   }
-  // Purpose Piece coords are personal — only the session's own token resolves
-  // whose they are; a track that belongs to nobody in particular falls back
-  // to the track's own recorded user.
+  // This endpoint writes steps onto a track and reads the owner's Purpose Piece
+  // and Map coordinates to do it. It previously resolved a userId, never
+  // compared it to the track, and fell back to the TRACK OWNER's coordinates
+  // when the caller was anonymous — so anyone holding a track id could drive
+  // generation against someone else's personal data and flip their track to
+  // active. Identity is now required and ownership is checked, the same as
+  // every sibling endpoint.
   const userId = await resolveUserId(req);
+  if (!userId) return res.status(401).json({ error: 'Sign-in required' });
 
   // 1. Load the Track
   const { data: track, error: trackErr } = await supabase
@@ -417,6 +422,9 @@ module.exports = async (req, res) => {
 
   if (trackErr || !track) {
     return res.status(404).json({ error: 'Track not found' });
+  }
+  if (track.user_id !== userId) {
+    return res.status(403).json({ error: 'Not your track' });
   }
 
   // 1b. The current phase. Steps live inside a phase now, so the phase is the
@@ -442,7 +450,7 @@ module.exports = async (req, res) => {
   }
 
   // 2. Pull developmental-navigation inputs
-  const ppCoords = await getPurposePieceCoords(userId || track.user_id);
+  const ppCoords = await getPurposePieceCoords(userId);
 
   // 3. Surface the Atlas shortlist (interim Decision Analytics)
   const actors = await shortlistActors(track.domains, track.scale, track.problem_chains);

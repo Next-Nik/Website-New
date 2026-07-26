@@ -54,6 +54,10 @@ export function NextStepsPage() {
   const [routeNote, setRouteNote] = useState(null)
   const [drafting, setDrafting] = useState(false)
   const [draftError, setDraftError] = useState(null)
+  // Arrival failures need their own slot. draftError is only rendered on the
+  // route stage, so routing an arrival failure into it left the person on a
+  // dead screen with nothing said.
+  const [arrivalError, setArrivalError] = useState(null)
   const [tracks, setTracks] = useState([])
 
   useEffect(() => {
@@ -113,7 +117,13 @@ export function NextStepsPage() {
       setStage('landing')
     } catch (err) {
       console.error('NextSteps reflection landing error:', err)
-      setDraftError('Something went wrong creating your track. Please try again.')
+      // This used to write to draftError, which is only ever rendered on the
+      // route stage. The person sat on the arrival screen with a disabled
+      // composer, no track, and nothing on screen saying anything had gone
+      // wrong. Arrival needs its own visible failure.
+      setArrivalError(
+        'I could not save that just now. Nothing you wrote is lost. Try again in a moment.'
+      )
     }
   }
 
@@ -176,6 +186,13 @@ export function NextStepsPage() {
       setActiveTrack({ ...track, _steps: steps || [] })
       setPhases(trackPhases || [])
       setRouteNote(null)
+      // A failure carried over from a DIFFERENT track used to survive this
+      // navigation, and because the error panel suppresses the RouteDraft
+      // branch, the person landed on a stale error over a route they had
+      // already edited. Its only button was "Try again", which redrafts, and
+      // redrafting deletes every phase they had rewritten. Their own words,
+      // destroyed by a button offering to retry something they never did here.
+      setDraftError(null)
 
       if (track.route_state === 'ratified') {
         setStage('path')
@@ -199,6 +216,8 @@ export function NextStepsPage() {
     setActiveTrack(null)
     setPhases([])
     setRouteNote(null)
+    setDraftError(null)
+    setArrivalError(null)
     setStage('arrival')
   }
 
@@ -206,6 +225,8 @@ export function NextStepsPage() {
     setActiveTrack(null)
     setPhases([])
     setRouteNote(null)
+    setDraftError(null)
+    setArrivalError(null)
     await loadTracks()
     setStage('loop')
   }
@@ -229,10 +250,24 @@ export function NextStepsPage() {
 
       <div className={`nextsteps-stage${stage === 'arrival' ? ' nextsteps-stage--chat' : ''}`}>
         {stage === 'arrival' && (
-          <ArrivalReflection
-            user={user}
-            onReflectionLanded={handleReflectionLanding}
-          />
+          <>
+            {arrivalError && (
+              <div className="ns-arrival-error">
+                <p className="ns-draft-fail-text">{arrivalError}</p>
+                <button
+                  type="button"
+                  className="ns-draft-retry"
+                  onClick={() => { setArrivalError(null); window.location.reload() }}
+                >
+                  Start again
+                </button>
+              </div>
+            )}
+            <ArrivalReflection
+              user={user}
+              onReflectionLanded={handleReflectionLanding}
+            />
+          </>
         )}
 
         {stage === 'landing' && activeTrack && (
@@ -356,6 +391,12 @@ export function NextStepsPage() {
           margin: 0;
         }
         .ns-draft-fail { padding: 32px 0; text-align: center; }
+        .ns-arrival-error {
+          max-width: 720px;
+          margin: 0 auto;
+          padding: 20px 24px;
+          text-align: center;
+        }
         .ns-draft-fail-text {
           font-family: 'Lora', Georgia, serif;
           font-size: 1.02rem;
