@@ -133,7 +133,7 @@ function ReflectionPanel({ reflection }) {
         <p style={{ ...fnText.eyebrow, margin: 0 }}>reading this…</p>
       ) : (
         <>
-          <p style={{ ...fnText.eyebrow, margin: `0 0 4px` }}>noticed</p>
+          <p style={{ ...fnText.eyebrow, margin: `0 0 4px` }}>reflection</p>
           <p style={{ ...fnText.body, color: fn.ink, margin: 0 }}>{reflection.text}</p>
         </>
       )}
@@ -199,8 +199,8 @@ export default function InstrumentRunner({ instrument, responses, onChange, refl
 
   // Reflection is opt-in per instrument via `kind: 'freetext'` in the data,
   // not hard-coded to a specific instrument by name or id — any future
-  // freetext instrument gets the same in-the-moment "noticed" behaviour for
-  // free, per the file's own architectural rule that adding instrument
+  // freetext instrument gets the same in-the-moment "reflection" behaviour
+  // for free, per the file's own architectural rule that adding instrument
   // fourteen should be a data task, not a dev task.
   const reflective = instrument.kind === 'freetext' && typeof onReflect === 'function'
 

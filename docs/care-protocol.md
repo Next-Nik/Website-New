@@ -583,7 +583,12 @@ tokens (`fn.moss`, `fn.mossTint`, `fn.mossEdge`, `fn.clay`, `fn.clayTint`,
 
 ---
 
-## 15. Autosave has no payoff — "Noticed"
+## 15. Autosave has no payoff — "Reflection"
+
+(Called "Noticed" for a while — renamed throughout in §19. Section titles
+and prose below use the current name; direct quotes from Nik's messages at
+the time keep the word actually used, in quotes, as an honest record of
+what was said.)
 
 Direct feedback after §14 shipped, once the save indicator was actually
 legible: "those things autosave... but there's no payoff. I want to
@@ -599,11 +604,11 @@ more than `● Saved` is the correct behaviour for a database and the wrong
 one for a tool whose entire premise is care. The gap isn't autosave working
 badly; it's autosave being the *only* response to a disclosure.
 
-**What "Noticed" is, and deliberately is not.** The product already has a
+**What "Reflection" is, and deliberately is not.** The product already has a
 considered response to what someone has shared: synthesis (§ various,
 `api/care-synthesis.js`) — a full cross-system portrait, generated once, on
 request, from everything at once (chart, human design, every instrument,
-both open-ended answers together). Noticed is not a smaller synthesis. It
+both open-ended answers together). Reflection is not a smaller synthesis. It
 fires the moment a founder finishes writing a single freetext answer —
 before they've moved to the next question — and does exactly one thing:
 shows, in one or two sentences, that what they just wrote landed with
@@ -616,7 +621,8 @@ few-hundred-millisecond model call can responsibly claim to know.
 
 **Where it lives and how it's gated.** Three pieces:
 
-- `api/care-notice.js` (new) — founder-only, same `resolveFounder` pattern
+- `api/care-reflection.js` (new, then renamed from `api/care-notice.js` in
+  §19) — founder-only, same `resolveFounder` pattern
   as `care-synthesis.js` (bearer token verified server-side against
   `app_metadata.role`, which the client cannot edit). Takes the question
   prompt, the answer text, and the display name; returns one plain-text
@@ -637,7 +643,8 @@ few-hundred-millisecond model call can responsibly claim to know.
   should be a data task, not a dev task — nothing here hard-codes
   `open_wish` or any other instrument by name. Renders nothing for `idle` or
   `error` states, a quiet "reading this…" for `loading`, and a moss-tinted
-  panel labelled "noticed" with the reflection for `done`. Deliberately
+  panel labelled "reflection" (originally "noticed" — see §19) with the
+  reflection text for `done`. Deliberately
   *not* italic: the card's own design law (`CareCard.jsx`) reserves italic
   exclusively for the user's own authored words; this is the system
   speaking, and using italic here would blur the one line that law exists
@@ -661,7 +668,7 @@ Not wired into the card, synthesis, or any `care_shares` snapshot. Not a
 second opinion-giving system alongside astrology/HD/attachment — it has no
 access to any of them and is instructed not to reach for them.
 
-Verified: `api/care-notice.js`, `InstrumentRunner.jsx`, and
+Verified: `api/care-reflection.js`, `InstrumentRunner.jsx`, and
 `CareProtocol.jsx` all parse clean; the full 25 + 5 + 30 test suite
 (regression, hostile-input, transits) still passes unchanged, since nothing
 here touches computation; the design audit shows zero new violations (two
@@ -675,7 +682,11 @@ screenshot.
 
 ---
 
-## 16. "Noticed" didn't show up — the failure path was silent too
+## 16. "Reflection" didn't show up — the failure path was silent too
+
+(Still called "Noticed" at the time — the file was `api/care-notice.js`;
+kept as such below since that's what actually existed then. Renamed in
+§19.)
 
 Report after §15 shipped and was deployed live: "it doesn't seem to have
 changed anything... the 'noticed' doesn't seem to have showed up." Confirmed
@@ -740,9 +751,10 @@ known OAuth restriction unrelated to this app.
 
 That's where the direct clarification landed: "I've been asking for a
 manual save button." Every round before this — §13's sticky fix, §14's
-colour, §15's "Noticed," this round's error-visibility fix and cache
-theory — was solving a real, verified problem, just not the one being
-asked for. The repeated report was never really "the autosave indicator is
+colour, §15's "Reflection" (then still named "Noticed"), this round's
+error-visibility fix and cache theory — was solving a real, verified
+problem, just not the one being asked for. The repeated report was never
+really "the autosave indicator is
 hard to see" or "I want AI to acknowledge what I wrote." It was: *give me
 something to press.* An ambient status chip, however legible, asks the
 person to trust a background process; a button hands them the action
@@ -874,3 +886,47 @@ confirmed six Save buttons render, clicking one drives only that one
 through the full state cycle, the other five stay untouched throughout,
 and the clicked one alone reverts after 2.2s. See the delivered
 screenshot.
+
+---
+
+## 19. "Noticed" renamed to "Reflection," throughout
+
+Direct request: rename "Noticed" to "Reflection" everywhere. Treated as
+literal and total — the visible label, the API endpoint and its file, the
+JSON contract between them, and every comment that named the feature.
+
+- `InstrumentRunner.jsx` — the visible eyebrow label under a landed
+  reflection changes from "noticed" to "reflection." (The panel's own
+  component name, `ReflectionPanel`, and the `reflections`/`onReflect`/
+  `reflectOn` naming throughout `CareProtocol.jsx` were already
+  "reflection"-based from the start — only the one user-facing word and
+  the surrounding prose needed to change.)
+- `api/care-notice.js` renamed to `api/care-reflection.js`. This changes
+  the live route from `/api/care-notice` to `/api/care-reflection` —
+  Vercel's file-based routing picks up the new path automatically, no
+  `vercel.json` entry required (there wasn't one for the old path either).
+  The old file was deleted outright rather than left behind, so there's no
+  stale duplicate endpoint.
+- The JSON contract changed to match: the endpoint now returns
+  `{ reflection, generatedAt }` instead of `{ notice, generatedAt }`, and
+  `CareProtocol.jsx`'s `reflectOn` reads `body.reflection` instead of
+  `body.notice`. Client and server changed together — this is a private,
+  founder-only endpoint with exactly one caller in this codebase, so there
+  was no compatibility window to preserve.
+- Console log prefixes updated from `[care-notice]` to `[care-reflection]`
+  in both files, so a live error in devtools now points at the right
+  filename.
+- Comments referring to the feature by name, in `InstrumentRunner.jsx`,
+  `CareProtocol.jsx`, and this document, updated to "reflection." Where
+  this document quotes an actual message sent at the time, the quote keeps
+  the word actually used ("noticed") rather than being rewritten — an
+  honest record of what was said shouldn't quietly change after the fact.
+
+Verified: both renamed/edited files parse clean; the full 25 + 5 + 30 test
+suite passes unchanged (nothing here touches computation); design audit
+shows zero new violations. Grepped the whole tree afterward for
+`care-notice`, `body.notice`, and the bare word "noticed" as a UI label to
+confirm nothing was missed — the only remaining hits are historical quotes
+in this document and unrelated ordinary-English uses of "notice"/"noticed"
+(a generic `S.notice` alert-box style, "went unnoticed," etc.), which are
+correctly left alone.

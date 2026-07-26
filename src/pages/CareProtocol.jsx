@@ -294,7 +294,7 @@ function CareProtocolWorkspace({ user }) {
   }, [persist])
 
   /* Manual save — a real button, not just a badge to trust. §13/§14 made
-     the passive autosave indicator visible and legible; the "Noticed"
+     the passive autosave indicator visible and legible; the "reflection"
      detour (§15/§16) answered a different complaint entirely. The actual,
      repeated, plainly-stated request was simpler than either: an actual
      button to press, with its own confirmation, wherever the founder is
@@ -672,12 +672,14 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
   // rather than their city not existing.
   const [searchStatus, setSearchStatus] = useState(null) // null | 'empty' | 'error'
 
-  // The "Noticed" reflection — the payoff for a freetext answer, fired the
-  // moment a founder finishes writing one, before autosave's silent status
-  // dot is the only sign anything happened at all. See api/care-notice.js
-  // and InstrumentRunner.jsx's ReflectionPanel for the other two-thirds of
-  // this feature; this is the missing middle that actually calls the
-  // endpoint and holds the per-item state while it runs.
+  // The reflection — the payoff for a freetext answer, fired the moment a
+  // founder finishes writing one, before autosave's silent status dot is
+  // the only sign anything happened at all. Called "Noticed" internally for
+  // a while; renamed to "reflection" throughout, per direct request — see
+  // api/care-reflection.js (renamed from api/care-notice.js) and
+  // InstrumentRunner.jsx's ReflectionPanel for the other two-thirds of this
+  // feature; this is the missing middle that actually calls the endpoint
+  // and holds the per-item state while it runs.
   //
   // Keyed by item id, not instrument id: two freetext items in the same
   // instrument (e.g. open_wish and open_line) get independent reflections.
@@ -689,8 +691,8 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
 
   const reflectOn = useCallback(async (item, text) => {
     const trimmed = (text || '').trim()
-    // Matches the server's own floor (api/care-notice.js) — "fine" or "idk"
-    // deserves silence, not a reflection stretched thin over three words.
+    // Matches the server's own floor (api/care-reflection.js) — "fine" or
+    // "idk" deserves silence, not a reflection stretched thin over three words.
     if (trimmed.length < 15) return
     if (reflectedTextRef.current[item.id] === trimmed) return
     reflectedTextRef.current[item.id] = trimmed
@@ -699,7 +701,7 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
     try {
       const { data: sessionData } = await supabase.auth.getSession()
       const token = sessionData?.session?.access_token
-      const res = await fetch('/api/care-notice', {
+      const res = await fetch('/api/care-reflection', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -708,8 +710,8 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
         body: JSON.stringify({ prompt: item.text, text: trimmed, displayName: state.displayName }),
       })
       const body = await res.json()
-      if (!res.ok || !body?.notice) throw new Error(body?.error || `Reflection failed (${res.status})`)
-      setReflections((r) => ({ ...r, [item.id]: { status: 'done', text: body.notice } }))
+      if (!res.ok || !body?.reflection) throw new Error(body?.error || `Reflection failed (${res.status})`)
+      setReflections((r) => ({ ...r, [item.id]: { status: 'done', text: body.reflection } }))
     } catch (err) {
       // Was originally fully silent on failure — reasoning being that a
       // missed reflection is a missed nicety, not worth interrupting
@@ -723,7 +725,7 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
       // console — a production failure here (bad auth, missing env var on
       // the new endpoint, network hiccup) was otherwise invisible to
       // anyone without devtools open, which made this exact bug unreportable.
-      console.error('[care-notice] reflection failed:', err?.message || err)
+      console.error('[care-reflection] reflection failed:', err?.message || err)
       setReflections((r) => ({ ...r, [item.id]: { status: 'error' } }))
     }
   }, [state?.displayName])
