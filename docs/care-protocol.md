@@ -729,3 +729,75 @@ server is failing — a devtools network-tab look at `/api/care-notice`'s
 response will show why. If nothing renders even now, the blur event itself
 isn't reaching `reflectOn` in the live environment, which would point
 somewhere neither this file nor its tests can see from here.
+
+Still didn't show up on the next report, with a real, substantial answer
+typed into the correct field (a live screenshot showed it: 205 characters,
+no "noticed" panel, no grey line either). Chased a service-worker staleness
+theory next (`sw.js`'s own comments mention it already caused a "mobile
+white-screen bug" once before) and asked for an incognito test to rule it
+out cleanly — blocked by Google sign-in not working in private tabs, a
+known OAuth restriction unrelated to this app.
+
+That's where the direct clarification landed: "I've been asking for a
+manual save button." Every round before this — §13's sticky fix, §14's
+colour, §15's "Noticed," this round's error-visibility fix and cache
+theory — was solving a real, verified problem, just not the one being
+asked for. The repeated report was never really "the autosave indicator is
+hard to see" or "I want AI to acknowledge what I wrote." It was: *give me
+something to press.* An ambient status chip, however legible, asks the
+person to trust a background process; a button hands them the action
+directly, with its own confirmation, on their own terms.
+
+---
+
+## 17. An actual manual save button
+
+Direct request, plainly stated this time: a manual save button, not
+another pass at making the autosave status more visible or more
+responsive.
+
+Added one, next to the existing ambient indicator in the sticky topbar —
+not instead of the debounced autosave (§8/§11), which keeps running in the
+background exactly as before, so nothing is lost if the button is never
+pressed at all. The button is for the person who doesn't want to rely on
+that: press it, and it flushes immediately, with its own confirmation on
+the button itself rather than asking anyone to notice a chip elsewhere on
+the page.
+
+**Mechanics.** `persist()` (the existing debounced/conflict-safe write —
+unchanged in every other respect) now returns `true`/`false` instead of
+nothing, so the button can know whether its own attempt actually landed.
+A new `saveNow()` cancels any pending debounce timer, calls `persist()`
+immediately, and drives its own state machine on the button —
+`Save → Saving… → ✓ Saved` (auto-reverts after ~2.2s) or `Save → Saving… →
+Try again` (does *not* auto-revert — a real failure stays visible on the
+button until either a retry succeeds or the next edit re-arms autosave).
+This is deliberately separate from `syncStatus` (the ambient chip's own
+state): the button's feedback is about the button being pressed, not a
+running description of background sync, and conflating the two would mean
+a stray background sync could silently flip the button's own label.
+
+**Where it sits.** In the topbar's `brand` group, right after the ambient
+chip — same sticky header, same visibility guarantee as §13. Gave `brand`
+`flexWrap: 'wrap'` so on a narrow phone screen the button drops to its own
+line under the title/chip rather than overflowing off the right edge;
+confirmed at 360px CSS width (the size implied by the phone screenshots)
+that nothing clips or scrolls horizontally.
+
+**What didn't change.** The ambient chip stays, still colour-coded (§14),
+still a true reflection of background sync state — it's useful on its own
+for anyone who does trust a passive signal, and it's what shows the
+autosave safety net is still working even if the button is never touched.
+Nothing about the write path, the conflict-merge logic, or the 700ms debounce
+changed; `persist()`'s new return values are additive, and its existing
+caller (the autosave effect) never used a return value in the first place.
+
+Verified: parses clean; the full 25 + 5 + 30 test suite passes unchanged
+(nothing here touches computation); the design audit shows zero new
+violations; the production build completes clean. Built a live harness
+reproducing `saveNow()`'s exact state machine (copied, not reimplemented)
+against mocked successful and failing `persist()` calls, driven by real
+clicks — confirmed the full `Save → Saving… → ✓ Saved → (2.2s) → Save` and
+`Save → Saving… → Try again` (stays) cycles land correctly, and confirmed
+no horizontal overflow at a 360px phone width. See the delivered
+screenshots.

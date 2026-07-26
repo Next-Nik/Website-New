@@ -186,7 +186,12 @@ function CareProtocolWorkspace({ user }) {
      device saved in the meantime we fetch theirs, merge, and write the merge —
      so a stale tab can never silently erase work done elsewhere. */
   const persist = useCallback(async (snapshot) => {
-    if (!snapshot) return
+    // Returns true/false now (previously nothing) — the manual "Save"
+    // button below needs to know whether the write it triggered actually
+    // landed, so it can show "Saved" or "Try again" instead of guessing.
+    // Existing callers (the debounced autosave effect) never used the
+    // return value, so this doesn't change their behaviour.
+    if (!snapshot) return false
     const stamp = new Date().toISOString()
     const row = {
       user_id: user.id,
@@ -211,10 +216,10 @@ function CareProtocolWorkspace({ user }) {
     // First write of a brand-new row: nothing to conflict with.
     if (!lastSyncRef.current) {
       const { error } = await supabase.from('care_profiles').upsert(row)
-      if (error) { setSyncStatus('error'); return }
+      if (error) { setSyncStatus('error'); return false }
       lastSyncRef.current = stamp
       setSyncStatus('synced')
-      return
+      return true
     }
 
     const { data, error } = await supabase
@@ -224,11 +229,11 @@ function CareProtocolWorkspace({ user }) {
       .eq('updated_at', lastSyncRef.current)
       .select('updated_at')
 
-    if (error) { setSyncStatus('error'); return }
+    if (error) { setSyncStatus('error'); return false }
     if (data && data.length) {
       lastSyncRef.current = data[0].updated_at
       setSyncStatus('synced')
-      return
+      return true
     }
 
     // Conflict: somebody else saved since we loaded. Take theirs as the base
@@ -239,7 +244,7 @@ function CareProtocolWorkspace({ user }) {
       .select('*')
       .eq('user_id', user.id)
       .maybeSingle()
-    if (fetchErr || !remote) { setSyncStatus('error'); return }
+    if (fetchErr || !remote) { setSyncStatus('error'); return false }
 
     const merged = {
       ...row,
@@ -257,9 +262,10 @@ function CareProtocolWorkspace({ user }) {
       updated_at: new Date().toISOString(),
     }
     const { error: mergeErr } = await supabase.from('care_profiles').upsert(merged)
-    if (mergeErr) { setSyncStatus('error'); return }
+    if (mergeErr) { setSyncStatus('error'); return false }
     lastSyncRef.current = merged.updated_at
     setSyncStatus('synced')
+    return true
   }, [user.id])
 
   useEffect(() => {
@@ -286,6 +292,43 @@ function CareProtocolWorkspace({ user }) {
       persist(stateRef.current)
     }
   }, [persist])
+
+  /* Manual save — a real button, not just a badge to trust. §13/§14 made
+     the passive autosave indicator visible and legible; the direct request
+     underneath both of those reports and the "Noticed" detour turned out to
+     be simpler than either: an actual button to press, with its own
+     confirmation, not an ambient status elsewhere on the page. This doesn't
+     replace the debounced autosave above — that keeps running as the
+     safety net if the founder never touches this button at all — it just
+     gives an explicit, deliberate action for whoever doesn't want to trust
+     the passive signal.
+     manualSave is its own state, separate from syncStatus, because the
+     button's feedback is about the button being pressed, not a running
+     description of background sync — "Save" -> "Saving…" -> "✓ Saved"
+     (which then reverts to "Save" after a couple of seconds) or "Try
+     again" (which does not auto-revert, so a real failure stays visible
+     until either another attempt succeeds or the next edit re-triggers
+     autosave). */
+  const [manualSave, setManualSave] = useState('idle') // idle | saving | done | error
+  const manualSaveResetRef = useRef(null)
+
+  const saveNow = useCallback(async () => {
+    if (saveTimer.current) { clearTimeout(saveTimer.current); saveTimer.current = null }
+    if (manualSaveResetRef.current) { clearTimeout(manualSaveResetRef.current); manualSaveResetRef.current = null }
+    setManualSave('saving')
+    setSyncStatus('syncing')
+    const ok = await persist(stateRef.current)
+    if (ok) {
+      setManualSave('done')
+      manualSaveResetRef.current = setTimeout(() => setManualSave('idle'), 2200)
+    } else {
+      setManualSave('error')
+    }
+  }, [persist])
+
+  useEffect(() => () => {
+    if (manualSaveResetRef.current) clearTimeout(manualSaveResetRef.current)
+  }, [])
 
   const setResponse = useCallback((id, value) => {
     setState((s) => ({ ...s, responses: { ...s.responses, [id]: value } }))
@@ -523,18 +566,13 @@ function CareProtocolWorkspace({ user }) {
         <div style={S.brand}>
           <span aria-hidden="true">◍</span>
           <span>Care Protocol</span>
-          {/* This is the only save feedback that exists — there is no save
-              button, by design (see docs/care-protocol.md §13). Making it
-              sticky (§13) fixed "I can't see it while scrolled", but it was
-              still rendered in fn.ghost — the same faint, deliberately
-              de-emphasized tone used for metadata like coordinates — so even
-              visible and sticky, it read as ambient noise rather than an
-              answer to "did this save." A status whose entire job is
-              reassurance has to look different from the text around it, not
-              just be present. Colour and a background chip now carry the
-              state: moss/filled reads as good news, clay reads as a problem,
-              matching the same moss=settled / clay=attention convention the
-              card itself uses. */}
+          {/* The ambient autosave readout — kept as a passive background
+              signal for the safety net above (§8/§11 debounced save), and
+              still colour-coded (§14) so it doesn't blend into ambient
+              text. Originally the only save feedback that existed at all
+              (§13's note said so explicitly); a direct request made clear
+              that wasn't the actual ask — see the button beside it below,
+              which is. */}
           <span
             style={{
               ...mono, fontSize: '13px', letterSpacing: '0.08em', fontWeight: 600,
@@ -546,6 +584,27 @@ function CareProtocolWorkspace({ user }) {
           >
             {syncStatus === 'synced' ? '● Saved' : syncStatus === 'syncing' ? '○ Saving…' : '⚠ Not saved'}
           </span>
+          {/* The actual manual save button. Autosave (above) keeps running
+              regardless — this doesn't replace it, so nothing is lost if
+              it's never pressed — but pressing it flushes immediately and
+              gives its own direct confirmation on the button itself,
+              rather than asking the founder to notice and trust a status
+              chip elsewhere. See saveNow() for the state machine. */}
+          <button
+            type="button"
+            onClick={saveNow}
+            disabled={manualSave === 'saving'}
+            style={{
+              ...mono, fontSize: '13px', letterSpacing: '0.08em', fontWeight: 600,
+              padding: '5px 14px', borderRadius: '2px',
+              cursor: manualSave === 'saving' ? 'default' : 'pointer',
+              background: manualSave === 'done' ? fn.moss : manualSave === 'error' ? fn.clay : 'transparent',
+              color: manualSave === 'done' || manualSave === 'error' ? fn.object : fn.ink,
+              border: `1px solid ${manualSave === 'done' ? fn.moss : manualSave === 'error' ? fn.clay : fn.rule}`,
+            }}
+          >
+            {manualSave === 'saving' ? 'Saving…' : manualSave === 'done' ? '✓ Saved' : manualSave === 'error' ? 'Try again' : 'Save'}
+          </button>
         </div>
         <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.12em', color: fn.ghost }}>
           HIDDEN · FOUNDER ONLY
@@ -1224,15 +1283,12 @@ const S = {
     display: 'flex', alignItems: 'center', justifyContent: 'center',
   },
   loadingTape: { ...mono, fontSize: '13px', letterSpacing: '0.2em', color: fn.ghost },
-  // Sticky, deliberately. The sync indicator inside it ("● synced" /
-  // "○ saving…" / "⚠ not saved") is the only feedback that anything typed
-  // into a long intake form is actually reaching the server — there is no
-  // per-field "saved" confirmation and no explicit save button by design
-  // (the whole point of the debounced autosave). A static topbar scrolls out
-  // of view the moment a founder is a screen or two into Step 2, and from
-  // there there is nothing on screen to say whether any of it registered.
-  // Reported directly: "there doesn't seem to be an enter or save button...
-  // so I don't know if any of this is being registered."
+  // Sticky, deliberately. It carries both the ambient sync indicator
+  // ("● Saved" / "○ Saving…" / "⚠ Not saved") and the manual Save button
+  // (§16 — a direct, repeated request for an actual button, not just a
+  // status readout to trust). A static topbar scrolls out of view the
+  // moment a founder is a screen or two into Step 2, and from there
+  // neither the ambient status nor the button itself would be reachable.
   topbar: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
     gap: space.lg, flexWrap: 'wrap',
@@ -1241,7 +1297,7 @@ const S = {
     position: 'sticky', top: 0, zIndex: 5,
   },
   brand: {
-    display: 'flex', alignItems: 'center', gap: space.md,
+    display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: space.md,
     ...display, fontSize: '20px', color: fn.ink,
   },
   tabRow: {
