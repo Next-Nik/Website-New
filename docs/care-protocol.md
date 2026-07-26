@@ -1,9 +1,12 @@
 # Care Protocol — build note and validation record
 
 **Status:** v1 built, hidden inside NextUs. Founder-only.
-**Migration:** `sql/184_care_protocol.sql`
-**Entry point:** the `◍ Care Protocol` button in the Movie Magic topbar. The
-route is unlinked from all navigation.
+**Migration:** `sql/187_care_protocol.sql`
+**Entry point:** a `CARE PROTOCOL →` button in the Profile panel
+(`src/app/components/mission-control/ProfileMissionPanel.jsx`), founder-gated
+alongside Admin Console and Movie Magic. The route is unlinked from all other
+navigation. (It briefly lived inside the Movie Magic topbar instead — see §10;
+that button has been removed so there is exactly one door.)
 
 ---
 
@@ -17,7 +20,7 @@ route is unlinked from all navigation.
 | Hidden working page | `src/pages/CareProtocol.jsx` → `/care-protocol` |
 | Public card route (dark) | `src/pages/CareCardPublic.jsx` → `/care/:token` |
 | Synthesis endpoint | `api/care-synthesis.js` |
-| Tables and RLS | `sql/184_care_protocol.sql` |
+| Tables and RLS | `sql/187_care_protocol.sql` |
 
 Nothing in `src/lib/care/` imports from the NextUs app, Supabase, or React —
 design tokens are touched only by the renderer. Placement stays a question of
@@ -284,19 +287,27 @@ and fixed; each has a regression test that fails against the original code.
 
 ### Housekeeping
 
-- **Migration renumbered 180 → 181, then 181 → 184.** The NextSteps route
-  layer landed `180_nextsteps_phases.sql` in the same window as the first
-  drop, so Care Protocol moved to 181. By the next merge, 181 had been
+- **Migration renumbered three times: 180 → 181 → 184 → 187.** The NextSteps
+  route layer landed `180_nextsteps_phases.sql` in the same window as the
+  first drop, so Care Protocol moved to 181. By the next merge, 181 had been
   independently claimed a second time — by both `181_nextsteps_phases.sql`
-  and a new `181_sparks.sql` — so it moved again, to 184, the first number
-  genuinely free across `sql/` at the time. Both `180_care_protocol.sql` and
-  `181_care_protocol.sql` are left in place as tombstones (all-comment files
-  pointing at 184) rather than deleted, matching the pattern already
-  established by `180_nextsteps_phases.sql`: a drag-and-drop merge cannot
-  remove files, so overwriting a superseded copy with a note is the only way
-  to mark it. No object names collide in any of these, so running any
-  already-applied copy alongside 184 is harmless; 184 is what should actually
-  be run.
+  and a new `181_sparks.sql` — so it moved to 184, the first number genuinely
+  free at the time. By the merge after that, an unrelated "pulse events"
+  migration had independently landed at 184 too (itself renumbered from its
+  own 180 collision, for the same reason), so Care Protocol moved once more,
+  to 187 — the first number genuinely free once `185_sparks.sql` and
+  `186_social_half_fixes.sql` were also accounted for. `180_care_protocol.sql`,
+  `181_care_protocol.sql`, and `184_care_protocol.sql` are all left in place
+  as tombstones (all-comment files pointing at the next hop) rather than
+  deleted, matching the pattern already established by
+  `180_nextsteps_phases.sql`: a drag-and-drop merge cannot remove files, so
+  overwriting a superseded copy with a note is the only way to mark it. No
+  object names collide in any of these, so running any already-applied copy
+  alongside 187 is harmless; 187 is what should actually be run. This is the
+  third time in four rounds that two independent workstreams have picked the
+  same "first free number" without seeing each other's work — worth a
+  standing convention (e.g. a shared next-number ledger, or reserving blocks
+  per workstream) rather than relying on each drop re-scanning `sql/` by hand.
 
 ### Known and deliberately unchanged
 
@@ -348,3 +359,34 @@ reference chart) all pass; the hostile-input probe (empty/partial/null jsonb
 shapes into `buildCard`) is 5/5; the design audit shows zero new violations;
 a production build succeeds with the ephemeris chunk byte-identical to every
 prior round; and a rendered card screenshot shows no visual regression.
+
+---
+
+## 10. The front door moved
+
+The brief asked for "a button under Movie Magic." That was built literally —
+a `◍ Care Protocol` button inside the Movie Magic workspace's own topbar,
+reachable only after opening Movie Magic itself. The actual ask, surfaced
+once the founder went looking for it, was a button positioned under the
+*Movie Magic* entry in the Profile panel — the same menu that already lists
+Admin Console, Movie Magic, and Prism Lab as founder-only shortcuts. Two
+different rooms both named "under Movie Magic."
+
+Moved to match the second reading, which is also the more consistent one: it
+puts Care Protocol alongside the other two hidden tools instead of nested one
+level inside a third:
+
+- Added a `CARE PROTOCOL →` button to
+  `src/app/components/mission-control/ProfileMissionPanel.jsx`, immediately
+  after Movie Magic and before Prism Lab, styled identically to both
+  (founder-gated on the same `isFounder` check already used for the other
+  two).
+- Removed the button from `MovieMagic.jsx`'s topbar, along with the
+  now-unused `useNavigate` import and `navigate` variable it existed for —
+  `<Navigate>` (the redirect component, used for the auth gate) stays.
+- Updated the stale "reached from Movie Magic" comments in `CareProtocol.jsx`
+  and `App.jsx` to point at the Profile panel instead.
+
+There is now exactly one door, and it is where the founder actually looks for
+it. Enforcement is unchanged either way — RLS in `sql/187_care_protocol.sql`
+never depended on which button led here.

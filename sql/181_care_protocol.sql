@@ -1,14 +1,14 @@
 -- 181_care_protocol.sql — SUPERSEDED. DO NOT RUN.
 --
--- This migration has moved to `184_care_protocol.sql`.
+-- This migration has moved to `187_care_protocol.sql`.
 --
 -- Why: `181` was picked to break the tie with the original `180_care_protocol`
 -- collision, but in parallel it was also independently claimed by the
 -- NextSteps phase layer (`181_nextsteps_phases.sql`) and by a new "sparks"
 -- migration (`181_sparks.sql`). Three files cannot share one number, so Care
--- Protocol moved again — to `184`, the first number genuinely free across the
--- whole sql/ directory once `182_milestones.sql` and `183_moment_featured.sql`
--- are accounted for.
+-- Protocol moved to `184`, then a further "pulse events" migration
+-- independently claimed 184 too, so it moved once more to `187` — see the
+-- tombstone left at `184_care_protocol.sql` for that leg of the story.
 --
 -- This file is left in place as a tombstone rather than deleted, for the same
 -- reason `180_care_protocol.sql` and `180_nextsteps_phases.sql` were: a
@@ -21,7 +21,7 @@
 --
 -- If you already ran this exact file (181_care_protocol.sql, the fixed
 -- version with the security-definer read function) against Supabase, there is
--- nothing to undo — 184 is identical content under the new number, and every
+-- nothing to undo — 187 is identical content under the new number, and every
 -- statement in it is idempotent.
 --
--- Run instead:  sql/184_care_protocol.sql
+-- Run instead:  sql/187_care_protocol.sql

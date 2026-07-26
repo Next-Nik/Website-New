@@ -3,7 +3,7 @@
 // The public Care Card route: /care/:token
 //
 // BUILT BUT DARK. The route, the renderer and the empty states are all real,
-// but sql/184's care_public_enabled() returns false, so the read returns
+// but sql/187's care_public_enabled() returns false, so the read returns
 // nothing to anyone. To go live: replace that function with `select true`.
 //
 // Reads go through the care_card_by_token RPC, NOT a table select. This is a
@@ -12,7 +12,7 @@
 // the client's to choose and the client can omit it. A table policy would
 // therefore let anyone with the publishable key enumerate every live card.
 // The RPC takes the token as an argument, so holding the token is the only
-// way to name a row. See the note above the function in sql/184.
+// way to name a row. See the note above the function in sql/187.
 //
 // It never touches care_profiles, so birth time and coordinates are
 // structurally out of reach rather than merely filtered out.

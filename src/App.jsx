@@ -80,8 +80,8 @@ import { AdminConsolePage }   from './app/pages/AdminConsole'
 import { PrismLabPage }       from './app/pages/PrismLab'
 import { CardLabPage }        from './app/pages/CardLab'   /* TEMPORARY · remove with the /admin/card-lab route */
 import { MovieMagicPage }     from './pages/MovieMagic'
-import { CareProtocolPage }   from './pages/CareProtocol'      /* hidden · founder only · entered from Movie Magic */
-import { CareCardPublicPage } from './pages/CareCardPublic'    /* public card route · built but dark, see sql/184 */
+import { CareProtocolPage }   from './pages/CareProtocol'      /* hidden · founder only · entered from the Profile panel */
+import { CareCardPublicPage } from './pages/CareCardPublic'    /* public card route · built but dark, see sql/187 */
 import { AddPage }            from './app/pages/Add'
 import { EventManagePage }    from './app/pages/EventManage'
 import { EventPublicPage }    from './app/pages/EventPublic'
@@ -458,7 +458,7 @@ function AppInner() {
         <Route path="/admin/prism"     element={<PrismLabPage />} />
         <Route path="/admin/card-lab"  element={<CardLabPage />} />  {/* TEMPORARY · WebKit blank-card diagnostic · delete once confirmed */}
         <Route path="/movie-magic"     element={<MovieMagicPage />} />
-        <Route path="/care-protocol"   element={<CareProtocolPage />} />   {/* hidden · founder gate in-page, RLS in sql/184 */}
+        <Route path="/care-protocol"   element={<CareProtocolPage />} />   {/* hidden · founder gate in-page, RLS in sql/187 */}
         <Route path="/care/:token"     element={<CareCardPublicPage />} /> {/* public card · dark until care_public_enabled() is true */}
         <Route path="/join/:slug"      element={<GroupJoinPage />} />
         <Route path="/auth/callback"   element={<AuthCallbackPage />} />

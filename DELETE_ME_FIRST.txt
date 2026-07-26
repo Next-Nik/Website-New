@@ -1,17 +1,62 @@
-This drop is built against your newest zip (WebsiteNewmain_37), which still had
-the ORIGINAL pre-review care-protocol files plus a real migration-number
-collision (sql/180_care_protocol.sql alongside sql/180_nextsteps_phases.sql).
+This drop is built against your newest zip (WebsiteNewmain_40) and does two
+things: fixes where the front door actually is, and renumbers the migration
+a third time because it collided again. Read both before applying.
 
-Before applying: delete sql/180_care_protocol.sql. It's replaced by
-sql/181_care_protocol.sql, which is a superset — it includes every fix from
-the review (the token-scoped RPC replacing the unsafe anon policy, the unique
-index on live shares, etc.) — not just a renumbering.
+1) THE FRONT DOOR MOVED
 
-If sql/180_care_protocol.sql was already run in Supabase: run 181 too. It's
-idempotent and additionally drops the old anon read policy on care_shares,
-which is what closes the security hole described in docs/care-protocol.md §8.
+You went looking for the Care Protocol button in the Profile panel (the
+screen with Admin Console / Movie Magic / Prism Lab) and it wasn't there —
+because the first drop built it literally as "a button under Movie Magic":
+inside the Movie Magic workspace's own topbar, one click deeper than where
+you were looking.
 
-Everything else here is unchanged from the fixes already reviewed. Your Deck
-rework in MovieMagic.jsx and the Wheel/domain-copy work elsewhere were left
-completely untouched — App.jsx and MovieMagic.jsx only had their sql/180 -> 181
-comment references updated (one line each), verified by diff before packaging.
+Fixed by moving it to where you actually look:
+
+  - Added a "CARE PROTOCOL →" button to
+    src/app/components/mission-control/ProfileMissionPanel.jsx, right after
+    Movie Magic and before Prism Lab, styled identically to both and
+    founder-gated the same way.
+  - Removed the button from inside MovieMagic.jsx's topbar (and the
+    now-unused useNavigate import/navigate variable it existed for — the
+    <Navigate> redirect component used by the auth gate is untouched).
+  - Updated the stray "reached from Movie Magic" comments in
+    CareProtocol.jsx and App.jsx to point at the Profile panel instead.
+
+There is exactly one door now. Nothing about enforcement changed — RLS in
+sql/187_care_protocol.sql never depended on which button led here.
+
+2) SQL — migration moved again, to 187
+
+  Run:      sql/187_care_protocol.sql
+  Ignore:   sql/180_care_protocol.sql, sql/181_care_protocol.sql,
+            sql/184_care_protocol.sql
+            (all three are now tombstones — all-comment files that do
+            nothing if run, left in place only because a drag-and-drop merge
+            can't delete files)
+
+  Why it moved a third time: 180 collided with sql/180_nextsteps_phases.sql,
+  so it became 181. 181 was then independently claimed twice more (NextSteps
+  phases' own renumbering, plus a new sql/181_sparks.sql), so it moved to
+  184 — which turned out to have ALSO been independently claimed, by a
+  "pulse events" migration renumbering from its own 180 collision. 187 is
+  the first number genuinely free once 185_sparks.sql and
+  186_social_half_fixes.sql are accounted for too. This is the third round
+  in a row where two workstreams have picked the same "first free number"
+  without seeing each other's work — worth a standing convention (a shared
+  next-number ledger, or reserved blocks per workstream) rather than each
+  drop re-scanning sql/ by hand. Flagged in docs/care-protocol.md §8.
+
+  187 is a superset of every fix already reviewed, same as every renumbering
+  before it. If you already ran 180, 181, or 184 in Supabase: run 187 too.
+  It's idempotent, and drops the old unsafe anon read policy by name before
+  creating the security-definer function that replaces it.
+
+Everything else (the engine in src/lib/care/, CareCard.jsx,
+InstrumentRunner.jsx, api/care-synthesis.js, CareProtocol.jsx, the public
+route) is unchanged from what you already have; confirmed by diff before
+packaging.
+
+Re-verified against this exact tree before packaging: all touched files
+parse clean, 25/25 regression tests, 5/5 hostile-input probe, zero new
+design-audit violations, and a clean production build with the ephemeris
+chunk byte-identical to every prior round (800.72 kB).

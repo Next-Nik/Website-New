@@ -18,7 +18,7 @@
 // transfer into Beat (the screenwriting app) at the desk.
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
 import { ScriptView, SCRIPT_CSS } from './MovieMagicScript'
@@ -354,7 +354,6 @@ export function MovieMagicPage() {
 export default MovieMagicPage
 
 function MovieMagicWorkspace({ user }) {
-  const navigate = useNavigate()
   const [state, setState] = useState(null)
   const [syncStatus, setSyncStatus] = useState('synced') // synced | syncing | error
   const [editor, setEditor] = useState(null)
@@ -878,21 +877,6 @@ function MovieMagicWorkspace({ user }) {
               Delete story
             </button>
           )}
-
-          {/* ── The other hidden room ──────────────────────────────
-              Care Protocol lives behind this button. Movie Magic is
-              already unlinked and founder-gated, which makes it the
-              quietest door in the building. Nothing about the Care
-              Protocol is reachable from any navigation; this is the
-              only way in. Real enforcement is RLS in sql/184. */}
-          <button
-            className="mm-btn ghost"
-            title="Care Protocol · hidden"
-            onClick={() => navigate('/care-protocol')}
-            style={{ marginLeft: 'auto', opacity: 0.72 }}
-          >
-            ◍ Care Protocol
-          </button>
         </div>
       </header>
 

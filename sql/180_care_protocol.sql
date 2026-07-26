@@ -1,16 +1,18 @@
 -- 180_care_protocol.sql — SUPERSEDED. DO NOT RUN.
 --
--- This migration has moved to `184_care_protocol.sql`.
+-- This migration has moved to `187_care_protocol.sql`.
 --
 -- Why: this was the first drop of the Care Protocol, delivered before review.
 -- Review found a real security defect in it — the anon read policy on
 -- care_shares had no way to scope a read to one token, so switching on public
 -- sharing would have let anyone holding the publishable key enumerate every
 -- live card. The fix replaced that policy with a security-definer function
--- and first landed as `181_care_protocol.sql`. In the meantime `181` was
--- independently claimed by both the NextSteps phase layer and a new "sparks"
--- migration, so the fixed version moved again, to `184`, the first number
--- genuinely free across the whole sql/ directory at the time.
+-- and first landed as `181_care_protocol.sql`. `181` was then independently
+-- claimed twice more (NextSteps phases, a "sparks" migration), so the fixed
+-- version moved to `184` — which was itself then independently claimed by a
+-- "pulse events" migration — before landing at `187`, the first number
+-- genuinely free once all of that is accounted for. See the tombstones at
+-- 181 and 184 for each leg.
 --
 -- This file is left in place as a tombstone rather than deleted, because a
 -- drag-and-drop merge cannot remove files — dropping it from the delivery
@@ -23,8 +25,8 @@
 -- leave it: the whole file is comments, so running it does nothing at all.
 --
 -- If you already ran the original 180_care_protocol.sql against Supabase, its
--- anon policy needs to come down — 184 drops it by name before creating the
--- replacement, so running 184 now closes that hole. There is nothing else to
+-- anon policy needs to come down — 187 drops it by name before creating the
+-- replacement, so running 187 now closes that hole. There is nothing else to
 -- undo.
 --
--- Run instead:  sql/184_care_protocol.sql
+-- Run instead:  sql/187_care_protocol.sql

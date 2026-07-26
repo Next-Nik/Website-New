@@ -1,11 +1,12 @@
 // src/pages/CareProtocol.jsx
 //
-// The Care Protocol — hidden, founder-only. Reached from the Movie Magic
-// topbar; the route is unlinked from all navigation.
+// The Care Protocol — hidden, founder-only. Reached from a "Care Protocol"
+// button in the Profile panel (ProfileMissionPanel.jsx), alongside Admin
+// Console and Movie Magic; the route is unlinked from all other navigation.
 //
 // UI gate mirrors the Movie Magic / AdminConsole founder check (tolerant of
 // either metadata source so the founder cannot be locked out). Real
-// enforcement is RLS in sql/184_care_protocol.sql, which requires app_metadata
+// enforcement is RLS in sql/187_care_protocol.sql, which requires app_metadata
 // only.
 //
 // Four surfaces behind one page: Intake, Protocol (the editable working view),
