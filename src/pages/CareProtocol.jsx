@@ -671,12 +671,22 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
         body: JSON.stringify({ prompt: item.text, text: trimmed, displayName: state.displayName }),
       })
       const body = await res.json()
-      if (!res.ok || !body?.notice) throw new Error(body?.error || 'Reflection failed')
+      if (!res.ok || !body?.notice) throw new Error(body?.error || `Reflection failed (${res.status})`)
       setReflections((r) => ({ ...r, [item.id]: { status: 'done', text: body.notice } }))
-    } catch (_) {
-      // Fails quiet, not loud — a missed reflection is a missed nicety, not
-      // an error worth interrupting someone mid-disclosure over. The panel
-      // simply renders nothing for 'error' (see ReflectionPanel).
+    } catch (err) {
+      // Was originally fully silent on failure — reasoning being that a
+      // missed reflection is a missed nicety, not worth interrupting
+      // someone mid-disclosure over. Reversed after a real report of "this
+      // doesn't seem to have shown up": total silence on error is
+      // indistinguishable from "this feature doesn't exist," which is
+      // exactly the bad-bedside-manner failure this feature exists to fix,
+      // just moved one layer down, into the failure path instead of the
+      // success path. The panel now renders something calm for 'error' too
+      // (see ReflectionPanel) rather than nothing. Also logged to the
+      // console — a production failure here (bad auth, missing env var on
+      // the new endpoint, network hiccup) was otherwise invisible to
+      // anyone without devtools open, which made this exact bug unreportable.
+      console.error('[care-notice] reflection failed:', err?.message || err)
       setReflections((r) => ({ ...r, [item.id]: { status: 'error' } }))
     }
   }, [state?.displayName])

@@ -672,3 +672,60 @@ static card-render harness can't exercise, rendered the real
 (idle/loading/done/error) in an isolated preview to confirm the panel reads
 correctly and that italic really was avoided — see the delivered
 screenshot.
+
+---
+
+## 16. "Noticed" didn't show up — the failure path was silent too
+
+Report after §15 shipped and was deployed live: "it doesn't seem to have
+changed anything... the 'noticed' doesn't seem to have showed up." Confirmed
+freshly deployed, tried on both freetext fields.
+
+Re-verified the actual code three ways before looking anywhere else: diffed
+the delivered files against the uploaded repo byte-for-byte (identical);
+re-ran the full parse/test/audit/build pipeline (all clean); and — new this
+round, going further than the §15 verification did — built a live harness
+that types into the real `open_wish` field, fires a real blur event, and
+drives the real `reflectOn` logic against a mocked `/api/care-notice` call.
+All three passed. The client-side code is correct.
+
+Which means the likeliest real explanation is the one place client-side
+correctness can't reach: `reflectOn`'s `catch` block was written to fail
+completely silently — a deliberate choice at the time (§15: "a missed
+reflection is a missed nicety, not worth interrupting someone over"). That
+reasoning holds for the person mid-disclosure. It does not hold for anyone
+trying to tell *whether the feature is working at all* — a genuine backend
+failure (a missing env var on the newly-added function, an auth mismatch,
+a network hiccup) and "this was never built" now render identically:
+nothing. That's the same failure this whole feature exists to fix, just
+moved one layer down, into the error path instead of the success path.
+
+Fixed by giving `error` a rendered state instead of `null`: a single quiet,
+`fn.ghost`-toned line — "A reflection didn't load that time — your answer
+is still saved." — no color, no icon, nothing urgent, just present instead
+of silent. Also logged the actual error to the console
+(`console.error('[care-notice] reflection failed:', ...)`), since a
+production failure on a brand-new endpoint was otherwise invisible to
+anyone without devtools open, which is what made this exact report
+unresolvable from the description alone.
+
+Two things worth naming that are *not* bugs, in case they're what actually
+happened: the reflection only fires on the longer first question
+(`open_wish`, `type: 'longtext'`) — the shorter one-liner right after it
+(`open_line`, `type: 'text'`) never gets one, by design; and it only fires
+on a live blur event, so merely reloading a page and looking at an answer
+saved from before this feature existed does nothing — the field has to
+actually be focused and un-focused (typing not required) in the current
+session for `reflectOn` to run at all.
+
+Verified: same pipeline as §15 (parse, 25 + 5 + 30 test suite, design
+audit, production build, all clean and unchanged), plus a second live
+harness run simulating a failing `/api/care-notice` call end to end —
+confirms the calm error line now renders and the console captures the
+underlying error — see the delivered screenshot. Next diagnostic step, if
+this still doesn't show up live: check whether the grey "didn't load" line
+appears at all. If it does, the client is reaching the endpoint and the
+server is failing — a devtools network-tab look at `/api/care-notice`'s
+response will show why. If nothing renders even now, the blur event itself
+isn't reaching `reflectOn` in the live environment, which would point
+somewhere neither this file nor its tests can see from here.

@@ -103,7 +103,22 @@ function Choice({ item, value, onChange }) {
 // CareCard.jsx), and this is the system speaking, not the person — using
 // italic here would blur exactly the line that law exists to hold.
 function ReflectionPanel({ reflection }) {
-  if (!reflection || reflection.status === 'error' || reflection.status === 'idle') return null
+  // 'idle' (nothing attempted yet) stays invisible — that's correct, not a
+  // failure. 'error' used to be invisible too, on the reasoning that a
+  // missed reflection was a missed nicety not worth interrupting someone
+  // over. That reasoning held for the person mid-disclosure, but not for
+  // anyone trying to tell whether the feature works at all: a silent
+  // failure and "this was never built" render identically. So error now
+  // gets a single quiet line — no red, no icon, nothing that reads as
+  // urgent — instead of nothing.
+  if (!reflection || reflection.status === 'idle') return null
+  if (reflection.status === 'error') {
+    return (
+      <p style={{ ...fnText.caption, color: fn.ghost, margin: `${space.sm} 0 0` }}>
+        A reflection didn't load that time — your answer is still saved.
+      </p>
+    )
+  }
   return (
     <div
       style={{
