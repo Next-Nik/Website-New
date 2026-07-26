@@ -884,7 +884,7 @@ function MovieMagicWorkspace({ user }) {
               already unlinked and founder-gated, which makes it the
               quietest door in the building. Nothing about the Care
               Protocol is reachable from any navigation; this is the
-              only way in. Real enforcement is RLS in sql/181. */}
+              only way in. Real enforcement is RLS in sql/184. */}
           <button
             className="mm-btn ghost"
             title="Care Protocol · hidden"

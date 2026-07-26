@@ -1,21 +1,30 @@
 -- 180_care_protocol.sql — SUPERSEDED. DO NOT RUN.
 --
--- This migration has moved to `181_care_protocol.sql`, which is a superset:
--- it carries every fix from the security review, including the token-scoped
--- RPC that replaces the unsafe anon read policy on care_shares.
+-- This migration has moved to `184_care_protocol.sql`.
 --
--- The Care Protocol drop's own DELETE_ME_FIRST.txt asked for this file to be
--- deleted by hand before applying. It was still present in the tree, so it is
--- overwritten here with a tombstone instead — a drag-and-drop merge cannot
--- remove a file, and leaving it live meant a reader could run the pre-review
--- version by mistake. Same convention the NextSteps drop used at this number.
+-- Why: this was the first drop of the Care Protocol, delivered before review.
+-- Review found a real security defect in it — the anon read policy on
+-- care_shares had no way to scope a read to one token, so switching on public
+-- sharing would have let anyone holding the publishable key enumerate every
+-- live card. The fix replaced that policy with a security-definer function
+-- and first landed as `181_care_protocol.sql`. In the meantime `181` was
+-- independently claimed by both the NextSteps phase layer and a new "sparks"
+-- migration, so the fixed version moved again, to `184`, the first number
+-- genuinely free across the whole sql/ directory at the time.
 --
--- IF THIS FILE WAS ALREADY RUN in Supabase: run 181_care_protocol.sql as well.
--- It is idempotent and it additionally drops the old anon read policy, which
--- is what closes the hole described in docs/care-protocol.md §8.
+-- This file is left in place as a tombstone rather than deleted, because a
+-- drag-and-drop merge cannot remove files — dropping it from the delivery
+-- would leave the old copy sitting on disk with no marker that it was
+-- superseded, and a later reader would have no way to tell it apart from the
+-- current migration. Overwriting it with this note is the only way the merge
+-- itself can resolve that.
 --
--- Safe to delete whenever convenient. The whole file is comments, so running
--- it does nothing at all.
+-- It is safe to delete this file whenever convenient, and equally safe to
+-- leave it: the whole file is comments, so running it does nothing at all.
 --
--- (Overwritten by the social-half review pass, 26 July 2026 — flagged rather
--- than done silently, since this file belongs to another drop.)
+-- If you already ran the original 180_care_protocol.sql against Supabase, its
+-- anon policy needs to come down — 184 drops it by name before creating the
+-- replacement, so running 184 now closes that hole. There is nothing else to
+-- undo.
+--
+-- Run instead:  sql/184_care_protocol.sql

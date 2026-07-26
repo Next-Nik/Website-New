@@ -1,7 +1,7 @@
 # Care Protocol — build note and validation record
 
 **Status:** v1 built, hidden inside NextUs. Founder-only.
-**Migration:** `sql/181_care_protocol.sql`
+**Migration:** `sql/184_care_protocol.sql`
 **Entry point:** the `◍ Care Protocol` button in the Movie Magic topbar. The
 route is unlinked from all navigation.
 
@@ -17,7 +17,7 @@ route is unlinked from all navigation.
 | Hidden working page | `src/pages/CareProtocol.jsx` → `/care-protocol` |
 | Public card route (dark) | `src/pages/CareCardPublic.jsx` → `/care/:token` |
 | Synthesis endpoint | `api/care-synthesis.js` |
-| Tables and RLS | `sql/181_care_protocol.sql` |
+| Tables and RLS | `sql/184_care_protocol.sql` |
 
 Nothing in `src/lib/care/` imports from the NextUs app, Supabase, or React —
 design tokens are touched only by the renderer. Placement stays a question of
@@ -284,9 +284,19 @@ and fixed; each has a regression test that fails against the original code.
 
 ### Housekeeping
 
-- **Migration renumbered 180 → 181.** The NextSteps route layer landed
-  `180_nextsteps_phases.sql` in the same window. No object names collide, so
-  running both is safe, but two files claiming 180 breaks the convention.
+- **Migration renumbered 180 → 181, then 181 → 184.** The NextSteps route
+  layer landed `180_nextsteps_phases.sql` in the same window as the first
+  drop, so Care Protocol moved to 181. By the next merge, 181 had been
+  independently claimed a second time — by both `181_nextsteps_phases.sql`
+  and a new `181_sparks.sql` — so it moved again, to 184, the first number
+  genuinely free across `sql/` at the time. Both `180_care_protocol.sql` and
+  `181_care_protocol.sql` are left in place as tombstones (all-comment files
+  pointing at 184) rather than deleted, matching the pattern already
+  established by `180_nextsteps_phases.sql`: a drag-and-drop merge cannot
+  remove files, so overwriting a superseded copy with a note is the only way
+  to mark it. No object names collide in any of these, so running any
+  already-applied copy alongside 184 is harmless; 184 is what should actually
+  be run.
 
 ### Known and deliberately unchanged
 
@@ -297,3 +307,44 @@ deliberate so the founder cannot be locked out. RLS and the synthesis endpoint
 both require `app_metadata`, so **no data is readable or writable** through it
 — the exposure is the page shell of an unreleased internal tool. Worth a
 repo-wide decision rather than a unilateral change here.
+
+---
+
+## 9. Corrections made merging onto the v39 tree
+
+The v39 snapshot carried unrelated new work — a "Sparks" feature, a Movie
+Magic Deck rework, milestone/moment migrations — merged in parallel with, and
+without ever having seen, this drop. Reviewed again after merging onto it;
+one defect, one loose end, and one UX gap found.
+
+- **`App.jsx` lost the Care Protocol route entirely.** The Sparks merge into
+  `App.jsx` branched from a copy of the file that predated Care Protocol's
+  integration, silently dropping both import lines
+  (`CareProtocolPage`, `CareCardPublicPage`) and both `<Route>` registrations
+  (`/care-protocol`, `/care/:token`). This is exactly the class of bug this
+  repo's own `CLAUDE.md` already documents by name — a page built but never
+  imported or routed, with the catch-all wildcard silently swallowing every
+  click to it — and it would have made the entire tool unreachable with no
+  error anywhere. Found by `grep -n "Care" src/App.jsx` returning nothing;
+  fixed by re-adding both lines at their original insertion points, verified
+  the new Sparks routes were untouched by diff.
+- **`view_count` was read and displayed nowhere and incremented nowhere.**
+  The column existed since the first schema draft and was carried into
+  client state, but no code path ever wrote to it. `care_card_by_token` now
+  bumps it atomically (`update ... returning`, so a concurrent reader can't
+  observe the row between a select and an update and lose a count), and the
+  Share Link panel now shows the running total.
+- **`show_right_now` was fully enforced with no way to set it.** Both
+  `publicCard()` and the RPC already honoured the flag correctly (see §8), and
+  it defaulted `true` at share creation, but the founder had no control to
+  ever flip it. Added a checkbox in the Share Link panel wired to a new
+  `toggleRightNow` callback.
+
+Re-verified against this exact tree after all of the above: the 25-assertion
+regression suite (sign boundaries, Li Chun instant, master numbers, the Accra
+anchor cross-check, symbol-strip confidence gating, deliberate-low-rating
+survival, optional-item completion, staleness-at-render, and the full Obama
+reference chart) all pass; the hostile-input probe (empty/partial/null jsonb
+shapes into `buildCard`) is 5/5; the design audit shows zero new violations;
+a production build succeeds with the ephemeris chunk byte-identical to every
+prior round; and a rendered card screenshot shows no visual regression.

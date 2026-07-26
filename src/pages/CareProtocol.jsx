@@ -5,7 +5,7 @@
 //
 // UI gate mirrors the Movie Magic / AdminConsole founder check (tolerant of
 // either metadata source so the founder cannot be locked out). Real
-// enforcement is RLS in sql/181_care_protocol.sql, which requires app_metadata
+// enforcement is RLS in sql/184_care_protocol.sql, which requires app_metadata
 // only.
 //
 // Four surfaces behind one page: Intake, Protocol (the editable working view),
@@ -439,6 +439,23 @@ function CareProtocolWorkspace({ user }) {
     if (error) setShareError(error.message || 'Could not update the snapshot')
   }, [share, card])
 
+  // The schema and the RPC have honoured this flag since the security review;
+  // there was simply no control in the UI to ever set it to false. Flipping it
+  // also refreshes the stored snapshot in the same call, since the flag only
+  // takes effect on the card that's actually saved — leaving the old snapshot
+  // in place would mean "Right now" stayed visible on an already-shared link
+  // until the next unrelated edit happened to trigger a refresh.
+  const toggleRightNow = useCallback(async () => {
+    if (!share?.token) return
+    setShareError(null)
+    const next = !share.show_right_now
+    const payload = { show_right_now: next, updated_at: new Date().toISOString() }
+    if (card) payload.card = publicCard(card, next)
+    const { error } = await supabase.from('care_shares').update(payload).eq('token', share.token)
+    if (error) { setShareError(error.message || 'Could not update the link'); return }
+    setShare((s) => ({ ...s, show_right_now: next }))
+  }, [share, card])
+
   const revokeShare = useCallback(async () => {
     if (!share?.token) return
     setShareError(null)
@@ -551,6 +568,7 @@ function CareProtocolWorkspace({ user }) {
             createShare={createShare}
             refreshShare={refreshShare}
             revokeShare={revokeShare}
+            toggleRightNow={toggleRightNow}
           />
         )}
 
@@ -760,7 +778,7 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
 
 function ProtocolTab({
   state, setState, card, engine, runSynthesis, synthesising, synthError,
-  share, shareError, createShare, refreshShare, revokeShare,
+  share, shareError, createShare, refreshShare, revokeShare, toggleRightNow,
 }) {
   const detail = card?.detail
   const shareUrl = share ? `${window.location.origin}/care/${share.token}` : null
@@ -858,6 +876,10 @@ function ProtocolTab({
             <p style={{ ...mono, fontSize: '13px', color: fn.meta, wordBreak: 'break-all', margin: `0 0 ${space.md}` }}>
               {shareUrl}
             </p>
+            <p style={{ ...fnText.caption, color: fn.ghost, margin: `0 0 ${space.md}` }}>
+              {share.view_count === 1 ? '1 view' : `${share.view_count ?? 0} views`} · counted only once
+              public sharing is switched on in SQL
+            </p>
             <div style={{ display: 'flex', gap: space.sm, flexWrap: 'wrap' }}>
               <button type="button" onClick={refreshShare} style={S.ghostBtn}>
                 Update snapshot
@@ -873,6 +895,15 @@ function ProtocolTab({
                 Revoke
               </button>
             </div>
+            <label
+              style={{
+                ...fnText.caption, color: fn.meta, display: 'flex', alignItems: 'center',
+                gap: space.sm, margin: `${space.md} 0 0`, cursor: 'pointer',
+              }}
+            >
+              <input type="checkbox" checked={Boolean(share.show_right_now)} onChange={toggleRightNow} />
+              Show "Right now" on the shared card
+            </label>
             <p style={{ ...fnText.caption, color: fn.ghost, margin: `${space.md} 0 0` }}>
               The link stores a snapshot of the card face only. Birth time and
               coordinates never leave your own row.
