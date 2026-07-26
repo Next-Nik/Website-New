@@ -390,3 +390,134 @@ level inside a third:
 There is now exactly one door, and it is where the founder actually looks for
 it. Enforcement is unchanged either way — RLS in `sql/187_care_protocol.sql`
 never depended on which button led here.
+
+---
+
+## 11. Today's sky — the daily layer
+
+Everything above this point is a snapshot: astrology, Human Design, Chinese
+zodiac, and numerology are all properties of the birth moment and never
+change; the five instruments are scored once and stay put until retaken.
+Asked directly whether the card gives "a daily window into self, like a
+horoscope but across multiple modalities" — the honest answer at the time was
+no, not yet, and that gap was already named in the brief and parked (§6,
+"Cycle-aware 'Right now'"). This closes it, for astrology and Human Design.
+
+**What it computes**, in `src/lib/care/transits.js`:
+
+- The transiting **Moon** (sign, phase, and its aspect to natal Sun/Moon/
+  Rising) — the standard engine behind almost every daily-horoscope product,
+  because it is the one body whose aspects to a natal chart genuinely turn
+  over inside a day or two.
+- The transiting **Sun** (sign, and its aspect to the same three natal
+  points) — slower, but its Human Design gate/line changes on the same kind
+  of timescale, and its aspects stay exact for roughly a day at a normal orb.
+- **Retrograde flags** for Mercury, Venus, Mars, Jupiter, and Saturn — the
+  single most-asked-about fact in mainstream astrology, and cheap to compute
+  correctly (the library already flags it per body; the same mechanism
+  natal placements already use).
+- **Human Design gate of the day**: the transiting Sun's (and Earth's,
+  its opposite point) gate and line, checked against the natal gate set for
+  a completed channel — reusing `CHANNELS`/`CENTRE_OF_GATE` from `wheel.js`
+  exactly as `computeHumanDesign` does for the birth chart itself. A hit
+  either reinforces a centre the person already has defined, or temporarily
+  opens one that is normally undefined for them.
+
+**Deliberately out of scope**, and why: Mercury, Venus, Mars, Jupiter and
+Saturn move too slowly for "today" to mean much about their *aspects*
+specifically — a Saturn square can sit within orb for weeks — so the
+aspect-interpretation table covers only Sun and Moon. Extending it to the
+outer planets is a real next step, not an oversight; it needs a different
+framing ("in effect for the next three weeks" rather than "today").
+
+**Evidence tier: mythic**, same as natal astrology and Human Design — added
+to `COMPUTED_SYSTEMS` in `instruments/index.js` as `daily_transits`, so it
+shows up in the Roster tab's rights ledger like everything else. This module
+computes the sky correctly; it does not make the sky predictive.
+
+**Stability, deliberate.** "Today" is pinned to noon UTC of the calendar
+date, not the instant the function happens to run — reloading the workspace
+at 9am and again at 11pm the same day returns byte-identical output. A
+section that changed every time you glanced at it inside one day would read
+as broken rather than alive; it is supposed to change once per calendar day,
+which is the whole point of "daily."
+
+**Public sharing: deliberately not wired in, yet.** `card` snapshots handed
+to `care_shares` are frozen at share-creation time (`publicCard()` in
+`cardModel.js`). Baking in a value that goes stale within a day would
+reintroduce, in a new place, exactly the frozen-staleness bug already found
+and fixed once for "Right now" (§8). So this is called directly by the
+founder's own workspace (`CareProtocol.jsx` computes it with `useMemo` and
+passes it to `<CareCard>` as its own `todaysWeather` prop) and never enters
+`buildCard()`'s output, `publicCard()`, or a stored snapshot at all —
+`CareCardPublic.jsx` is untouched and never computes or passes it. A
+cycle-aware public share — recomputing live on each view rather than freezing
+at share time — is real future work, not an accident.
+
+**Where it renders**: a new "TODAY'S SKY" section on the Card tab, directly
+under the header (a live gloss on the same placements) and before "How I'm
+wired." Tone is moss, not clay, even though — like "Right now" — it changes
+daily: clay marks a section a *human* let go stale; this one recomputes
+itself correctly every render, so there is nothing here for a human to have
+forgotten.
+
+**Tested**: 30 new checks (`aspectBetween` and `moonPhase` pure-math cases;
+same-calendar-day stability and next-day divergence against a fixed birth
+chart; the Sun and Moon longitudes cross-checked against an independent call
+to the already-validated `horoscopeAtUTC`; every retrograde flag cross-checked
+against the library's own `isRetrograde`; the Human Design gate-of-the-day
+cross-checked against an independent `gateLine()` call; every reported
+channel-hit checked against the invariant that it is a real channel, keyed to
+an actual natal gate, off an actual transiting gate; and a synthetic
+gate-41-vs-natal-gate-30 case exercising the channel-matching logic directly
+against a hand-picked, known channel). All 30 pass, alongside the full
+existing 25-test regression suite and 5-test hostile-input probe, which both
+still pass unchanged. The ephemeris chunk grew from 800.72 kB to 806.28 kB in
+this round's production build — expected and correct, since this is the
+first round that deliberately changes the engine rather than merely carrying
+it forward; previous rounds' "byte-identical" checks were verifying nothing
+had changed by accident, not that nothing should ever change.
+
+---
+
+## 12. Birth-place search failed silently
+
+Reported directly: typing a birth place and tapping "Compute chart" did
+nothing. The root cause was in `IntakeTab` in `CareProtocol.jsx`, and it is a
+sequencing trap rather than a broken computation:
+
+`state.birth.lat`/`lon` are only ever set by `pickPlace()` — clicking a
+result from the geocoding dropdown. The text box above it is bound to a
+*separate* piece of local state (`placeQuery`), so typing a city and going
+straight to "Compute chart" leaves `state.birth.lat` at `null` regardless of
+what the box shows. `runComputation`'s `ready` gate correctly refuses to run
+without coordinates, but the button was simply `disabled` — which fires no
+click event at all — with nothing on screen explaining why. A second,
+separate gap: the geocoding fetch's `catch` block swallowed every failure
+(network error, CORS, a non-2xx response) into a silent empty result list,
+identical in appearance to "that city doesn't exist."
+
+Three fixes, all in `IntakeTab`:
+
+- An always-visible hint under the search box while no coordinates are set
+  yet: type a city, then tap Search and choose it from the list — typing
+  alone does not set coordinates. Also suggests searching the bare city name
+  rather than "City, Region, Country" for a better match against the
+  geocoding API.
+- The search now distinguishes and reports three states instead of one: a
+  successful search, a search that ran and found nothing ("No matches for
+  '…'. Try just the city name on its own."), and a search that could not run
+  at all ("Could not reach the location search. Check your connection and
+  try again.") — previously indistinguishable, both from each other and from
+  never having searched.
+- A message next to the "Compute chart" button whenever it is inactive,
+  naming the actual missing piece — a birth date, or a selected city —
+  instead of leaving a disabled button to explain itself through silence.
+
+Nothing about the computation changed: once a city is actually selected,
+Sun/Moon/Rising and everything else compute exactly as before (see §3 for the
+validation record). This was purely a "the founder doesn't know why nothing
+happened" gap, closed with feedback, not a change to what gets computed or
+how. Verified: the file parses clean, builds clean, and the full 25 + 5 + 30
+test suite (regression, hostile-input, transits) all still pass unchanged —
+nothing here touches computation, so none of them were expected to move.

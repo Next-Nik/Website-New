@@ -59,6 +59,14 @@ export const COMPUTED_SYSTEMS = [
     evidence: 'mythic',
     rights: { status: 'cleared', basis: 'Computed · traditional system', url: null },
   },
+  {
+    id: 'daily_transits',
+    name: "Today's sky",
+    shortName: 'Daily transits',
+    kind: 'computed',
+    evidence: 'mythic',
+    rights: { status: 'cleared', basis: 'Computed from birth data · pure mathematics', url: null },
+  },
 ]
 
 // ── Parked ────────────────────────────────────────────────────────────────

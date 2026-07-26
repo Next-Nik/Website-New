@@ -5,14 +5,17 @@
 // on the second read, and built to be screenshotted.
 //
 // Structure runs most permanent to most alive, which is also the trust
-// gradient of the systems it draws on: placements, then synthesis, then the
-// symbol strip, then what fills them, then attachment, then Right now.
+// gradient of the systems it draws on: placements, then today's sky (a live
+// gloss on those same placements), then synthesis, then the symbol strip,
+// then what fills them, then attachment, then Right now.
 //
 // DESIGN LAW NOTES
 //   · Field Notes rail throughout. Every colour comes from designTokens.
 //   · Top rule is the signature element: moss = living and settled, clay =
-//     asking for attention. Only "Right now" gets clay, because it is the only
-//     section that goes stale.
+//     asking for attention. Only "Right now" gets clay — it is the only
+//     section that can go stale from human neglect. Today's sky also changes
+//     daily, but it recomputes itself correctly every render; there is
+//     nothing there for a human to have forgotten, so it stays moss.
 //   · Progress lines are the existing segmented hand-ruled treatment.
 //   · Italic appears exactly once, on the user's own sentence. That is the
 //     design law and it is also the point: a partner should receive
@@ -174,7 +177,75 @@ function EvidenceChip({ tier }) {
 
 const STALE_AFTER_MS = 14 * 86400000
 
-export default function CareCard({ card, showRightNow = true, qrDataUrl = null, width = CARD_WIDTH }) {
+// Today's sky — the one section computed live rather than shaped ahead of
+// time by cardModel.js. It is passed in as its own prop, never as part of
+// `card` (see the "PUBLIC SHARING" note in lib/care/transits.js), which is
+// also why it only ever appears here in the founder's own workspace and never
+// on the public share route: CareCardPublic.jsx never computes or passes it.
+//
+// Tone is moss, not clay, even though this is the other section that changes
+// daily. Clay marks "a human forgot to update this" — Right now's staleness
+// is a founder oversight becoming visible. Today's sky recomputes itself
+// correctly every time the card renders; there is nothing here for a human
+// to have forgotten.
+function TodaysSky({ weather }) {
+  if (!weather) return null
+  const reads = [
+    ...Object.values(weather.moon?.reads || {}),
+    ...Object.values(weather.sun?.reads || {}),
+  ].filter((r) => r.text)
+
+  return (
+    <Section eyebrow={`TODAY'S SKY · ${weather.date}`}>
+      <p style={{ ...fnText.caption, color: fn.meta, margin: `0 0 ${space.md}` }}>
+        <span style={{ ...mono, letterSpacing: '0.06em', color: fn.ink }}>
+          MOON {weather.moon.formatted}
+        </span>
+        {' · '}
+        {weather.moon.phase}
+        {'  ·  '}
+        <span style={{ ...mono, letterSpacing: '0.06em', color: fn.ink }}>
+          SUN {weather.sun.formatted}
+        </span>
+      </p>
+
+      {reads.map((r, i) => (
+        <p key={i} style={{ ...fnText.caption, color: fn.ink, margin: `0 0 ${space.sm}` }}>
+          {r.text}
+        </p>
+      ))}
+
+      {weather.humanDesign && (
+        <p style={{ ...fnText.caption, color: fn.meta, margin: `${space.sm} 0 0` }}>
+          <span style={{ ...mono, letterSpacing: '0.06em', color: fn.ink }}>
+            GATE {weather.humanDesign.sunGate.gate}.{weather.humanDesign.sunGate.line} (SUN)
+            {'  ·  '}
+            GATE {weather.humanDesign.earthGate.gate}.{weather.humanDesign.earthGate.line} (EARTH)
+          </span>
+          {weather.humanDesign.hits.map((hit, i) => (
+            <span key={i} style={{ display: 'block', marginTop: '3px' }}>
+              {hit.effect === 'reinforces'
+                ? `Forms a channel with your natal gate ${hit.natalGate} — reinforces your ${hit.centres.join(' – ')} connection.`
+                : `Forms a channel with your natal gate ${hit.natalGate} — temporarily opens your ${hit.centres.join(' – ')} connection.`}
+            </span>
+          ))}
+        </p>
+      )}
+
+      {weather.retrograde.length > 0 && (
+        <div style={{ marginTop: space.md }}>
+          {weather.retrograde.map((r) => (
+            <p key={r.key} style={{ ...fnText.caption, color: fn.ghost, margin: `0 0 ${space.sm}` }}>
+              {r.note}
+            </p>
+          ))}
+        </div>
+      )}
+    </Section>
+  )
+}
+
+export default function CareCard({ card, showRightNow = true, qrDataUrl = null, width = CARD_WIDTH, todaysWeather = null }) {
   // A share row's `card` column defaults to '{}', and an older snapshot may
   // predate a section. Default every branch rather than destructuring blind.
   if (!card || !card.header) return null
@@ -231,7 +302,10 @@ export default function CareCard({ card, showRightNow = true, qrDataUrl = null, 
         )}
       </header>
 
-      {/* 2 — How I'm wired */}
+      {/* 2 — Today's sky, live, present only in the founder's own workspace */}
+      <TodaysSky weather={todaysWeather} />
+
+      {/* 3 — How I'm wired */}
       <Section eyebrow="HOW I'M WIRED">
         {wired.pending ? (
           <p style={{ ...fnText.body, margin: 0, color: fn.ghost }}>
@@ -267,12 +341,12 @@ export default function CareCard({ card, showRightNow = true, qrDataUrl = null, 
         )}
       </Section>
 
-      {/* 3 — Care instructions: the symbol strip */}
+      {/* 4 — Care instructions: the symbol strip */}
       <Section eyebrow="CARE INSTRUCTIONS">
         <SymbolStrip symbols={symbols} />
       </Section>
 
-      {/* 4 — What fills me */}
+      {/* 5 — What fills me */}
       {fills.length > 0 && (
         <Section eyebrow="WHAT FILLS ME">
           {fills.map((mode) => (
@@ -300,7 +374,7 @@ export default function CareCard({ card, showRightNow = true, qrDataUrl = null, 
         </Section>
       )}
 
-      {/* 5 — How I attach, and the one user-voice moment */}
+      {/* 6 — How I attach, and the one user-voice moment */}
       {(attach?.anxiety || attach?.userLine) && (
         <Section eyebrow="HOW I ATTACH">
           {attach.anxiety && (
@@ -338,7 +412,7 @@ export default function CareCard({ card, showRightNow = true, qrDataUrl = null, 
         </Section>
       )}
 
-      {/* 6 — Right now: the only clay section */}
+      {/* 7 — Right now: the only clay section */}
       {showRightNow && rightNow.text && (
         <Section tone="clay" eyebrow={`RIGHT NOW${rightNow.updatedAt ? ` · ${String(rightNow.updatedAt).slice(0, 10)}` : ''}`}>
           <p style={{ ...fnText.body, margin: 0, color: fn.ink }}>{rightNow.text}</p>
@@ -350,7 +424,7 @@ export default function CareCard({ card, showRightNow = true, qrDataUrl = null, 
         </Section>
       )}
 
-      {/* 7 — Footer */}
+      {/* 8 — Footer */}
       <Section tone="moss" last>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: space.lg }}>
           <div>

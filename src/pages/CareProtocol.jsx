@@ -345,6 +345,22 @@ function CareProtocolWorkspace({ user }) {
     [engine, state],
   )
 
+  /* today's sky. Recomputed every render, never stored — see the note atop
+     lib/care/transits.js. Deliberately keyed on the calendar date rather than
+     any finer instant, so this recomputes once per day rather than on every
+     keystroke elsewhere on the page: two renders on the same day produce an
+     identical object, so React never sees it as a change worth re-rendering
+     for. Never passed into buildCard()/publicCard(), so it can never reach a
+     stored share snapshot — see the "PUBLIC SHARING" note in transits.js for
+     why that is deliberate, not an oversight. */
+  const today = new Date()
+  const dayKey = today.toISOString().slice(0, 10)
+  const todaysWeather = useMemo(
+    () => (engine && state?.chart ? engine.computeTransits(state.chart, state.humanDesign, today) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [engine, state?.chart, state?.humanDesign, dayKey],
+  )
+
   /* QR — the qrcode dependency already exists in the repo */
   useEffect(() => {
     let cancelled = false
@@ -575,7 +591,7 @@ function CareProtocolWorkspace({ user }) {
 
         {tab === 'card' && (
           <div style={{ padding: `${space.xl} 0` }}>
-            <CareCard card={card} qrDataUrl={qrDataUrl} />
+            <CareCard card={card} qrDataUrl={qrDataUrl} todaysWeather={todaysWeather} />
           </div>
         )}
 
@@ -591,18 +607,30 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
   const [placeQuery, setPlaceQuery] = useState('')
   const [placeResults, setPlaceResults] = useState([])
   const [searching, setSearching] = useState(false)
+  // Distinguishes "the search ran and found nothing" from "the search
+  // couldn't run at all" (network/CORS/API hiccup), and from "no search has
+  // been attempted yet" (null) — each gets a different message. Before this,
+  // a failed fetch was swallowed silently: placeResults just stayed empty,
+  // with nothing on screen to tell the founder the search itself broke
+  // rather than their city not existing.
+  const [searchStatus, setSearchStatus] = useState(null) // null | 'empty' | 'error'
 
   const searchPlace = async () => {
     if (!placeQuery.trim()) return
     setSearching(true)
+    setSearchStatus(null)
     try {
       const res = await fetch(
         `https://geocoding-api.open-meteo.com/v1/search?count=6&language=en&format=json&name=${encodeURIComponent(placeQuery)}`,
       )
+      if (!res.ok) throw new Error(`Search failed (${res.status})`)
       const body = await res.json()
-      setPlaceResults(body?.results || [])
+      const results = body?.results || []
+      setPlaceResults(results)
+      setSearchStatus(results.length ? null : 'empty')
     } catch (_) {
       setPlaceResults([])
+      setSearchStatus('error')
     } finally {
       setSearching(false)
     }
@@ -616,6 +644,7 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
     }))
     setPlaceResults([])
     setPlaceQuery('')
+    setSearchStatus(null)
   }
 
   const core = engine?.CORE_INSTRUMENTS || []
@@ -686,6 +715,31 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
           </div>
         </Field>
 
+        {/* Typing a city name alone does not set coordinates — only picking a
+            result below does. This is the single most common way "Compute
+            chart" silently does nothing: the founder types a place, never
+            taps Search or a result, and there is no error to explain why the
+            button is inert. Say it up front rather than only after it fails. */}
+        {!state.birth.lat && (
+          <p style={{ ...fnText.caption, color: fn.ghost, margin: `0 0 ${space.md}` }}>
+            Type a city name, then tap Search and choose your city from the
+            list that appears. Typing alone does not set your coordinates —
+            try just the city ("London") rather than "City, Region, Country"
+            for the best match.
+          </p>
+        )}
+
+        {searchStatus === 'empty' && !searching && (
+          <p style={{ ...fnText.caption, color: fn.clay, margin: `0 0 ${space.lg}` }}>
+            No matches for "{placeQuery}". Try just the city name on its own.
+          </p>
+        )}
+        {searchStatus === 'error' && !searching && (
+          <p style={{ ...fnText.caption, color: fn.clay, margin: `0 0 ${space.lg}` }}>
+            Could not reach the location search. Check your connection and try again.
+          </p>
+        )}
+
         {placeResults.length > 0 && (
           <div style={{ marginBottom: space.lg }}>
             {placeResults.map((result) => (
@@ -723,6 +777,18 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
         >
           {computing ? 'Computing…' : state.chart ? 'Recompute chart' : 'Compute chart'}
         </button>
+
+        {/* A disabled button fires no click at all, so without this the only
+            feedback for "why won't this button do anything" is silence.
+            Named exactly what's missing rather than a generic "required
+            fields" line, since date and place fail for different reasons. */}
+        {!ready && !computing && (
+          <p style={{ ...fnText.caption, color: fn.clay, margin: `${space.sm} 0 0` }}>
+            {!state.birth.date
+              ? 'Add a birth date first.'
+              : 'Search for your birth city above and tap it in the results list — the button stays inactive until a city is actually selected.'}
+          </p>
+        )}
 
         {state.chart && (
           <div style={{ marginTop: space.lg, padding: space.lg, background: fn.ground, borderRadius: '2px' }}>

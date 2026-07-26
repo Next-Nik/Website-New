@@ -1,0 +1,29 @@
+14 files, all actually changed vs. WebsiteNewmain_40 — nothing carried forward
+untouched. Drop each into the same path in your repo.
+
+sql/187_care_protocol.sql            RUN THIS. The migration (renumbered from
+                                      184 — see docs/care-protocol.md §8).
+sql/180_care_protocol.sql            tombstone, ignore/delete
+sql/181_care_protocol.sql            tombstone, ignore/delete
+sql/184_care_protocol.sql            tombstone, ignore/delete
+
+src/App.jsx                          comment fix (entry-point reference)
+src/app/components/mission-control/
+  ProfileMissionPanel.jsx            Care Protocol button, next to Movie
+                                      Magic and Prism Lab (§10)
+src/pages/MovieMagic.jsx             removed the old button + dead import
+src/pages/CareProtocol.jsx           daily transits wiring (§11) + the
+                                      birth-place search fix (§12)
+src/pages/CareCardPublic.jsx         comment-only (migration number)
+src/components/care/CareCard.jsx     new "TODAY'S SKY" section (§11)
+src/lib/care/transits.js             NEW — the daily transits engine (§11)
+src/lib/care/index.js                exports transits.js
+src/lib/care/instruments/index.js    roster entry for the new module
+
+docs/care-protocol.md                the full build note, all sections
+
+Not included: everything else in src/lib/care/ (chart.js, humanDesign.js,
+wheel.js, computed.js, cardModel.js, traitVector.js, the five instrument
+files), CareCard's sibling InstrumentRunner.jsx, and api/care-synthesis.js —
+none of these have changed since your last deploy. If your repo already has
+Care Protocol running, you don't need to touch them.

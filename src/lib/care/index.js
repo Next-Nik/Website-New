@@ -26,5 +26,6 @@ export { attachmentReading, NORMS as ECR_NORMS } from './instruments/ecrRS'
 export { doshaReading, DOSHA_GUIDANCE } from './instruments/dosha'
 export { DIMENSION_LABELS as BIG5_LABELS } from './instruments/ipip50'
 export { WHEEL, CENTRES, CENTRE_LABELS, CHANNELS, gateLine } from './wheel'
+export { computeTransits, aspectBetween, moonPhase, humanDesignToday } from './transits'
 
 export const ENGINE_VERSION = '1.0.0'
