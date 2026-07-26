@@ -745,6 +745,55 @@ function MovieMagicWorkspace({ user }) {
     patchProject(project.id, (p) => ({ ...p, inbox: (p.inbox || []).filter((i) => i.id !== itemId) }))
   }
 
+  /* deck: file a card onto a board as a beat · first line becomes the
+     title, the rest travels as detail, and the card leaves the pile */
+  const fileInboxCard = (itemId, boardId, laneIdx) => {
+    const item = (project.inbox || []).find((i) => i.id === itemId)
+    if (!item) return
+    const lines = item.text.split('\n')
+    const title = lines[0].trim().slice(0, 120) || 'Untitled beat'
+    const detail = lines.slice(1).join('\n').trim()
+    patchBoard(boardId, (b) => {
+      const laneNotes = b.laneNotes.map((l) => l.slice())
+      const idx = Math.max(0, Math.min(laneIdx, laneNotes.length - 1))
+      laneNotes[idx].push({
+        id: uid(), title, detail,
+        color: NOTE_COLORS[idx % NOTE_COLORS.length].id,
+      })
+      return { ...b, laneNotes }
+    })
+    deleteInboxItem(itemId)
+  }
+
+  const clearInbox = () => {
+    patchProject(project.id, (p) => ({ ...p, inbox: [] }))
+  }
+
+  const copyDeck = async () => {
+    const items = project.inbox || []
+    const lines = [`${project.name} · card deck`, '']
+    items.slice().reverse().forEach((item, i) => {
+      lines.push(`${i + 1}. ${item.text.replace(/\n+/g, ' · ')}`)
+    })
+    if (items.length === 0) lines.push('(empty deck)')
+    const text = lines.join('\n')
+    try {
+      await navigator.clipboard.writeText(text)
+      return true
+    } catch (e) {
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const el = document.createElement('a')
+      el.href = url
+      el.download = `${slugify(project.name)}-deck.txt`
+      document.body.appendChild(el)
+      el.click()
+      document.body.removeChild(el)
+      URL.revokeObjectURL(url)
+      return true
+    }
+  }
+
   /* drag & drop (pointer-based, touch friendly) */
   const onGripDown = (e, boardId, laneIdx, note) => {
     e.preventDefault()
@@ -818,7 +867,7 @@ function MovieMagicWorkspace({ user }) {
           </select>
           <button className="mm-btn ghost" onClick={() => setImportOpen(true)}>Import</button>
           <button className="mm-btn ghost" onClick={() => setInboxOpen(true)}>
-            Inbox{inboxCount ? ` (${inboxCount})` : ''}
+            Deck{inboxCount ? ` (${inboxCount})` : ''}
           </button>
           <button className="mm-btn ghost" onClick={() => setNameModal({ kind: 'project' })}>+ Story</button>
           {state.projects.length > 1 && (
@@ -1023,8 +1072,12 @@ function MovieMagicWorkspace({ user }) {
       {inboxOpen && (
         <InboxModal
           project={project}
+          boards={projectBoards}
           onAdd={addInboxItem}
           onDelete={deleteInboxItem}
+          onFile={fileInboxCard}
+          onCopyDeck={copyDeck}
+          onClearAll={clearInbox}
           onClose={() => setInboxOpen(false)}
         />
       )}
@@ -1298,63 +1351,126 @@ function NameModal({ title, placeholder, initial, submitLabel, onClose, onSubmit
   )
 }
 
-/* Quick capture from the phone. Items live per story until you
-   transfer them into Beat (copy) or pin them on a board. */
-function InboxModal({ project, onAdd, onDelete, onClose }) {
+/* The Deck · rapid card capture and later sorting. Deal cards one
+   after another (Enter deals, focus stays), then file each onto a
+   board, or copy the numbered deck out for a sorting session. */
+function InboxModal({ project, boards, onAdd, onDelete, onFile, onCopyDeck, onClearAll, onClose }) {
   const [text, setText] = useState('')
-  const [copiedId, setCopiedId] = useState(null)
+  const [filingId, setFilingId] = useState(null)
+  const [boardSel, setBoardSel] = useState(boards[0] ? boards[0].id : null)
+  const [laneSel, setLaneSel] = useState(0)
+  const [deckCopied, setDeckCopied] = useState(false)
+  const entryRef = useRef(null)
   const items = project.inbox || []
 
-  const submit = () => {
+  const deal = () => {
     if (!text.trim()) return
     onAdd(text.trim())
     setText('')
+    if (entryRef.current) entryRef.current.focus()
   }
 
-  const copy = async (item) => {
-    try {
-      await navigator.clipboard.writeText(item.text)
-      setCopiedId(item.id)
-      setTimeout(() => setCopiedId(null), 1200)
-    } catch (e) { /* clipboard unavailable; user can select manually */ }
-  }
+  const filingBoard = boards.find((b) => b.id === boardSel)
+  const filingLanes = filingBoard ? lanesForBoard(filingBoard) : []
 
   return (
-    <ModalShell title={`Inbox · ${project.name}`} onClose={onClose}>
-      <p className="mm-help">
-        Catch ideas here from any device. Copy them out when you're back at Beat, or pin them onto a board.
-      </p>
-      <textarea
-        className="mm-input"
-        rows={3}
-        autoFocus
-        value={text}
-        placeholder="A line, a beat, a fragment…"
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submit()
-        }}
-      />
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
-        <button className="mm-btn primary" disabled={!text.trim()} onClick={submit}>Catch it</button>
-      </div>
-
-      {items.length === 0 && <p className="mm-help" style={{ opacity: 0.72 }}>Nothing waiting.</p>}
-      {items.map((item) => (
-        <div key={item.id} className="mm-inbox-item">
-          <div className="mm-inbox-text">{item.text}</div>
-          <div className="mm-inbox-meta">
-            <span>{new Date(item.ts).toLocaleString()}</span>
-            <span style={{ display: 'flex', gap: 6 }}>
-              <button className="mm-btn ghost small" onClick={() => copy(item)}>
-                {copiedId === item.id ? 'Copied ✓' : 'Copy'}
-              </button>
-              <button className="mm-btn ghost small danger" onClick={() => onDelete(item.id)}>Delete</button>
-            </span>
-          </div>
+    <div className="mm-drawer-scrim" onClick={onClose}>
+      <div className="mm-drawer" onClick={(e) => e.stopPropagation()}>
+        <div className="mm-drawer-head">
+          <span>The Deck · {project.name}</span>
+          <button className="mm-btn ghost dark" onClick={onClose}>✕</button>
         </div>
-      ))}
-    </ModalShell>
+        <p className="mm-help">
+          Deal cards as fast as they come · Enter deals the card and keeps you typing.
+          Sort later: file each card onto a board, or copy the numbered deck out for a
+          sorting session and import the placements back.
+        </p>
+
+        <textarea
+          ref={entryRef}
+          className="mm-input"
+          rows={2}
+          autoFocus
+          value={text}
+          placeholder="One idea per card · first line becomes the title"
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); deal() }
+          }}
+        />
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 12 }}>
+          <span className="mm-deck-count">{items.length} card{items.length === 1 ? '' : 's'} in the pile</span>
+          <button className="mm-btn primary" disabled={!text.trim()} onClick={deal}>Deal it</button>
+        </div>
+
+        {items.length > 0 && (
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            <button
+              className="mm-btn ghost dark"
+              style={{ flex: 1 }}
+              onClick={async () => { await onCopyDeck(); setDeckCopied(true); setTimeout(() => setDeckCopied(false), 1400) }}
+            >
+              {deckCopied ? 'Copied ✓' : 'Copy deck · numbered'}
+            </button>
+            <button
+              className="mm-btn ghost dark danger"
+              onClick={() => { if (window.confirm('Clear every card in the deck? Filed beats stay on their boards.')) onClearAll() }}
+            >
+              Clear deck
+            </button>
+          </div>
+        )}
+
+        {items.length === 0 && <p className="mm-help" style={{ opacity: 0.72 }}>The pile is empty · deal the first card.</p>}
+
+        {items.map((item) => (
+          <div key={item.id} className="mm-deck-card">
+            <div className="mm-deck-text">{item.text}</div>
+            <div className="mm-deck-actions">
+              <span className="mm-deck-when">{new Date(item.ts).toLocaleString()}</span>
+              <span style={{ display: 'flex', gap: 6 }}>
+                <button
+                  className="mm-btn ghost dark small"
+                  onClick={() => setFilingId(filingId === item.id ? null : item.id)}
+                >
+                  {filingId === item.id ? 'Close' : 'File'}
+                </button>
+                <button className="mm-btn ghost dark small danger" onClick={() => onDelete(item.id)}>Delete</button>
+              </span>
+            </div>
+            {filingId === item.id && (
+              <div className="mm-deck-filing">
+                <select
+                  className="mm-select wide"
+                  value={boardSel || ''}
+                  onChange={(e) => { setBoardSel(e.target.value); setLaneSel(0) }}
+                >
+                  {boards.map((b) => (
+                    <option key={b.id} value={b.id}>{b.kind === 'character' ? '◐ ' : ''}{b.name}</option>
+                  ))}
+                </select>
+                <select
+                  className="mm-select wide"
+                  value={laneSel}
+                  onChange={(e) => setLaneSel(parseInt(e.target.value, 10))}
+                >
+                  {filingLanes.map((l, i) => (
+                    <option key={i} value={i}>{l.name}</option>
+                  ))}
+                </select>
+                <button
+                  className="mm-btn primary"
+                  style={{ width: '100%' }}
+                  onClick={() => { onFile(item.id, boardSel, laneSel); setFilingId(null) }}
+                >
+                  Pin to board
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -1784,6 +1900,20 @@ const CSS_TEXT = `
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .mm-weave-empty { opacity: .72; font-size: 13.5px; max-width: 520px; }
+
+  .mm-btn.ghost.dark { background: rgba(47,62,70,.08); color: #2F3E46; }
+  .mm-btn.ghost.dark:hover { background: rgba(47,62,70,.16); }
+  .mm-btn.ghost.dark.danger { color: #C0392B; }
+  .mm-deck-count { font-size: 13px; opacity: .72; align-self: center; }
+  .mm-deck-card {
+    background: #FEF3A2; border-radius: 4px; padding: 10px 12px; margin-bottom: 10px;
+    box-shadow: 0 3px 7px rgba(0,0,0,.18); color: #333;
+  }
+  .mm-deck-card:nth-child(even) { background: #FFD9A8; }
+  .mm-deck-text { font-family: 'Chalkboard SE','Segoe Print',cursive; font-size: 14px; line-height: 1.35; white-space: pre-wrap; }
+  .mm-deck-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .mm-deck-when { font-size: 13px; opacity: .62; }
+  .mm-deck-filing { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
   .mm-tab.new { background: transparent; border: 1px dashed rgba(255,255,255,.35); border-radius: 6px; }
   .mm-tab.new:hover { background: rgba(255,255,255,.08); }
 
