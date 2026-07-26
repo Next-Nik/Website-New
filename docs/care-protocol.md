@@ -955,3 +955,75 @@ real `CareProtocolPage` again (mocked login, stateful mock database) and
 confirmed exactly five "Save" buttons remain — all at the bottom of their
 sections — and the topbar contains only the ambient status text, no
 button. See the delivered screenshot.
+
+---
+
+## 21. Section reflections — every Save gets a reading
+
+The clarification that reframed the whole reflection feature: "These are
+assessment tools. I want to feel assessed and seen and I'm not getting
+that. Every section is a fresh opportunity for something, an insight or
+SOMETHING but so far... nothing."
+
+The beats were stated plainly back in §18's round — "I answer the
+questions, I hit save, there's some sort of reflection. Those are the
+beats" — and §15 wired the reflection to one text box instead of to the
+beats. The correction: every section is a disclosure. Rating "being
+defended" a 5 and "shared adventure" a 2 says as much about a person as a
+paragraph of prose; an assessment tool that files those numbers with only
+a save confirmation leaves the person unassessed. So now, every section's
+Save — once the save has actually landed — produces a reflection grounded
+in that section's actual answers and scores, rendered directly under the
+button that was pressed.
+
+**How it works.**
+
+- `SaveButton` gained an optional `onSaved` callback, fired only after a
+  save that really landed (fire-and-forget: a slow or failed reflection
+  can never make a successful save look unsaved). Each section's button
+  passes a payload builder for its own contents.
+- Two generic serializers in `CareProtocol.jsx` turn a section into
+  readable grounding: `describeAnswers` (likert → "Spoken reassurance:
+  4/5" with the scale's anchor labels, choice → the chosen option's label,
+  freetext → the person's own words, the forced final pick included) and
+  `describeScores` (each instrument's own `score()` output — including
+  ECR-RS z-scores against population norms and the care-receiving
+  "keeper" flag). Generic over item TYPE, never over instrument identity —
+  the same "instrument fourteen is a data task" rule the runner lives by.
+- The birth-data section reflects too, from the computed chart (big3,
+  Human Design shorthand/authority/definition, Chinese year, life path) —
+  no chart yet, no reflection, but Save still works.
+- The Deepen panel reflects on whichever optional instruments actually
+  have answers, combined.
+- `api/care-reflection.js` now takes two modes: the existing freetext blur
+  payload (`{prompt, text}`, unchanged, 1–2 sentences) and a section
+  payload (`{section: {name, evidence, answers, scores}}`, 2–4 sentences,
+  max_tokens 320). The section prompt requires anchoring on specifics —
+  highest/lowest, the keeper, tensions — and adapts to the evidence tier:
+  measured instruments may speak plainly to what scores indicate
+  (translated into something human, never "you scored 73/100"); mapped and
+  mythic sections speak in their own tradition's voice without dressing it
+  up as scientific fact. Hard rule either way: stay inside THIS section.
+  Reading across systems is the synthesis's job, and blurring that line
+  would blur the evidence-tier honesty the build stands on.
+- Re-pressing Save with unchanged answers doesn't re-spend a model call
+  (fingerprint dedupe per section). Saving an unanswered section saves
+  normally and just doesn't reflect. Failure renders the same calm
+  "didn't load — your answers are still saved" line as the freetext path.
+
+**What didn't change.** The freetext blur reflection stays (it's the
+instant turn-of-the-head while writing; the section reflection is the
+considered read on Save). The synthesis stays the only place systems are
+read together. Nothing is persisted — reflections live in component state
+and are gone on reload; the answers themselves are saved exactly as
+before.
+
+Verified: both files parse clean; the full 25 + 5 + 30 test suite passes
+unchanged; design audit zero new violations; production build clean. Live
+harness on the real `CareProtocolPage`: answered all of Step 2 with a
+deliberate pattern plus the forced pick, pressed Save, and confirmed the
+request carried the real instrument name, every rating, the forced pick,
+computed scores, and the evidence tier; the panel rendered through
+loading → done under the pressed button; re-saving unchanged answers made
+no second call; saving an untouched section saved fine with no call. See
+the delivered screenshot.

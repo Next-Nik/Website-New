@@ -722,6 +722,90 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
     }
   }, [state?.displayName])
 
+  // §21 — section reflections. The beats, as stated directly and missed
+  // for several rounds: "I answer the questions, I hit save, there's some
+  // sort of reflection." Every section is a disclosure — rating "being
+  // defended" a 5 and "shared adventure" a 2 says as much as a paragraph —
+  // and an assessment tool that files those numbers with only a save
+  // confirmation leaves the person unassessed. So: each section's Save,
+  // once the save has actually landed, sends that section's answers and
+  // computed scores to /api/care-reflection and renders what comes back
+  // under the button that was pressed. Section-local by design — the
+  // cross-system portrait stays the synthesis's job.
+  const [sectionReflections, setSectionReflections] = useState({})
+  // Fingerprint of the answers each section last reflected on, so pressing
+  // Save twice on unchanged answers doesn't re-spend a model call.
+  const sectionReflectedRef = useRef({})
+
+  const reflectOnSection = useCallback(async (sectionKey, payload) => {
+    if (!payload) return
+    const fingerprint = JSON.stringify(payload)
+    if (sectionReflectedRef.current[sectionKey] === fingerprint) return
+    sectionReflectedRef.current[sectionKey] = fingerprint
+
+    setSectionReflections((r) => ({ ...r, [sectionKey]: { status: 'loading' } }))
+    try {
+      const { data: sessionData } = await supabase.auth.getSession()
+      const token = sessionData?.session?.access_token
+      const res = await fetch('/api/care-reflection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ section: payload, displayName: state.displayName }),
+      })
+      const body = await res.json()
+      if (!res.ok || !body?.reflection) throw new Error(body?.error || `Reflection failed (${res.status})`)
+      setSectionReflections((r) => ({ ...r, [sectionKey]: { status: 'done', text: body.reflection } }))
+    } catch (err) {
+      // Same visibility rule as the freetext path: fail calm, never silent.
+      console.error('[care-reflection] section reflection failed:', err?.message || err)
+      setSectionReflections((r) => ({ ...r, [sectionKey]: { status: 'error' } }))
+    }
+  }, [state?.displayName])
+
+  // Payload builders. Return null when a section has nothing to reflect on
+  // yet — Save still works, there's just no reading to give.
+  const buildInstrumentsPayload = (name, instruments) => {
+    const withAnswers = instruments.filter((i) => i.items.some((item) => {
+      const v = state.responses[item.id]
+      return v != null && v !== ''
+    }))
+    if (!withAnswers.length) return null
+    const answers = []
+    const scores = []
+    withAnswers.forEach((instrument) => {
+      if (withAnswers.length > 1) answers.push(`— ${instrument.name} —`)
+      answers.push(...describeAnswers(instrument, state.responses))
+      scores.push(...describeScores(instrument, state.responses))
+    })
+    return {
+      name,
+      evidence: withAnswers.map((i) => i.evidence).join(' + '),
+      answers: answers.join('\n'),
+      scores: scores.length ? scores.join('\n') : null,
+    }
+  }
+
+  const buildBirthPayload = () => {
+    if (!state.chart?.big3) return null
+    const lines = [
+      `Sun ${state.chart.big3.sun.formatted} · Moon ${state.chart.big3.moon.formatted} · Rising ${state.chart.big3.rising.formatted}`,
+      state.humanDesign
+        ? `Human Design: ${state.humanDesign.shorthand} · ${state.humanDesign.authority} authority · ${state.humanDesign.definition} definition`
+        : null,
+      state.extras?.chinese ? `Chinese zodiac: ${state.extras.chinese.label}` : null,
+      state.extras?.numerology ? `Life path: ${state.extras.numerology.lifePath}` : null,
+    ].filter(Boolean)
+    return {
+      name: 'Birth data — the computed chart',
+      evidence: 'mythic',
+      answers: lines.join('\n'),
+      scores: null,
+    }
+  }
+
   const searchPlace = async () => {
     if (!placeQuery.trim()) return
     setSearching(true)
@@ -911,12 +995,16 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
           </div>
         )}
 
-        {/* §18 — a Save button at the bottom of this section too, not just
-            the topbar. Same underlying save as everywhere else (there's one
-            profile row, not one per section); its own local confirmation. */}
+        {/* §18/§21 — a Save button at the bottom of the section, and a
+            reflection under it once the save lands: answer → Save → the
+            tool says what it saw in this section's chart. */}
         {onSaveNow && (
           <div style={{ marginTop: space.lg }}>
-            <SaveButton onSave={onSaveNow} />
+            <SaveButton
+              onSave={onSaveNow}
+              onSaved={() => reflectOnSection('birth', buildBirthPayload())}
+            />
+            <SectionReflection reflection={sectionReflections.birth} />
           </div>
         )}
       </Panel>
@@ -938,7 +1026,14 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
           />
           {onSaveNow && (
             <div style={{ marginTop: space.lg }}>
-              <SaveButton onSave={onSaveNow} />
+              <SaveButton
+                onSave={onSaveNow}
+                onSaved={() => reflectOnSection(
+                  instrument.id,
+                  buildInstrumentsPayload(instrument.name, [instrument]),
+                )}
+              />
+              <SectionReflection reflection={sectionReflections[instrument.id]} />
             </div>
           )}
         </Panel>
@@ -971,7 +1066,14 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
         ))}
         {onSaveNow && (
           <div style={{ marginTop: space.lg }}>
-            <SaveButton onSave={onSaveNow} />
+            <SaveButton
+              onSave={onSaveNow}
+              onSaved={() => reflectOnSection(
+                'deepen',
+                buildInstrumentsPayload('Deepen the protocol (optional depth)', deepen),
+              )}
+            />
+            <SectionReflection reflection={sectionReflections.deepen} />
           </div>
         )}
       </Panel>
@@ -1211,19 +1313,20 @@ function Panel({ eyebrow, note, status, children }) {
   )
 }
 
-/* The manual save button. One reusable component, rendered from several
-   places at once (the topbar, and — §18 — the bottom of every section in
-   IntakeTab): "each section should have the save button" was the actual,
-   plainly-stated request, after a topbar-only button (§17) went unnoticed
-   by someone who was, reasonably, looking at the bottom of the section
-   they'd just finished, not the top of the page.
+/* The manual save button. One reusable component, rendered at the bottom
+   of every section in IntakeTab (§18/§20): "each section should have the
+   save button" was the actual, plainly-stated request.
    Every instance calls the same underlying save (there is one profile row,
    not one per section — "saving a section" really means "saving
    everything," same as autosave already does), but each instance owns its
    own local confirmation state, so pressing Save under one section doesn't
    make a different, untouched section's button light up "✓ Saved" too —
-   only the one actually pressed reflects what just happened. */
-function SaveButton({ onSave }) {
+   only the one actually pressed reflects what just happened.
+   onSaved (optional) fires after a save that actually landed — §21 hangs
+   the section reflection off it, so the beat is exactly: answer → Save →
+   the tool turns and says what it saw. Fire-and-forget: a slow or failed
+   reflection must never make a successful save look unsaved. */
+function SaveButton({ onSave, onSaved }) {
   const [status, setStatus] = useState('idle') // idle | saving | done | error
   const resetRef = useRef(null)
 
@@ -1236,6 +1339,7 @@ function SaveButton({ onSave }) {
     if (ok) {
       setStatus('done')
       resetRef.current = setTimeout(() => setStatus('idle'), 2200)
+      if (onSaved) onSaved()
     } else {
       setStatus('error')
     }
@@ -1258,6 +1362,93 @@ function SaveButton({ onSave }) {
       {status === 'saving' ? 'Saving…' : status === 'done' ? '✓ Saved' : status === 'error' ? 'Try again' : 'Save'}
     </button>
   )
+}
+
+/* §21 — the section reflection panel, rendered under a section's Save
+   button once its reflection lands. Same visual language as the freetext
+   ReflectionPanel in InstrumentRunner.jsx (moss tint, "reflection" eyebrow,
+   deliberately NOT italic — italic is reserved for the person's own words),
+   living here because sections are this file's concern, items are the
+   runner's. */
+function SectionReflection({ reflection }) {
+  if (!reflection || reflection.status === 'idle') return null
+  if (reflection.status === 'error') {
+    return (
+      <p style={{ ...fnText.caption, color: fn.ghost, margin: `${space.sm} 0 0` }}>
+        A reflection didn't load that time — your answers are still saved.
+      </p>
+    )
+  }
+  return (
+    <div
+      style={{
+        marginTop: space.md,
+        padding: `${space.sm} ${space.md}`,
+        background: fn.mossTint,
+        borderLeft: `2px solid ${fn.mossEdge}`,
+        borderRadius: '2px',
+      }}
+    >
+      {reflection.status === 'loading' ? (
+        <p style={{ ...fnText.eyebrow, margin: 0 }}>reading this…</p>
+      ) : (
+        <>
+          <p style={{ ...fnText.eyebrow, margin: `0 0 4px` }}>reflection</p>
+          <p style={{ ...fnText.body, color: fn.ink, margin: 0 }}>{reflection.text}</p>
+        </>
+      )}
+    </div>
+  )
+}
+
+/* §21 — serializers: turn a section's answers and scores into the readable
+   grounding the reflection model works from. Generic over item TYPE, never
+   over instrument identity — the same rule the runner lives by ("adding
+   assessment fourteen is a data task, not a dev task"). A likert answer
+   becomes "label: 4/5", a choice becomes the chosen option's label, a
+   freetext answer is passed through in the person's own words. */
+function describeAnswers(instrument, responses) {
+  const lines = []
+  const scale = instrument.scale
+  if (scale?.anchors) {
+    lines.push(`(rating scale: 1 = "${scale.anchors[1]}", ${scale.points} = "${scale.anchors[scale.points]}")`)
+  }
+  instrument.items.forEach((item) => {
+    const v = responses[item.id]
+    if (v == null || v === '') return
+    if (item.type === 'choice') {
+      const opt = (item.options || []).find((o) => o.value === v)
+      lines.push(`${item.text} → ${opt ? opt.label : v}`)
+    } else if (item.type === 'text' || item.type === 'longtext') {
+      lines.push(`${item.text} → in their own words: "${v}"`)
+    } else {
+      lines.push(`${item.label || item.text}: ${v}/${scale?.points || '?'}`)
+    }
+  })
+  if (instrument.finalPick) {
+    const v = responses[instrument.finalPick.id]
+    if (v) {
+      const opt = instrument.finalPick.options.find((o) => o.value === v)
+      lines.push(`${instrument.finalPick.prompt} → ${opt ? opt.label : v}`)
+    }
+  }
+  return lines
+}
+
+function describeScores(instrument, responses) {
+  if (typeof instrument.score !== 'function') return []
+  let scored
+  try { scored = instrument.score(responses) } catch (_) { return [] }
+  if (!scored) return []
+  return Object.entries(scored).map(([key, s]) => {
+    const parts = [`${key}: ${s.value}/100`]
+    if (s.z != null) parts.push(`z = ${s.z} vs population norms`)
+    if (s.keeper) parts.push('the single one they said they would keep')
+    if (s.confidence != null && s.confidence < 1) {
+      parts.push(`partially answered (${Math.round(s.confidence * 100)}%)`)
+    }
+    return parts.join(' · ')
+  })
 }
 
 function Field({ label, children, grow }) {
