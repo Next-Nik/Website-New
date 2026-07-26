@@ -33,7 +33,7 @@ export function tickerLine(a) {
     case 'event_published': return `Event published: ${a.subject_name || ''}${where}`
     case 'step_forward':    return `Someone stepped forward${a.subject_name ? ` for ${a.subject_name}` : ''}`
     case 'listing_added':   return `New in NextMarket: ${a.subject_name || ''}`
-    // ── the daily loop (180) ────────────────────────────────────────────────
+    // ── the daily loop (184) ────────────────────────────────────────────────
     case 'check_in':        return a.subject_name
                               ? `Someone kept ${a.subject_name}${inDom}`
                               : `Someone kept a practice${inDom}`

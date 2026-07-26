@@ -46,14 +46,20 @@ export async function getFeaturedToday() {
 
 // Has anybody asked ME about one of mine? Read where the person already is —
 // there is no notification system in scope, and nothing chases anyone.
+//
+// Only today's ask. A request lapses with the day it was made (186), so
+// showing an older one would offer a button that can only come back as an
+// error — and it would quietly contradict "silence is a no".
 export async function getMyPendingAsk() {
   const uid = await currentUserId()
   if (!uid) return null
+  const startOfDay = new Date(); startOfDay.setHours(0, 0, 0, 0)
   const { data, error } = await supabase
     .from('moments')
     .select('id, line, image_path, thumb_path, domain, created_at, featured_virtue')
     .eq('user_id', uid)
     .eq('featured_consent', 'pending')
+    .gte('featured_asked_at', startOfDay.toISOString())
     .is('deleted_at', null)
     .order('featured_asked_at', { ascending: true })
     .limit(1)

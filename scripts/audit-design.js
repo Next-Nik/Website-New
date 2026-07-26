@@ -107,6 +107,7 @@ const ITALIC_WHITELIST = [
   'app/components/FeaturedTop.jsx', // {m.line} at the top of Today + in the consent request — the owner's own words
   'app/components/Bloom.jsx', // {ctx.horizonLine} step-toward on a milestone — the person's own declared horizon
   'app/pages/SparkReceive.jsx', // {spark.line} — the giver's own line about why them, rendered verbatim
+  'app/components/SparkWaiting.jsx', // {s.line} — the giver's own line, on the door to the spark
 ]
 
 // Files where heritage gold is legal (Master Spec §4). Keep this

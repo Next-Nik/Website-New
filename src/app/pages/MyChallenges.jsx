@@ -188,7 +188,7 @@ function ChallengeCard({ p, userId, founding, onLeft, onSpark, horizonLine }) {
 
           // The pulse learns that a practice was kept. Anonymous by
           // construction — the activity table has no user column, so the
-          // subject is the challenge, never the person (180).
+          // subject is the challenge, never the person (184).
           logActivity({
             eventType: 'check_in', subjectType: 'challenge',
             subjectId: p.call_id || null, subjectName: p.title || null,

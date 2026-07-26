@@ -77,7 +77,7 @@ export default function MomentCapture({ challengeId, domain, onCaptured }) {
 
       // The pulse learns a moment landed. Anonymous by construction — the
       // activity table has no user column, and the line itself is never
-      // copied there (180).
+      // copied there (184).
       logActivity({ eventType: 'moment_posted', subjectType: 'challenge', domain: domain || null })
 
       // …and if this was their first ever, that is worth stopping for.

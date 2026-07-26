@@ -4,7 +4,7 @@
 // in your own words about why them. They take it up, and what they hold
 // carries its lineage.
 //
-// Every write goes through a SECURITY DEFINER RPC (181_sparks.sql) — the
+// Every write goes through a SECURITY DEFINER RPC (185_sparks.sql) — the
 // address is resolved server-side so no email ever reaches a browser, and
 // status is never client-settable. The lineage is the giver's alone: it is
 // never public, never compared, never ranked, and never shown to the people

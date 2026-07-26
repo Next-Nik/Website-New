@@ -96,6 +96,8 @@ import { Explore } from './app/pages/Explore'
 import { FieldGuidePage } from './app/pages/FieldGuide'
 import { DailySurfacePage } from './app/pages/DailySurface'
 import { SparkReceivePage } from './app/pages/SparkReceive'
+import { CareProtocolPage }  from './pages/CareProtocol'
+import { CareCardPublicPage } from './pages/CareCardPublic'
 import { SparkLineagePage } from './app/pages/SparkLineage'
 import { SearchPage } from './app/pages/Search'
 import { ClaimPage } from './app/pages/Claim'
@@ -410,6 +412,8 @@ function AppInner() {
         <Route path="/guide"                        element={<FieldGuidePage />} /> {/* slug provisional · naming session pending */}
         <Route path="/today"                        element={<DailySurfacePage />} /> {/* daily surface · slug provisional */}
         <Route path="/spark/:id"                    element={<SparkReceivePage />} /> {/* passing a spark · the receive moment */}
+        <Route path="/care-protocol"                element={<CareProtocolPage />} /> {/* founder only · unlinked, entered from Movie Magic */}
+        <Route path="/care/:token"                  element={<CareCardPublicPage />} /> {/* the public Care Card */}
         <Route path="/sparks"                       element={<SparkLineagePage />} /> {/* the giver's private lineage */}
         <Route path="/tuned-in"                     element={<WatchedFeed />} />
         <Route path="/watched"                      element={<Navigate to="/tuned-in" replace />} />

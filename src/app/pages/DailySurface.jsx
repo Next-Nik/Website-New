@@ -22,6 +22,8 @@ import { platformUrl } from '../lib/shareArtifact'
 import PulseLines, { usePulseLines } from '../components/pulse/PulseLines'
 import { FeaturedTop, FeaturedConsent } from '../components/FeaturedTop'
 import { getFeaturedToday, getMyPendingAsk } from '../lib/featured'
+import SparkWaiting from '../components/SparkWaiting'
+import { getWaitingSparks } from '../lib/sparks'
 
 function startOfTodayISO() {
   const d = new Date()
@@ -147,6 +149,7 @@ export function DailySurfacePage() {
   const [horizonLine, setHorizonLine] = useState(null)
   const [featured, setFeatured] = useState([])
   const [pendingAsk, setPendingAsk] = useState(null)
+  const [waitingSparks, setWaitingSparks] = useState([])
   const pulse = usePulseLines(24)
 
   const load = useCallback(async () => {
@@ -185,8 +188,14 @@ export function DailySurfacePage() {
   useEffect(() => {
     let live = true
     getFeaturedToday().then(f => { if (live) setFeatured(f) })
-    if (user) getMyPendingAsk().then(m => { if (live) setPendingAsk(m) })
-    else setPendingAsk(null)
+    if (user) {
+      getMyPendingAsk().then(m => { if (live) setPendingAsk(m) })
+      // A spark somebody passed you. Surfaced here because there is no
+      // notification system and nothing chases anyone — it waits to be found.
+      getWaitingSparks().then(s => { if (live) setWaitingSparks(s) })
+    } else {
+      setPendingAsk(null); setWaitingSparks([])
+    }
     return () => { live = false }
   }, [user])
 
@@ -205,8 +214,11 @@ export function DailySurfacePage() {
           What people did today, in their own words. It fills through the day and begins again tomorrow.
         </p>
 
-        {/* The request, if there is one. Above everything, because it is the
-            only thing on this page that is addressed to you personally. */}
+        {/* The two things on this page addressed to you personally, above
+            everything that is addressed to nobody. */}
+        <SparkWaiting sparks={waitingSparks} />
+
+        {/* The request, if there is one. */}
         {pendingAsk && (
           <FeaturedConsent moment={pendingAsk} onAnswered={yes => {
             setPendingAsk(null)
