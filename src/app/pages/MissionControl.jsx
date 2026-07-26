@@ -1890,6 +1890,7 @@ const STAGE_CSS = `
 .mc-brand {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 9px;
   font-family: var(--mc-display);
   font-weight: 500;
@@ -1922,6 +1923,7 @@ const STAGE_CSS = `
   align-items: center;
   gap: 8px;
   height: 38px;
+  flex-shrink: 0;
   padding: 0 18px;
   border-radius: 999px;
   border: 0;
@@ -1941,6 +1943,7 @@ const STAGE_CSS = `
 
 .mc-pole {
   display: inline-flex;
+  flex-shrink: 0;
   background: var(--mc-surface-2);
   border: 1px solid var(--mc-line);
   border-radius: 999px;
@@ -1970,6 +1973,12 @@ const STAGE_CSS = `
 .mc-icon-btn {
   width: 38px;
   height: 38px;
+  /* flex-shrink:0 is load-bearing, not decoration. These sit in a flex row
+     with no wrapping, so when the row overran the viewport the browser did
+     what flex is supposed to do and shrank them — the 38px circles were
+     rendering at 19px and 12.8px on a phone, squashing the glyphs inside and
+     dropping the tap targets far below the 44px minimum. */
+  flex-shrink: 0;
   border-radius: 999px;
   border: 1px solid var(--mc-line);
   background: var(--mc-surface);
@@ -1981,6 +1990,7 @@ const STAGE_CSS = `
 .mc-avatar {
   width: 38px;
   height: 38px;
+  flex-shrink: 0;
   border-radius: 999px;
   border: 1.5px solid #4c6b45;
   background: rgba(76, 107, 69, 0.08);
@@ -2616,12 +2626,41 @@ const STAGE_CSS = `
   .mc-nav-links { display: none; }
   .mc-nav-inner { gap: 16px; }
 }
-@media (max-width: 640px) {
-  .mc-wrap, .mc-nav-inner { padding: 0 18px; }
-  .mc-nav-links { display: none; }
-  /* Collapse Practice to an icon on phones so the top bar never crowds. */
+/* Between 640 and 820 the labelled Practice button is the item that tips the
+   row over — brand + pole + "Daily Tools" + two icons needs ~605px of content
+   and a 660px viewport only offers ~604. Collapse it to its icon here rather
+   than at 640, so there is no window where the bar silently overruns. */
+@media (max-width: 820px) {
   .mc-practice-btn { padding: 0; width: 38px; justify-content: center; gap: 0; }
   .mc-practice-btn span { display: none; }
+}
+@media (max-width: 640px) {
+  .mc-wrap { padding: 0 18px; }
+  .mc-nav-links { display: none; }
+
+  /* Two rows on phones. One row cannot be made to fit: at 320px the bar has
+     ~284px of usable width, and the wordmark, the two pole labels at the 13px
+     type floor, and three 38px controls need ~400px however the gaps are
+     tuned. Previously it simply overran — at 390px the content was 449px wide,
+     so the mail icon was clipped and the avatar sat entirely off-screen.
+
+     So the pole drops to its own full-width row and becomes a proper segmented
+     control, which is a better tap target than it was on one line anyway.
+     order:9 puts it after everything else; flex-basis:100% forces the wrap. */
+  .mc-nav-inner {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 7px 18px 8px;
+    gap: 10px;
+    row-gap: 6px;
+  }
+  .mc-brand { font-size: 20px; }
+  .mc-pole {
+    order: 9;
+    flex: 0 0 100%;
+    width: 100%;
+  }
+  .mc-pole button { flex: 1; padding: 7px 10px; text-align: center; }
   .mc-beat { padding: 44px 0 8px; }
   .mc-glance { padding: 20px; }
   .mc-glance-detail { padding: 0 18px 22px; }
