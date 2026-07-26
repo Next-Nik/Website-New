@@ -35,9 +35,15 @@ const STATE_LABELS = {
   done:      'Done',
 }
 
-export function PathView({ track, user, onBackToLoop, phases: initialPhases = [], onPhasesChanged }) {
+export function PathView({ track, user, onBackToLoop, phases: initialPhases = [], onPhasesChanged, onSketchRoute }) {
   const [phases, setPhases] = useState(initialPhases || [])
   const currentPhase = phases.find((p) => p.state === 'current') || null
+
+  // A track that was started before the route layer existed. It has steps and
+  // no phases, so it works exactly as it always did, and the middle of its
+  // journey is still fog. The offer below is how it gets a route without
+  // losing anything: the steps stay, the concern stays, the route is added.
+  const hasNoRoute = phases.length === 0
 
   // Only the steps of the phase the person is standing in. Steps from cleared
   // phases stay in the record but are not the work any more. Legacy tracks
@@ -311,6 +317,26 @@ export function PathView({ track, user, onBackToLoop, phases: initialPhases = []
             <span className="ns-phase-exit-label">This phase ends when</span>{' '}
             {currentPhase.exit_condition}
           </p>
+        </div>
+      )}
+
+      {/* The retrofit offer. Anyone who used NextSteps before the route layer
+          existed lands here, and without this there is no door from a stepped
+          track to a route at all. Offered, not forced: the track is perfectly
+          usable as it stands, and the copy says so rather than implying the
+          person is behind for not having one. */}
+      {hasNoRoute && onSketchRoute && (
+        <div className="ns-retrofit">
+          <p className="ns-retrofit-lead">This track has steps, but no route yet.</p>
+          <p className="ns-retrofit-sub">
+            A route is the ordered stages between where you are now and the horizon
+            you named, each one ending on something you can actually check. I can
+            sketch one from what you have already told the platform, and you can
+            change every word of it. Your steps here stay exactly as they are.
+          </p>
+          <button type="button" className="ns-step-btn ns-step-btn-primary" onClick={onSketchRoute}>
+            Sketch the route
+          </button>
         </div>
       )}
 
@@ -646,6 +672,30 @@ function PathStyles() {
           flex-wrap: wrap;
           gap: 10px;
           margin-top: 16px;
+        }
+
+        /* ── The retrofit offer, for a track older than the route layer ── */
+        .ns-retrofit {
+          padding: 20px 22px;
+          background: #FFFFFF;
+          border: 1px solid rgba(38,36,32,0.20);
+          border-top: 3px solid #a9743f;
+          border-radius: 14px;
+        }
+        .ns-retrofit-lead {
+          font-family: 'Lora', Georgia, serif;
+          font-size: 1.25rem;
+          line-height: 1.35;
+          color: #0F1523;
+          margin: 0;
+        }
+        .ns-retrofit-sub {
+          font-family: 'Lora', Georgia, serif;
+          font-size: 0.98rem;
+          line-height: 1.65;
+          color: rgba(38,36,32,0.78);
+          margin: 10px 0 18px;
+          max-width: 58ch;
         }
 
         /* ── A phase cleared ───────────────────────────────────────────── */

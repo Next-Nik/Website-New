@@ -149,6 +149,17 @@ export function NextStepsPage() {
     }
   }
 
+  // Retrofit: a track that already has steps and no route asks for one. Same
+  // drafting act, entered from the walking surface instead of the landing. This
+  // is the door for anyone who used NextSteps before the route layer existed,
+  // and for anyone who is already well past the point in the order of
+  // operations where this tool nominally sits.
+  async function handleSketchRoute() {
+    if (!activeTrack) return
+    setStage('route')
+    await draftRoute(activeTrack.id)
+  }
+
   // Ratified. The route is the person's own artifact from here on.
   function handleRatified(ratifiedPhases) {
     setPhases(ratifiedPhases || [])
@@ -266,6 +277,7 @@ export function NextStepsPage() {
             user={user}
             phases={phases}
             onPhasesChanged={setPhases}
+            onSketchRoute={handleSketchRoute}
             onBackToLoop={handleBackToLoop}
           />
         )}

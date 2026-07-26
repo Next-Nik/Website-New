@@ -1164,12 +1164,20 @@ export default function MissionControl() {
         { kicker: 'Circles', title: 'Move with people', blurb: 'The people walking the same way as you.', cta: 'Open Circles', img: 'mc-im5', onClick: () => navigate('/circles') },
       ]
 
+  // Beat three of the loop, and the one the platform had no instrument for
+  // until the route layer shipped. NextSteps leads this beat on both rails
+  // because the beat IS the route: the ordered phases between Now and Horizon.
+  // (NextSteps Conceptual Foundation v2.0.1 §1.1 places it at the top of the
+  // Mission Control tool cards, prominent enough that the lost person sees it
+  // immediately and contained enough that the oriented person flows past it.)
   const pathCards = isCiv
     ? [
+        { kicker: 'NextSteps', title: 'Turn caring into a path', blurb: 'Bring what is bothering you about the world. Get back the stages between here and the world you want, with the one you are in lit.', cta: 'Open NextSteps', img: 'mc-im6', onClick: () => navigate('/tools/nextsteps') },
         { kicker: 'Your Guide', title: 'The company you keep', blurb: 'Collect the organisations you meet, learn who they are, find where you can help.', cta: 'Open your field guide', img: 'mc-im3', fallbackSrc: guideCollage, onClick: () => navigate('/guide') },
         { kicker: 'Search', title: 'Find anything', blurb: 'People, orgs, missions, moments across the planet.', cta: 'Search', img: 'mc-im4', onClick: () => navigate('/search') },
       ]
     : [
+        { kicker: 'NextSteps', title: 'The way from here to there', blurb: 'The stages between where you are and where you said you are going, with the one you are in lit and the next real step inside it.', cta: 'Open NextSteps', img: 'mc-im6', onClick: () => navigate('/tools/nextsteps') },
         { kicker: 'Daily', title: 'Your loop, closing', blurb: 'Each step bends the path back to your horizon.', cta: 'Open your day', img: 'mc-im7', onClick: openDaily },
         { kicker: 'Journal', title: 'The record of becoming', blurb: 'Where the path is written down, day by day.', cta: 'Open Journal', img: 'mc-im5', onClick: () => navigate('/journal') },
       ]
