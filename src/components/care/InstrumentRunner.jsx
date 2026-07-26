@@ -95,7 +95,38 @@ function Choice({ item, value, onChange }) {
   )
 }
 
-function TextItem({ item, value, onChange }) {
+// The reflection panel — the payoff for a freetext answer. Autosave alone
+// means every disclosure goes into a database and nothing ever turns to look
+// at the person who wrote it; this is that turn. See onReflect's call site in
+// CareProtocol.jsx for the full reasoning. Deliberately not italic: the
+// card's own design law reserves italic for the user's own words only (see
+// CareCard.jsx), and this is the system speaking, not the person — using
+// italic here would blur exactly the line that law exists to hold.
+function ReflectionPanel({ reflection }) {
+  if (!reflection || reflection.status === 'error' || reflection.status === 'idle') return null
+  return (
+    <div
+      style={{
+        marginTop: space.md,
+        padding: `${space.sm} ${space.md}`,
+        background: fn.mossTint,
+        borderLeft: `2px solid ${fn.mossEdge}`,
+        borderRadius: '2px',
+      }}
+    >
+      {reflection.status === 'loading' ? (
+        <p style={{ ...fnText.eyebrow, margin: 0 }}>reading this…</p>
+      ) : (
+        <>
+          <p style={{ ...fnText.eyebrow, margin: `0 0 4px` }}>noticed</p>
+          <p style={{ ...fnText.body, color: fn.ink, margin: 0 }}>{reflection.text}</p>
+        </>
+      )}
+    </div>
+  )
+}
+
+function TextItem({ item, value, onChange, onBlurText, reflection }) {
   const long = item.type === 'longtext'
   const shared = {
     width: '100%',
@@ -126,6 +157,7 @@ function TextItem({ item, value, onChange }) {
           maxLength={item.maxLength}
           value={value || ''}
           onChange={(e) => onChange(item.id, e.target.value)}
+          onBlur={onBlurText ? () => onBlurText(item, value || '') : undefined}
           style={shared}
         />
       ) : (
@@ -142,12 +174,20 @@ function TextItem({ item, value, onChange }) {
           {(value || '').length} / {item.maxLength}
         </div>
       )}
+      {onBlurText && <ReflectionPanel reflection={reflection} />}
     </div>
   )
 }
 
-export default function InstrumentRunner({ instrument, responses, onChange }) {
+export default function InstrumentRunner({ instrument, responses, onChange, reflections, onReflect }) {
   if (!instrument) return null
+
+  // Reflection is opt-in per instrument via `kind: 'freetext'` in the data,
+  // not hard-coded to a specific instrument by name or id — any future
+  // freetext instrument gets the same in-the-moment "noticed" behaviour for
+  // free, per the file's own architectural rule that adding instrument
+  // fourteen should be a data task, not a dev task.
+  const reflective = instrument.kind === 'freetext' && typeof onReflect === 'function'
 
   return (
     <div>
@@ -162,7 +202,17 @@ export default function InstrumentRunner({ instrument, responses, onChange }) {
           return <Choice key={item.id} item={item} value={responses[item.id]} onChange={onChange} />
         }
         if (item.type === 'text' || item.type === 'longtext') {
-          return <TextItem key={item.id} item={item} value={responses[item.id]} onChange={onChange} />
+          const reflect = reflective && item.type === 'longtext'
+          return (
+            <TextItem
+              key={item.id}
+              item={item}
+              value={responses[item.id]}
+              onChange={onChange}
+              onBlurText={reflect ? onReflect : undefined}
+              reflection={reflections?.[item.id]}
+            />
+          )
         }
         return (
           <Likert

@@ -635,6 +635,52 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
   // rather than their city not existing.
   const [searchStatus, setSearchStatus] = useState(null) // null | 'empty' | 'error'
 
+  // The "Noticed" reflection — the payoff for a freetext answer, fired the
+  // moment a founder finishes writing one, before autosave's silent status
+  // dot is the only sign anything happened at all. See api/care-notice.js
+  // and InstrumentRunner.jsx's ReflectionPanel for the other two-thirds of
+  // this feature; this is the missing middle that actually calls the
+  // endpoint and holds the per-item state while it runs.
+  //
+  // Keyed by item id, not instrument id: two freetext items in the same
+  // instrument (e.g. open_wish and open_line) get independent reflections.
+  const [reflections, setReflections] = useState({})
+  // Tracks the last text a reflection actually ran for, per item, so
+  // blurring the same unchanged answer twice (tab away and back, no edit)
+  // doesn't re-spend a model call and re-render the same sentence.
+  const reflectedTextRef = useRef({})
+
+  const reflectOn = useCallback(async (item, text) => {
+    const trimmed = (text || '').trim()
+    // Matches the server's own floor (api/care-notice.js) — "fine" or "idk"
+    // deserves silence, not a reflection stretched thin over three words.
+    if (trimmed.length < 15) return
+    if (reflectedTextRef.current[item.id] === trimmed) return
+    reflectedTextRef.current[item.id] = trimmed
+
+    setReflections((r) => ({ ...r, [item.id]: { status: 'loading' } }))
+    try {
+      const { data: sessionData } = await supabase.auth.getSession()
+      const token = sessionData?.session?.access_token
+      const res = await fetch('/api/care-notice', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ prompt: item.text, text: trimmed, displayName: state.displayName }),
+      })
+      const body = await res.json()
+      if (!res.ok || !body?.notice) throw new Error(body?.error || 'Reflection failed')
+      setReflections((r) => ({ ...r, [item.id]: { status: 'done', text: body.notice } }))
+    } catch (_) {
+      // Fails quiet, not loud — a missed reflection is a missed nicety, not
+      // an error worth interrupting someone mid-disclosure over. The panel
+      // simply renders nothing for 'error' (see ReflectionPanel).
+      setReflections((r) => ({ ...r, [item.id]: { status: 'error' } }))
+    }
+  }, [state?.displayName])
+
   const searchPlace = async () => {
     if (!placeQuery.trim()) return
     setSearching(true)
@@ -833,7 +879,13 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
           note={`${instrument.estimatedMinutes} min · ${instrument.evidence}`}
           status={completionMap[instrument.id]}
         >
-          <InstrumentRunner instrument={instrument} responses={state.responses} onChange={setResponse} />
+          <InstrumentRunner
+            instrument={instrument}
+            responses={state.responses}
+            onChange={setResponse}
+            reflections={reflections}
+            onReflect={reflectOn}
+          />
         </Panel>
       ))}
 
@@ -852,7 +904,13 @@ function IntakeTab({ state, setState, setResponse, engine, completionMap, runCom
               </span>
             </summary>
             <div style={{ paddingTop: space.lg }}>
-              <InstrumentRunner instrument={instrument} responses={state.responses} onChange={setResponse} />
+              <InstrumentRunner
+                instrument={instrument}
+                responses={state.responses}
+                onChange={setResponse}
+                reflections={reflections}
+                onReflect={reflectOn}
+              />
             </div>
           </details>
         ))}

@@ -580,3 +580,95 @@ still passes unchanged, and the design audit shows zero new violations —
 this is a colour/style change only, using only already-defined design
 tokens (`fn.moss`, `fn.mossTint`, `fn.mossEdge`, `fn.clay`, `fn.clayTint`,
 `fn.clayEdge`, all already in use elsewhere in this file), nothing invented.
+
+---
+
+## 15. Autosave has no payoff — "Noticed"
+
+Direct feedback after §14 shipped, once the save indicator was actually
+legible: "those things autosave... but there's no payoff. I want to
+immediately have it see something in me and reflect it back... The autosave
+feels like I'm being ignored. Like I'm talking to someone who doesn't turn
+to look at me... for a care protocol, it's bad bedside manner."
+
+§11–14 fixed a sequence of ways the *existing* save mechanism failed to be
+seen. This is a different complaint: even seen and legible, a status dot
+was never going to be presence. Filling in a genuinely vulnerable freetext
+answer — a real disclosure — and watching it get filed away with nothing
+more than `● Saved` is the correct behaviour for a database and the wrong
+one for a tool whose entire premise is care. The gap isn't autosave working
+badly; it's autosave being the *only* response to a disclosure.
+
+**What "Noticed" is, and deliberately is not.** The product already has a
+considered response to what someone has shared: synthesis (§ various,
+`api/care-synthesis.js`) — a full cross-system portrait, generated once, on
+request, from everything at once (chart, human design, every instrument,
+both open-ended answers together). Noticed is not a smaller synthesis. It
+fires the moment a founder finishes writing a single freetext answer —
+before they've moved to the next question — and does exactly one thing:
+shows, in one or two sentences, that what they just wrote landed with
+someone. No analysis, no system names (astrology/HD/attachment), no scores,
+no tiers, no advice. The turn of the head, not the diagnosis. Keeping the
+two clearly separate matters for the same reason the evidence-tier framework
+matters elsewhere in this build: blurring "I noticed what you said" into "I
+have concluded something about you" would be dishonest about what a
+few-hundred-millisecond model call can responsibly claim to know.
+
+**Where it lives and how it's gated.** Three pieces:
+
+- `api/care-notice.js` (new) — founder-only, same `resolveFounder` pattern
+  as `care-synthesis.js` (bearer token verified server-side against
+  `app_metadata.role`, which the client cannot edit). Takes the question
+  prompt, the answer text, and the display name; returns one plain-text
+  reflection, not JSON, not the full instrument context. The prompt
+  explicitly forbids "Thank you for sharing," therapy-speak ("it sounds
+  like...", "I hear that..."), and reaching for any system name — and
+  requires the reflection cite something specific from what was actually
+  written, the way a person listening would, not a form confirmation. A
+  15-character floor on the server (belt-and-braces; the client already
+  gates on the same number) means "fine" or "idk" gets silence, not a
+  reading fabricated out of three words.
+- `InstrumentRunner.jsx` — a new `ReflectionPanel`, rendered under a
+  `longtext` field only when the instrument declares `kind: 'freetext'`
+  (currently just `openNeeds.js` — the "in your words" instrument) and the
+  runner was given an `onReflect` handler. Gated on the same generic
+  `instrument.kind`/`item.type` properties the rest of this file already
+  uses, per its own architectural rule that adding instrument fourteen
+  should be a data task, not a dev task — nothing here hard-codes
+  `open_wish` or any other instrument by name. Renders nothing for `idle` or
+  `error` states, a quiet "reading this…" for `loading`, and a moss-tinted
+  panel labelled "noticed" with the reflection for `done`. Deliberately
+  *not* italic: the card's own design law (`CareCard.jsx`) reserves italic
+  exclusively for the user's own authored words; this is the system
+  speaking, and using italic here would blur the one line that law exists
+  to hold.
+- `CareProtocol.jsx` — the connective piece. `IntakeTab` holds a
+  `reflections` state object keyed by item id and a `reflectOn` callback,
+  wired to the `longtext` field's `onBlur`. `reflectOn` mirrors
+  `runSynthesis`'s own auth pattern (`supabase.auth.getSession()` →
+  bearer token → `fetch`), skips the call entirely under the 15-character
+  floor, and — via a ref, not state, so it doesn't itself trigger a
+  re-render — skips re-firing for text it already reflected on, so
+  tabbing away and back without editing doesn't re-spend a model call for
+  the same sentence. Failure is quiet by design: a missed reflection just
+  renders nothing rather than surfacing an error over a missed nicety in
+  the middle of someone disclosing something.
+
+**What it is not.** Not persisted anywhere — it lives in component state
+for the session and is gone on reload; the answer itself is still autosaved
+exactly as before (§8), this only adds a transient acknowledgment on top.
+Not wired into the card, synthesis, or any `care_shares` snapshot. Not a
+second opinion-giving system alongside astrology/HD/attachment — it has no
+access to any of them and is instructed not to reach for them.
+
+Verified: `api/care-notice.js`, `InstrumentRunner.jsx`, and
+`CareProtocol.jsx` all parse clean; the full 25 + 5 + 30 test suite
+(regression, hostile-input, transits) still passes unchanged, since nothing
+here touches computation; the design audit shows zero new violations (two
+pre-existing italic flags in `MarketingHome.jsx` are unrelated); the
+production build completes clean. Because this involves an async call the
+static card-render harness can't exercise, rendered the real
+`InstrumentRunner` component standalone at all four reflection states
+(idle/loading/done/error) in an isolated preview to confirm the panel reads
+correctly and that italic really was avoided — see the delivered
+screenshot.
