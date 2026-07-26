@@ -551,3 +551,32 @@ correct; only its visibility was fixed.
 Verified: the file parses and builds clean, and the full 25 + 5 + 30 test
 suite (regression, hostile-input, transits) all still pass unchanged —
 nothing here touches computation or persistence logic, only layout.
+
+---
+
+## 14. The save indicator still didn't read as reassurance
+
+Follow-up report after §13 shipped: "I'm not seeing a new save button." No
+new button was ever built — §13 made the *existing* status indicator sticky,
+not new. Checked the actual deployed code first (diffed the newest zip
+against what was delivered for §13): the sticky fix was present, byte for
+byte. So the gap wasn't the code; it was that `● synced` in faint
+`fn.ghost` — the same de-emphasized tone used for ambient metadata like
+coordinates — doesn't read as an answer to "did this save" even once it's
+visible and pinned in place. A status whose only job is reassurance was
+styled identically to text that doesn't matter.
+
+Fixed by giving it colour and a background chip, using the same moss =
+settled / clay = attention convention the card itself already uses
+elsewhere: `● Saved` now renders moss-green in a tinted pill,
+`⚠ Not saved` renders clay/orange in its own tinted pill, and `○ Saving…`
+stays neutral in between. Same three states, same logic, now visually
+distinct from the rest of the topbar rather than blending into it.
+Rendered all three states side by side in an isolated preview to confirm
+the colours read correctly before shipping (see the delivered screenshot).
+
+Verified: the file parses and builds clean, the full 25 + 5 + 30 test suite
+still passes unchanged, and the design audit shows zero new violations —
+this is a colour/style change only, using only already-defined design
+tokens (`fn.moss`, `fn.mossTint`, `fn.mossEdge`, `fn.clay`, `fn.clayTint`,
+`fn.clayEdge`, all already in use elsewhere in this file), nothing invented.

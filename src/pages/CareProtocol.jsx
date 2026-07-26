@@ -523,8 +523,28 @@ function CareProtocolWorkspace({ user }) {
         <div style={S.brand}>
           <span aria-hidden="true">◍</span>
           <span>Care Protocol</span>
-          <span style={{ ...mono, fontSize: '13px', letterSpacing: '0.12em', color: fn.ghost }}>
-            {syncStatus === 'synced' ? '● synced' : syncStatus === 'syncing' ? '○ saving…' : '⚠ not saved'}
+          {/* This is the only save feedback that exists — there is no save
+              button, by design (see docs/care-protocol.md §13). Making it
+              sticky (§13) fixed "I can't see it while scrolled", but it was
+              still rendered in fn.ghost — the same faint, deliberately
+              de-emphasized tone used for metadata like coordinates — so even
+              visible and sticky, it read as ambient noise rather than an
+              answer to "did this save." A status whose entire job is
+              reassurance has to look different from the text around it, not
+              just be present. Colour and a background chip now carry the
+              state: moss/filled reads as good news, clay reads as a problem,
+              matching the same moss=settled / clay=attention convention the
+              card itself uses. */}
+          <span
+            style={{
+              ...mono, fontSize: '13px', letterSpacing: '0.08em', fontWeight: 600,
+              padding: '2px 8px', borderRadius: '2px',
+              color: syncStatus === 'synced' ? fn.moss : syncStatus === 'syncing' ? fn.meta : fn.clay,
+              background: syncStatus === 'synced' ? fn.mossTint : syncStatus === 'error' ? fn.clayTint : 'transparent',
+              border: `1px solid ${syncStatus === 'synced' ? fn.mossEdge : syncStatus === 'syncing' ? fn.rule : fn.clayEdge}`,
+            }}
+          >
+            {syncStatus === 'synced' ? '● Saved' : syncStatus === 'syncing' ? '○ Saving…' : '⚠ Not saved'}
           </span>
         </div>
         <div style={{ ...mono, fontSize: '13px', letterSpacing: '0.12em', color: fn.ghost }}>
