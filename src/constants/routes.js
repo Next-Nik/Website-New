@@ -26,6 +26,9 @@ export const ROUTES = {
   terms:          '/terms',
   admin:          '/admin',
   prismLab:       '/admin/prism',   // founder lab — hidden practices under evaluation
+  movieMagic:     '/movie-magic',   // founder only — unlinked from all navigation
+  careProtocol:   '/care-protocol', // founder only — entered from the Movie Magic topbar
+  careCard:       '/care',          // + /:token — public card, dark until care_public_enabled()
   // ── Platform ──────────────────────────────────────────────
   missionControl:   '/',
   welcome:          '/welcome',
@@ -70,8 +73,6 @@ export const ROUTES = {
     nextStepsChat:           '/tools/nextsteps/api/chat',
     nextStepsTrack:          '/api/nextsteps-track',
     nextStepsPath:           '/api/nextsteps-path',
-    nextStepsRoute:          '/api/nextsteps-route',
-    nextStepsRouteDraft:     '/api/nextsteps-route-draft',
     nextStepsActorsSample:   '/api/nextsteps-actors-sample',
     nextStepsTagActor:       '/api/nextsteps-tag-actor',
     mapChat:                 '/tools/map/api/chat',

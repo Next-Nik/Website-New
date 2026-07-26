@@ -18,7 +18,7 @@
 // transfer into Beat (the screenwriting app) at the desk.
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
 import { ScriptView, SCRIPT_CSS } from './MovieMagicScript'
@@ -354,6 +354,7 @@ export function MovieMagicPage() {
 export default MovieMagicPage
 
 function MovieMagicWorkspace({ user }) {
+  const navigate = useNavigate()
   const [state, setState] = useState(null)
   const [syncStatus, setSyncStatus] = useState('synced') // synced | syncing | error
   const [editor, setEditor] = useState(null)
@@ -744,55 +745,6 @@ function MovieMagicWorkspace({ user }) {
     patchProject(project.id, (p) => ({ ...p, inbox: (p.inbox || []).filter((i) => i.id !== itemId) }))
   }
 
-  /* deck: file a card onto a board as a beat · first line becomes the
-     title, the rest travels as detail, and the card leaves the pile */
-  const fileInboxCard = (itemId, boardId, laneIdx) => {
-    const item = (project.inbox || []).find((i) => i.id === itemId)
-    if (!item) return
-    const lines = item.text.split('\n')
-    const title = lines[0].trim().slice(0, 120) || 'Untitled beat'
-    const detail = lines.slice(1).join('\n').trim()
-    patchBoard(boardId, (b) => {
-      const laneNotes = b.laneNotes.map((l) => l.slice())
-      const idx = Math.max(0, Math.min(laneIdx, laneNotes.length - 1))
-      laneNotes[idx].push({
-        id: uid(), title, detail,
-        color: NOTE_COLORS[idx % NOTE_COLORS.length].id,
-      })
-      return { ...b, laneNotes }
-    })
-    deleteInboxItem(itemId)
-  }
-
-  const clearInbox = () => {
-    patchProject(project.id, (p) => ({ ...p, inbox: [] }))
-  }
-
-  const copyDeck = async () => {
-    const items = project.inbox || []
-    const lines = [`${project.name} · card deck`, '']
-    items.slice().reverse().forEach((item, i) => {
-      lines.push(`${i + 1}. ${item.text.replace(/\n+/g, ' · ')}`)
-    })
-    if (items.length === 0) lines.push('(empty deck)')
-    const text = lines.join('\n')
-    try {
-      await navigator.clipboard.writeText(text)
-      return true
-    } catch (e) {
-      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
-      const url = URL.createObjectURL(blob)
-      const el = document.createElement('a')
-      el.href = url
-      el.download = `${slugify(project.name)}-deck.txt`
-      document.body.appendChild(el)
-      el.click()
-      document.body.removeChild(el)
-      URL.revokeObjectURL(url)
-      return true
-    }
-  }
-
   /* drag & drop (pointer-based, touch friendly) */
   const onGripDown = (e, boardId, laneIdx, note) => {
     e.preventDefault()
@@ -866,7 +818,7 @@ function MovieMagicWorkspace({ user }) {
           </select>
           <button className="mm-btn ghost" onClick={() => setImportOpen(true)}>Import</button>
           <button className="mm-btn ghost" onClick={() => setInboxOpen(true)}>
-            Deck{inboxCount ? ` (${inboxCount})` : ''}
+            Inbox{inboxCount ? ` (${inboxCount})` : ''}
           </button>
           <button className="mm-btn ghost" onClick={() => setNameModal({ kind: 'project' })}>+ Story</button>
           {state.projects.length > 1 && (
@@ -877,6 +829,21 @@ function MovieMagicWorkspace({ user }) {
               Delete story
             </button>
           )}
+
+          {/* ── The other hidden room ──────────────────────────────
+              Care Protocol lives behind this button. Movie Magic is
+              already unlinked and founder-gated, which makes it the
+              quietest door in the building. Nothing about the Care
+              Protocol is reachable from any navigation; this is the
+              only way in. Real enforcement is RLS in sql/180. */}
+          <button
+            className="mm-btn ghost"
+            title="Care Protocol · hidden"
+            onClick={() => navigate('/care-protocol')}
+            style={{ marginLeft: 'auto', opacity: 0.72 }}
+          >
+            ◍ Care Protocol
+          </button>
         </div>
       </header>
 
@@ -1056,12 +1023,8 @@ function MovieMagicWorkspace({ user }) {
       {inboxOpen && (
         <InboxModal
           project={project}
-          boards={projectBoards}
           onAdd={addInboxItem}
           onDelete={deleteInboxItem}
-          onFile={fileInboxCard}
-          onCopyDeck={copyDeck}
-          onClearAll={clearInbox}
           onClose={() => setInboxOpen(false)}
         />
       )}
@@ -1335,126 +1298,343 @@ function NameModal({ title, placeholder, initial, submitLabel, onClose, onSubmit
   )
 }
 
-/* The Deck · rapid card capture and later sorting. Deal cards one
-   after another (Enter deals, focus stays), then file each onto a
-   board, or copy the numbered deck out for a sorting session. */
-function InboxModal({ project, boards, onAdd, onDelete, onFile, onCopyDeck, onClearAll, onClose }) {
+/* Quick capture from the phone. Items live per story until you
+   transfer them into Beat (copy) or pin them on a board. */
+function InboxModal({ project, onAdd, onDelete, onClose }) {
   const [text, setText] = useState('')
-  const [filingId, setFilingId] = useState(null)
-  const [boardSel, setBoardSel] = useState(boards[0] ? boards[0].id : null)
-  const [laneSel, setLaneSel] = useState(0)
-  const [deckCopied, setDeckCopied] = useState(false)
-  const entryRef = useRef(null)
+  const [copiedId, setCopiedId] = useState(null)
   const items = project.inbox || []
 
-  const deal = () => {
+  const submit = () => {
     if (!text.trim()) return
     onAdd(text.trim())
     setText('')
-    if (entryRef.current) entryRef.current.focus()
   }
 
-  const filingBoard = boards.find((b) => b.id === boardSel)
-  const filingLanes = filingBoard ? lanesForBoard(filingBoard) : []
+  const copy = async (item) => {
+    try {
+      await navigator.clipboard.writeText(item.text)
+      setCopiedId(item.id)
+      setTimeout(() => setCopiedId(null), 1200)
+    } catch (e) { /* clipboard unavailable; user can select manually */ }
+  }
 
   return (
-    <div className="mm-drawer-scrim" onClick={onClose}>
-      <div className="mm-drawer" onClick={(e) => e.stopPropagation()}>
-        <div className="mm-drawer-head">
-          <span>The Deck · {project.name}</span>
-          <button className="mm-btn ghost dark" onClick={onClose}>✕</button>
-        </div>
-        <p className="mm-help">
-          Deal cards as fast as they come · Enter deals the card and keeps you typing.
-          Sort later: file each card onto a board, or copy the numbered deck out for a
-          sorting session and import the placements back.
-        </p>
-
-        <textarea
-          ref={entryRef}
-          className="mm-input"
-          rows={2}
-          autoFocus
-          value={text}
-          placeholder="One idea per card · first line becomes the title"
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); deal() }
-          }}
-        />
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 12 }}>
-          <span className="mm-deck-count">{items.length} card{items.length === 1 ? '' : 's'} in the pile</span>
-          <button className="mm-btn primary" disabled={!text.trim()} onClick={deal}>Deal it</button>
-        </div>
-
-        {items.length > 0 && (
-          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-            <button
-              className="mm-btn ghost dark"
-              style={{ flex: 1 }}
-              onClick={async () => { await onCopyDeck(); setDeckCopied(true); setTimeout(() => setDeckCopied(false), 1400) }}
-            >
-              {deckCopied ? 'Copied ✓' : 'Copy deck · numbered'}
-            </button>
-            <button
-              className="mm-btn ghost dark danger"
-              onClick={() => { if (window.confirm('Clear every card in the deck? Filed beats stay on their boards.')) onClearAll() }}
-            >
-              Clear deck
-            </button>
-          </div>
-        )}
-
-        {items.length === 0 && <p className="mm-help" style={{ opacity: 0.72 }}>The pile is empty · deal the first card.</p>}
-
-        {items.map((item) => (
-          <div key={item.id} className="mm-deck-card">
-            <div className="mm-deck-text">{item.text}</div>
-            <div className="mm-deck-actions">
-              <span className="mm-deck-when">{new Date(item.ts).toLocaleString()}</span>
-              <span style={{ display: 'flex', gap: 6 }}>
-                <button
-                  className="mm-btn ghost dark small"
-                  onClick={() => setFilingId(filingId === item.id ? null : item.id)}
-                >
-                  {filingId === item.id ? 'Close' : 'File'}
-                </button>
-                <button className="mm-btn ghost dark small danger" onClick={() => onDelete(item.id)}>Delete</button>
-              </span>
-            </div>
-            {filingId === item.id && (
-              <div className="mm-deck-filing">
-                <select
-                  className="mm-select wide"
-                  value={boardSel || ''}
-                  onChange={(e) => { setBoardSel(e.target.value); setLaneSel(0) }}
-                >
-                  {boards.map((b) => (
-                    <option key={b.id} value={b.id}>{b.kind === 'character' ? '◐ ' : ''}{b.name}</option>
-                  ))}
-                </select>
-                <select
-                  className="mm-select wide"
-                  value={laneSel}
-                  onChange={(e) => setLaneSel(parseInt(e.target.value, 10))}
-                >
-                  {filingLanes.map((l, i) => (
-                    <option key={i} value={i}>{l.name}</option>
-                  ))}
-                </select>
-                <button
-                  className="mm-btn primary"
-                  style={{ width: '100%' }}
-                  onClick={() => { onFile(item.id, boardSel, laneSel); setFilingId(null) }}
-                >
-                  Pin to board
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
+    <ModalShell title={`Inbox · ${project.name}`} onClose={onClose}>
+      <p className="mm-help">
+        Catch ideas here from any device. Copy them out when you're back at Beat, or pin them onto a board.
+      </p>
+      <textarea
+        className="mm-input"
+        rows={3}
+        autoFocus
+        value={text}
+        placeholder="A line, a beat, a fragment…"
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submit()
+        }}
+      />
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+        <button className="mm-btn primary" disabled={!text.trim()} onClick={submit}>Catch it</button>
       </div>
+
+      {items.length === 0 && <p className="mm-help" style={{ opacity: 0.72 }}>Nothing waiting.</p>}
+      {items.map((item) => (
+        <div key={item.id} className="mm-inbox-item">
+          <div className="mm-inbox-text">{item.text}</div>
+          <div className="mm-inbox-meta">
+            <span>{new Date(item.ts).toLocaleString()}</span>
+            <span style={{ display: 'flex', gap: 6 }}>
+              <button className="mm-btn ghost small" onClick={() => copy(item)}>
+                {copiedId === item.id ? 'Copied ✓' : 'Copy'}
+              </button>
+              <button className="mm-btn ghost small danger" onClick={() => onDelete(item.id)}>Delete</button>
+            </span>
+          </div>
+        </div>
+      ))}
+    </ModalShell>
+  )
+}
+
+/* Hidden on screen, becomes the whole page in print. Linearised:
+   each lane is a heading with its beats beneath, so any board
+   paginates cleanly through the system's Save as PDF. */
+function PrintSheet({ project, board }) {
+  if (!board) return null
+  const lanes = lanesForBoard(board)
+  const frameworkMeta = board.kind === 'character' ? FRAMEWORKS[board.framework] : null
+  return (
+    <div className="mm-print-sheet">
+      <div className="mm-print-eyebrow">{project ? project.name : ''} · Structure Wall</div>
+      <h1 className="mm-print-title">{board.name}</h1>
+      <div className="mm-print-sub">
+        {board.kind === 'story'
+          ? 'Syd Field paradigm'
+          : `${frameworkMeta ? frameworkMeta.label : 'Custom'} · ${frameworkMeta ? frameworkMeta.credit : 'your stages'}`}
+      </div>
+      {lanes.map((lane, i) => (
+        <section key={i} className="mm-print-lane">
+          <h2 className="mm-print-lane-name">{lane.name}</h2>
+          {board.laneNotes[i].length === 0 && <div className="mm-print-empty">no beats pinned</div>}
+          {board.laneNotes[i].map((note) => (
+            <div key={note.id} className="mm-print-beat">
+              <div className="mm-print-beat-title">{note.title || 'Untitled beat'}</div>
+              {note.detail && <div className="mm-print-beat-detail">{note.detail}</div>}
+            </div>
+          ))}
+        </section>
+      ))}
     </div>
+  )
+}
+
+/* Paste or upload a structured JSON of boards and beats · the merge
+   result is reported inline so nothing happens silently. */
+function ImportModal({ onMerge, onClose }) {
+  const [text, setText] = useState('')
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState(null)
+
+  const runImport = (raw) => {
+    setError(null)
+    setResult(null)
+    let payload
+    try {
+      payload = JSON.parse(raw)
+    } catch (e) {
+      setError('That is not valid JSON. Check for a missing bracket or trailing comma.')
+      return
+    }
+    if (!payload || !Array.isArray(payload.boards)) {
+      setError('Expected a payload with a "boards" array.')
+      return
+    }
+    const summary = onMerge(payload)
+    setResult(summary)
+  }
+
+  const onFile = (e) => {
+    const file = e.target.files && e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => { setText(String(reader.result)); runImport(String(reader.result)) }
+    reader.readAsText(file)
+  }
+
+  return (
+    <ModalShell title="Import beats" onClose={onClose}>
+      <p className="mm-help">
+        Paste an import file (or choose one) and its boards and beats merge into the wall.
+        Boards are matched by name or created. Nothing existing is deleted.
+      </p>
+      <label className="mm-label">Paste JSON</label>
+      <textarea
+        className="mm-input"
+        rows={7}
+        value={text}
+        placeholder={'{ "story": "Golden Jedi", "boards": [ { "name": "Episode I", "kind": "story", "beats": [ { "lane": "Act I · Setup", "title": "..." } ] } ] }'}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <label className="mm-label">Or choose a file</label>
+      <input type="file" accept=".json,application/json" onChange={onFile} style={{ marginBottom: 12, fontSize: 13 }} />
+
+      {error && <p className="mm-help" style={{ color: '#C0392B' }}>{error}</p>}
+      {result && (
+        <p className="mm-help" style={{ fontWeight: 600 }}>
+          Done · {result.beatsAdded} beat{result.beatsAdded === 1 ? '' : 's'} pinned
+          {result.boardsCreated ? ` · ${result.boardsCreated} board${result.boardsCreated === 1 ? '' : 's'} created` : ''}
+          {result.scriptsAdded ? ` · ${result.scriptsAdded} script${result.scriptsAdded === 1 ? '' : 's'} restored` : ''}
+          {result.unplaced ? ` · ${result.unplaced} placed in the first column (lane not recognised)` : ''}
+        </p>
+      )}
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+        {result ? (
+          <button className="mm-btn primary" onClick={onClose}>Close</button>
+        ) : (
+          <button className="mm-btn primary" disabled={!text.trim()} onClick={() => runImport(text)}>
+            Merge into the wall
+          </button>
+        )}
+      </div>
+    </ModalShell>
+  )
+}
+
+/* The Weave · every journey against the same act ruler. The story
+   spine renders on Syd Field's proportions; each character's stages
+   divide the same width evenly, so where a stage falls under the
+   ruler suggests where that stage should land in the acts. */
+function WeaveView({ boards, onOpenBoard }) {
+  const storyBoards = boards.filter((b) => b.kind === 'story')
+  const charBoards = boards.filter((b) => b.kind === 'character')
+  const [spineId, setSpineId] = useState(storyBoards[0] ? storyBoards[0].id : null)
+  const spine = storyBoards.find((b) => b.id === spineId) || storyBoards[0]
+
+  const cellTitle = (notes) => notes.map((n) => '· ' + (n.title || 'Untitled beat')).join('\n')
+
+  return (
+    <main style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '10px 18px 24px', minHeight: 0 }}>
+      <div style={S.boardHeader}>
+        <div>
+          <h1 style={S.boardTitle}>The Weave</h1>
+          <div style={S.boardSub}>Every journey against the same act ruler</div>
+        </div>
+        {storyBoards.length > 1 && (
+          <select className="mm-select" value={spine ? spine.id : ''} onChange={(e) => setSpineId(e.target.value)}>
+            {storyBoards.map((b) => (
+              <option key={b.id} value={b.id}>Spine · {b.name}</option>
+            ))}
+          </select>
+        )}
+      </div>
+
+      <div className="mm-weave-scroll">
+        <div className="mm-weave-grid">
+          {/* act ruler */}
+          <div className="mm-weave-row ruler">
+            <div className="mm-weave-name" />
+            <div className="mm-weave-cells">
+              {SYD_FIELD_LANES.map((lane, i) => (
+                <div key={i} className={'mm-weave-ruler-cell ' + lane.type}>{lane.name}</div>
+              ))}
+            </div>
+          </div>
+
+          {/* story spine */}
+          {spine && (
+            <div className="mm-weave-row">
+              <button className="mm-weave-name" onClick={() => onOpenBoard(spine.id)}>
+                {spine.name}
+                <span className="mm-weave-kind">story spine</span>
+              </button>
+              <div className="mm-weave-cells">
+                {SYD_FIELD_LANES.map((lane, i) => (
+                  <div key={i} className={'mm-weave-cell ' + lane.type} title={cellTitle(spine.laneNotes[i])}>
+                    {spine.laneNotes[i].length > 0 && <span className="mm-weave-count">{spine.laneNotes[i].length}</span>}
+                    {spine.laneNotes[i].slice(0, 2).map((n) => (
+                      <div key={n.id} className="mm-weave-beat">{n.title || 'Untitled beat'}</div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* one row per character */}
+          {charBoards.map((b) => {
+            const lanes = lanesForBoard(b)
+            const meta = FRAMEWORKS[b.framework]
+            return (
+              <div className="mm-weave-row" key={b.id}>
+                <button className="mm-weave-name" onClick={() => onOpenBoard(b.id)}>
+                  {b.name}
+                  <span className="mm-weave-kind">{meta ? meta.label : 'Custom'}</span>
+                </button>
+                <div className="mm-weave-cells">
+                  {lanes.map((lane, i) => (
+                    <div key={i} className="mm-weave-cell even" title={lane.name + '\n' + cellTitle(b.laneNotes[i])}>
+                      <div className="mm-weave-stage">{lane.name}</div>
+                      {b.laneNotes[i].length > 0 && <span className="mm-weave-count">{b.laneNotes[i].length}</span>}
+                      {b.laneNotes[i].slice(0, 1).map((n) => (
+                        <div key={n.id} className="mm-weave-beat">{n.title || 'Untitled beat'}</div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+
+          {charBoards.length === 0 && (
+            <p className="mm-weave-empty">
+              No character journeys yet · use + New board, choose Character journey, and each
+              character gets their own wall. They all appear here, woven against the acts.
+            </p>
+          )}
+        </div>
+      </div>
+    </main>
+  )
+}
+
+/* Deleting a story is guarded twice: a downloadable backup and a
+   type-the-name confirmation. The last remaining story cannot go. */
+function DeleteStoryModal({ project, boards, scripts, canDelete, onBackup, onDelete, onClose }) {
+  const [typed, setTyped] = useState('')
+  const beatCount = boards.reduce((n, b) => n + b.laneNotes.reduce((m, l) => m + l.length, 0), 0)
+  const snapCount = scripts.reduce((n, sc) => n + (sc.snapshots || []).length, 0)
+  const match = typed.trim() === project.name
+
+  return (
+    <ModalShell title={`Delete · ${project.name}`} onClose={onClose}>
+      {!canDelete ? (
+        <p className="mm-help">This is your only story. Create another before deleting this one.</p>
+      ) : (
+        <>
+          <p className="mm-help">
+            This permanently deletes {boards.length} board{boards.length === 1 ? '' : 's'}, {beatCount} beat{beatCount === 1 ? '' : 's'}, {scripts.length} script{scripts.length === 1 ? '' : 's'} and {snapCount} snapshot{snapCount === 1 ? '' : 's'}. It cannot be undone from inside Movie Magic.
+          </p>
+          <button className="mm-btn primary" style={{ width: '100%', marginBottom: 12 }} onClick={onBackup}>
+            Download backup first
+          </button>
+          <p className="mm-help">
+            The backup restores through Import · boards, beats and scripts included.
+          </p>
+          <label className="mm-label">Type the story name to confirm</label>
+          <input
+            className="mm-input"
+            value={typed}
+            placeholder={project.name}
+            onChange={(e) => setTyped(e.target.value)}
+          />
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
+            <button className="mm-btn ghost" onClick={onClose}>Keep it</button>
+            <button className="mm-btn primary" disabled={!match} onClick={onDelete}>
+              Delete forever
+            </button>
+          </div>
+        </>
+      )}
+    </ModalShell>
+  )
+}
+
+/* Round-trip re-entry: paste or upload a .fountain to replace the
+   script text. A snapshot is taken first, so the old draft survives. */
+function ReplaceScriptModal({ scriptName, onReplace, onClose }) {
+  const [text, setText] = useState('')
+  const onFile = (e) => {
+    const file = e.target.files && e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setText(String(reader.result))
+    reader.readAsText(file)
+  }
+  return (
+    <ModalShell title={`Replace · ${scriptName}`} onClose={onClose}>
+      <p className="mm-help">
+        Paste the returned draft (or choose the .fountain file). The current text is
+        snapshotted automatically before being replaced, so nothing is lost.
+      </p>
+      <label className="mm-label">Paste Fountain</label>
+      <textarea
+        className="mm-input"
+        rows={8}
+        value={text}
+        placeholder={'INT. THRONE ROOM - NIGHT'}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <label className="mm-label">Or choose a file</label>
+      <input type="file" accept=".fountain,.txt,text/plain" onChange={onFile} style={{ marginBottom: 12, fontSize: 13 }} />
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <button className="mm-btn primary" disabled={!text.trim()} onClick={() => onReplace(text)}>
+          Snapshot current and replace
+        </button>
+      </div>
+    </ModalShell>
   )
 }
 
@@ -1604,20 +1784,6 @@ const CSS_TEXT = `
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .mm-weave-empty { opacity: .72; font-size: 13.5px; max-width: 520px; }
-
-  .mm-btn.ghost.dark { background: rgba(47,62,70,.08); color: #2F3E46; }
-  .mm-btn.ghost.dark:hover { background: rgba(47,62,70,.16); }
-  .mm-btn.ghost.dark.danger { color: #C0392B; }
-  .mm-deck-count { font-size: 13px; opacity: .72; align-self: center; }
-  .mm-deck-card {
-    background: #FEF3A2; border-radius: 4px; padding: 10px 12px; margin-bottom: 10px;
-    box-shadow: 0 3px 7px rgba(0,0,0,.18); color: #333;
-  }
-  .mm-deck-card:nth-child(even) { background: #FFD9A8; }
-  .mm-deck-text { font-family: 'Chalkboard SE','Segoe Print',cursive; font-size: 14px; line-height: 1.35; white-space: pre-wrap; }
-  .mm-deck-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
-  .mm-deck-when { font-size: 13px; opacity: .62; }
-  .mm-deck-filing { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
   .mm-tab.new { background: transparent; border: 1px dashed rgba(255,255,255,.35); border-radius: 6px; }
   .mm-tab.new:hover { background: rgba(255,255,255,.08); }
 
