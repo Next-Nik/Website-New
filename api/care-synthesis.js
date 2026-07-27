@@ -65,7 +65,7 @@ The product's entire differentiator is that it tells people which of its
 inputs are science. Do not blur the tiers to make the reading sound stronger.`
 
 function buildPrompt(payload) {
-  const { vector, displayName, openWish, openLine, humanDesign, big3 } = payload
+  const { vector, displayName, openWish, openLine, humanDesign, big3, recovery } = payload
 
   const byTier = { measured: [], mapped: [], mythic: [] }
   for (const item of vector || []) {
@@ -97,6 +97,22 @@ ${byTier.mythic.join('\n') || '  (nothing computed yet)'}
 ── IN THEIR OWN WORDS ──
 What they wish people knew: ${openWish || '(not answered)'}
 ${openLine ? `The line they chose for the card: ${openLine}` : ''}
+${recovery ? `
+── RECENT WEATHER (founder-only · recovery practice trends) ──
+${recovery}
+
+HOW TO READ THIS SECTION — non-negotiable rules:
+- This is WEATHER OVER THE PORTRAIT, not identity. It describes how this
+  person has been moving through their pattern lately; it may never redraw
+  the portrait itself. A hard fortnight is a hard fortnight, not who they are.
+- It feeds ONLY the "recoveryRead" output field below. The "wired" text,
+  convergences, tensions and suggestedLine are card-facing and may not
+  reference, quote, or allude to anything in this section — no urges, no
+  windows, no practice log, nothing. Those fields must read identically
+  whether or not this section was present.
+- Their own written words in it (the tape, the counter-lines) are theirs;
+  the trend numbers are bookkeeping. Lean on the former, never recite the
+  latter.` : ''}
 
 ── YOUR TASK ──
 
@@ -106,7 +122,8 @@ Return ONLY valid JSON, no markdown fence, in exactly this shape:
   "wired": "...",
   "convergences": [ { "need": "...", "reading": "..." } ],
   "tensions": [ { "tension": "...", "inPractice": "..." } ],
-  "suggestedLine": "..."
+  "suggestedLine": "..."${recovery ? `,
+  "recoveryRead": "..."` : ''}
 }
 
 "wired" — 60 to 90 words. A plain-language portrait of how this person is put
@@ -133,6 +150,16 @@ empty array rather than inventing one.
 their own words above, offered as the line the card could carry in their voice.
 If they already supplied a line, return that line unchanged. If they wrote
 nothing, return an empty string.
+${recovery ? `
+"recoveryRead" — 60 to 100 words, founder-only (this field never reaches the
+card or any shared copy — it is read by the person themselves, in private).
+How they have been moving through their pattern lately, read against how they
+are wired: where the practice and the wiring agree, where the recent weather
+is exactly the withdrawal their frame predicts, what their own tape and
+counter-lines already answer. Second person, steady, on their side. Weather,
+never verdict: no scores, no totals recited, no "you logged N times", no
+advice beyond what their own frame already holds (small, no big moves, the
+people in their corner).` : ''}
 
 TONE — warm, direct, unsentimental. British spelling. No em-dashes; use a
 middot with spaces instead. Never use the phrase "love language". Do not
@@ -147,18 +174,25 @@ module.exports = async (req, res) => {
   if (!user) return res.status(403).json({ error: 'Not available' })
 
   try {
-    const { vector, displayName, openWish, openLine, humanDesign, big3 } = req.body || {}
+    const { vector, displayName, openWish, openLine, humanDesign, big3, recovery } = req.body || {}
     if (!Array.isArray(vector) || vector.length === 0) {
       return res.status(400).json({ error: 'Missing trait vector' })
     }
 
+    // The recovery context is optional, founder-only input (this whole
+    // endpoint is founder-only). Trends text built client-side by
+    // buildRecoveryContext(); bounded here so a runaway payload can't blow
+    // the prompt.
+    const recoveryContext =
+      typeof recovery === 'string' && recovery.trim() ? recovery.trim().slice(0, 6000) : null
+
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 1600,
+      max_tokens: 1800,
       messages: [
         {
           role: 'user',
-          content: buildPrompt({ vector, displayName, openWish, openLine, humanDesign, big3 }),
+          content: buildPrompt({ vector, displayName, openWish, openLine, humanDesign, big3, recovery: recoveryContext }),
         },
       ],
     })
@@ -177,6 +211,7 @@ module.exports = async (req, res) => {
         convergences: [],
         tensions: [],
         suggestedLine: openLine || '',
+        recoveryRead: '',
         degraded: true,
         generatedAt: new Date().toISOString(),
       })
@@ -187,6 +222,12 @@ module.exports = async (req, res) => {
       convergences: Array.isArray(parsed.convergences) ? parsed.convergences.slice(0, 4) : [],
       tensions: Array.isArray(parsed.tensions) ? parsed.tensions.slice(0, 3) : [],
       suggestedLine: typeof parsed.suggestedLine === 'string' ? parsed.suggestedLine : (openLine || ''),
+      // Founder-only. buildCard() never copies this into any card field, so
+      // publicCard() and every care_shares snapshot are structurally unable
+      // to carry it — same missing-edge guarantee as birth data. Rendered
+      // only on the Protocol tab.
+      recoveryRead:
+        recoveryContext && typeof parsed.recoveryRead === 'string' ? parsed.recoveryRead : '',
       generatedAt: new Date().toISOString(),
     })
   } catch (err) {

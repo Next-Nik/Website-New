@@ -108,6 +108,7 @@ const ITALIC_WHITELIST = [
   'app/components/Bloom.jsx', // {ctx.horizonLine} step-toward on a milestone — the person's own declared horizon
   'app/pages/SparkReceive.jsx', // {spark.line} — the giver's own line about why them, rendered verbatim
   'app/components/SparkWaiting.jsx', // {s.line} — the giver's own line, on the door to the spark
+  'pages/Practice.jsx', // {savedTape}/{savedSceneLast}/{counters[lastNamed]} — the founder's own written tape, scene-last line, and per-state counter-lines; this tool's design law reserves italic for exactly these
 ]
 
 // Files where heritage gold is legal (Master Spec §4). Keep this

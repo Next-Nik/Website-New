@@ -830,6 +830,36 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
         </button>
       )}
 
+      {/* Founder: The Practice (hidden recovery-informed daily tools). Its
+          own tool with its own front door — began as a Care Protocol tab,
+          pulled out by direct request the same way Admin Console and Movie
+          Magic each get their own door rather than living as a tab inside
+          something else. Real enforcement is RLS in sql/188_practice.sql,
+          this is just the door. */}
+      {isFounder && (
+        <button
+          onClick={() => onNavigate('/practice')}
+          style={{
+            display: 'block',
+            width: '100%',
+            padding: '11px 16px',
+            background: 'rgba(76,107,69, 0.06)',
+            border: `1px solid ${GOLD}`,
+            borderRadius: 14,
+            cursor: 'pointer',
+            fontFamily: FONT_SC,
+            fontSize: 13,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: GOLD_DK,
+            textAlign: 'center',
+            marginBottom: 14,
+          }}
+        >
+          THE PRACTICE →
+        </button>
+      )}
+
       {/* Founder: Prism Lab (hidden practices under evaluation) */}
       {isFounder && (
         <button

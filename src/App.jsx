@@ -82,6 +82,7 @@ import { CardLabPage }        from './app/pages/CardLab'   /* TEMPORARY · remov
 import { MovieMagicPage }     from './pages/MovieMagic'
 import { CareProtocolPage }   from './pages/CareProtocol'      /* hidden · founder only · entered from the Profile panel */
 import { CareCardPublicPage } from './pages/CareCardPublic'    /* public card route · built but dark, see sql/187 */
+import { PracticePage }       from './pages/Practice'          /* hidden · founder only · own front door, entered from the Profile panel */
 import { AddPage }            from './app/pages/Add'
 import { EventManagePage }    from './app/pages/EventManage'
 import { EventPublicPage }    from './app/pages/EventPublic'
@@ -460,6 +461,7 @@ function AppInner() {
         <Route path="/movie-magic"     element={<MovieMagicPage />} />
         <Route path="/care-protocol"   element={<CareProtocolPage />} />   {/* hidden · founder gate in-page, RLS in sql/187 */}
         <Route path="/care/:token"     element={<CareCardPublicPage />} /> {/* public card · dark until care_public_enabled() is true */}
+        <Route path="/practice"        element={<PracticePage />} />       {/* hidden · founder gate in-page, RLS in sql/188 */}
         <Route path="/join/:slug"      element={<GroupJoinPage />} />
         <Route path="/auth/callback"   element={<AuthCallbackPage />} />
 

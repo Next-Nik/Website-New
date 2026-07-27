@@ -24,6 +24,16 @@ import { useAuth } from '../hooks/useAuth'
 import { fn, fnText, space, shadow, display, mono } from '../lib/designTokens'
 import CareCard from '../components/care/CareCard'
 import InstrumentRunner from '../components/care/InstrumentRunner'
+// The Practice is its own standalone tool (src/pages/Practice.jsx) with its
+// own front door, its own table (practice_events), and its own engine
+// (src/lib/practice) — no dependency in either direction. This is the one
+// deliberate exception: the synthesis below reads a TRENDS summary of that
+// tool's log, by explicit founder-approved design (full AI access —
+// Practice_v2_Personal_Layer_Brief.md §7), same as Depth reads chart data
+// computed elsewhere. Statically imported: unlike '../lib/care/index', this
+// module carries no ephemeris dependency, so it adds nothing worth
+// code-splitting for.
+import { buildRecoveryContext } from '../lib/practice'
 
 // Tolerant UI gate. RLS is the real boundary.
 const isFounder = (user) =>
@@ -421,6 +431,24 @@ function CareProtocolWorkspace({ user }) {
         extras: state.extras,
         responses: state.responses,
       })
+      // Recovery context — full-access decision, with guardrails. The last
+      // ~30 days of The Practice's log, summarised to TRENDS (never a diary)
+      // by buildRecoveryContext, feed a separate founder-only recoveryRead
+      // output (api/care-synthesis.js). A failed read here degrades to a
+      // synthesis without the recovery layer rather than blocking the whole
+      // run: the portrait never depends on the weather.
+      let recovery = ''
+      try {
+        const { data: practiceRows, error: practiceError } = await supabase
+          .from('practice_events')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('at', { ascending: false })
+          .limit(400)
+        if (!practiceError && practiceRows?.length) {
+          recovery = buildRecoveryContext(practiceRows, { now: new Date() })
+        }
+      } catch (_) { /* degrade silently — see above */ }
       const res = await fetch('/api/care-synthesis', {
         method: 'POST',
         headers: {
@@ -443,6 +471,7 @@ function CareProtocolWorkspace({ user }) {
               }
             : null,
           big3: state.chart?.big3 || null,
+          recovery: recovery || undefined,
         }),
       })
       const body = await res.json()
@@ -459,7 +488,7 @@ function CareProtocolWorkspace({ user }) {
     } finally {
       setSynthesising(false)
     }
-  }, [engine, state])
+  }, [engine, state, user.id])
 
   /* share link. Every one of these reports its errors — a silently swallowed
      failure here reads to the founder as success, and a revoke that looks like
@@ -1148,6 +1177,21 @@ function ProtocolTab({
           <p style={{ ...fnText.body, color: fn.ink, margin: `${space.lg} 0 0` }}>{card.wired.text}</p>
         )}
       </Panel>
+
+      {/* The founder-only recovery read. Deliberately rendered from
+          state.synthesis directly, NOT from the card object: buildCard()
+          never copies recoveryRead into any card field, so publicCard() and
+          every share snapshot are structurally unable to carry it — reading
+          it from `card` here would create the very edge that guarantee
+          removes. */}
+      {state.synthesis?.recoveryRead && (
+        <Panel
+          eyebrow="RECOVERY READ"
+          note="How you've been moving through the pattern lately, read against how you're wired. Founder-only · never on the card, never in any share snapshot. Weather, not identity. From The Practice — its own tool, read here only as a trend summary."
+        >
+          <p style={{ ...fnText.body, color: fn.ink, margin: 0 }}>{state.synthesis.recoveryRead}</p>
+        </Panel>
+      )}
 
       {detail?.humanDesign && (
         <Panel eyebrow="HUMAN DESIGN · FULL READ" note="Computed. Mythic tier.">

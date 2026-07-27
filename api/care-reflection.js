@@ -137,6 +137,74 @@ ${depth.summary}
 Return ONLY the translation itself. No preamble, no labels.`
 }
 
+// The practice reflection — fires when an URGE is logged on The Practice (its
+// own standalone tool; src/pages/Practice.jsx). A logged sabotage-pull is one
+// of the most vulnerable disclosures this endpoint receives, and it is
+// exactly the moment the turn-of-the-head matters most. Different job from
+// every other mode here: not "I saw what you wrote" (freetext), not "here is
+// the pattern in your answers" (section), not a translation (depth) — this
+// one holds a single recovery frame steady: the urge is withdrawal, a
+// set-point defending itself; it is never a character verdict.
+//
+// context (optional): ~30-day TRENDS from the practice log, built by
+// buildRecoveryContext() in src/lib/practice — never a raw diary. It shapes
+// the reflection's bearing only; see contextBlock below for the same rule
+// spelled out for the model.
+function contextBlock(context) {
+  if (!context || typeof context !== 'string' || !context.trim()) return ''
+  return `
+For your bearing only — how their recent weeks have actually been moving. Do NOT recite, summarise, or quote any of this back at them; it exists so your steadiness is informed rather than generic. If their own written words appear in it (their tape, their counter-lines), you may echo AT MOST a few words of those — theirs, never the statistics:
+${context.trim().slice(0, 4000)}
+`
+}
+
+function buildPracticePrompt({ entry, displayName, context }) {
+  return `Someone in recovery just logged a sabotage urge in their own private daily practice log. The frame their recovery work is built on: the urge is a withdrawal symptom — a stress system defending the chaotic state it was calibrated to, registering something good or calm as danger — and never a character failure. Logging it at all is the practice working.
+
+Your job, in 1 to 3 sentences: reflect the SPECIFIC thing they logged back so it lands as seen, inside that frame. The way a steady person who knows their history would respond — present, unimpressed by the urge, on their side.
+
+Ground rules:
+- Anchor on their specifics: the particular pull, what set it off, what they did. Generic recovery warmth with no specifics is failure.
+- If they rode it out: the wave rose and passed and nothing had to burn — name that plainly, without cheerleading.
+- If they made the move anyway: zero shame. It is data about the pattern, not a verdict about them. Do not call it a relapse or a failure.
+- If they are still in it: steady, present, and concretely small — the only move worth suggesting is no big moves right now.
+- Never use program jargon, step numbers, or the words "relapse", "clean", "sober", "addict". Never diagnose. No therapy-speak ("it sounds like...", "I hear that..."), no opening with thanks, no "proud of you", no exclamation marks.
+- Second person, addressed to them directly. Calm, direct, brief: 1 to 3 sentences, 70 words or fewer.
+
+${displayName ? `Their name, if useful: ${displayName}` : ''}
+${contextBlock(context)}
+What they logged:
+${entry}
+
+Return ONLY the reflection itself. No preamble, no quotation marks around it, no JSON, no labels.`
+}
+
+// The return reflection — fires when the evening return is saved. A
+// day-inventory-shaped disclosure: where they were off, what they did well,
+// anything to clear. Different rules from the urge prompt in two places: the
+// "did well" line must actually land (the person's long habit is counting
+// only the misses), and anything-to-clear gets the noticing affirmed but
+// NEVER a prescribed conversation — what to do about it belongs to the
+// people in their corner, not to this tool.
+function buildReturnPrompt({ entry, displayName, context }) {
+  return `Someone in recovery just filled in their private evening return — a short end-of-day review with up to three parts: where they were off today, what they did well, and whether there's anything to clear with someone. Your job, in 2 to 3 sentences: reflect the day they actually described back so it lands as seen, with the steadiness of someone who knows their history and is on their side.
+
+Ground rules:
+- Anchor on their specifics. Generic end-of-day warmth with no specifics is failure.
+- If they named something they did well, make sure it genuinely lands — this person's long habit is counting only the misses. Do not gush; name it plainly as real.
+- If they named being off somewhere: naming it IS the practice working. No verdict, no fix, no "tomorrow you can..."
+- If they named something to clear with someone: affirm the noticing, and go no further. Never suggest how, when, or whether to have that conversation — that belongs to the people in their corner, not to you.
+- Never use program jargon, step numbers, or the words "relapse", "clean", "sober", "addict". No therapy-speak ("it sounds like...", "I hear that..."), no opening with thanks, no "proud of you", no exclamation marks.
+- Second person, addressed to them directly. Calm, direct, brief: 2 to 3 sentences, 80 words or fewer.
+
+${displayName ? `Their name, if useful: ${displayName}` : ''}
+${contextBlock(context)}
+Their return:
+${entry}
+
+Return ONLY the reflection itself. No preamble, no quotation marks around it, no JSON, no labels.`
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
@@ -144,11 +212,24 @@ module.exports = async (req, res) => {
   if (!user) return res.status(403).json({ error: 'Not available' })
 
   try {
-    const { prompt, text, displayName, section, depth, careContext } = req.body || {}
+    const { prompt, text, displayName, section, depth, careContext, practice } = req.body || {}
 
     let content
     let maxTokens = 200
-    if (depth) {
+    if (practice) {
+      // Practice mode: an urge entry or an evening return from The Practice
+      // (its own standalone tool). The kind picks the prompt; both share the
+      // same floor. This mode has no careContext — The Practice does not
+      // read Care Protocol's intake — but it has its own optional recovery
+      // trends context, carried as practice.context.
+      if (!practice.entry || typeof practice.entry !== 'string' || practice.entry.trim().length < 10) {
+        return res.status(400).json({ error: 'Too little to reflect on' })
+      }
+      content = practice.kind === 'return'
+        ? buildReturnPrompt({ entry: practice.entry.trim(), displayName, context: practice.context })
+        : buildPracticePrompt({ entry: practice.entry.trim(), displayName, context: practice.context })
+      maxTokens = 240
+    } else if (depth) {
       // Depth mode: translate the full chart/bodygraph readout (§23).
       if (!depth.summary || typeof depth.summary !== 'string' || depth.summary.trim().length < 40) {
         return res.status(400).json({ error: 'Too little to translate' })
@@ -183,7 +264,7 @@ module.exports = async (req, res) => {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       // Depth translations run a few paragraphs; section reflections 2-4
-      // sentences; freetext ones 1-2.
+      // sentences; practice ones 1-3; freetext ones 1-2.
       max_tokens: maxTokens,
       messages: [{ role: 'user', content }],
     })
