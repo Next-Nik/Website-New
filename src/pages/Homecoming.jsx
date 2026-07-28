@@ -6,7 +6,7 @@
 //
 // UI gate mirrors the Care Protocol founder check (tolerant of either metadata
 // source so the founder cannot be locked out). Real enforcement is RLS in
-// sql/188_homecoming.sql, which requires app_metadata only.
+// sql/189_homecoming.sql, which requires app_metadata only.
 //
 // One tool, four surfaces: Threshold (set the old number and the target home,
 // once), The Daily Return (the six-move rep), Guards (Scene One + the reference),
@@ -28,7 +28,7 @@ import {
   setpointTrend, trendDirection, evidenceSummary,
 } from '../lib/homecoming'
 
-// Tolerant UI gate. RLS is the real boundary (sql/188).
+// Tolerant UI gate. RLS is the real boundary (sql/189).
 const isFounder = (user) =>
   user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
 

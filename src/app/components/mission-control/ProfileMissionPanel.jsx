@@ -860,6 +860,33 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
         </button>
       )}
 
+      {/* Founder: Homecoming (the allostasis / set-point tool). Unlinked from all
+          navigation except this button — real enforcement is RLS in
+          sql/189_homecoming.sql, this is just the door. */}
+      {isFounder && (
+        <button
+          onClick={() => onNavigate('/homecoming')}
+          style={{
+            display: 'block',
+            width: '100%',
+            padding: '11px 16px',
+            background: 'rgba(76,107,69, 0.06)',
+            border: `1px solid ${GOLD}`,
+            borderRadius: 14,
+            cursor: 'pointer',
+            fontFamily: FONT_SC,
+            fontSize: 13,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: GOLD_DK,
+            textAlign: 'center',
+            marginBottom: 14,
+          }}
+        >
+          HOMECOMING →
+        </button>
+      )}
+
       {/* Founder: Prism Lab (hidden practices under evaluation) */}
       {isFounder && (
         <button
