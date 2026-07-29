@@ -27,7 +27,7 @@ import {
   THREE_QUESTIONS, REACH_FOR_A_PERSON, SAFETY,
   isDoneToday, repDaysInWindow, dayKey,
   setpointTrend, trendDirection, evidenceSummary,
-  PLACEMENT, composePlacement, REACH_COPY,
+  PLACEMENT, composePlacement, REACH_COPY, knownFromEcosystem,
 } from '../lib/homecoming'
 
 // Tolerant UI gate. RLS is the real boundary (sql/189).
@@ -126,6 +126,28 @@ function HomecomingWorkspace({ user }) {
   }, [user.id])
 
   useEffect(() => { profileRef.current = profile }, [profile])
+
+  // ── the ecosystem bridge: arrive knowing you ──
+  // Reads the personal layer (Horizon scores, the Map's life statement) so the
+  // Placement can pre-fill. Read-only, same account. Failures are silent — a
+  // missing table or no data just means the Placement asks cold.
+  const [known, setKnown] = useState(null)
+  useEffect(() => {
+    let alive = true
+    ;(async () => {
+      const [hp, mr] = await Promise.all([
+        supabase.from('horizon_profile')
+          .select('domain, current_score, horizon_score, horizon_goal, ia_statement')
+          .eq('user_id', user.id),
+        supabase.from('map_results')
+          .select('life_ia_statement, horizon_goal_user, updated_at')
+          .eq('user_id', user.id).order('updated_at', { ascending: false }).limit(1).maybeSingle(),
+      ])
+      if (!alive) return
+      setKnown(knownFromEcosystem(hp && hp.data, mr && mr.data))
+    })()
+    return () => { alive = false }
+  }, [user.id])
 
   // ── conflict-safe persist (mirrors CareProtocol's proven pattern) ──
   const persist = useCallback(async (snapshot) => {
@@ -241,7 +263,7 @@ function HomecomingWorkspace({ user }) {
         </nav>
 
         {surface === 'threshold' && (
-          <Threshold profile={profile} patch={patch} onDone={() => setSurface('return')} />
+          <Threshold profile={profile} patch={patch} known={known} onDone={() => setSurface('return')} />
         )}
         {surface === 'return' && (
           <DailyReturn
@@ -281,18 +303,26 @@ function HomecomingWorkspace({ user }) {
 }
 
 /* ── Threshold (placement → drafted lines) ────────────────── */
-function Threshold({ profile, patch, onDone }) {
+function Threshold({ profile, patch, known, onDone }) {
   const hasLines = !!(profile.old_number || profile.target_state)
   const placed = profile.guards && profile.guards.placement
   const [mode, setMode] = useState(hasLines ? 'review' : 'placing')
   const [qi, setQi] = useState(0)
   const [answers, setAnswers] = useState((placed && placed.answers) || {})
 
+  // Pre-select the pressure the ecosystem already knows, once it loads, unless
+  // the person has already answered it themselves.
+  useEffect(() => {
+    if (mode === 'placing' && known && known.pressureAnswer) {
+      setAnswers(a => (a.pressure ? a : { ...a, pressure: known.pressureAnswer }))
+    }
+  }, [known, mode])
+
   const pick = (qid, optId) => {
     const next = { ...answers, [qid]: optId }
     setAnswers(next)
     if (qi < PLACEMENT.length - 1) { setQi(qi + 1); return }
-    const composed = composePlacement(next)
+    const composed = composePlacement(next, { targetDraft: known && known.targetDraft })
     patch({
       old_number: composed.oldNumber,
       target_state: composed.targetState,
@@ -311,6 +341,9 @@ function Threshold({ profile, patch, onDone }) {
         <div style={S.eyebrow}>Placement · {qi + 1} of {PLACEMENT.length}</div>
         <h2 style={S.h2}>{q.prompt}</h2>
         {q.hint && <p style={S.p}>{q.hint}</p>}
+        {qi === 0 && known && known.ok && (
+          <div style={S.guardMoss}><b style={S.guardTagMoss}>NextUs already knows you</b> I brought {known.provenance.join(' and ')}, and pencilled in what fits along the way. Change anything that’s off.</div>
+        )}
         <div style={S.rungs}>
           {q.options.map(o => {
             const on = answers[q.id] === o.id

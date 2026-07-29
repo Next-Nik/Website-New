@@ -15,5 +15,6 @@ export { MOVES, MOVES_BY_ID, SCENE_ONE, THREE_QUESTIONS, REACH_FOR_A_PERSON, SAF
 export { dayKey, isDoneToday, returnsToday, repDaysInWindow } from './guards'
 export { setpointTrend, trendDirection, evidenceSummary } from './evidence'
 export { PLACEMENT, PLACEMENT_IDS, composePlacement, REACH_COPY } from './placement'
+export { knownFromEcosystem } from './bridge'
 
 export const ENGINE_VERSION = '1.1.0'

@@ -119,14 +119,16 @@ export const REACH_COPY = {
   none: null,
 }
 
-export function composePlacement(answers = {}) {
+export function composePlacement(answers = {}, prior = {}) {
   const { baseline, calm, reach, pressure, home } = answers
 
   const oldNumber = (
     (BASELINE_PHRASE[baseline] || 'Braced more than I need to be') +
     (CALM_PHRASE[calm] || '.')
   )
-  const targetState = HOME_PHRASE[home] || 'Calm that feels like home, not like waiting.'
+  // The Map's own life statement wins over the template when the ecosystem
+  // brought one (bridge.js), so the home reads in the person's own words.
+  const targetState = (prior && prior.targetDraft) || HOME_PHRASE[home] || 'Calm that feels like home, not like waiting.'
 
   // internal reads — shape the reflection, never shown as labels
   const reads = {

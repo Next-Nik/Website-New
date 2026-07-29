@@ -60,6 +60,7 @@ import OrgRoomOverlay             from '../components/OrgRoomOverlay'
 import MapMissionPanel            from '../components/mission-control/MapMissionPanel'
 import TargetSprintMissionPanel   from '../components/mission-control/TargetSprintMissionPanel'
 import ProfileMissionPanel        from '../components/mission-control/ProfileMissionPanel'
+import HomecomingMissionPanel      from '../components/mission-control/HomecomingMissionPanel'  /* founder · Homecoming signal */
 import WorldViewMissionPanel      from '../components/mission-control/WorldViewMissionPanel'
 import GetToDoMissionPanel        from '../components/mission-control/GetToDoMissionPanel'
 import AddOverlay                 from '../components/AddOverlay'
@@ -1290,6 +1291,20 @@ export default function MissionControl() {
             <span>Daily Tools</span>
           </button>
 
+          {isFounderUser && (
+            <button
+              type="button"
+              className="mc-icon-btn"
+              onClick={() => setActivePanel('homecoming')}
+              aria-label="Homecoming"
+              title="Homecoming"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 11l9-8 9 8" />
+                <path d="M5 10v10h14V10" />
+              </svg>
+            </button>
+          )}
           <button
             type="button"
             className="mc-icon-btn"
@@ -1761,6 +1776,22 @@ export default function MissionControl() {
           onNavigate={navigate}
         />
       </Panel>
+
+
+      {isFounderUser && (
+        <Panel
+          open={activePanel === 'homecoming'}
+          onClose={closePanel}
+          eyebrow="YOU · HOMECOMING"
+          title="Coming home"
+          actions={[
+            { label: 'OPEN HOMECOMING →', primary: true, onClick: () => navigate('/homecoming') },
+            { label: 'CLOSE', onClick: closePanel },
+          ]}
+        >
+          <HomecomingMissionPanel userId={data.user?.id} onNavigate={navigate} />
+        </Panel>
+      )}
 
 
       <Panel
