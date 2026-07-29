@@ -23,16 +23,23 @@ import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
 import { fn, fnText, space, shadow, display, mono } from '../lib/designTokens'
 import {
-  MOVES, POSTS, postForDay, STATES, SCENE_ONE, THREE_QUESTIONS, REACH_FOR_A_PERSON,
-  isDoneToday, returnsToday, repDaysInWindow,
+  MOVES, POSTS, POSTS_BY_ID, postForDay, postIndexOf, STATES, SCENE_ONE,
+  THREE_QUESTIONS, REACH_FOR_A_PERSON, SAFETY,
+  isDoneToday, repDaysInWindow, dayKey,
   setpointTrend, trendDirection, evidenceSummary,
+  PLACEMENT, composePlacement, REACH_COPY,
 } from '../lib/homecoming'
 
 // Tolerant UI gate. RLS is the real boundary (sql/189).
 const isFounder = (user) =>
   user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
 
-const dayIndexNow = () => Math.floor(Date.now() / 86400000)
+// Local-day index, so the post-of-the-day turns over at local midnight and
+// matches the local-day logic the guards use (rather than UTC midnight).
+const dayIndexNow = () => {
+  const d = new Date()
+  return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000)
+}
 
 // Maps a state's semantic colour key (states.js) to design tokens. Slate has no
 // token, so Collapsed reads as the neutral ink-grey rather than a raw hex.
@@ -64,11 +71,13 @@ function HomecomingWorkspace({ user }) {
   const [entries, setEntries] = useState([])
   const [surface, setSurface] = useState('return')
   const [loadError, setLoadError] = useState(null)
+  const [syncStatus, setSyncStatus] = useState('synced')  // synced | saving | error
 
   const saveTimer = useRef(null)
   const loaded = useRef(false)           // armed only after a SUCCESSFUL load
   const lastSyncRef = useRef(null)       // the server updated_at we last agreed on
   const profileRef = useRef(null)
+  const justLoaded = useRef(false)       // skip the write-back on the render right after load
 
   // ── load ────────────────────────────────────────────────
   useEffect(() => {
@@ -89,6 +98,7 @@ function HomecomingWorkspace({ user }) {
         setProfile({ ...EMPTY_PROFILE })
         lastSyncRef.current = null
         loaded.current = true
+        justLoaded.current = true
         setSurface('threshold')       // first run → set the old number + target
       } else {
         setProfile({
@@ -100,6 +110,7 @@ function HomecomingWorkspace({ user }) {
         })
         lastSyncRef.current = data.updated_at
         loaded.current = true
+        justLoaded.current = true
         setSurface((data.old_number || data.target_state) ? 'return' : 'threshold')
       }
       // entries
@@ -161,11 +172,18 @@ function HomecomingWorkspace({ user }) {
     return true
   }, [user.id])
 
-  // debounced autosave
+  // debounced autosave, with a visible status and a guard against the needless
+  // write-back on the first render right after a load
   useEffect(() => {
     if (!profile || !loaded.current) return
+    if (justLoaded.current) { justLoaded.current = false; return }
     if (saveTimer.current) clearTimeout(saveTimer.current)
-    saveTimer.current = setTimeout(() => { saveTimer.current = null; persist(profile) }, 700)
+    setSyncStatus('saving')
+    saveTimer.current = setTimeout(async () => {
+      saveTimer.current = null
+      const ok = await persist(profile)
+      setSyncStatus(ok ? 'synced' : 'error')
+    }, 700)
     return () => { if (saveTimer.current) clearTimeout(saveTimer.current) }
   }, [profile, persist])
 
@@ -209,12 +227,15 @@ function HomecomingWorkspace({ user }) {
       <div style={S.shell}>
         <header style={S.top}>
           <div style={S.mark}>Home<span style={{ color: fn.moss }}>coming</span></div>
-          <div style={S.founder}>FOUNDER</div>
+          <div style={S.topRight}>
+            <SaveChip status={syncStatus} />
+            <div style={S.founder}>FOUNDER</div>
+          </div>
         </header>
 
         <nav style={S.tabs}>
           {[['return', 'The Daily Return'], ['guards', 'Guards'], ['evidence', 'Evidence'], ['threshold', 'Threshold']].map(([id, label]) => (
-            <button key={id} onClick={() => setSurface(id)}
+            <button key={id} onClick={() => setSurface(id)} aria-current={surface === id ? 'page' : undefined}
               style={{ ...S.tab, ...(surface === id ? S.tabOn : null) }}>{label}</button>
           ))}
         </nav>
@@ -226,7 +247,8 @@ function HomecomingWorkspace({ user }) {
           <DailyReturn
             profile={profile}
             doneToday={doneToday}
-            returnsToday={returnsToday(entries)}
+            placement={profile.guards && profile.guards.placement}
+            onOpenSafety={() => setSurface('safety')}
             onComplete={async ({ state, post, mode, receipt, landed }) => {
               await addEntry({ kind: 'return', state, post, mode })
               if (receipt && receipt.trim()) {
@@ -237,33 +259,96 @@ function HomecomingWorkspace({ user }) {
           />
         )}
         {surface === 'guards' && (
-          <Guards onLogUrge={async (note) => { await addEntry({ kind: 'urge', note }) }} />
+          <Guards
+            reads={profile.guards && profile.guards.placement && profile.guards.placement.reads}
+            onLogUrge={async (note) => { await addEntry({ kind: 'urge', note }) }}
+            onOpenSafety={() => setSurface('safety')}
+          />
         )}
         {surface === 'evidence' && (
-          <Evidence entries={entries} />
+          <Evidence entries={entries} onLog={async (value) => { await addEntry({ kind: 'setpoint', value }) }} />
+        )}
+        {surface === 'safety' && (
+          <SafetyDoor onBack={() => setSurface('return')} />
         )}
 
-        <p style={S.footNote}>{REACH_FOR_A_PERSON}</p>
+        <button style={S.footDoor} onClick={() => setSurface('safety')}>
+          Not okay right now? →
+        </button>
       </div>
     </div>
   )
 }
 
-/* ── Threshold ────────────────────────────────────────────── */
+/* ── Threshold (placement → drafted lines) ────────────────── */
 function Threshold({ profile, patch, onDone }) {
+  const hasLines = !!(profile.old_number || profile.target_state)
+  const placed = profile.guards && profile.guards.placement
+  const [mode, setMode] = useState(hasLines ? 'review' : 'placing')
+  const [qi, setQi] = useState(0)
+  const [answers, setAnswers] = useState((placed && placed.answers) || {})
+
+  const pick = (qid, optId) => {
+    const next = { ...answers, [qid]: optId }
+    setAnswers(next)
+    if (qi < PLACEMENT.length - 1) { setQi(qi + 1); return }
+    const composed = composePlacement(next)
+    patch({
+      old_number: composed.oldNumber,
+      target_state: composed.targetState,
+      guards: { ...(profile.guards || {}), placement: {
+        answers: next, reflection: composed.reflection, startPost: composed.startPost, reads: composed.reads,
+      } },
+    })
+    setMode('review')
+  }
+
+  // ── placing: recognition, one question at a time ──
+  if (mode === 'placing') {
+    const q = PLACEMENT[qi]
+    return (
+      <div style={S.card}>
+        <div style={S.eyebrow}>Placement · {qi + 1} of {PLACEMENT.length}</div>
+        <h2 style={S.h2}>{q.prompt}</h2>
+        {q.hint && <p style={S.p}>{q.hint}</p>}
+        <div style={S.rungs}>
+          {q.options.map(o => {
+            const on = answers[q.id] === o.id
+            return (
+              <button key={o.id} onClick={() => pick(q.id, o.id)}
+                style={{ ...S.rung, borderLeftColor: fn.moss, ...(on ? { borderColor: fn.moss, boxShadow: `0 0 0 1px ${fn.moss}` } : null) }}>
+                <div style={{ ...S.rungName, color: fn.ink }}>{o.label}</div>
+                <div style={S.rungDesc}>{o.sub}</div>
+              </button>
+            )
+          })}
+        </div>
+        <div style={S.row}>
+          {qi > 0
+            ? <button style={S.link} onClick={() => setQi(qi - 1)}>← back</button>
+            : <span style={S.fine}>no wrong answer, just what is true</span>}
+          <div style={{ flex: 1 }} />
+        </div>
+      </div>
+    )
+  }
+
+  // ── review: the drafted lines, yours to nudge ──
   return (
     <div style={S.card}>
-      <div style={S.eyebrow}>Threshold · set once, re-openable</div>
-      <h1 style={S.h1}>Name the home you’re coming to.</h1>
-      <p style={S.p}>Two lines, in your own words. They orient every rep after this. Come back and edit them whenever the words change.</p>
+      <div style={S.eyebrow}>Threshold · your two lines, yours to nudge</div>
+      <h1 style={S.h1}>Here’s where you are, and where you’re coming to.</h1>
+      {placed && placed.reflection && (
+        <div style={S.guardMoss}><b style={S.guardTagMoss}>A first read</b> {placed.reflection}</div>
+      )}
 
-      <label style={S.lbl}>The number your body has been defending — the old normal, in a phrase</label>
-      <input style={S.input} value={profile.old_number}
+      <label style={{ ...S.lbl, marginTop: space.lg }}>The number your body has been defending</label>
+      <textarea style={S.textarea} rows={2} value={profile.old_number}
         onChange={e => patch({ old_number: e.target.value })}
         placeholder="braced, scanning, never quite off the clock…" />
 
-      <label style={{ ...S.lbl, marginTop: space.lg }}>The state that would be a proper home — where you’re coming to</label>
-      <input style={S.input} value={profile.target_state}
+      <label style={{ ...S.lbl, marginTop: space.lg }}>The home you’re coming to</label>
+      <textarea style={S.textarea} rows={2} value={profile.target_state}
         onChange={e => patch({ target_state: e.target.value })}
         placeholder="settled, flush, held, chest open, laughing easily…" />
 
@@ -271,7 +356,9 @@ function Threshold({ profile, patch, onDone }) {
         <b style={S.guardTagMoss}>The three questions</b> {THREE_QUESTIONS} Three yeses, and you’re home.
       </div>
 
-      <div style={S.rowEnd}>
+      <div style={S.row}>
+        <button style={S.link} onClick={() => { setAnswers({}); setQi(0); setMode('placing') }}>↺ place me again</button>
+        <div style={{ flex: 1 }} />
         <button style={S.btn} onClick={onDone}>Begin the daily return →</button>
       </div>
     </div>
@@ -279,18 +366,23 @@ function Threshold({ profile, patch, onDone }) {
 }
 
 /* ── The Daily Return ─────────────────────────────────────── */
-function DailyReturn({ profile, doneToday, returnsToday, onComplete, onOpenSceneOne }) {
+function DailyReturn({ profile, doneToday, placement, onComplete, onOpenSceneOne, onOpenSafety }) {
   const [step, setStep] = useState(0)          // 0 intro … 6 close
   const [state, setState] = useState(null)
   const [mode, setMode] = useState(null)
   const [receipt, setReceipt] = useState('')
   const [landed, setLanded] = useState(null)
   const [anchor, setAnchor] = useState('')
-  const post = useMemo(() => postForDay(dayIndexNow()), [])
+  // Reassign opens on the guardian the Placement flagged, else the day's rotation.
+  const startIdx = placement && placement.startPost ? postIndexOf(placement.startPost) : (dayIndexNow() % POSTS.length)
+  const [postIdx, setPostIdx] = useState(startIdx)
+  const [shortPath, setShortPath] = useState(false)   // the one-move path for a shut-down day
+  const post = POSTS[postIdx % POSTS.length]
   const savedRef = useRef(false)
 
   const reset = () => {
-    setStep(0); setState(null); setMode(null); setReceipt(''); setLanded(null); setAnchor(''); savedRef.current = false
+    setStep(0); setState(null); setMode(null); setReceipt(''); setLanded(null); setAnchor('')
+    setShortPath(false); setPostIdx(startIdx); savedRef.current = false
   }
 
   const finish = async () => {
@@ -361,7 +453,19 @@ function DailyReturn({ profile, doneToday, returnsToday, onComplete, onOpenScene
           })}
         </div>
         <GuardMoss g={move.guard} />
-        <NavRow onBack={() => setStep(0)} nextLabel="Named it →" nextOn={!!state} onNext={() => setStep(2)} />
+        {state === 'collapsed' ? (
+          <>
+            <div style={S.guardMoss}><b style={S.guardTagMoss}>The short way home</b> On a shut-down day, one move counts. Just the breath, and today’s rep is done. No mountain.</div>
+            <div style={S.row}>
+              <button style={S.link} onClick={() => setStep(0)}>← back</button>
+              <div style={{ flex: 1 }} />
+              <button style={S.btnGhost} onClick={() => { setShortPath(true); setStep(2) }}>Just breathe →</button>
+              <button style={S.btn} onClick={() => { setShortPath(false); setStep(2) }}>Full return →</button>
+            </div>
+          </>
+        ) : (
+          <NavRow onBack={() => setStep(0)} nextLabel="Named it →" nextOn={!!state} onNext={() => setStep(2)} />
+        )}
       </MoveCard>
     )
   }
@@ -372,7 +476,9 @@ function DailyReturn({ profile, doneToday, returnsToday, onComplete, onOpenScene
       <MoveCard move={move}>
         <GuardMoss g={move.guard} />
         <Breath seconds={profile.breath_seconds || 300} />
-        <NavRow onBack={() => setStep(1)} nextLabel="Move on →" nextOn onNext={() => setStep(3)} />
+        {shortPath
+          ? <NavRow onBack={() => setStep(1)} nextLabel="That’s enough today →" nextOn onNext={finish} />
+          : <NavRow onBack={() => setStep(1)} nextLabel="Move on →" nextOn onNext={() => setStep(3)} />}
       </MoveCard>
     )
   }
@@ -395,8 +501,11 @@ function DailyReturn({ profile, doneToday, returnsToday, onComplete, onOpenScene
     return (
       <MoveCard move={move}>
         <div style={S.post}>
-          <div style={S.postRole}>{post.role}</div>
+          <div style={{ ...S.postRole, color: STATE_COLOR[post.color] || fn.moss }}>{post.role} · {post.domain}</div>
           <div style={S.postDecl} dangerouslySetInnerHTML={{ __html: post.decl }} />
+        </div>
+        <div style={{ display: 'flex', marginTop: 8, marginBottom: 4 }}>
+          <button style={S.link} onClick={() => { setPostIdx(postIdx + 1); setMode(null) }}>↻ show me another guardian</button>
         </div>
         {mode == null ? (
           <>
@@ -562,8 +671,10 @@ function Breath({ seconds }) {
 
   const toggle = () => {
     if (running) { stop(); return }
+    let start = left
+    if (start <= 0) { start = seconds; setLeft(seconds); phaseRef.current = 0; setWord('ready when you are') }
     setRunning(true)
-    endRef.current = Date.now() + left * 1000
+    endRef.current = Date.now() + start * 1000
     tickClock(); cycle()
   }
 
@@ -571,23 +682,24 @@ function Breath({ seconds }) {
 
   return (
     <div style={S.breathStage}>
-      <div style={S.orbWrap}>
+      <div style={S.orbWrap} aria-hidden="true">
         <div style={{ ...S.orb, transform: `scale(${scale})`, transition: `transform ${dur}s cubic-bezier(.4,0,.3,1)` }} />
       </div>
-      <div style={S.breathWord}>{word}</div>
+      <div style={S.breathWord} role="status" aria-live="polite">{word}</div>
       <div style={S.clock}>{mm}:{ss}</div>
       <div style={{ ...S.row, marginTop: space.md }}>
         <div style={{ flex: 1 }} />
-        <button style={S.btnGhost} onClick={toggle}>{running ? 'Pause' : (left < seconds ? 'Resume' : 'Begin')}</button>
+        <button style={S.btnGhost} onClick={toggle} aria-label={running ? 'Pause the breath timer' : 'Start the breath timer'}>{running ? 'Pause' : (left <= 0 ? 'Again' : (left < seconds ? 'Resume' : 'Begin'))}</button>
       </div>
     </div>
   )
 }
 
 /* ── Guards surface (Scene One + reference) ───────────────── */
-function Guards({ onLogUrge }) {
+function Guards({ reads, onLogUrge, onOpenSafety }) {
   const [note, setNote] = useState('')
   const [logged, setLogged] = useState(false)
+  const reachLine = reads && reads.reachKind ? REACH_COPY[reads.reachKind] : null
   if (logged) {
     return (
       <div style={S.card}>
@@ -602,11 +714,15 @@ function Guards({ onLogUrge }) {
       <div style={S.eyebrow}>Guard · {SCENE_ONE.name}</div>
       <h2 style={S.h2}>{SCENE_ONE.title}</h2>
       <p style={S.p}>{SCENE_ONE.body}</p>
+      {reachLine && <p style={S.p}>For you it usually looks like {reachLine}. Same shape either way, and the same move works.</p>}
       <div style={S.guardClay}><b style={S.guardTagClay}>{SCENE_ONE.name}</b> {SCENE_ONE.guard}</div>
+      <div style={S.guardMoss}><b style={S.guardTagMoss}>Ride the wave</b> {SCENE_ONE.surf}</div>
       <label style={S.lbl}>Name it — it goes to the log as data, a rep of noticing</label>
       <textarea style={S.textarea} rows={3} value={note} onChange={e => setNote(e.target.value)}
         placeholder="the urge that just showed up, in your words…" />
-      <div style={S.rowEnd}>
+      <div style={S.row}>
+        <button style={S.link} onClick={onOpenSafety}>If this is bigger than an urge →</button>
+        <div style={{ flex: 1 }} />
         <button style={S.btnClay} onClick={async () => { if (note.trim()) await onLogUrge(note.trim()); setLogged(true) }}>
           Named. I’ll keep today small →
         </button>
@@ -615,8 +731,32 @@ function Guards({ onLogUrge }) {
   )
 }
 
+/* ── Safety door — the heavy-day surface (guard G6) ───────── */
+function SafetyDoor({ onBack }) {
+  return (
+    <div style={S.card}>
+      <div style={S.eyebrow}>A door, always open</div>
+      <h2 style={S.h2}>{SAFETY.title}</h2>
+      <p style={{ ...S.p, color: fn.ink, fontSize: 16 }}>{SAFETY.body}</p>
+      <div style={{ marginTop: space.md }}>
+        {SAFETY.steps.map((s, i) => (
+          <div key={i} style={S.safetyStep}>
+            <div style={S.safetyStepLabel}>{s.label}</div>
+            <div style={S.safetyStepNote}>{s.note}</div>
+          </div>
+        ))}
+      </div>
+      <div style={S.guardClay}><b style={S.guardTagClay}>If you might not be safe</b> {SAFETY.crisis}</div>
+      <p style={{ ...S.fine, marginTop: space.md }}>{SAFETY.close}</p>
+      <div style={S.row}>
+        <button style={S.link} onClick={onBack}>← back to the tool</button>
+      </div>
+    </div>
+  )
+}
+
 /* ── Evidence surface ─────────────────────────────────────── */
-function Evidence({ entries }) {
+function Evidence({ entries, onLog }) {
   const sum = evidenceSummary(entries)
   const receipts = entries.filter(e => e.kind === 'receipt').slice(0, 12)
   const urges = entries.filter(e => e.kind === 'urge').slice(0, 8)
@@ -629,6 +769,8 @@ function Evidence({ entries }) {
       <div style={S.eyebrow}>Evidence · the proof file</div>
       <h2 style={S.h2}>Read the month, not the morning.</h2>
       <p style={S.p}>The set-point moves slowly, under the daily noise. This surface favours the long view on purpose — a single tired day carries no verdict here.</p>
+
+      <SetpointInput entries={entries} onLog={onLog} />
 
       <div style={S.stats}>
         <Stat n={repDays} label="rep-days · last 30" />
@@ -659,6 +801,42 @@ function Stat({ n, label }) {
   return <div style={S.stat}><div style={S.statN}>{n}</div><div style={S.statL}>{label}</div></div>
 }
 
+// One daily read that feeds the set-point trend. 1 settled … 10 wired, so the
+// line easing down over weeks is the set-point lowering. Re-reads on the same
+// day just update the day (the engine keeps the latest — evidence.js).
+function SetpointInput({ entries, onLog }) {
+  const todayEntry = (entries || []).find(e => e.kind === 'setpoint' && dayKey(e.created_at) === dayKey(new Date()))
+  const [picked, setPicked] = useState(todayEntry ? todayEntry.value : null)
+  const choose = (v) => { setPicked(v); if (onLog) onLog(v) }
+  return (
+    <div style={S.setpoint}>
+      <div style={S.evHead}>Today’s resting charge</div>
+      <p style={S.setpointHint}>One read for the trend. 1 is settled, 10 is wired.</p>
+      <div style={S.scale}>
+        {Array.from({ length: 10 }, (_, i) => i + 1).map(v => (
+          <button key={v} onClick={() => choose(v)} aria-label={`Resting charge ${v} of 10`} aria-pressed={picked === v}
+            style={{ ...S.scaleBtn, ...(picked === v ? S.scaleBtnOn : null) }}>{v}</button>
+        ))}
+      </div>
+      {picked != null && <div style={S.setpointLogged}>Logged {picked}. It joins the 7-day average.</div>}
+    </div>
+  )
+}
+
+// Ambient save state, pinned in the header so a Threshold edit visibly lands.
+function SaveChip({ status }) {
+  const map = {
+    saving: { t: '○ Saving…', c: fn.ghost, bg: 'transparent', bd: fn.rule },
+    synced: { t: '● Saved', c: fn.moss, bg: fn.mossTint, bd: fn.mossEdge },
+    error:  { t: '⚠ Unsaved', c: fn.clay, bg: fn.clayTint, bd: fn.clayEdge },
+  }
+  const s = map[status] || map.synced
+  return (
+    <span role="status" aria-live="polite" aria-label={`Save state: ${s.t.replace(/[^A-Za-z ]/g, '').trim()}`}
+      style={{ ...mono, fontSize: 13, letterSpacing: '.1em', color: s.c, background: s.bg, border: `1px solid ${s.bd}`, borderRadius: 20, padding: '3px 10px' }}>{s.t}</span>
+  )
+}
+
 /* ── styles (Field Notes tokens) ──────────────────────────── */
 const CARD_SHADOW = '0 1px 2px rgba(38,36,32,.04), 0 12px 34px rgba(38,36,32,.05)'
 const S = {
@@ -667,6 +845,7 @@ const S = {
   page: { minHeight: '100dvh', background: fn.ground, padding: '28px 20px 64px', display: 'flex', justifyContent: 'center' },
   shell: { width: '100%', maxWidth: 620 },
   top: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: space.md },
+  topRight: { display: 'flex', alignItems: 'center', gap: 10 },
   mark: { ...display, fontSize: 17, color: fn.ink },
   founder: { ...mono, fontSize: 13, letterSpacing: '.22em', color: fn.gold, border: `1px solid ${fn.gold}`, borderRadius: 20, padding: '3px 9px' },
   tabs: { display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: space.xl },
@@ -680,6 +859,10 @@ const S = {
   p: { ...fnText, color: fn.meta, fontSize: 15.5, lineHeight: 1.55, marginBottom: space.md },
   fine: { ...fnText, fontSize: 13, color: fn.ghost, lineHeight: 1.5 },
   footNote: { ...fnText, fontSize: 13, color: fn.ghost, lineHeight: 1.5, marginTop: space.xl, textAlign: 'center' },
+  footDoor: { ...fnText, fontSize: 13, color: fn.ghost, background: 'none', border: 'none', cursor: 'pointer', width: '100%', marginTop: space.xl, textAlign: 'center', textDecoration: 'underline', textUnderlineOffset: 3 },
+  safetyStep: { padding: '12px 0', borderBottom: `1px solid ${fn.rule}` },
+  safetyStepLabel: { ...display, fontSize: 17, color: fn.ink, marginBottom: 2 },
+  safetyStepNote: { ...fnText, fontSize: 13.5, color: fn.meta, lineHeight: 1.5 },
 
   lbl: { ...fnText, fontSize: 13, color: fn.ghost, display: 'block', margin: '2px 0 7px' },
   input: { width: '100%', ...fnText, fontSize: 15, color: fn.ink, background: fn.ground, border: `1px solid ${fn.rule}`, borderRadius: 12, padding: '12px 14px' },
@@ -725,6 +908,12 @@ const S = {
   stat: { background: fn.surface2, borderRadius: 12, padding: '14px 10px', textAlign: 'center' },
   statN: { ...display, fontSize: 24, color: fn.moss },
   statL: { ...fnText, fontSize: 13, color: fn.ghost, letterSpacing: '.04em', marginTop: 2 },
+  setpoint: { background: fn.surface2, borderRadius: 12, padding: '14px 16px', marginBottom: space.lg },
+  setpointHint: { ...fnText, fontSize: 13, color: fn.ghost, margin: '2px 0 10px' },
+  scale: { display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: 5 },
+  scaleBtn: { ...fnText, fontSize: 13, padding: '9px 0', borderRadius: 8, border: `1px solid ${fn.rule}`, background: fn.object, color: fn.meta, cursor: 'pointer' },
+  scaleBtnOn: { borderColor: fn.moss, color: fn.moss, background: fn.mossTint, fontWeight: 600 },
+  setpointLogged: { ...fnText, fontSize: 13, color: fn.moss, marginTop: 9 },
   evTrend: { ...fnText, fontSize: 13.5, color: fn.meta, background: fn.mossTint, border: `1px solid ${fn.mossEdge}`, borderRadius: 10, padding: '10px 13px', marginBottom: space.md },
   evBlock: { marginTop: space.md },
   evHead: { ...mono, fontSize: 13, letterSpacing: '.18em', textTransform: 'uppercase', color: fn.ghost, marginBottom: 8 },

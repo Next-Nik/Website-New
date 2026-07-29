@@ -55,6 +55,8 @@ export const SCENE_ONE = {
   title: 'This is scene one.',
   body: 'A pull has arrived — toward a spark, a fight, a fog, a way to shake the good loose. Here’s the frame: as the set-point eases down, the body reads the new calm as unfamiliar and reaches for the number it knows. This is the defence doing its old job. You’re watching it — which means you’re already a step free of it.',
   guard: 'Name it, and let it pass — it always does. Keep today steady and small while it moves through. Play the whole film forward, all the way to the aftermath you’ve already written. You know how this one ends.',
+  // Urge-surfing: the shape of a craving, said plainly.
+  surf: 'An urge crests like a wave and falls. It peaks in minutes, not hours. You don’t have to do anything but let it move through — watch it rise, watch it break, watch it go.',
 }
 
 // The three questions (his Practice vocabulary), asked of himself at the door.
@@ -63,3 +65,19 @@ export const THREE_QUESTIONS = 'Are you ready? Are you allowed? Are you choosing
 // The safety line (guard G6). A person outranks the rep, said plainly.
 export const REACH_FOR_A_PERSON =
   'This is a daily rep, and a person outranks it any day. When today is heavy, reach for a nervous system — a program call, a safe friend, a professional. That’s the strongest move there is.'
+
+// The heavy-day door (guard G6, made a real surface). Calm hand-off to a
+// person. The rep is deliberately NOT positioned as the answer in this moment.
+export const SAFETY = {
+  title: 'Right now, a person beats this tool.',
+  body: 'If today is heavy — really heavy — the daily rep is not the thing. A nervous system is. Reaching for one is not a detour from the work; it is the work.',
+  steps: [
+    { label: 'Call your program person', note: 'the bookend call. Borrowed regulation is real medicine.' },
+    { label: 'Text or ring a safe friend', note: 'you don’t need the right words. “Rough day, can we talk” is enough.' },
+    { label: 'Reach a professional', note: 'your therapist, your doctor, or a helpline. This is what they are for.' },
+  ],
+  // Accurate as of build; the US line. Elsewhere, a local crisis line.
+  crisis: 'If you might not be safe: in the US call or text 988 (Suicide & Crisis Lifeline), any time. Elsewhere, your local crisis line. You deserve a real voice, now.',
+  close: 'The rep will keep. It is small and it is patient. Come back to it when you have a hand to hold first.',
+}
+

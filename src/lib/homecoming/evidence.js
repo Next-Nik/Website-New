@@ -12,11 +12,17 @@ import { dayKey } from './guards'
 // points: [{created_at, value}] -> [{day, value, avg}] oldest→newest, with a
 // trailing simple moving average of length `window`.
 export function setpointTrend(points, window = 7) {
-  const rows = (points || [])
+  const valid = (points || [])
     .filter(p => typeof p.value === 'number' && !Number.isNaN(p.value))
     .slice()
     .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-    .map(p => ({ day: dayKey(p.created_at), value: p.value }))
+
+  // One reading per day: the latest wins. Ascending sort means the last set()
+  // for a given day is the newest, so several reads in a day never skew the
+  // trailing average — the day counts once.
+  const byDay = new Map()
+  for (const p of valid) byDay.set(dayKey(p.created_at), p.value)
+  const rows = [...byDay.entries()].map(([day, value]) => ({ day, value }))
 
   return rows.map((r, i) => {
     const from = Math.max(0, i - window + 1)

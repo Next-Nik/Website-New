@@ -9,10 +9,11 @@
 // question of "where does this ship next", never a rewrite. No ephemeris here,
 // so no code-split is needed — it is light.
 
-export { POSTS, POSTS_BY_ID, postForDay } from './posts'
+export { POSTS, POSTS_BY_ID, postForDay, postIndexOf } from './posts'
 export { STATES, STATES_BY_ID, FROZEN } from './states'
-export { MOVES, MOVES_BY_ID, SCENE_ONE, THREE_QUESTIONS, REACH_FOR_A_PERSON } from './session'
+export { MOVES, MOVES_BY_ID, SCENE_ONE, THREE_QUESTIONS, REACH_FOR_A_PERSON, SAFETY } from './session'
 export { dayKey, isDoneToday, returnsToday, repDaysInWindow } from './guards'
 export { setpointTrend, trendDirection, evidenceSummary } from './evidence'
+export { PLACEMENT, PLACEMENT_IDS, composePlacement, REACH_COPY } from './placement'
 
-export const ENGINE_VERSION = '1.0.0'
+export const ENGINE_VERSION = '1.1.0'

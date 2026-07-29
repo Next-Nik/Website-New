@@ -1,49 +1,70 @@
 // src/lib/homecoming/posts.js
 //
-// The four reassigned protector posts, from Protector_Reassignment_Covenant.md.
-// The premise: protectors are promoted, not cleared. Each post honours the same
-// original intent (keep him safe and good) with a strategy that lets the good
-// things arrive. Voice is invitational and forward — the declaration names what
-// the protector moves toward, not what it stops doing.
+// The reassigned protector posts — the league of seven guardians (see the
+// Guardian Team brief and Protector_Reassignment_Covenant.md). Protectors are
+// promoted, not cleared: each keeps its original intent (keep him safe and
+// good) with a strategy that lets the good things arrive. Voice is invitational
+// and forward — the vow names what the guardian moves toward.
+//
+// `decl` renders with a <b>and</b> as the emphasised pivot. `color` is a
+// semantic key the renderer maps to a design token.
 //
 // PORTABLE: pure data. No app / Supabase / React imports.
 
 export const POSTS = [
   {
-    id: 'solvency',
-    role: 'Solvency Guardian',
-    // `decl` renders with <b> spans as the emphasised AND-pivot.
-    decl: 'I will keep money flowing toward me <b>and</b> hold it with an open hand. Keeping me flush is keeping me safe — that’s your post.',
-    steady: 'Money is handled, and it can come. You can relax your grip.',
-    gripping: 'I have to lock it down or it disappears.',
+    id: 'alchemist', role: 'The Alchemist', domain: 'Wealth & flow', color: 'gold',
+    decl: 'I will keep money flowing toward me <b>and</b> hold it with an open hand. Keeping me flush is keeping me safe.',
+    steady: 'Money is handled, and it can come. I can ease the grip.',
+    gripping: 'Lock it down or it vanishes.',
   },
   {
-    id: 'connection',
-    role: 'Connection Keeper',
-    decl: 'I will keep the door open <b>and</b> let people find me as I am. When the quiet stretches long, turn me toward people.',
-    steady: 'The door is open and people are drawn in. I can ease off.',
-    gripping: 'I have to keep them close or they leave.',
+    id: 'triad', role: 'The Triad', domain: 'The body', color: 'moss',
+    decl: 'I will tend this body daily and easy <b>and</b> trust it to carry me the long way. Strong, mobile, here for the decades.',
+    steady: 'The body is cared for. I can train gently and rest.',
+    gripping: 'Push it hard or it falls apart.',
   },
   {
-    id: 'love',
-    role: 'Love Steward',
-    decl: 'I will let love in <b>and</b> stay in the room, chest open, long enough to let it land. When love comes close, keep me here.',
+    id: 'witness', role: 'The Witness', domain: 'Worth', color: 'moss',
+    decl: 'I will let the evidence land <b>and</b> receive the good already said about me. Worth grows by being received.',
+    steady: 'The proof is in. I can let it in.',
+    gripping: 'Prove it again — it never quite counts.',
+  },
+  {
+    id: 'sovereign', role: 'The Sovereign', domain: 'Full presence', color: 'gold',
+    decl: 'I will take up my whole space <b>and</b> let my size be used in service. Fully here, without apology.',
+    steady: 'There is room for all of me. I can fill it.',
+    gripping: 'Shrink — take less, do not be too much.',
+  },
+  {
+    id: 'gentle_titan', role: 'The Gentle Titan', domain: 'Power in service', color: 'clay',
+    decl: 'I will be big <b>and</b> kind, my certainty used to lift, never as a weapon. Strong with a gentle hand.',
+    steady: 'My power is safe to hold. I can be certain and warm.',
+    gripping: 'Hold it back, or you become them.',
+  },
+  {
+    id: 'heart_star', role: 'Heart Star', domain: 'The open heart', color: 'clay',
+    decl: 'I will keep my heart open to the world <b>and</b> love freely without it costing me. Open, not walled.',
+    steady: 'The heart is safe to keep open. Love can flow both ways.',
+    gripping: 'Guard the chest — do not let it show.',
+  },
+  {
+    id: 'companion', role: 'The Companion', domain: 'The beloved', color: 'clay',
+    decl: 'I will let love in <b>and</b> stay in the room, giving and receiving in equal measure. A partnership worth staying for.',
     steady: 'Love is welcome here, and I can stay for it.',
     gripping: 'Leave first, before this can hurt.',
-  },
-  {
-    id: 'joy',
-    role: 'Joy Defender',
-    decl: 'I will protect my joy <b>and</b> hold it lightly, trusting it to stay. When the good thing lands, stand at the window and let it in.',
-    steady: 'The joy is safe to keep. I can let it in.',
-    gripping: 'Brace — this is about to be taken.',
   },
 ]
 
 export const POSTS_BY_ID = Object.fromEntries(POSTS.map(p => [p.id, p]))
 
-// Rotate through the four by day so each Return surfaces a different post,
-// deterministically (no randomness — same day, same post).
+// Rotate through the league by day, deterministically (same day, same guardian).
 export function postForDay(dayIndex) {
   return POSTS[((dayIndex % POSTS.length) + POSTS.length) % POSTS.length]
+}
+
+// Index of a guardian by id, for opening Reassign on the Placement's pick.
+export function postIndexOf(id) {
+  const i = POSTS.findIndex(p => p.id === id)
+  return i < 0 ? 0 : i
 }
