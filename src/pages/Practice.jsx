@@ -36,6 +36,11 @@ import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
 import { fn, fnText, space, shadow, mono } from '../lib/designTokens'
 import * as engine from '../lib/practice'
+// Timekeeper's summary read rides the standing full-access decision with the
+// same guardrails: aggregate hours only (buildTimeContext never emits entry
+// descriptions). It seasons the reflections' bearing exactly as the practice
+// trends do.
+import { buildTimeContext } from '../lib/timekeeper'
 
 // Tolerant UI gate. RLS is the real boundary (sql/188_practice.sql).
 const isFounder = (user) =>
@@ -66,6 +71,29 @@ function PracticeWorkspace({ user }) {
   const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name || ''
   const [events, setEvents] = useState(null)
   const [loadError, setLoadError] = useState(null)
+  // Timekeeper's last ~31 days, for the trends-only time context that rides
+  // the reflections. Optional by design: a failed read leaves this empty and
+  // the practice renders and reflects exactly as before — the practice never
+  // depends on another tool's table being reachable.
+  const [timeEntries, setTimeEntries] = useState([])
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const floor = new Date(Date.now() - 31 * 864e5).toISOString()
+        const { data: timeRows, error: timeError } = await supabase
+          .from('time_entries')
+          .select('*')
+          .eq('user_id', user.id)
+          .gte('started_at', floor)
+          .order('started_at', { ascending: false })
+          .limit(1000)
+        if (!cancelled && !timeError && timeRows?.length) setTimeEntries(timeRows)
+      } catch (_) { /* degrade silently — see above */ }
+    })()
+    return () => { cancelled = true }
+  }, [user.id])
 
   useEffect(() => {
     let cancelled = false
@@ -234,8 +262,14 @@ function PracticeWorkspace({ user }) {
   const savedSceneLast = engine.latestSceneLast(events)
   const coregDays = engine.daysSinceLast(events, 'coreg', new Date())
   // Fresh at every call — render-scope, so it always reads the newest event
-  // list, unlike anything captured inside a useCallback.
-  const recoveryContextNow = () => engine.buildRecoveryContext(events, { now: new Date() })
+  // list, unlike anything captured inside a useCallback. The time trends
+  // ride along when present, same guardrails (aggregates, never a diary).
+  const recoveryContextNow = () => {
+    const practiceContext = engine.buildRecoveryContext(events, { now: new Date() })
+    const timeContext = buildTimeContext(timeEntries, { now: new Date() })
+    if (!timeContext) return practiceContext
+    return practiceContext ? `${practiceContext}\n\n${timeContext}` : timeContext
+  }
   const todayKey = engine.dayKeyOf(new Date().toISOString())
   const todaysEvents = events.filter((e) => engine.dayKeyOf(e.at) === todayKey)
   const todaysLoops = todaysEvents.filter((e) => e.kind === 'loop')

@@ -34,6 +34,10 @@ import InstrumentRunner from '../components/care/InstrumentRunner'
 // module carries no ephemeris dependency, so it adds nothing worth
 // code-splitting for.
 import { buildRecoveryContext } from '../lib/practice'
+// Timekeeper's summary read rides the same decision and the same guardrails:
+// aggregate hours only (buildTimeContext never emits entry descriptions).
+// Equally dependency-light, so equally statically imported.
+import { buildTimeContext } from '../lib/timekeeper'
 
 // Tolerant UI gate. RLS is the real boundary.
 const isFounder = (user) =>
@@ -447,6 +451,24 @@ function CareProtocolWorkspace({ user }) {
           .limit(400)
         if (!practiceError && practiceRows?.length) {
           recovery = buildRecoveryContext(practiceRows, { now: new Date() })
+        }
+      } catch (_) { /* degrade silently — see above */ }
+      // Timekeeper rides the same read, same guardrails: aggregate hours by
+      // category over ~30 days via buildTimeContext (src/lib/timekeeper) —
+      // never entry descriptions. Same degradation rule: a failed read means
+      // a synthesis without the time layer, never a blocked run.
+      try {
+        const floor = new Date(Date.now() - 31 * 864e5).toISOString()
+        const { data: timeRows, error: timeError } = await supabase
+          .from('time_entries')
+          .select('*')
+          .eq('user_id', user.id)
+          .gte('started_at', floor)
+          .order('started_at', { ascending: false })
+          .limit(1000)
+        if (!timeError && timeRows?.length) {
+          const timeContext = buildTimeContext(timeRows, { now: new Date() })
+          if (timeContext) recovery = recovery ? `${recovery}\n\n${timeContext}` : timeContext
         }
       } catch (_) { /* degrade silently — see above */ }
       const res = await fetch('/api/care-synthesis', {
